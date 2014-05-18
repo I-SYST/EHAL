@@ -1,4 +1,5 @@
 EHAL
 ====
 
-Embedded Hardware Abstraction Layer
+Embedded Hardware Abstraction Library
+
