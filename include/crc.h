@@ -4,6 +4,7 @@ File   : crc.h
 Author : Hoang Nguyen Hoan          Dec. 27, 2011
 
 Desc   : CRC calculations
+		 reference : http://en.wikipedia.org/wiki/Computation_of_CRC
 
 Copyright (c) 2011, I-SYST, all rights reserved
 

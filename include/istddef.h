@@ -61,11 +61,19 @@ typedef bool	Bool;
 #define max(x, y)	((x) > (y) ? (x) : (y))
 #endif
 
+#pragma pack(push, 1)
 typedef struct {
-	char 		Name[16];
-	uint32_t	Vers;
-	uint32_t	Build;
+	char Name[16];			// Application signature
+	union {					// Verison number
+		uint32_t	Vers;
+		struct {
+			uint32_t	Minor:16;
+			uint32_t	Major:16;
+		};
+	};
+	uint32_t	Build;		// Build number
 } VER;
+#pragma pack(pop)
 
 #endif // __ISTDDEF_H__
 

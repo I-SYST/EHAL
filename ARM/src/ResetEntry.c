@@ -34,6 +34,10 @@ Modified by          Date              Description
 #include <stdint.h>
 #include <string.h>
 
+#ifdef NRF51
+#include "nrf51.h"
+#endif
+
 extern unsigned long __etext;	// Begin of data in FLASH location
 extern unsigned long __data_loc__;
 extern unsigned long __data_start__;	// RAM data start
@@ -54,6 +58,11 @@ extern void SystemCoreClockUpdate(void);
 __attribute__ ((section (".AppStart")))
 void ResetEntry (void)
 {
+#ifdef NRF51
+	/* nRF51 has default RAM off, we need to turn on RAM before calling any functions */
+	NRF_POWER->RAMON = 0xf000f;
+#endif
+
 	/*
 	 * Core initialization using CMSIS
 	 */
