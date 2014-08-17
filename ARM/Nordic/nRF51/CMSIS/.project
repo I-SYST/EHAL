@@ -30,11 +30,6 @@
 			<location>/Users/hoan/I-SYST/swdev/fwdev/ARM/src/ResetEntry.c</location>
 		</link>
 		<link>
-			<name>src/Vectors_M0.c</name>
-			<type>1</type>
-			<location>/Users/hoan/I-SYST/swdev/fwdev/ARM/src/Vectors_M0.c</location>
-		</link>
-		<link>
 			<name>src/system_nrf51.c</name>
 			<type>1</type>
 			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/templates/system_nrf51.c</locationURI>
