@@ -31,7 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -57,7 +56,16 @@ Modified by          Date              Description
  *
  */
 
-uint32_t g_KValue[] = {
+#define H0	0x6a09e667
+#define H1	0xbb67ae85
+#define H2	0x3c6ef372
+#define H3	0xa54ff53a
+#define H4	0x510e527f
+#define H5	0x9b05688c
+#define H6	0x1f83d9ab
+#define H7	0x5be0cd19
+
+static uint32_t g_Sha256KValue[] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 
 	0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
 	0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
@@ -70,12 +78,6 @@ uint32_t g_KValue[] = {
 	0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
 	0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
-
-uint32_t g_HValue[8] = {
-	0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 
-	0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
-};
-
 
 inline uint32_t ROTR(uint32_t x, uint32_t n) 
 {
@@ -117,10 +119,7 @@ inline uint32_t MAJ(uint32_t x, uint32_t y, uint32_t z)
 	return (x & y) ^ (x & z) ^ (y & z); 
 }
 
-static uint32_t H[8] = {
-	0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
-	0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
-};
+static uint32_t H[8] = { H0, H1, H2, H3, H4, H5, H6, H7 };
 static uint32_t W[64];
 
 void ShaCompute(uint32_t *xx)
@@ -145,32 +144,33 @@ void ShaCompute(uint32_t *xx)
 		if (t > 15)
 			W[t] = (SIGMA1(W[t-2]) + W[t-7] + SIGMA0(W[t-15]) + W[t-16]) & 0xffffffff;
 
-		T1 = h + SUM1(e) + CH(e, f, g) + g_KValue[t] + W[t];
+		T1 = h + SUM1(e) + CH(e, f, g) + g_Sha256KValue[t] + W[t];
 		T2 = SUM0(a) + MAJ(a, b, c);
 
 		h = g;
 		g = f;
 		f = e;
-		e = (d + T1) & 0xffffffff;
+		e = (d + T1);// & 0xffffffff;
 		d = c;
 		c = b;
 		b = a;
-		a = (T1 + T2) & 0xffffffff;
+		a = (T1 + T2);// & 0xffffffff;
 	}
 
-	H[0] = (H[0] + a) & 0xffffffff;
-	H[1] = (H[1] + b) & 0xffffffff;
-	H[2] = (H[2] + c) & 0xffffffff;
-	H[3] = (H[3] + d) & 0xffffffff;
-	H[4] = (H[4] + e) & 0xffffffff;
-	H[5] = (H[5] + f) & 0xffffffff;
-	H[6] = (H[6] + g) & 0xffffffff;
-	H[7] = (H[7] + h) & 0xffffffff;
+	H[0] = (H[0] + a);// & 0xffffffff;
+	H[1] = (H[1] + b);// & 0xffffffff;
+	H[2] = (H[2] + c);// & 0xffffffff;
+	H[3] = (H[3] + d);// & 0xffffffff;
+	H[4] = (H[4] + e);// & 0xffffffff;
+	H[5] = (H[5] + f);// & 0xffffffff;
+	H[6] = (H[6] + g);// & 0xffffffff;
+	H[7] = (H[7] + h);// & 0xffffffff;
 }
 
 static int g_LastWIdx = 0;
 static int g_LastOctet = 0;
 static uint64_t g_TotalBitLen = 0;
+static char g_Sha256Digest[66] = { 0,};
 
 /*
  * Generate SHA digest code.  Call this function until all data are processed.
@@ -182,14 +182,17 @@ static uint64_t g_TotalBitLen = 0;
  * @param 	pSrc 	: Pointer to source data
  * 			SrcLen	: Source data length in bytes
  *			bLast	: set true to indicate last data packet
- * 			pRes	: Pointer to buffer to store resoults of 64 characters
+ * 			pRes	: Pointer to buffer to store results of 64 characters
+ * 					  if NULL is passed, internal buffer will be used
  *
- * 	@return	Number of bytes encoded
+ * 	@return	Pointer to digest string. If pRes is NULL, internal buffer is returned
+ * 			NULL if incomplete
  */
-void Sha256(uint8_t *pData, int DataLen, bool bLast, char *pRes)
+char *Sha256(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 {
 	uint8_t *p = pData;
 	int t = 0, j = 0;
+	char *digest = g_Sha256Digest;
 
 	g_TotalBitLen += DataLen << 3;
 
@@ -263,7 +266,7 @@ void Sha256(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 		g_LastWIdx = t;
 		g_LastOctet = j;
 
-		return;
+		return NULL;
 	}
 
 	if (bLast)
@@ -278,23 +281,29 @@ void Sha256(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 			W[15] = g_TotalBitLen & 0xffffffff;
 		}
 		ShaCompute(W);
-		sprintf(pRes, "%08X%08X%08X%08X%08X%08X%08X%08X", H[0], H[1], H[2], H[3], H[4], H[5], H[6], H[7]);
+
+		if (pRes)
+			digest = pRes;
+
+		sprintf(digest, "%08X%08X%08X%08X%08X%08X%08X%08X", H[0], H[1], H[2], H[3], H[4], H[5], H[6], H[7]);
 
 		// Reset memory, ready for new processing
 
-		H[0] = g_HValue[0];
-		H[1] = g_HValue[1];
-		H[2] = g_HValue[2];
-		H[3] = g_HValue[3];
-		H[4] = g_HValue[4];
-		H[5] = g_HValue[5];
-		H[6] = g_HValue[6];
-		H[7] = g_HValue[7];
+		H[0] = H0;
+		H[1] = H1;
+		H[2] = H2;
+		H[3] = H3;
+		H[4] = H4;
+		H[5] = H5;
+		H[6] = H6;
+		H[7] = H7;
 
 		memset(W, 0, sizeof(W));
 		g_LastWIdx = 0;
 		g_LastOctet = 0;
 		g_TotalBitLen = 0;
 	}
+
+	return digest;
 }
 

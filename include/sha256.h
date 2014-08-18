@@ -72,10 +72,12 @@ extern "C" {
  * 			SrcLen	: Source data length in bytes
  *			bLast	: set true to indicate last data packet
  * 			pRes	: Pointer to buffer to store resoults of 64 characters
+ * 					  if NULL is passed, internal buffer will be used
  *
- * 	@return	Number of bytes encoded
+ * 	@return	Pointer to digest string. If pRes is NULL, internal buffer is returned
+ * 			NULL if incomplete
  */
-void Sha256(uint8_t *pData, int DataLen, bool bLast, char *pRes);
+char *Sha256(uint8_t *pData, int DataLen, bool bLast, char *pRes);
 
 #ifdef __cplusplus
 }
