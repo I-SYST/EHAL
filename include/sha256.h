@@ -59,7 +59,7 @@ Modified by          Date              Description
 extern "C" {
 #endif
 
-#include <stdbool>
+#include <stdbool.h>
 
 /*
  * Generate SHA digest code.  Call this function until all data are processed.
@@ -84,4 +84,4 @@ char *Sha256(uint8_t *pData, int DataLen, bool bLast, char *pRes);
 #endif
 
 
-#endif // __BASE64_H__
+#endif // __SHA256_H__

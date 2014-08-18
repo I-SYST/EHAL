@@ -36,6 +36,7 @@ Modified by          Date              Description
 #include <string.h>
 
 #include "istddef.h"
+#include "sha256.h"
 
 /*
  * Test cases
@@ -119,10 +120,7 @@ inline uint32_t MAJ(uint32_t x, uint32_t y, uint32_t z)
 	return (x & y) ^ (x & z) ^ (y & z); 
 }
 
-static uint32_t H[8] = { H0, H1, H2, H3, H4, H5, H6, H7 };
-static uint32_t W[64];
-
-void ShaCompute(uint32_t *xx)
+void Sha256Compute(uint32_t *W, uint32_t *H)
 {
 	uint32_t a, b, c, d, e, f, g, h;
 
@@ -150,27 +148,30 @@ void ShaCompute(uint32_t *xx)
 		h = g;
 		g = f;
 		f = e;
-		e = (d + T1);// & 0xffffffff;
+		e = (d + T1);
 		d = c;
 		c = b;
 		b = a;
-		a = (T1 + T2);// & 0xffffffff;
+		a = (T1 + T2);
 	}
 
-	H[0] = (H[0] + a);// & 0xffffffff;
-	H[1] = (H[1] + b);// & 0xffffffff;
-	H[2] = (H[2] + c);// & 0xffffffff;
-	H[3] = (H[3] + d);// & 0xffffffff;
-	H[4] = (H[4] + e);// & 0xffffffff;
-	H[5] = (H[5] + f);// & 0xffffffff;
-	H[6] = (H[6] + g);// & 0xffffffff;
-	H[7] = (H[7] + h);// & 0xffffffff;
+	H[0] = (H[0] + a);
+	H[1] = (H[1] + b);
+	H[2] = (H[2] + c);
+	H[3] = (H[3] + d);
+	H[4] = (H[4] + e);
+	H[5] = (H[5] + f);
+	H[6] = (H[6] + g);
+	H[7] = (H[7] + h);
 }
 
 static int g_LastWIdx = 0;
 static int g_LastOctet = 0;
 static uint64_t g_TotalBitLen = 0;
 static char g_Sha256Digest[66] = { 0,};
+static uint32_t H[8] = { H0, H1, H2, H3, H4, H5, H6, H7 };
+static uint32_t W[64];
+
 
 /*
  * Generate SHA digest code.  Call this function until all data are processed.
@@ -219,7 +220,7 @@ char *Sha256(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 		if (t >= 16)
 		{
 			// We have complete 512
-			ShaCompute(W);
+			Sha256Compute(W, H);
 			memset(W, 0, sizeof(W));
 			t = 0; j = 0;
 		}
@@ -237,7 +238,7 @@ char *Sha256(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 				p += 4;
 				DataLen -= 4;
 			}
-			ShaCompute(W);
+			Sha256Compute(W, H);
 		}
 		t = 0;
 		j = 0;
@@ -275,12 +276,12 @@ char *Sha256(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 		W[t] |= 0x80 << (24 - (j << 3));
 		t++;
 		if (t > 14)
-			ShaCompute(W);
+			Sha256Compute(W, H);
 		{
 			W[14] = g_TotalBitLen >> 32;
 			W[15] = g_TotalBitLen & 0xffffffff;
 		}
-		ShaCompute(W);
+		Sha256Compute(W, H);
 
 		if (pRes)
 			digest = pRes;
