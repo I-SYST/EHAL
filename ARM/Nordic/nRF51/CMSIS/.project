@@ -32,7 +32,7 @@
 		<link>
 			<name>src/system_nrf51.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/templates/system_nrf51.c</locationURI>
+			<locationURI>WORKSPACE_LOC/src/system_nrf51.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
