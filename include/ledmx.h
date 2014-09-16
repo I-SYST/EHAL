@@ -45,8 +45,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------
-Modified by          Date              Description
-
+Modified by         Date         	Description
+Hoan				Sep. 14, 2014	Add support for IBB-LMXBLUE with 16 displays
 ----------------------------------------------------------------------------*/
 #ifndef __LEDMX_H__
 #define __LEDMX_H__
@@ -70,9 +70,7 @@ Modified by          Date              Description
 #define LEDMX_CMD_PWM_16			0x95e
 
 
-#define LEDMX_MAX_PANEL			8
-#define LEDMX_MAX_LINE			2
-//#define LEDMX_MAX_ADDRPIN		4
+#define LEDMX_MAX_PANEL			16
 
 typedef enum {
 	LEDMXPRTMODE_JLEFT,
@@ -85,9 +83,9 @@ typedef enum {
 // CS mapping type
 typedef enum {
 	LEDMX_CSTYPE_GPIO, 		// Direct map to GPIO pin
-	LEDMX_CSTYPE_BIN		// Through a binary decoder, i.e. using 74AHCT138 style
+	LEDMX_CSTYPE_BIN,		// Through a binary decoder, i.e. using 74AHCT138 style
+    LEDMX_CSTYPE_SER		// Through serial shift register
 } LEDMX_CSTYPE;
-
 
 #pragma pack(push, 4)
 
@@ -102,7 +100,7 @@ typedef struct {
 
 typedef struct {
 	int	NbPanel;		// Max number of panels installed
-	int PanelAddr[8];	//
+	int PanelAddr[LEDMX_MAX_PANEL];	//
     int FontLen;
     LEDMXFONT_BITMAP const *pFont;
     void *pIODev;		// Pointer to platform specific I/O control
@@ -131,7 +129,7 @@ void LedMxWriteRam(LEDMXDEV *pDev, unsigned Addr, uint8_t const *pData, int Len,
 // Private platform dependent impletmentation
 void LedMxIOInit(LEDMXDEV *pLedMxDev, LEDMXCFG *pCfg);
 void LedMxStartTx(LEDMXDEV *pDev, int PanelAddr);
-void LedMxStopTx(LEDMXDEV *pDev);
+void LedMxStopTx(LEDMXDEV *pDev, int PanelAddr);
 void LedMxTxData(LEDMXDEV *pDev, uint32_t Data, int NbBits);
 
 #ifdef __cplusplus
@@ -174,7 +172,7 @@ public:
 
 protected:
 	void StartTx(int PanelAddr) { LedMxStartTx(&vDevData, PanelAddr); }
-	void StopTx() { LedMxStopTx(&vDevData); }
+	void StopTx(int PanelAddr) { LedMxStopTx(&vDevData, PanelAddr); }
 	void TxData(uint32_t Data, int NbBits) { LedMxTxData(&vDevData, Data, NbBits); }
 
 private:

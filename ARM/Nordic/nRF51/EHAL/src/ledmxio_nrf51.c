@@ -133,7 +133,7 @@ void LedMxTxData(LEDMXDEV *pLedMxDev, uint32_t Data, int NbBits)
 
 }
 
-void LedMxStopTx(LEDMXDEV *pLedMxDev)
+void LedMxStopTx(LEDMXDEV *pLedMxDev, int PanelAddr)
 {
 	IODEV *pdev = (IODEV *)pLedMxDev->pIODev;
 
@@ -149,5 +149,5 @@ void LedMxStopTx(LEDMXDEV *pLedMxDev)
 		nrf_gpio_pin_set(pdev->EnPin);
 	}
 	else
-		nrf_gpio_pin_clear(pdev->EnPin);
+		nrf_gpio_pin_set(pdev->CsPins[PanelAddr]);
 }

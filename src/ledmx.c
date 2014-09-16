@@ -74,8 +74,10 @@ void LedMxPrintAt(LEDMXDEV *pDev, int col, const char *pStr)
 		LEDMXFONT_BITMAP const *font = &pDev->pFont[fidx];
 
 #ifdef __AVR__
-        LEDMXFONT_BITMAP tfont;
+	    LEDMXFONT_BITMAP tfont;
+
         memcpy_P(&tfont, &pDev->pFont[fidx], sizeof(LEDMXFONT_BITMAP));
+
         font = &tfont;
 #endif
 
@@ -103,7 +105,7 @@ void LedMxPrintAt(LEDMXDEV *pDev, int col, const char *pStr)
 			paneladdr = pDev->PanelAddr[panelidx];
 			LedMxWriteRam(pDev, 0, data, col, paneladdr);
 			addr += w << 1;
-			col = 0;
+			//col = 0;
 			i++;
 			continue;
 		}
@@ -161,7 +163,7 @@ static char s_Buffer[512] = {0,};// __attribute__ ((section(".RAMAHB")));
 
 void LedMxvPrintf(LEDMXDEV *pDev, LEDMXPRTMODE Mode, const char *pFormat, va_list vl)
 {
-	vsnprintf(s_Buffer, sizeof(s_Buffer), pFormat, vl);
+    vsnprintf(s_Buffer, sizeof(s_Buffer), pFormat, vl);
     s_Buffer[sizeof(s_Buffer) - 1] = '\0';
 
     switch (Mode)
@@ -225,7 +227,11 @@ int LedMxPixStrLen(LEDMXDEV *pDev, const char *pStr)
 	for (i = 0; i < strlen(pStr); i++)
 	{
 		uint8_t fidx = pStr[i];
+#ifdef __AVR__
+		len += pgm_read_word_near(&pDev->pFont[fidx].Width);
+#else
 		len += pDev->pFont[fidx].Width;
+#endif
 	}
 
 	return len;
@@ -235,15 +241,15 @@ void LedMxCmd(LEDMXDEV *pDev, int CmdVal, int PanelAddr)
 {
 	LedMxStartTx(pDev, PanelAddr);
 	LedMxTxData(pDev, CmdVal, 12);
-	LedMxStopTx(pDev);
+	LedMxStopTx(pDev, PanelAddr);
 }
 
 void LedMxSetRam(LEDMXDEV *pDev, unsigned RamAddr, char Data, int Len, int PanelAddr)
 {
 	uint32_t d;
-	int i;
-	
-	if (RamAddr >= 0x80)
+    int i;
+        
+	if (RamAddr >= 64) //0x80)
 		return;
 
 	while (RamAddr < 0 && Len > 0)
@@ -261,21 +267,21 @@ void LedMxSetRam(LEDMXDEV *pDev, unsigned RamAddr, char Data, int Len, int Panel
 	d = 0x280 | (RamAddr & 0x7f);
 	LedMxTxData(pDev, d, 10);
 
-	for (i = 0; i < Len && RamAddr < 0x80; i++)
+	for (i = 0; i < Len && RamAddr < 64; i++)	//0x80; i++)
 	{
 		LedMxTxData(pDev, Data, 8);
 		RamAddr += 2;
 	}
 
-	LedMxStopTx(pDev);
+	LedMxStopTx(pDev, PanelAddr);
 }
 
 void LedMxWriteRam(LEDMXDEV *pDev, unsigned RamAddr, uint8_t const *pData, int Len, int PanelAddr)
 {
 	uint32_t d;
-	int i;
-	
-	if (RamAddr >= 0x80)
+    int i;
+
+	if (RamAddr >= 64)	//0x80)
 		return;
 
 	while (RamAddr < 0 && Len > 0)
@@ -295,14 +301,14 @@ void LedMxWriteRam(LEDMXDEV *pDev, unsigned RamAddr, uint8_t const *pData, int L
 	d = 0x280 | (RamAddr & 0x7f);// | *pData;
 	LedMxTxData(pDev, d, 10);
 
-	for (i = 0; i < Len && RamAddr < 0x80; i++)
+	for (i = 0; i < Len && RamAddr < 64; i++) //0x80; i++)
 	{
 		LedMxTxData(pDev, *pData, 8);
 		RamAddr += 2;
 		pData++;
 	}
 
-	LedMxStopTx(pDev);
+	LedMxStopTx(pDev, PanelAddr);
 }
 
 void LedMxInit(LEDMXDEV *pDev, LEDMXCFG *pCfg)
@@ -334,11 +340,11 @@ void LedMxInit(LEDMXDEV *pDev, LEDMXCFG *pCfg)
 		LedMxCmd(pDev, LEDMX_CMD_SYSDIS, panelno);
 		LedMxCmd(pDev, LEDMX_CMD_NMOS_COM8, panelno);
 
-		//if ((panelno & 3) == 0)  // Master at every 4 displays
-		if (i == 0)
+		if ((panelno & 3) == 0)  // Master display with switch set to 1
+		//if (i == 0)
 			LedMxCmd(pDev, LEDMX_CMD_RC_MASTER, panelno);
 		else
-			LedMxCmd(pDev, LEDMX_CMD_SLAVE_MODE, panelno);
+		    LedMxCmd(pDev, LEDMX_CMD_SLAVE_MODE, panelno);
 		LedMxCmd(pDev, LEDMX_CMD_SYSEN, panelno);
 		LedMxCmd(pDev, LEDMX_CMD_BLINKOFF, panelno);
 		LedMxCmd(pDev, LEDMX_CMD_LEDON, panelno);
