@@ -64,7 +64,10 @@ Modified by          Date              Description
  */
 static void on_connect(ble_uarts_t * p_uarts, ble_evt_t * p_ble_evt)
 {
+	char *s = "IMM-NRF51822 Welcome";
 	p_uarts->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
+    //ble_uarts_data_send(p_uarts, s, strlen(s));
+    p_uarts->write_handler(p_uarts, s, strlen(s));
 }
 
 
@@ -121,7 +124,7 @@ static uint32_t uart_ctrl_char_add(ble_uarts_t * p_uarts, const ble_uarts_init_t
 
     memset(&cccd_md, 0, sizeof(cccd_md));
 
-    //BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
 
     cccd_md.vloc = BLE_GATTS_VLOC_STACK;
@@ -261,19 +264,24 @@ uint32_t ble_uarts_init(ble_uarts_t * p_uarts, const ble_uarts_init_t * p_uarts_
     return NRF_SUCCESS;
 }
 
-uint32_t ble_uarts_on_data_change(ble_uarts_t * p_uarts)
+uint32_t ble_uarts_data_send(ble_uarts_t * p_uarts, uint8_t *pData, int16_t Len)
 {
     ble_gatts_hvx_params_t params;
-    uint8_t data;
-    uint16_t len = sizeof(data);
+    //uint8_t data;
+    //uint16_t len = sizeof(data);
+    //while (Len)
+    {
+    	int l = min(20, Len);
+    	memset(&params, 0, sizeof(params));
+		params.type = BLE_GATT_HVX_NOTIFICATION;
+		params.handle = p_uarts->data_char_handles.value_handle;
+		params.p_data = pData;
+		params.p_len = &Len;
 
-    memset(&params, 0, sizeof(params));
-    params.type = BLE_GATT_HVX_NOTIFICATION;
-    params.handle = p_uarts->data_char_handles.value_handle;
-    params.p_data = &data;
-    params.p_len = &len;
-
-    return sd_ble_gatts_hvx(p_uarts->conn_handle, &params);
+		sd_ble_gatts_hvx(p_uarts->conn_handle, &params);
+		//pData += l;
+		//Len -= l;
+    }
 }
 
 

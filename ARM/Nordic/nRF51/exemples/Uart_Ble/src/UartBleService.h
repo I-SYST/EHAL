@@ -80,6 +80,7 @@ extern "C" {
 
 uint32_t ble_uarts_init(ble_uarts_t * p_uarts, const ble_uarts_init_t * p_uarts_init);
 void ble_uarts_on_ble_evt(ble_uarts_t * p_uarts, ble_evt_t * p_ble_evt);
+uint32_t ble_uarts_data_send(ble_uarts_t * p_uarts, uint8_t *pData, int16_t Len);
 
 
 #ifdef __cplusplus
