@@ -1,10 +1,9 @@
 /*--------------------------------------------------------------------------
-File   : ledmxio.h
+File   : imm-nrf51.h
 
-Author : Hoang Nguyen Hoan          Aug. 21, 2014
+Author : Hoang Nguyen Hoan          Sep. 20, 2014
 
-Desc   : This is platform specific I/O control interface for
-         IDM-LMX3208 series LED matrix display
+Desc   : Contains definitions for boards using the IMM-NRF51822
 
 Copyright (c) 2014, I-SYST inc., all rights reserved
 
@@ -33,35 +32,12 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
-#ifndef __LEDMXIO_H__
-#define __LEDMXIO_H__
+#ifndef __IMM_NRF51_H__
+#define __IMM_NRF51_H__
 
-#include "ledmx.h"
+// Most IMM-NRF51822 base boards use P0.30 for Bluetooth connection state LED
+#define IMM_NRF51_CONNECT_LED		30
 
-// Breakout pin mapping
-#define LMXBRK_CSTYPE               LEDMX_CSTYPE_BIN
 
-// IBB-LMXBLUE board
-#define LMXBLUE_CSTYPE				LEDMX_CSTYPE_BIN
-#define LMXBLUE_RD_PIN				15
-#define LMXBLUE_WR_PIN				14
-#define LMXBLUE_DATA_PIN			13
-#define LMXBLUE_EN_PIN				8
-#define LMXBLUE_AD3_PIN				9
-#define LMXBLUE_AD2_PIN				10
-#define LMXBLUE_AD1_PIN				11
-#define LMXBLUE_AD0_PIN				12
 
-#define LEDMX_MAX_ADDRPIN			4
-
-typedef struct _LedMxIOCfg {
-  int WrPin;				// WR pin map GPIO pin #
-  int RdPin;				// RD pin map GPIO pin #
-  int DataPin;				// DATA pin map GPIO pin #
-  int EnPin;				// Decoder enable pin map GPIO pin #
-  int CsPins[LEDMX_MAX_ADDRPIN];	// CS pins map GPIO pin #s
-  int NbCsPins;				// Total number of CS pins used
-  LEDMX_CSTYPE CsType;
-} LEDMXIOCFG;
-
-#endif // __LEDMXIO_H__
+#endif // __IMM_NRF51_H__

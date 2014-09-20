@@ -7,19 +7,20 @@
 //============================================================================
 
 #include <iostream>
+#include "nrf_delay.h"
 #include "ledmxio.h"
 
 using namespace std;
 
 // I/O pins connection
 LEDMXIOCFG g_IOCfg = {
-  21,  // WR pin
-  22,  // RD pin
-  23,  // Data pin
-  24, // En pin
-  { 25, 26, 27, 29,}, // CS pins
-  4,  // Number of CS pins
-  LEDMX_CSTYPE_GPIO
+	LMXBLUE_WR_PIN,  // WR pin
+	LMXBLUE_RD_PIN,  // RD pin
+	LMXBLUE_DATA_PIN,  // Data pin
+	LMXBLUE_EN_PIN, // En pin
+	{ LMXBLUE_AD0_PIN, LMXBLUE_AD1_PIN, LMXBLUE_AD2_PIN, LMXBLUE_AD3_PIN,}, // CS pins
+	4,  // Number of CS pins
+	LMXBLUE_CSTYPE
 };
 
 // Display board configuration
@@ -59,7 +60,9 @@ main()
 
 	g_LmxDev.Init(g_Cfg);
 
-	g_LmxDev.PrintLeft("Hello World");
+	g_LmxDev.PrintLeft("Hello!");
+	//nrf_delay(5000);
+	g_LmxDev.PrintRight("Ola!");
 
 	return 0;
 }
