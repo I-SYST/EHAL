@@ -595,9 +595,10 @@ static void lmxs_write_handler(ble_lmxs_t * p_lmxs, uint8_t *data, int offset, i
 				LedMxPrintRight(&g_LmxDev, p->str);
 				break;
 			case LMX_ATTR_SCROLL_LEFT:
-			    //nrf_gpio_cfg_input(p->iopin, NRF_GPIO_PIN_PULLUP);
+			    LedMxPrintScrollLeft(&g_LmxDev, p->str);
 				break;
 			case LMX_ATTR_SCROLL_RIGHT:
+			    LedMxPrintScrollRight(&g_LmxDev, p->str);
 				break;
 		}
     }

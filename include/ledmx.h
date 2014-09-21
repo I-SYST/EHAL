@@ -123,6 +123,8 @@ void LedMxPrintf(LEDMXDEV *pDev, LEDMXPRTMODE Mode, const char *pFormat, ...);
 void LedMxvPrintf(LEDMXDEV *pDev, LEDMXPRTMODE Mode, const char *pFormat, va_list vl);
 void LedMxPrintLeft(LEDMXDEV *pDev, const char *pStr);
 void LedMxPrintRight(LEDMXDEV *pDev, const char *pStr);
+void LedMxPrintScrollLeft(LEDMXDEV *pDev, const char *pStr);
+void LedMxPrintScrollRight(LEDMXDEV *pDev, const char *pStr);
 void LedMxSetRam(LEDMXDEV *pDev, unsigned RamAddr, char Data, int Len, int PanelNo);
 void LedMxWriteRam(LEDMXDEV *pDev, unsigned Addr, uint8_t const *pData, int Len, int DevNo);
 

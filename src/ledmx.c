@@ -159,6 +159,24 @@ void LedMxPrintCenter(LEDMXDEV *pDev, const char *pStr)
 	LedMxPrintAt(pDev, col, pStr);
 }
 
+void LedMxPrintScrollLeft(LEDMXDEV *pDev, const char *pStr)
+{
+	int col = pDev->NbPanel * 32;
+	int i = col;
+	int pixlen;
+
+	pixlen = LedMxPixStrLen(pDev, pStr);
+	for (i = col; i + pixlen > 0; i-= 1)
+	{
+		LedMxPrintAt(pDev, i, pStr);
+	}
+}
+
+void LedMxPrintScrollRight(LEDMXDEV *pDev, const char *pStr)
+{
+
+}
+
 static char s_Buffer[512] = {0,};// __attribute__ ((section(".RAMAHB")));
 
 void LedMxvPrintf(LEDMXDEV *pDev, LEDMXPRTMODE Mode, const char *pFormat, va_list vl)
@@ -176,10 +194,10 @@ void LedMxvPrintf(LEDMXDEV *pDev, LEDMXPRTMODE Mode, const char *pFormat, va_lis
     	LedMxPrintRight(pDev, s_Buffer);
     	break;
     case LEDMXPRTMODE_SCROLLLEFT:
-    	//PrintScrollLeft(s_Buffer);
+    	LedMxPrintScrollLeft(pDev, s_Buffer);
     	break;
     case LEDMXPRTMODE_SCROLLRIGHT:
-    	//PrintScrollRight(s_Buffer);
+    	LedMxPrintScrollRight(pDev, s_Buffer);
     	break;
     case LEDMXPRTMODE_JLEFT:
     default:
