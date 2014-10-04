@@ -1,18 +1,20 @@
 /*--------------------------------------------------------------------------
-File   : gcc_arm.ld
+File   : gcc_arm_ram.ld
 
-Author : Hoang Nguyen Hoan          Jan. 19, 2012
+Author : Hoang Nguyen Hoan          Oct. 1, 2014
 
 Desc   : Generic common linker script sections.  General sections
          definitions for of GCC compiler.  This file is to be inlcuded
-	 in the device specific linker script.
+	 	 in the device specific linker script.
 
-	 Require memory region name definition as follow
+		This is script is for RAM based only processor such as the 
+		TI CC3200
+		
+	 	Require memory region name definition as follow
 		 
-	        FLASH : Read only code memory region
-	        RAM : Ram memory region for data  
+	        RAM : Ram memory region for both data & code  
 
-Copyright (c) 2012, I-SYST, all rights reserved
+Copyright (c) 2014, I-SYST, all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -52,7 +54,7 @@ __CheckSum = 0;
 
 SECTIONS {
 
-        /* Require ARM vectors located at begining of FLASH region at address 0*/
+     /* Require ARM vectors located at begining of RAM region at address 0*/
 	.ivector : ALIGN(4)
 	{
 		__text_start__ = .;
@@ -62,20 +64,23 @@ SECTIONS {
 
 		/* interrupt vector */
 		KEEP(*(.intvect))
-		FILL(0xff)
-		. = __text_start__ + 0x100;
-	} > FLASH 
+		FILL(0xff) /* fill unsused area to have consistant checksum */
+		. = __text_start__ + 0x400;
+	} > RAM 
 	
-	/* This is where the firmware informaton is stored */
+	/* This is where the firmware informaton is stored. Usefull for bootloader */
 	.Version : ALIGN(4)
 	{
 		KEEP(*(.Version))
 		LONG(__CheckSum);
-	} > FLASH
+	} > RAM
 	
 	/* Code region starts here */
 	.text : ALIGN(4)
 	{	
+		/* Application Entry point starts here.  Normaly is the ResetEntry function */ 
+		KEEP(*(.AppStart))
+		
 		KEEP(*(.init))
 		KEEP(*(.fini))
 		
@@ -95,35 +100,25 @@ SECTIONS {
 
 		*(.text*)
 		*(.rodata .rodata.* .gnu.linkonce.r.* .rodata1)
-	} > FLASH
+	} > RAM
     
 
 	.ARM.extab : 
 	{
 		*(.ARM.extab* .gnu.linkonce.armextab.*)
-	} > FLASH
+	} > RAM
 
 	PROVIDE (__exidx_start = .);
 	.ARM.exidx :
 	{
 		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
-	} > FLASH
+	} > RAM
 	PROVIDE (__exidx_end = .);
 
 	.eh_frame_hdr : 
 	{ 
 		*(.eh_frame_hdr) 
-	} > FLASH
-	
-	.eh_frame : ONLY_IF_RO 
-	{ 
-		*(.eh_frame)
-	} > FLASH
-	
-	.gcc_except_table : ONLY_IF_RO 
-	{ 
-		*(.gcc_except_table .gcc_except_table.*) 
-	} > FLASH
+	} > RAM
 	
 	__text_end__ = .;
 	
@@ -172,7 +167,7 @@ SECTIONS {
 		/* All data end */
 		__data_end__ = .;
 
-	} > RAM AT > FLASH
+	} > RAM
 	
 	__data_start__ = ADDR(.data);
    	__data_loc__ = LOADADDR(.data);
@@ -193,8 +188,8 @@ SECTIONS {
 	{
 		__end__ = .;
 		end = __end__;
-		*(.heap*)
 		_pvHeapStart = .;
+		*(.heap*)
 		__HeapLimit = .;
 	} > RAM
 

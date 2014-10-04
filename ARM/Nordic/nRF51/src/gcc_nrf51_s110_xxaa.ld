@@ -16,5 +16,5 @@ MEMORY
   RAM (rwx) : ORIGIN = 0x20002000, LENGTH = 0x2000 /* 8 kB, 8 kB is taken by S110. */
 }
 
-INCLUDE "gcc_arm.ld"
+INCLUDE "gcc_arm_flash.ld"
 

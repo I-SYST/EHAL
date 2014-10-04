@@ -23,5 +23,5 @@ SECTIONS {
     } > NRF_UICR_BOOT_START
 }
 
-INCLUDE "gcc_arm.ld"
+INCLUDE "gcc_arm_flash.ld"
 

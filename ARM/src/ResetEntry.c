@@ -33,6 +33,7 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 extern unsigned long __etext;	// Begin of data in FLASH location
 extern unsigned long __data_loc__;
@@ -63,7 +64,8 @@ void ResetEntry (void)
 	 * Copy the initialized data of the ".data" segment
 	 * from the flash to ram.
 	 */
-	memcpy((void *)&__data_start__, (void *)&__data_loc__, (size_t)&__data_size__);
+	if (&__data_start__ != &__data_loc__)
+		memcpy((void *)&__data_start__, (void *)&__data_loc__, (size_t)&__data_size__);
 
 	/*
 	 * Clear the ".bss" segment.

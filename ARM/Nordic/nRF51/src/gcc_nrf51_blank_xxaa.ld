@@ -10,7 +10,7 @@ MEMORY
   RAM (rwx) : ORIGIN = 0x20000000, LENGTH = 16K
 }
 
-INCLUDE "gcc_arm.ld"
+INCLUDE "gcc_arm_flash.ld"
 
 
 
