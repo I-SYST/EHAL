@@ -30,9 +30,9 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/ARM/src/ResetEntry.c</locationURI>
 		</link>
 		<link>
-			<name>src/system_nrf51.c</name>
+			<name>src/system_cc3200.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/src/system_nrf51.c</locationURI>
+			<locationURI>WORKSPACE_LOC/src/system_cc3200.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
