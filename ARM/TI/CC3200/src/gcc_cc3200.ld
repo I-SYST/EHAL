@@ -5,7 +5,7 @@ SEARCH_DIR("../../../../../src")
 GROUP(-lgcc -lc -lnosys -lCMSIS)
 
 /* 
-Total RAM 256K, 
+Total RAM 256K 
 */
 
 MEMORY

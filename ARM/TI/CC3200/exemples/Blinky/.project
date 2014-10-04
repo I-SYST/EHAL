@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>Blinky</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
+			<triggers>clean,full,incremental,</triggers>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.cdt.managedbuilder.core.ScannerConfigBuilder</name>
+			<triggers>full,incremental,</triggers>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.cdt.core.cnature</nature>
+		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
+		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>src/Vectors_CC3200.c</name>
+			<type>1</type>
+			<locationURI>WORKSPACE_LOC/src/Vectors_CC3200.c</locationURI>
+		</link>
+		<link>
+			<name>src/gpio_if.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-2-PROJECT_LOC%7D/cc3200-sdk/example/common/gpio_if.c</locationURI>
+		</link>
+	</linkedResources>
+</projectDescription>
