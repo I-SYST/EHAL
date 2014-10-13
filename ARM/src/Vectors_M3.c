@@ -35,6 +35,7 @@ Modified by          Date              Description
 #include <string.h>
 #include <sys/types.h>
 
+extern void ResetEntry(void);
 
 void DEF_IRQHandler(void) { while(1); }
 
