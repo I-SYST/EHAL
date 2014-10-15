@@ -36,31 +36,34 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
-typedef enum _iopin_res_mode {
-	IOPIN_RESMODE_NONE,
-	IOPIN_RESMODE_PULLUP,
-	IOPIN_RESMODE_PULLDOWN,
-	IOPIN_RESMODE_FOLLOW
-} IOPIN_RESMODE;
+// I/O pin resistor config
+typedef enum _iopin_resistor {
+	IOPINRES_NONE,
+	IOPINRES_PULLUP,
+	IOPINRES_PULLDOWN,
+	IOPINRES_FOLLOW
+} IOPINRES;
 
+// I/O pin direction config
 typedef enum _iopin_dir {
-    IOPIN_DIR_INPUT,
-    IOPIN_DIR_OUTPUT
-} IOPIN_DIR;
+    IOPINDIR_INPUT,
+    IOPINDIR_OUTPUT
+} IOPINDIR;
 
+// I/O pin type
 typedef enum {
-	IOPIN_MODE_NORMAL = 0,
-	IOPIN_MODE_OPENDRAIN = 1
-} IOPIN_MODE;
+	IOPINTYPE_NORMAL = 0,
+	IOPINTYPE_OPENDRAIN = 1
+} IOPINTYPE;
 
 typedef struct _iopin_cfg {
-	int 			PortNo;		// Port number
-	int 			PinNo;		// Pin number
-	int 			PinOp;		// Pin function select index from 0, MCU dependent
-	IOPIN_DIR		PinDir;		// Pin direction
-	IOPIN_RESMODE 	ResMode;	// Pin resistor setting
-	IOPIN_MODE		PinMode;
-} IOPIN_CFG;
+	int 		PortNo;		// Port number
+	int 		PinNo;		// Pin number
+	int 		PinOp;		// Pin function select index from 0, MCU dependent
+	IOPINDIR	PinDir;		// Pin direction
+	IOPINRES 	Res;		// Pin resistor setting
+	IOPINTYPE	Type;		// I/O type
+} IOPINCFG;
 
 #ifdef 	__cplusplus
 extern "C" {
@@ -75,12 +78,11 @@ extern "C" {
  * 			PinNo  	: Pin number
  * 			PinOp	: Pin function index from 0. MCU dependent
  * 			Dir     : I/O direction
- *			ResMode : Resistor config
- *			PinMode : Pin mode
+ *			Resistor : Resistor config
+ *			Type 	: I/O type
  *
  */
-void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPIN_DIR Dir,
-				 IOPIN_RESMODE ResMode, IOPIN_MODE PinMode);
+void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resistor, IOPINTYPE Type);
 
 /*
  * Configure I/O pin with IOPIN_CFG data structure. Can be used for batch config
@@ -88,14 +90,14 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPIN_DIR Dir,
  * @param   pCfg   : Pointer to an array gpio pin configuration
  *          NbPins : Number of gpio pins to configure 
 */
-__inline__  __attribute__((always_inline)) void IOPinCfg(IOPIN_CFG *pCfg, int NbPins) {
+inline __attribute__((always_inline)) void IOPinCfg(IOPINCFG *pCfg, int NbPins) {
 	if (pCfg == NULL || NbPins <= 0)
 		return;
 
 	for (int i = 0; i < NbPins; i++)
 	{
 		IOPinConfig(pCfg[i].PortNo, pCfg[i].PinNo, pCfg[i].PinOp, pCfg[i].PinDir,
-					pCfg[i].ResMode, pCfg[i].PinMode);
+					pCfg[i].Res, pCfg[i].Type);
 	}
 }
 
