@@ -263,7 +263,7 @@ char *Sha1(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 		if (pRes)
 			digest = pRes;
 
-		sprintf(digest, "%08X%08X%08X%08X%08X", H[0], H[1], H[2], H[3], H[4]);
+		sprintf(digest, "%08lX%08lX%08lX%08lX%08lX", H[0], H[1], H[2], H[3], H[4]);
 
 		// Reset memory, ready for new processing
 
