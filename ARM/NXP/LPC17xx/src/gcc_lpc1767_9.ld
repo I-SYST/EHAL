@@ -33,6 +33,7 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 OUTPUT_FORMAT ("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 SEARCH_DIR(.)
+SEARCH_DIR("../../../src")
 SEARCH_DIR("../../../../src")
 SEARCH_DIR("../../../../../src")
 GROUP(-lgcc -lc -lnosys -lCMSIS)
@@ -65,4 +66,28 @@ GROUP (
 )
 
 INCLUDE "gcc_arm_flash.ld"
+
+SECTIONS 
+{
+	.data_RAMAHB :
+	{
+		. = ALIGN(4);        
+		__data_ahb_start__ = .;
+/*		*(RAMAHB0*)
+		*(.data.RAMAHB0*)
+		*(.data.RAMAHB1*)
+		*(.RAMAHB1*)
+*/		*(.data.RAM2*)
+		*(.data.$RAM2*)
+		*(.data.$RamAHB32*)
+        *(RAM2*)
+        *(RAMAHB*)
+        *(.RAMAHB*)
+		*(.data.RAMAHB*)
+		. = ALIGN(4);        
+   		__data_ahb_end__ = .;   	
+	} > RAMAHB AT > FLASH
+   	__data_ahb_loc__ = LOADADDR(.data_RAMAHB);
+   	__data_ahb_size__ = SIZEOF(.data_RAMAHB);
+}
 

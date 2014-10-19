@@ -99,6 +99,9 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.507881895.208717455" name="Vectors_LPC17xx.c" rcbsApplicability="disable" resourcePath="src/Vectors_LPC17xx.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1810880540.901636559">
+						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1810880540.901636559" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1810880540"/>
+					</fileInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>

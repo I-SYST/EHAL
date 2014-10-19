@@ -27,9 +27,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/Vectors_M3.c</name>
+			<name>src/Vectors_LPC17xx.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/src/Vectors_M3.c</locationURI>
+			<locationURI>WORKSPACE_LOC/src/Vectors_LPC17xx.c</locationURI>
 		</link>
 		<link>
 			<name>src/gcc_lpc1767_9.ld</name>

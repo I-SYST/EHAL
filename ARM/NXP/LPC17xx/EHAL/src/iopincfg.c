@@ -44,25 +44,25 @@ Modified by          Date              Description
  * 			PinNo  	: Pin number
  * 			PinOp	: Pin function index from 0. MCU dependent
  * 			Dir     : I/O direction
- *			ResMode : Resistor config
+ *			Res 	: Resistor config
+ *			Type	: I/O type
  *
  */
-void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPIN_DIR Dir,
-				 IOPIN_RESMODE ResMode, IOPIN_MODE PinMode)
+void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resistor, IOPINTYPE Type)
 {
 	uint32_t *pinselreg = (uint32_t *)&LPC_PINCON->PINSEL0 + (PortNo << 1);
 	uint32_t *pinmodereg = (uint32_t *)&LPC_PINCON->PINMODE0 + (PortNo << 1);
 	uint32_t *pinodreg = (uint32_t *)&LPC_PINCON->PINMODE_OD0 + PortNo;
 
 	// Configure direction
-	if (Dir == IOPIN_DIR_OUTPUT)
+	if (Dir == IOPINDIR_OUTPUT)
 		LPC_GPIO0[PortNo].FIODIR |= (1 << PinNo);
 	else
 		LPC_GPIO0[PortNo].FIODIR &= ~(1 << PinNo);
 
 	// Configure open drain
 	*pinodreg &= ~(1 << PinNo);
-	if (PinMode == IOPIN_MODE_OPENDRAIN)
+	if (Type == IOPINTYPE_OPENDRAIN)
 		*pinodreg |= (1 << PinNo);
 
 	if (PinNo > 15)
@@ -82,18 +82,18 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPIN_DIR Dir,
 	*pinmodereg &= ~(3 << PinNo);
 
 	int rmode = 0;
-	switch (ResMode)
+	switch (Resistor)
 	{
-		case IOPIN_RESMODE_NONE:
+		case IOPINRES_NONE:
 			rmode = 2;
 			break;
-		case IOPIN_RESMODE_PULLUP:
+		case IOPINRES_PULLUP:
 			rmode = 0;
 			break;
-		case IOPIN_RESMODE_PULLDOWN:
+		case IOPINRES_PULLDOWN:
 			rmode = 3;
 			break;
-		case IOPIN_RESMODE_FOLLOW:
+		case IOPINRES_FOLLOW:
 			rmode = 1;
 			break;
 	}
