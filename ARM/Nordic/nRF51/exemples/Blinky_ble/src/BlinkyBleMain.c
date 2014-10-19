@@ -57,6 +57,8 @@ Modified by          Date              Description
 #include "nrf_gpio.h"
 #include "pstorage.h"
 #include "nrf_gpio.h"
+#include "ble_dfu.h"
+#include "dfu_app_handler.h"
 
 #include "BlinkyBleService.h"
 
@@ -118,8 +120,9 @@ app_gpiote_user_id_t				g_GpioteId = 0;
 static ble_blinkys_t				g_BlinkyServ;
 ble_bas_t                        	g_BatServ;                                         /**< Structure used to identify the battery service. */
 static ble_gap_sec_params_t         g_GAPSecParams;                                  /**< Security requirements for this application. */
-static int8_t                       g_LastConnectedCentral;                   /**< BondManager reference handle to the last connected central. */
+//static int8_t                       g_LastConnectedCentral;                   /**< BondManager reference handle to the last connected central. */
 static dm_application_instance_t    g_AppHandle; /**< Application identifier allocated by device manager */
+static ble_dfu_t                             m_dfus;                                    /**< Structure used to identify the DFU service. */
 
 
 /**@brief Function for error handling, which is called when an error has occurred.
@@ -258,6 +261,41 @@ static void advertising_init(void)
     scanrsp.p_manuf_specific_data = &data;
 
     err_code = ble_advdata_set(&advdata, &scanrsp);
+    APP_ERROR_CHECK(err_code);
+}
+
+static void advertising_stop(void)
+{
+    uint32_t err_code;
+
+    err_code = sd_ble_gap_adv_stop();
+    APP_ERROR_CHECK(err_code);
+
+//    nrf_gpio_pin_clear(ADVERTISING_LED_PIN_NO);
+}
+
+
+/** @snippet [DFU BLE Reset prepare] */
+static void reset_prepare(void)
+{
+    uint32_t err_code;
+
+    if (g_BlinkyServ.conn_handle != BLE_CONN_HANDLE_INVALID)
+    {
+        // Disconnect from peer.
+        err_code = sd_ble_gap_disconnect(g_BlinkyServ.conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+        APP_ERROR_CHECK(err_code);
+    }
+    else
+    {
+        // If not connected, then the device will be advertising. Hence stop the advertising.
+        advertising_stop();
+    }
+
+    //nrf_gpio_pin_clear(ADVERTISING_LED_PIN_NO);
+    //nrf_gpio_pin_clear(CONNECTED_LED_PIN_NO);
+
+    err_code = ble_conn_params_stop();
     APP_ERROR_CHECK(err_code);
 }
 
@@ -507,6 +545,9 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     ble_blinkys_on_ble_evt(&g_BlinkyServ, p_ble_evt);
     ble_bas_on_ble_evt(&g_BatServ, p_ble_evt);
     ble_conn_params_on_ble_evt(p_ble_evt);
+    /** @snippet [Propagating BLE Stack events to DFU Service] */
+    ble_dfu_on_ble_evt(&m_dfus, p_ble_evt);
+    /** @snippet [Propagating BLE Stack events to DFU Service] */
     on_ble_evt(p_ble_evt);
 }
 
@@ -534,6 +575,7 @@ static void ble_stack_init(void)
     SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_SYNTH_250_PPM, true);
 
     // Enable BLE stack
+
     ble_enable_params_t ble_enable_params;
     memset(&ble_enable_params, 0, sizeof(ble_enable_params));
     ble_enable_params.gatts_enable_params.service_changed = IS_SRVC_CHANGED_CHARACT_PRESENT;
@@ -584,6 +626,21 @@ static void services_init(void)
 
 	blinkyscfg.write_handler = blinkys_write_handler;
 	ble_blinkys_init(&g_BlinkyServ, &blinkyscfg);
+
+    /** @snippet [DFU BLE Service initialization] */
+    ble_dfu_init_t   dfus_init;
+
+    // Initialize the Device Firmware Update Service.
+    memset(&dfus_init, 0, sizeof(dfus_init));
+
+    dfus_init.evt_handler    = dfu_app_on_dfu_evt;
+    dfus_init.error_handler  = NULL; //service_error_handler - Not used as only the switch from app to DFU mode is required and not full dfu service.
+
+    uint32_t err_code = ble_dfu_init(&m_dfus, &dfus_init);
+    APP_ERROR_CHECK(err_code);
+
+    dfu_app_reset_prepare_set(reset_prepare);
+    /** @snippet [DFU BLE Service initialization] */
 }
 
 void BLEStart(void)

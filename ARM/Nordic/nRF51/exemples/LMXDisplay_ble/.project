@@ -26,9 +26,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/Vectors_M0.c</name>
+			<name>src/Vectors_nRf51.c</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/ARM/src/Vectors_M0.c</locationURI>
+			<locationURI>WORKSPACE_LOC/src/Vectors_nRF51.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk</name>

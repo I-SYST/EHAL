@@ -502,7 +502,8 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
 
                     // Go to system-off mode.
                     // (this function will not return; wakeup will cause a reset).
-                    err_code = sd_power_system_off();
+                    //err_code = sd_power_system_off();
+                	advertising_start();
                     APP_ERROR_CHECK(err_code);
             }
             break;
@@ -513,6 +514,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             err_code = sd_ble_gap_disconnect(g_LmxServ.conn_handle,
                                              BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
             APP_ERROR_CHECK(err_code);
+            advertising_start();
             break;
 
         default:
