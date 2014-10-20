@@ -35,6 +35,7 @@ Modified by          Date              Description
 #define __IOPINCFG_H__
 
 #include <stdint.h>
+#include <stdio.h>
 
 // I/O pin resistor config
 typedef enum _iopin_resistor {
@@ -46,8 +47,9 @@ typedef enum _iopin_resistor {
 
 // I/O pin direction config
 typedef enum _iopin_dir {
-    IOPINDIR_INPUT,
-    IOPINDIR_OUTPUT
+    IOPINDIR_INPUT = 0,
+    IOPINDIR_OUTPUT = 1,
+    IOPINDIR_BI = 2,		// Bidirectional
 } IOPINDIR;
 
 // I/O pin type

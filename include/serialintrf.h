@@ -37,55 +37,104 @@ Modified by          Date              Description
 #define __SERIALINTRF_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 
-typedef struct _serialintrf_dev {
-	void *hSerDev;		// Interface device data
-	bool (*Init)(void *hSerDev, void *pCfgData);
-	int (*GetRate)(void *hSerDev);
-	int (*SetRate)(void *hSerDev, int Rate);
-	int (*StartRx)(void *hSerDev, int DevAddr);
-	int (*RxData)(void *hSerDev, int DevAddr, uint8_t *pData, int DataLen);
-	void (*StopRx)(void *hSerDev, int DevAddr);
-	int (*StartTx)(void *hSerDev, int DevAddr);
-	int (*TxData)(void *hSerDev, int DevAddr, uint8_t *pData, int DataLen);
-	void (*StopTx)(void *hSerDev, int DevAddr);
-} SERINTRFDEV;
+typedef struct _serialintrf_dev SERINTRFDEV;
+struct _serialintrf_dev {
+	void *pDevData;		// Private device interface implementation data
+	void (*Disable)(SERINTRFDEV *pSerDev);
+	void (*Enable)(SERINTRFDEV *pSerDev);
+	int (*GetRate)(SERINTRFDEV *pSerDev);
+	int (*SetRate)(SERINTRFDEV *pSerDev, int Rate);
+	bool (*StartRx)(SERINTRFDEV *pSerDev, int DevAddr);
+	int (*RxData)(SERINTRFDEV *pSerDev, uint8_t *pData, int DataLen);
+	void (*StopRx)(SERINTRFDEV *pSerDev);
+	bool (*StartTx)(SERINTRFDEV *pSerDev, int DevAddr);
+	int (*TxData)(SERINTRFDEV *pSerDev, uint8_t *pData, int DataLen);
+	void (*StopTx)(SERINTRFDEV *pSerDev);
+};
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 // C only function prototypes
-inline __attribute__((always_inline)) int SerialIntrfGetRate(SERINTRFDEV *pDev) {
-	return pDev->GetRate(pDev->hSerDev);
+inline __attribute__((always_inline))
+void SerialIntrfDisable(SERINTRFDEV *pDev) {
+	pDev->Disable(pDev);
 }
 
-inline __attribute__((always_inline)) int SerialIntrfSetRate(
+inline __attribute__((always_inline))
+void SerialIntrfEnable(SERINTRFDEV *pDev) {
+	pDev->Enable(pDev);
+}
+
+inline __attribute__((always_inline))
+int SerialIntrfGetRate(SERINTRFDEV *pDev) {
+	return pDev->GetRate(pDev);
+}
+
+inline __attribute__((always_inline))
+int SerialIntrfSetRate(
 			SERINTRFDEV *pDev, int Rate) {
-	return pDev->SetRate(pDev->hSerDev, Rate);
+	return pDev->SetRate(pDev, Rate);
 }
 
-inline __attribute__((always_inline)) int SerialIntrfRx(
+inline __attribute__((always_inline))
+int SerialIntrfRx(
 			SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen) {
 	int retval = 0;
 
-	pDev->StartRx(pDev->hSerDev, DevAddr);
-	retval = pDev->RxData(pDev->hSerDev, DevAddr, pBuff, BuffLen);
-	pDev->StopRx(pDev->hSerDev, DevAddr);
+	if (pDev->StartRx(pDev, DevAddr)) {
+		retval = pDev->RxData(pDev, pBuff, BuffLen);
+		pDev->StopRx(pDev);
+	}
 
 	return retval;
 }
 
-inline __attribute__((always_inline)) int SerialIntrfTx(
+inline __attribute__((always_inline))
+int SerialIntrfTx(
 		SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen) {
 	int retval = 0;
 
-	pDev->StartTx(pDev->hSerDev, DevAddr);
-	retval = pDev->TxData(pDev->hSerDev, DevAddr, pBuff, BuffLen);
-	pDev->StopTx(pDev->hSerDev, DevAddr);
-
+	if (pDev->StartTx(pDev, DevAddr)) {
+		retval = pDev->TxData(pDev, pBuff, BuffLen);
+		pDev->StopTx(pDev);
+	}
 	return retval;
 }
+
+inline __attribute__((always_inline))
+bool SerialIntrfStartRx(SERINTRFDEV *pDev, int DevAddr) {
+	return pDev->StartRx(pDev, DevAddr);
+}
+
+inline __attribute__((always_inline))
+int SerialIntrfRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen) {
+	return pDev->RxData(pDev, pBuff, BuffLen);
+}
+
+inline __attribute__((always_inline))
+void SerialIntrfStopRx(SERINTRFDEV *pDev) {
+	pDev->StopRx(pDev);
+}
+
+inline __attribute__((always_inline))
+bool SerialIntrfStartTx(SERINTRFDEV *pDev, int DevAddr) {
+	return pDev->StartTx(pDev, DevAddr);
+}
+
+inline __attribute__((always_inline))
+int SerialIntrfTxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen) {
+	return pDev->TxData(pDev, pBuff, BuffLen);
+}
+
+inline __attribute__((always_inline))
+void SerialIntrfStopTx(SERINTRFDEV *pDev) {
+	pDev->StopTx(pDev);
+}
+
 
 #ifdef __cplusplus
 }

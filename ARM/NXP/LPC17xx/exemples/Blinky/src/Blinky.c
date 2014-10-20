@@ -12,6 +12,8 @@
 #include "LPC17xx.h"
 #include "imm_lpc1769.h"
 #include "iopincfg.h"
+#include "lpci2c.h"
+#include "seep.h"
 
 IOPINCFG g_IOPinCfg[] = {
 	{IMM_LPC1769_LED_BLUE_PORT, IMM_LPC1769_LED_BLUE_PIN, 0, IOPINDIR_OUTPUT,
@@ -21,6 +23,21 @@ IOPINCFG g_IOPinCfg[] = {
 	{IMM_LPC1769_LED_RED_PORT, IMM_LPC1769_LED_RED_PIN, 0, IOPINDIR_OUTPUT,
 	 IOPINRES_PULLUP, IOPINTYPE_NORMAL},
 };
+
+// I2C1 config
+//
+const I2CCFG g_I2C1Cfg = {
+	1,	// I2C interface number
+	IMM_LPC1769_SEEPMAC_SDA_PORT, IMM_LPC1769_SEEPMAC_SDA_PIN, 3,
+	IMM_LPC1769_SEEPMAC_SCL_PORT, IMM_LPC1769_SEEPMAC_SCL_PIN, 3,
+	100000,		// data rate in Hz
+	I2CMODE_MASTER,
+	0, 	// Slave mode address
+	3	// Max retry
+};
+
+I2CDEV g_I2cDev;
+SEEPDEV g_Seep;
 
 /*
  *
@@ -40,6 +57,22 @@ IOPINCFG g_IOPinCfg[] = {
 int
 main(void)
 {
+	uint8_t macaddr[6];
+
+	memset(macaddr, 0, sizeof(macaddr));
+
+	// Set system for IMM-LPC1769
+	SystemSetCoreClock(CORE_FREQ, OSC_FREQ_16MHZ);
+
+	I2CInit(&g_I2cDev, &g_I2C1Cfg);
+
+	SeepInit(&g_Seep, 0xa0>>1, 8, 1, &g_I2cDev.SerIntrf);
+	SeepRead(&g_Seep, 0xfa, macaddr, 6);
+
+	if (macaddr[0] !=0 || macaddr[1] != 4 || macaddr[2] != 0xa3)
+	{
+
+	}
 	IOPinCfg(g_IOPinCfg, 3);
 
 	int i = 0, k = 2;

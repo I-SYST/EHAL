@@ -61,24 +61,24 @@ void LedMxIOInit(LEDMXDEV *pLedMxDev, LEDMXCFG *pCfg)
 
 	pLedMxDev->pIODev = (void *)&g_LmxIODev;
 
-	IOPinConfig(pcfg->WrPort, pcfg->WrPin, 0, IOPIN_DIR_OUTPUT, IOPIN_RESMODE_PULLUP, IOPIN_MODE_NORMAL);
+	IOPinConfig(pcfg->WrPort, pcfg->WrPin, 0, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL);
 	pdev->pWrPort = &LPC_GPIO0[pcfg->WrPort];
 	pdev->WrPin = 1 << pcfg->WrPin;
 	pdev->pWrPort->FIODIR |= pdev->WrPin;
 	pdev->pWrPort->FIOSET = pdev->WrPin;
 
-	IOPinConfig(pcfg->RdPort, pcfg->RdPin, 0, IOPIN_DIR_OUTPUT, IOPIN_RESMODE_PULLUP, IOPIN_MODE_NORMAL);
+	IOPinConfig(pcfg->RdPort, pcfg->RdPin, 0, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL);
 	pdev->pRdPort = &LPC_GPIO0[pcfg->RdPort];
 	pdev->RdPin = 1 << pcfg->RdPin;
 	pdev->pRdPort->FIODIR |= pdev->RdPin;
 	pdev->pRdPort->FIOSET = pdev->RdPin;
 
-	IOPinConfig(pcfg->DataPort, pcfg->DataPin, 0, IOPIN_DIR_OUTPUT, IOPIN_RESMODE_NONE, IOPIN_MODE_NORMAL);
+	IOPinConfig(pcfg->DataPort, pcfg->DataPin, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
 	pdev->pDataPort = &LPC_GPIO0[pcfg->DataPort];
 	pdev->DataPin = 1 << pcfg->DataPin;
 	pdev->pDataPort->FIODIR |= pdev->DataPin;
 
-	IOPinConfig(pcfg->EnPort, pcfg->EnPin, 0, IOPIN_DIR_OUTPUT, IOPIN_RESMODE_PULLUP, IOPIN_MODE_NORMAL);
+	IOPinConfig(pcfg->EnPort, pcfg->EnPin, 0, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL);
 	pdev->pEnPort = &LPC_GPIO0[pcfg->EnPort];
 	pdev->EnPin = 1 << pcfg->EnPin;
 	pdev->pEnPort->FIODIR |= pdev->EnPin;
@@ -88,7 +88,7 @@ void LedMxIOInit(LEDMXDEV *pLedMxDev, LEDMXCFG *pCfg)
 	{
 		if (pcfg->CsPorts[i] >= 0)
 		{
-			IOPinConfig(pcfg->CsPorts[i], pcfg->CsPins[i], 0, IOPIN_DIR_OUTPUT, IOPIN_RESMODE_PULLUP, IOPIN_MODE_NORMAL);
+			IOPinConfig(pcfg->CsPorts[i], pcfg->CsPins[i], 0, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL);
 			pdev->pCsPorts[i] = &LPC_GPIO0[pcfg->CsPorts[i]];
 			pdev->CsPins[i] = 1 << pcfg->CsPins[i];
 			((LPC_GPIO_TypeDef *)(pdev->pCsPorts[i]))->FIODIR |= pdev->CsPins[i];
@@ -140,7 +140,7 @@ void LedMxStartTx(LEDMXDEV *pLedMxDev, int PanelAddr)
 		pdev->pEnPort->FIOCLR = pdev->EnPin;
 	}
 
-	usDelay(40);
+//	usDelay(40);
 }
 
 void LedMxTxData(LEDMXDEV *pLedMxDev, uint32_t Data, int NbBits)
@@ -150,26 +150,14 @@ void LedMxTxData(LEDMXDEV *pLedMxDev, uint32_t Data, int NbBits)
 
 	while (mask)
 	{
+		pdev->pWrPort->FIOCLR = pdev->WrPin;
 		if (Data & mask)
 			pdev->pDataPort->FIOSET = pdev->DataPin;	// 1
 		else
 			pdev->pDataPort->FIOCLR = pdev->DataPin;	// 0
-		pdev->pWrPort->FIOCLR = pdev->WrPin;
-		// Require 4 NOP here to stable i/o line
-		__NOP();
-		__NOP();
-		__NOP();
-		__NOP();
-		__NOP();
-		__NOP();
 		__NOP();
 		__NOP();
 		pdev->pWrPort->FIOSET = pdev->WrPin;
-		// Require 2 NOP here to stable i/o line
-		__NOP();
-		__NOP();
-		__NOP();
-		__NOP();
 		mask >>= 1;
 	}
 }
