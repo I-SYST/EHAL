@@ -26,6 +26,51 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>include/base64.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/base64.h</locationURI>
+		</link>
+		<link>
+			<name>include/crc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/crc.h</locationURI>
+		</link>
+		<link>
+			<name>include/iopincfg.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/iopincfg.h</locationURI>
+		</link>
+		<link>
+			<name>include/istddef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/istddef.h</locationURI>
+		</link>
+		<link>
+			<name>include/ledmx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/ledmx.h</locationURI>
+		</link>
+		<link>
+			<name>include/ledmxfont.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/ledmxfont.h</locationURI>
+		</link>
+		<link>
+			<name>include/serialintrf.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/serialintrf.h</locationURI>
+		</link>
+		<link>
+			<name>include/sha1.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/sha1.h</locationURI>
+		</link>
+		<link>
+			<name>include/sha256.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/sha256.h</locationURI>
+		</link>
+		<link>
 			<name>src/crc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/crc.c</locationURI>
@@ -39,6 +84,26 @@
 			<name>src/ledmxfont.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/ledmxfont.c</locationURI>
+		</link>
+		<link>
+			<name>src/sdcard.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/src/sdcard.c</locationURI>
+		</link>
+		<link>
+			<name>src/seep.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/src/seep.c</locationURI>
+		</link>
+		<link>
+			<name>src/seep_impl.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/src/seep_impl.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/serialintrf.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/src/serialintrf.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sha1.c</name>

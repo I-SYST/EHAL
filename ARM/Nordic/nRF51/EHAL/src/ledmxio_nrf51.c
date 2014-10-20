@@ -46,14 +46,14 @@ typedef struct {
   LEDMX_CSTYPE CsType;
 } IODEV;
 
-IODEV g_IODev;
+static IODEV g_LmxIODev;
 
 void LedMxIOInit(LEDMXDEV *pLedMxDev, LEDMXCFG *pCfg)
 {
-    IODEV *pdev = &g_IODev;
+    IODEV *pdev = &g_LmxIODev;
 	LEDMXIOCFG *pcfg = (LEDMXIOCFG *)pCfg->pIOCfg;
 
-    pLedMxDev->pIODev = (void *)&g_IODev;
+    pLedMxDev->pIODev = (void *)&g_LmxIODev;
 
     pdev->WrPin = pcfg->WrPin;
     nrf_gpio_cfg_output(pcfg->WrPin);

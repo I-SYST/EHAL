@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?fileVersion 4.0.0?>
-
-<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582" moduleId="org.eclipse.cdt.core.settings" name="Debug">
@@ -21,7 +19,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582" name="Debug" parent="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug">
+				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582" name="Debug" parent="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug">
 					<folderInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582." name="/" resourcePath="">
 						<toolChain id="ilg.gnuarmeclipse.managedbuild.cross.toolchain.lib.debug.821069111" name="Cross ARM GCC" superClass="ilg.gnuarmeclipse.managedbuild.cross.toolchain.lib.debug">
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.1332947208" name="Optimization Level" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level" value="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.none" valueType="enumerated"/>
@@ -61,11 +59,6 @@
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.410723587" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.820323101" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/ble/ble_services}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/sd_common}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/ble}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/s110}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/app_common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/gcc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="/Users/hoan/I-SYST/swdev/fwdev/include"/>
@@ -78,6 +71,12 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.std.934418260" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.std.cpp11" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.760761494" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.633640502" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.701008382" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/gcc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="/Users/hoan/I-SYST/swdev/fwdev/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/include}&quot;"/>
+								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.1766232943" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker.1270242780" name="Cross ARM C Linker" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker">
@@ -100,12 +99,9 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582.920590928" name="sha1.c" rcbsApplicability="disable" resourcePath="src/sha1.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.410723587.2092409467">
-						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.410723587.2092409467" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.410723587"/>
-					</fileInfo>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="BlueIOADC.c|ADXL335.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -129,7 +125,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release.372971708" name="Release" parent="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release">
+				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release.372971708" name="Release" parent="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release">
 					<folderInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release.372971708." name="/" resourcePath="">
 						<toolChain id="ilg.gnuarmeclipse.managedbuild.cross.toolchain.lib.release.335594391" name="Cross ARM GCC" superClass="ilg.gnuarmeclipse.managedbuild.cross.toolchain.lib.release">
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.606725962" name="Optimization Level" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level" value="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.size" valueType="enumerated"/>
@@ -169,11 +165,6 @@
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.171268187" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.336332368" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/ble/ble_services}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/sd_common}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/ble}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/s110}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/app_common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/gcc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="/Users/hoan/I-SYST/swdev/fwdev/include"/>
@@ -186,6 +177,12 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.std.1021818998" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.std.cpp11" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.536398360" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.1948262147" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.1745822235" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/gcc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="/Users/hoan/I-SYST/swdev/fwdev/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/include}&quot;"/>
+								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.1712323590" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker.1844919673" name="Cross ARM C Linker" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker">
@@ -210,7 +207,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="BlueIOADC.c|ADXL335.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
