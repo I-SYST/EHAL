@@ -45,7 +45,7 @@ void LedMxPrintAt(LEDMXDEV *pDev, int col, const char *pStr)
 	int paneladdr = pDev->PanelAddr[panelidx];
 	int addr = (col % 32) << 1;
 	int i = 0;
-	uint8_t *data;
+	uint8_t const *data;
 	int w;
 	int len = strlen(pStr);
                 
@@ -352,7 +352,7 @@ void LedMxInit(LEDMXDEV *pDev, LEDMXCFG *pCfg)
 		LedMxCmd(pDev, LEDMX_CMD_SLAVE_MODE, pCfg->PanelAddr[i]);
 	}
 
-	for (i = 0; i < LEDMX_MAX_PANEL; i++) // pDev->NbPanel; i++)
+	for (i = 0; i < /*LEDMX_MAX_PANEL; i++) */ pDev->NbPanel; i++)
 	{
 		panelno = pCfg->PanelAddr[i];
 		LedMxCmd(pDev, LEDMX_CMD_SYSDIS, panelno);

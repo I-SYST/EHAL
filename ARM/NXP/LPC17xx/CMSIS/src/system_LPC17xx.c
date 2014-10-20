@@ -38,14 +38,12 @@ Modified by          Date              Description
 #include "system_LPC17xx.h"
 
 #define OSC_FREQ				OSC_FREQ_16MHZ  /* Installed oscillator frequency */
-#define IRC_FREQ				(4000000UL)	/* Internal RC freq */
+#define IRC_FREQ				(4000000UL)		/* Internal RC freq */
 #define RTC_FREQ				(32768UL)		/* RTC frequency */
 
 /* Select system clock oscillator source */
-#define CLKSRCSEL_VAL		CLKSRCSEL_MAIN
-
-/* Set target core frequence value in Hz */
-//#define CORE_FREQ			120000000UL
+#define DEF_CLK_SRC			IRC_FREQ
+//#define CLKSRCSEL_VAL		CLKSRCSEL_MAIN
 
 /*
  * This variable indicates actual Core Clock (cclk) in Hz
@@ -281,5 +279,5 @@ void SystemConnectPLL1(void)
  */
 void SystemInit (void)
 {
-	SystemSetCoreClock(CORE_FREQ, IRC_FREQ);//CLKSRCSEL_VAL);
+	SystemSetCoreClock(CORE_FREQ, DEF_CLK_SRC);
 }
