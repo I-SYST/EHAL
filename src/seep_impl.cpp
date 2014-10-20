@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : seep.c
+File   : seep_impl.cpp
 
 Author : Hoang Nguyen Hoan          Sept. 16, 2011
 
