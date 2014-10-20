@@ -61,17 +61,22 @@ main(void)
 
 	memset(macaddr, 0, sizeof(macaddr));
 
-	// Set system for IMM-LPC1769
-	SystemSetCoreClock(CORE_FREQ, OSC_FREQ_16MHZ);
-
 	I2CInit(&g_I2cDev, &g_I2C1Cfg);
 
 	SeepInit(&g_Seep, 0xa0>>1, 8, 1, &g_I2cDev.SerIntrf);
+
+	// Read MAC address
 	SeepRead(&g_Seep, 0xfa, macaddr, 6);
 
 	if (macaddr[0] !=0 || macaddr[1] != 4 || macaddr[2] != 0xa3)
 	{
-
+		// LPCXpresso board
+		SystemSetCoreClock(CORE_FREQ, OSC_FREQ_12MHZ);
+	}
+	else
+	{
+		// Set system clock for IMM-LPC1769 board
+		SystemSetCoreClock(CORE_FREQ, OSC_FREQ_16MHZ);
 	}
 	IOPinCfg(g_IOPinCfg, 3);
 
