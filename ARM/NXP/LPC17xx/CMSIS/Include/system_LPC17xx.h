@@ -43,8 +43,8 @@ Modified by          Date              Description
 #define CLKSRCSEL_RTC		2	/* Realtime clock oscillator */
 
 /* Crystal or Oscillator frequencies in Hz */
-#define OSC_FREQ_12MHZ			(12000000UL)    /* Oscillator frequency             */
-#define OSC_FREQ_16MHZ			(16000000UL)    /* Oscillator frequency             */
+#define OSC_FREQ_12MHZ			(12000000UL)    /* LPCXpresso Oscillator frequency     */
+#define OSC_FREQ_16MHZ			(16000000UL)    /* IMM-LPC1769 Oscillator frequency    */
 
 /* Set target core frequence value in Hz */
 #define CORE_FREQ			120000000UL
