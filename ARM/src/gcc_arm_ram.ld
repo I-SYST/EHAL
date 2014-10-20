@@ -139,21 +139,21 @@ SECTIONS {
 	{
 		/* preinit data */
 		PROVIDE (__preinit_array_start = .);
-		*(.preinit_array)
+		KEEP(*(.preinit_array))
 		PROVIDE (__preinit_array_end = .);
 
 		. = ALIGN(4);
 		/* init data */
 		PROVIDE (__init_array_start = .);
 		*(SORT(.init_array.*))
-		*(.init_array)
+		KEEP(*(.init_array))
 		PROVIDE (__init_array_end = .);
 
 		. = ALIGN(4);
 		/* finit data */
 		PROVIDE (__fini_array_start = .);
 		*(SORT(.fini_array.*))
-		*(.fini_array)
+		KEEP(*(.fini_array))
 		PROVIDE (__fini_array_end = .);
 
 		. = ALIGN(4);        
