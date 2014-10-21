@@ -6,7 +6,6 @@
 // Description : Hello World in C++
 //============================================================================
 
-#include <iostream>
 #include "nrf_delay.h"
 #include "ledmxio.h"
 

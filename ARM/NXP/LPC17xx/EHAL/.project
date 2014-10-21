@@ -56,6 +56,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/ledmx.h</locationURI>
 		</link>
 		<link>
+			<name>include/sdcard.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/sdcard.h</locationURI>
+		</link>
+		<link>
 			<name>include/seep.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/seep.h</locationURI>
