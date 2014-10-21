@@ -46,11 +46,11 @@ Modified by          Date              Description
 #define LMXBLUE_RD_PIN				15
 #define LMXBLUE_WR_PIN				14
 #define LMXBLUE_DATA_PIN			13
-#define LMXBLUE_EN_PIN				8
-#define LMXBLUE_AD3_PIN				9
+#define LMXBLUE_EN_PIN				12
+#define LMXBLUE_AD3_PIN				11
 #define LMXBLUE_AD2_PIN				10
-#define LMXBLUE_AD1_PIN				11
-#define LMXBLUE_AD0_PIN				12
+#define LMXBLUE_AD1_PIN				9
+#define LMXBLUE_AD0_PIN				8
 
 #define LEDMX_MAX_ADDRPIN			4
 
