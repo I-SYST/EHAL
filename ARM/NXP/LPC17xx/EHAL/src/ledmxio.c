@@ -84,6 +84,9 @@ void LedMxIOInit(LEDMXDEV *pLedMxDev, LEDMXCFG *pCfg)
 	pdev->pEnPort->FIODIR |= pdev->EnPin;
 	pdev->pEnPort->FIOCLR = pdev->EnPin;
 
+	pdev->CsType = pcfg->CsType;
+	pdev->NbCsPins = pcfg->NbCsPins;
+
 	for (int i = 0; i < LEDMX_MAX_ADDRPIN; i++)
 	{
 		if (pcfg->CsPorts[i] >= 0)
@@ -91,17 +94,15 @@ void LedMxIOInit(LEDMXDEV *pLedMxDev, LEDMXCFG *pCfg)
 			IOPinConfig(pcfg->CsPorts[i], pcfg->CsPins[i], 0, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL);
 			pdev->pCsPorts[i] = &LPC_GPIO0[pcfg->CsPorts[i]];
 			pdev->CsPins[i] = 1 << pcfg->CsPins[i];
-			((LPC_GPIO_TypeDef *)(pdev->pCsPorts[i]))->FIODIR |= pdev->CsPins[i];
+			pdev->pCsPorts[i]->FIODIR |= pdev->CsPins[i];
 
 			if (pdev->CsType == LEDMX_CSTYPE_BIN)
-				((LPC_GPIO_TypeDef *)(pdev->pCsPorts[i]))->FIOCLR = pdev->CsPins[i];
+				pdev->pCsPorts[i]->FIOCLR = pdev->CsPins[i];
 			else
-				((LPC_GPIO_TypeDef *)(pdev->pCsPorts[i]))->FIOSET = pdev->CsPins[i];
+				pdev->pCsPorts[i]->FIOSET = pdev->CsPins[i];
 		}
 	}
 
-	pdev->NbCsPins = pcfg->NbCsPins;
-	pdev->CsType = pcfg->CsType;
 }
 
 void LedMxStartTx(LEDMXDEV *pLedMxDev, int PanelAddr)
@@ -124,9 +125,9 @@ void LedMxStartTx(LEDMXDEV *pLedMxDev, int PanelAddr)
 			if (pdev->CsPins[i] >= 0)
 			{
 				if (PanelAddr & 1)
-					((LPC_GPIO_TypeDef *)(pdev->pCsPorts[i]))->FIOSET = pdev->CsPins[i];
+					pdev->pCsPorts[i]->FIOSET = pdev->CsPins[i];
 				else
-					((LPC_GPIO_TypeDef *)(pdev->pCsPorts[i]))->FIOCLR = pdev->CsPins[i];
+					pdev->pCsPorts[i]->FIOCLR = pdev->CsPins[i];
 			}
 			PanelAddr >>= 1;
 		}
@@ -136,7 +137,7 @@ void LedMxStartTx(LEDMXDEV *pLedMxDev, int PanelAddr)
 	{
 		pdev->pEnPort->FIOSET = pdev->EnPin;
 		__NOP();
-		((LPC_GPIO_TypeDef *)(pdev->pCsPorts[PanelAddr]))->FIOCLR = pdev->CsPins[PanelAddr];
+		pdev->pCsPorts[PanelAddr]->FIOCLR = pdev->CsPins[PanelAddr];
 		pdev->pEnPort->FIOCLR = pdev->EnPin;
 	}
 
@@ -157,7 +158,19 @@ void LedMxTxData(LEDMXDEV *pLedMxDev, uint32_t Data, int NbBits)
 			pdev->pDataPort->FIOCLR = pdev->DataPin;	// 0
 		__NOP();
 		__NOP();
+		__NOP();
+		__NOP();
+		__NOP();
+		__NOP();
+		__NOP();
+		__NOP();
 		pdev->pWrPort->FIOSET = pdev->WrPin;
+		__NOP();
+		__NOP();
+		__NOP();
+		__NOP();
+		__NOP();
+		__NOP();
 		mask >>= 1;
 	}
 }
@@ -173,7 +186,7 @@ void LedMxStopTx(LEDMXDEV *pLedMxDev, int PanelAddr)
 		for (int i = 0; i < pdev->NbCsPins; i++)
 		{
 			if (pdev->CsPins[i] >= 0)
-				((LPC_GPIO_TypeDef *)(pdev->pCsPorts[i]))->FIOSET = pdev->CsPins[i];
+				pdev->pCsPorts[i]->FIOSET = pdev->CsPins[i];
 		}
 		pdev->pEnPort->FIOSET = pdev->EnPin;
 	}

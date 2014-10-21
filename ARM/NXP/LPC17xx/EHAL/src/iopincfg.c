@@ -79,8 +79,6 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 	*pinselreg |= (PinOp & 3) << PinNo;
 
 	// Configure pin resistor
-	*pinmodereg &= ~(3 << PinNo);
-
 	int rmode = 0;
 	switch (Resistor)
 	{
@@ -97,6 +95,7 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 			rmode = 1;
 			break;
 	}
+	*pinmodereg &= ~(3 << PinNo);
 	*pinmodereg |= (rmode & 3) << PinNo;
 }
 

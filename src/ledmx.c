@@ -344,13 +344,13 @@ void LedMxInit(LEDMXDEV *pDev, LEDMXCFG *pCfg)
 	memcpy(pDev->PanelAddr, pCfg->PanelAddr, sizeof(pDev->PanelAddr));
 
 	// This loop is a patch for now.  Revise this code is required
-	for (i = 0; i < LEDMX_MAX_PANEL; i++) //pDev->NbPanel; i++)
+/*	for (i = 0; i < LEDMX_MAX_PANEL; i++) //pDev->NbPanel; i++)
 	{
         LedMxCmd(pDev, LEDMX_CMD_SYSDIS, pCfg->PanelAddr[i]);
 		// NOTE : 	Put all display in slave mode. By default master will generate clock
 		//			it could conflict with unused display is in system
 		LedMxCmd(pDev, LEDMX_CMD_SLAVE_MODE, pCfg->PanelAddr[i]);
-	}
+	}*/
 
 	for (i = 0; i < /*LEDMX_MAX_PANEL; i++) */ pDev->NbPanel; i++)
 	{
@@ -358,8 +358,8 @@ void LedMxInit(LEDMXDEV *pDev, LEDMXCFG *pCfg)
 		LedMxCmd(pDev, LEDMX_CMD_SYSDIS, panelno);
 		LedMxCmd(pDev, LEDMX_CMD_NMOS_COM8, panelno);
 
-		if ((panelno & 3) == 0)  // Master display with switch set to 1
-		//if (i == 0)
+		if ((panelno & 3) == 0)  // Master display with switch set to CS1
+		//if ((i & 3) == 0)
 			LedMxCmd(pDev, LEDMX_CMD_RC_MASTER, panelno);
 		else
 		    LedMxCmd(pDev, LEDMX_CMD_SLAVE_MODE, panelno);
