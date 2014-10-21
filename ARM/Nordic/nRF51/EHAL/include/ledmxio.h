@@ -38,28 +38,29 @@ Modified by          Date              Description
 
 #include "ledmx.h"
 
-// Breakout pin mapping
+// LED matrix controller Breakout board pin mapping
 #define LMXBRK_CSTYPE               LEDMX_CSTYPE_BIN
 
-// IBB-LMXBLUE board
+// IDC-LMXBLUE LED matrix display controller board pin mapping
+// aka IBB-LMXBLUE
 #define LMXBLUE_CSTYPE				LEDMX_CSTYPE_BIN
-#define LMXBLUE_RD_PIN				15
-#define LMXBLUE_WR_PIN				14
-#define LMXBLUE_DATA_PIN			13
-#define LMXBLUE_EN_PIN				12
-#define LMXBLUE_AD3_PIN				11
-#define LMXBLUE_AD2_PIN				10
-#define LMXBLUE_AD1_PIN				9
-#define LMXBLUE_AD0_PIN				8
+#define LMXBLUE_RD_PIN				15		// RR signal pin
+#define LMXBLUE_WR_PIN				14		// WR signal pin
+#define LMXBLUE_DATA_PIN			13		// Data pin
+#define LMXBLUE_EN_PIN				12		// Enable pin
+#define LMXBLUE_AD3_PIN				11		//
+#define LMXBLUE_AD2_PIN				10		// CS addressing 4 pin => 16 Displays
+#define LMXBLUE_AD1_PIN				9		//
+#define LMXBLUE_AD0_PIN				8		//
 
-#define LEDMX_MAX_ADDRPIN			4
+#define LEDMX_MAX_ADDRPIN			4	// Number of pins to address the display
 
 typedef struct _LedMxIOCfg {
   int WrPin;				// WR pin map GPIO pin #
   int RdPin;				// RD pin map GPIO pin #
   int DataPin;				// DATA pin map GPIO pin #
   int EnPin;				// Decoder enable pin map GPIO pin #
-  int CsPins[LEDMX_MAX_ADDRPIN];	// CS pins map GPIO pin #s
+  int CsPins[LEDMX_MAX_ADDRPIN];	// CS pins map GPIO pin #
   int NbCsPins;				// Total number of CS pins used
   LEDMX_CSTYPE CsType;
 } LEDMXIOCFG;
