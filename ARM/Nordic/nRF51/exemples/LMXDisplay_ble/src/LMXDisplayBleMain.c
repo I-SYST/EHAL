@@ -69,6 +69,7 @@ Modified by          Date              Description
 #define BASE_USB_HID_SPEC_VERSION        		0x0101                                         /**< Version number of base USB HID Specification implemented by this application. */
 
 #define ASSERT_LED_PIN_NO					18
+#define CONNECT_LED						30
 
 #define APP_GPIOTE_MAX_USERS			1
 #define SCHED_MAX_EVENT_DATA_SIZE       MAX(APP_TIMER_SCHED_EVT_SIZE,\
@@ -136,7 +137,7 @@ LEDMXIOCFG g_IOCfg = {
 // Display board configuration
 LEDMXCFG g_LmxCfg = {
   &g_IOCfg,
-  2,  // Number of display board in daisy chain, only one in this case
+  8,  // Number of display board in daisy chain, only one in this case
   {0, 1, 2, 3, 4, 5, 6, 7}, // display board ordering
 };
 
@@ -369,7 +370,7 @@ static void on_conn_params_evt(ble_conn_params_evt_t * p_evt)
     if(p_evt->evt_type == BLE_CONN_PARAMS_EVT_FAILED)
     {
         err_code = sd_ble_gap_disconnect(g_LmxServ.conn_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
-        APP_ERROR_CHECK(err_code);
+       // APP_ERROR_CHECK(err_code);
     }
 }
 
@@ -458,7 +459,7 @@ static void advertising_start(void)
 
     err_code = sd_ble_gap_adv_start(&adv_params);
     APP_ERROR_CHECK(err_code);
-    nrf_gpio_pin_clear(24);
+    nrf_gpio_pin_clear(IMM_NRF51_CONNECT_LED);
 }
 
 /**@brief Function for handling the Application's BLE Stack events.
@@ -472,13 +473,13 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
     switch (p_ble_evt->header.evt_id)
     {
         case BLE_GAP_EVT_CONNECTED:
-            nrf_gpio_pin_clear(28);
+            nrf_gpio_pin_set(IMM_NRF51_CONNECT_LED);
 
             g_LmxServ.conn_handle  = p_ble_evt->evt.gap_evt.conn_handle;
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
-            nrf_gpio_pin_set(28);
+            nrf_gpio_pin_clear(IMM_NRF51_CONNECT_LED);
             g_LmxServ.conn_handle = BLE_CONN_HANDLE_INVALID;
 
             advertising_start();
@@ -498,7 +499,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
         case BLE_GAP_EVT_TIMEOUT:
             if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISEMENT)
             {
-            	nrf_gpio_pin_set(24);
+            	nrf_gpio_pin_clear(IMM_NRF51_CONNECT_LED);
 
                     // Go to system-off mode.
                     // (this function will not return; wakeup will cause a reset).

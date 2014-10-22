@@ -110,12 +110,16 @@ void ble_lmxs_on_ble_evt(ble_lmxs_t * p_lmxs, ble_evt_t * p_ble_evt)
 
         		if (p_evt_write->handle == 0 && p_evt_write->op == BLE_GATTS_OP_EXEC_WRITE_REQ_NOW)
         		{
+        			static char buff[256];
+        			int len = 0;
         			while (hdr->Handle == p_lmxs->char_handles.value_handle)
         		    {
-        				p_lmxs->write_handler(p_lmxs, hdr->Data, hdr->Offset, hdr->Len);//p_evt_write->data);
+        				memcpy(buff + hdr->Offset, hdr->Data, hdr->Len);
+        				len += hdr->Len;
         				p += hdr->Len + 6;
         				hdr = (GATMEMHDR*)p;
         		    }
+       				p_lmxs->write_handler(p_lmxs, buff, 0, len);//p_evt_write->data);
         			return;
         		}
         		else if ((p_evt_write->handle == p_lmxs->char_handles.value_handle) &&
