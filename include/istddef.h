@@ -75,5 +75,10 @@ typedef struct {
 } VER;
 #pragma pack(pop)
 
+#define EndianCvt16(x) ((((x) >> 8) & 0xff) | (((x) << 8) & 0xff00))
+#define EndianCvt32(x) ((((x) >> 24L) & 0xff) | (((x) << 24L) & 0xff000000L) | \
+					   (((x) >> 8L) & 0xff00L) | (((x) << 8L) | 0xff0000L))
+
+
 #endif // __ISTDDEF_H__
 
