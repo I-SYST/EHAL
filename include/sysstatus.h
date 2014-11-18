@@ -41,7 +41,7 @@ Hoan				Nov. 18, 2014	Reimplementing for new EHAL C based
 #include "sysstatusdef.h"
 
 // Max number of status code queued in system
-#define SYSSTATUS_MAXQUE      3
+#define SYSSTATUS_MAXQUE      2
 
 // Max string len for status description
 #define SYSSTATUS_DESC_MAX    128
@@ -82,7 +82,7 @@ STATUS SysStatusSet(STATUS Code, char *pDesc);
 //
 class SysStatus {
 public:
-   SysStatus();
+   SysStatus() {}
    virtual ~SysStatus() {}
 
    /**
@@ -138,7 +138,7 @@ public:
     * @Param   Code : Status value
     * @Param   Desc : Status description string
     */
-   STATUS SetStatus(STATUS status, char *pDesc = NULL) { return SysStatusSet(Code, pDesc); }
+   STATUS SetStatus(STATUS Code, char *pDesc = NULL) { return SysStatusSet(Code, pDesc); }
 
    /**
     * Set system state code
@@ -147,7 +147,7 @@ public:
     * 
     * @Return  State code
     */
-   STATUS SetState(STATUS State) { return SysStatusSet(Code, NULL); }
+   STATUS SetState(STATUS Code) { return SysStatusSet(Code, NULL); }
 
 private:
 //   uint32_t		vHead;
