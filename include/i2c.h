@@ -82,6 +82,8 @@ typedef enum _I2C_Mode {
 
 #define I2C_MAX_RETRY		5
 
+#pragma pack(push, 4)
+
 // Configuration data used to initialize device
 typedef struct _I2C_Config {
 	int I2CNo;			// I2C interface number
@@ -105,6 +107,8 @@ typedef struct {
 	int 	MaxRetry;			// Max number of retry
 	SERINTRFDEV	SerIntrf;		// I2C device interface implementation
 } I2CDEV;
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 extern "C" {
