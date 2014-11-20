@@ -40,12 +40,16 @@ Modified by          Date              Description
 
 #define SEEP_NB_IOPIN	2
 
+#pragma pack(push,4)
+
 typedef struct {
 	int DevAddr;
 	int AddrLen;
 	int PageSize;
 	SERINTRFDEV	*pSerIntrf;
 } SEEPDEV;
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 

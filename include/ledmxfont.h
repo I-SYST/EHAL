@@ -44,10 +44,14 @@ Modified by          Date              Description
 #define PROGMEM         
 #endif
 
+#pragma pack(push, 4)
+
 typedef struct {
 	int Width;		// in bits
 	uint8_t Data[8];
 } LEDMXFONT_BITMAP;
+
+#pragma pack(pop)
 
 extern PROGMEM const LEDMXFONT_BITMAP g_FontBitmap[];
 extern PROGMEM const int g_FontBitmapSize;

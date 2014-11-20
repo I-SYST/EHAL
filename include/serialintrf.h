@@ -39,6 +39,8 @@ Modified by          Date              Description
 #include <stdint.h>
 #include <stdbool.h>
 
+#pragma pack(push, 4)
+
 typedef struct _serialintrf_dev SERINTRFDEV;
 struct _serialintrf_dev {
 	void *pDevData;		// Private device interface implementation data
@@ -53,6 +55,8 @@ struct _serialintrf_dev {
 	int (*TxData)(SERINTRFDEV *pSerDev, uint8_t *pData, int DataLen);
 	void (*StopTx)(SERINTRFDEV *pSerDev);
 };
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 extern "C" {

@@ -106,11 +106,11 @@ typedef struct {
     void *pIODev;		// Pointer to platform specific I/O control
 } LEDMXDEV;
 
+#pragma pack(pop)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#pragma pack(pop)
 
 void LedMxBlink(LEDMXDEV *pDev, int OnOff);
 void LedMxCmd(LEDMXDEV *pDev, int CmdVal, int DevNo);
