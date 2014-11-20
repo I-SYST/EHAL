@@ -26,6 +26,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>include/atomic.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/atomic.h</locationURI>
+		</link>
+		<link>
 			<name>include/base64.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/base64.h</locationURI>
@@ -34,6 +39,11 @@
 			<name>include/crc.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/crc.h</locationURI>
+		</link>
+		<link>
+			<name>include/fatfs.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/fatfs.h</locationURI>
 		</link>
 		<link>
 			<name>include/i2c.h</name>
@@ -86,6 +96,51 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/sha256.h</locationURI>
 		</link>
 		<link>
+			<name>include/sysstatus.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sysstatus.h</locationURI>
+		</link>
+		<link>
+			<name>include/sysstatusdef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sysstatusdef.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb_cdcdef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb_cdcdef.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb_def.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb_def.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb_hiddef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb_hiddef.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb_mscdef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb_mscdef.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbhiddev.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usbhiddev.h</locationURI>
+		</link>
+		<link>
+			<name>include/utf8.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/utf8.h</locationURI>
+		</link>
+		<link>
+			<name>include/utf8cvt.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/utf8cvt.h</locationURI>
+		</link>
+		<link>
 			<name>src/CppRuntimeOverload.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/CppRuntimeOverload.cpp</locationURI>
@@ -99,6 +154,11 @@
 			<name>src/crc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/crc.c</locationURI>
+		</link>
+		<link>
+			<name>src/fats_vdisk.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/fats_vdisk.c</locationURI>
 		</link>
 		<link>
 			<name>src/ledmx.c</name>
@@ -149,6 +209,21 @@
 			<name>src/sha256.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/sha256.c</locationURI>
+		</link>
+		<link>
+			<name>src/sysstatus.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sysstatus.c</locationURI>
+		</link>
+		<link>
+			<name>src/utf8.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/utf8.c</locationURI>
+		</link>
+		<link>
+			<name>src/utf8cvt.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/utf8cvt.cpp</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

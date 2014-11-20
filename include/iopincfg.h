@@ -96,7 +96,7 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
  * @param   pCfg   : Pointer to an array gpio pin configuration
  *          NbPins : Number of gpio pins to configure 
 */
-inline __attribute__((always_inline)) void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
+inline void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
 	if (pCfg == NULL || NbPins <= 0)
 		return;
 

@@ -64,7 +64,7 @@ Modified by          Date              Description
 #define LPC_PCLKSEL1_UART3_DIV4		(0)
 #define LPC_PCLKSEL1_UART3_DIV8		(3 << 18)
 
-bool LpcUARTInit(UARTDEV *pDev, UARTCFG *pCfg)
+bool LpcUARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 {
 	switch (pCfg->DevNo)
 	{

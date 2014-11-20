@@ -58,34 +58,25 @@ struct _serialintrf_dev {
 
 #pragma pack(pop)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // C only function prototypes
-inline __attribute__((always_inline))
-void SerialIntrfDisable(SERINTRFDEV *pDev) {
+inline void SerialIntrfDisable(SERINTRFDEV *pDev) {
 	pDev->Disable(pDev);
 }
 
-inline __attribute__((always_inline))
-void SerialIntrfEnable(SERINTRFDEV *pDev) {
+inline void SerialIntrfEnable(SERINTRFDEV *pDev) {
 	pDev->Enable(pDev);
 }
 
-inline __attribute__((always_inline))
-int SerialIntrfGetRate(SERINTRFDEV *pDev) {
+inline int SerialIntrfGetRate(SERINTRFDEV *pDev) {
 	return pDev->GetRate(pDev);
 }
 
-inline __attribute__((always_inline))
-int SerialIntrfSetRate(
+inline int SerialIntrfSetRate(
 			SERINTRFDEV *pDev, int Rate) {
 	return pDev->SetRate(pDev, Rate);
 }
 
-inline __attribute__((always_inline))
-int SerialIntrfRx(
+inline int SerialIntrfRx(
 			SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen) {
 	int retval = 0;
 
@@ -97,8 +88,7 @@ int SerialIntrfRx(
 	return retval;
 }
 
-inline __attribute__((always_inline))
-int SerialIntrfTx(
+inline int SerialIntrfTx(
 		SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen) {
 	int retval = 0;
 
@@ -109,39 +99,32 @@ int SerialIntrfTx(
 	return retval;
 }
 
-inline __attribute__((always_inline))
-bool SerialIntrfStartRx(SERINTRFDEV *pDev, int DevAddr) {
+inline bool SerialIntrfStartRx(SERINTRFDEV *pDev, int DevAddr) {
 	return pDev->StartRx(pDev, DevAddr);
 }
 
-inline __attribute__((always_inline))
-int SerialIntrfRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen) {
+inline int SerialIntrfRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen) {
 	return pDev->RxData(pDev, pBuff, BuffLen);
 }
 
-inline __attribute__((always_inline))
-void SerialIntrfStopRx(SERINTRFDEV *pDev) {
+inline void SerialIntrfStopRx(SERINTRFDEV *pDev) {
 	pDev->StopRx(pDev);
 }
 
-inline __attribute__((always_inline))
-bool SerialIntrfStartTx(SERINTRFDEV *pDev, int DevAddr) {
+inline bool SerialIntrfStartTx(SERINTRFDEV *pDev, int DevAddr) {
 	return pDev->StartTx(pDev, DevAddr);
 }
 
-inline __attribute__((always_inline))
-int SerialIntrfTxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen) {
+inline int SerialIntrfTxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen) {
 	return pDev->TxData(pDev, pBuff, BuffLen);
 }
 
-inline __attribute__((always_inline))
-void SerialIntrfStopTx(SERINTRFDEV *pDev) {
+inline void SerialIntrfStopTx(SERINTRFDEV *pDev) {
 	pDev->StopTx(pDev);
 }
 
 
 #ifdef __cplusplus
-}
 
 class SerialIntrf {
 public:
