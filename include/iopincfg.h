@@ -58,6 +58,8 @@ typedef enum {
 	IOPINTYPE_OPENDRAIN = 1
 } IOPINTYPE;
 
+#pragma pack(push,4)
+
 typedef struct _iopin_cfg {
 	int 		PortNo;		// Port number
 	int 		PinNo;		// Pin number
@@ -66,6 +68,8 @@ typedef struct _iopin_cfg {
 	IOPINRES 	Res;		// Pin resistor setting
 	IOPINTYPE	Type;		// I/O type
 } IOPINCFG;
+
+#pragma pack(pop)
 
 #ifdef 	__cplusplus
 extern "C" {
@@ -92,7 +96,7 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
  * @param   pCfg   : Pointer to an array gpio pin configuration
  *          NbPins : Number of gpio pins to configure 
 */
-inline __attribute__((always_inline)) void IOPinCfg(IOPINCFG *pCfg, int NbPins) {
+inline __attribute__((always_inline)) void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
 	if (pCfg == NULL || NbPins <= 0)
 		return;
 
