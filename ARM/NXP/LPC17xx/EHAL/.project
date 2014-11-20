@@ -56,6 +56,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/ledmx.h</locationURI>
 		</link>
 		<link>
+			<name>include/lpcuart.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/lpcuart.h</locationURI>
+		</link>
+		<link>
 			<name>include/sdcard.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/sdcard.h</locationURI>
@@ -81,6 +86,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/sha256.h</locationURI>
 		</link>
 		<link>
+			<name>src/CppRuntimeOverload.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/CppRuntimeOverload.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/base64.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/base64.c</locationURI>
@@ -99,6 +109,11 @@
 			<name>src/ledmxfont.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/ledmxfont.c</locationURI>
+		</link>
+		<link>
+			<name>src/lpcuart.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/lpcuart.c</locationURI>
 		</link>
 		<link>
 			<name>src/sdcard.c</name>

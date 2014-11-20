@@ -59,6 +59,8 @@
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.410723587" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.820323101" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/nrf51822/Include/s110&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/app_common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/gcc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
@@ -72,6 +74,8 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.760761494" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.633640502" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.701008382" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/app_common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/nrf51822/Include/s110&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/gcc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
@@ -102,7 +106,7 @@
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582.1927089570" name="ledmxio.h" rcbsApplicability="disable" resourcePath="include/ledmxio.h" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="BlueIOADC.c|ADXL335.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -166,6 +170,8 @@
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.171268187" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.336332368" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/nrf51822/Include/s110&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/app_common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/gcc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
@@ -179,6 +185,8 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.536398360" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.1948262147" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.1745822235" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/app_common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/nrf51822/Include/s110&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include/gcc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/nrf51822/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
@@ -208,7 +216,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="BlueIOADC.c|ADXL335.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
