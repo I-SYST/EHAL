@@ -72,12 +72,12 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 	if (PortNo > 0)
 		PinNo -= 15;
 
+	pincfgreg += PinNo;
+
 	// Configure open drain
-	pincfgreg[PinNo] &= ~(1 << IOCON_PIN_OPENDRAIN);
+	*pincfgreg &= ~(1 << IOCON_PIN_OPENDRAIN);
 	if (Type == IOPINTYPE_OPENDRAIN)
 		*pincfgreg |= (1 << IOCON_PIN_OPENDRAIN);
-
-	PinNo <<= 1;
 
 	// Configure pin function
 	*pincfgreg &= ~(3 << IOCON_PIN_FUNCTION);
