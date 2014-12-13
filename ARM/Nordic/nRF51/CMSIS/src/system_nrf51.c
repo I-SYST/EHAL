@@ -60,14 +60,7 @@ void SystemCoreClockUpdate(void)
 
 void SystemInit(void)
 {
-	NRF_CLOCK->XTALFREQ = CLOCK_XTALFREQ_XTALFREQ_16MHz;
-
-	/* nRF51 has default RAM off when Softdevice not present, we need to turn on RAM before calling any functions
-	 * We turn all RAM on here.
-	*/
-	NRF_POWER->RAMON = 0xf000f;
-
-	/* If desired, switch off the unused RAM to lower consumption by the use of RAMON register.
+    /* If desired, switch off the unused RAM to lower consumption by the use of RAMON register.
        It can also be done in the application main() function. */
 
     /* Prepare the peripherals for use as indicated by the PAN 26 "System: Manual setup is required
