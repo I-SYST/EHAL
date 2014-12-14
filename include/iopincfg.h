@@ -90,13 +90,17 @@ extern "C" {
  */
 void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resistor, IOPINTYPE Type);
 
+#ifdef __cplusplus
+}
+#endif
+
 /*
  * Configure I/O pin with IOPIN_CFG data structure. Can be used for batch config
  *
  * @param   pCfg   : Pointer to an array gpio pin configuration
  *          NbPins : Number of gpio pins to configure 
 */
-inline void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
+static inline void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
 	if (pCfg == NULL || NbPins <= 0)
 		return;
 
@@ -108,8 +112,5 @@ inline void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
 }
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif	// __IOPINCFG_H__

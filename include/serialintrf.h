@@ -59,25 +59,23 @@ struct _serialintrf_dev {
 #pragma pack(pop)
 
 // C only function prototypes
-inline void SerialIntrfDisable(SERINTRFDEV *pDev) {
+static inline void SerialIntrfDisable(SERINTRFDEV *pDev) {
 	pDev->Disable(pDev);
 }
 
-inline void SerialIntrfEnable(SERINTRFDEV *pDev) {
+static inline void SerialIntrfEnable(SERINTRFDEV *pDev) {
 	pDev->Enable(pDev);
 }
 
-inline int SerialIntrfGetRate(SERINTRFDEV *pDev) {
+static inline int SerialIntrfGetRate(SERINTRFDEV *pDev) {
 	return pDev->GetRate(pDev);
 }
 
-inline int SerialIntrfSetRate(
-			SERINTRFDEV *pDev, int Rate) {
+static inline int SerialIntrfSetRate(SERINTRFDEV *pDev, int Rate) {
 	return pDev->SetRate(pDev, Rate);
 }
 
-inline int SerialIntrfRx(
-			SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen) {
+static inline int SerialIntrfRx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen) {
 	int retval = 0;
 
 	if (pDev->StartRx(pDev, DevAddr)) {
@@ -88,8 +86,7 @@ inline int SerialIntrfRx(
 	return retval;
 }
 
-inline int SerialIntrfTx(
-		SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen) {
+static inline int SerialIntrfTx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen) {
 	int retval = 0;
 
 	if (pDev->StartTx(pDev, DevAddr)) {
@@ -99,27 +96,27 @@ inline int SerialIntrfTx(
 	return retval;
 }
 
-inline bool SerialIntrfStartRx(SERINTRFDEV *pDev, int DevAddr) {
+static inline bool SerialIntrfStartRx(SERINTRFDEV *pDev, int DevAddr) {
 	return pDev->StartRx(pDev, DevAddr);
 }
 
-inline int SerialIntrfRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen) {
+static inline int SerialIntrfRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen) {
 	return pDev->RxData(pDev, pBuff, BuffLen);
 }
 
-inline void SerialIntrfStopRx(SERINTRFDEV *pDev) {
+static inline void SerialIntrfStopRx(SERINTRFDEV *pDev) {
 	pDev->StopRx(pDev);
 }
 
-inline bool SerialIntrfStartTx(SERINTRFDEV *pDev, int DevAddr) {
+static inline bool SerialIntrfStartTx(SERINTRFDEV *pDev, int DevAddr) {
 	return pDev->StartTx(pDev, DevAddr);
 }
 
-inline int SerialIntrfTxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen) {
+static inline int SerialIntrfTxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen) {
 	return pDev->TxData(pDev, pBuff, BuffLen);
 }
 
-inline void SerialIntrfStopTx(SERINTRFDEV *pDev) {
+static inline void SerialIntrfStopTx(SERINTRFDEV *pDev) {
 	pDev->StopTx(pDev);
 }
 

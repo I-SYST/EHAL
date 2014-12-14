@@ -107,3 +107,10 @@ STATUS SysStatusSet(STATUS Code, char *pDesc)
 	return Code;
 }
 
+STATUS SysStateSet(uint32_t State)
+{
+	int code = (State & 0xfffffff) | SYSSTATUS_TYPE_RNT;
+
+	return SysStatusSet(code, NULL);
+}
+

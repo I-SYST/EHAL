@@ -73,6 +73,7 @@ STATUS SysStatusGetPrevCode(void);
 
 // Set current STATUS
 STATUS SysStatusSet(STATUS Code, char *pDesc);
+STATUS SysStateSet(uint32_t State);
 
 #ifdef __cplusplus
 }

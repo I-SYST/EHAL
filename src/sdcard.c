@@ -38,12 +38,12 @@ Modified by          Date              Description
 #include "crc.h"
 #include "sdcard.h"
 
-inline int SDRx(SDDEV *pDev, uint8_t *pData, int DataLen)
+static inline int SDRx(SDDEV *pDev, uint8_t *pData, int DataLen)
 {
 	return SerialIntrfRx(pDev->pSerIntrf, 0, pData, DataLen);
 }
 
-inline int SDTx(SDDEV *pDev, uint8_t *pData, int DataLen)
+static inline int SDTx(SDDEV *pDev, uint8_t *pData, int DataLen)
 {
 	return SerialIntrfTx(pDev->pSerIntrf, 0, pData, DataLen);
 }
