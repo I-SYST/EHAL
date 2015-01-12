@@ -73,8 +73,6 @@ typedef struct {
 	uint16_t wLength;				// Number of bytes to transfer if there is a Data stage
 } USB_SETUP_PACKET;
 
-#pragma pack(pop)
-
 typedef struct {
 	// Function to register class specific EP0 event handler with USB device stack.
 	//
@@ -318,6 +316,6 @@ typedef struct _USB_CORE_CTRL_T
 
 } USB_CORE_CTRL_T;
 
-//#pragma pack(pop)
+#pragma pack(pop)
 
 #endif // __LPCUSBD_CORE_H__

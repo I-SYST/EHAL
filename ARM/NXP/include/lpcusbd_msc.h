@@ -11,6 +11,8 @@
 #include "usb_mscdef.h"
 #include "lpcusbd_core.h"
 
+#pragma pack(push, 1)
+
 typedef struct {
 	uint32_t 	mem_base;	// Base memory location from where the stack can
 							// allocate data and buffers.
@@ -197,5 +199,7 @@ typedef struct _MSC_CTRL_T
 	/* optional call back for MSC_Write optimization */
 	void (*MSC_GetWriteBuf)( uint32_t offset, uint8_t** buff_adr, uint32_t length, uint32_t high_offset);
 } USB_MSC_CTRL_T;
+
+#pragma pack(pop)
 
 #endif // __LPC11UXX_USBMSC_H__ 

@@ -43,11 +43,12 @@ Modified by          Date              Description
 #endif
 
 #include "iopincfg.h"
+#include "uart.h"
 
 // IER interrupt enable
 #define LPCUART_IER_RBR			1 		// RBR Interrupt enable
 #define LPCUART_IER_THRE		2		// THRE Interrupt enable
-#define LPCUART_IER_RX			4		// RX Line Status Interrupt enable
+#define LPCUART_IER_RLS			4		// RX Line Status Interrupt enable
 #define LPCUART_IER_ABEO 		0x10	// ABEOIntEn Enables the end of auto-baud interrupt.
 #define LPCUART_IER_ABTO		0x20	// ABTOIntEn Enables the auto-baud time-out interrupt.
 
@@ -60,6 +61,11 @@ Modified by          Date              Description
 										// 010 2a - Receive Data Available (RDA).
 										// 110 2b - Character Time-out Indicator (CTI).
 										// 001 3 - THRE Interrupt
+#define LPCUART_IIR_ID_THRE		0x2
+#define LPCUART_IIR_ID_RDA		0x4
+#define LPCUART_IIR_ID_RLS		0x6
+#define LPCUART_IIR_ID_CTIMOUT	0xc
+
 #define LPCUART_IIR_FIFO_MASK	0xc0	// FIFO Enable Copies of UnFCR[0].
 #define LPCUART_IIR_ABEO 		0x100	// End of auto-baud interrupt. True if auto-baud has finished successfully and
 										// interrupt is enabled.
@@ -177,156 +183,71 @@ typedef enum {
 	UART_STATUS_RX_FIFO = LPCUART_LSR_RXFE	// Receive FIFO error
 } UART_STATUS;
 
-typedef enum {
-	UART_PARITY_NONE 	= -1,
-	UART_PARITY_ODD 	= 0,
-	UART_PARITY_EVEN 	= 1,
-	UART_PARITY_MARK	= 2,
-	UART_PARITY_SPACE	= 3
-} UART_PARITY;
-
-typedef enum {
-	UART_FLWCTRL_NONE,
-	UART_FLWCTRL_XONXOFF,
-	UART_FLWCTRL_HW,
-} UART_FLWCTRL;
 
 #pragma pack(push, 1)
 
 // Partial common UART register mapping
 typedef struct {
 	union {
-		uint32_t DLL;                      /*!< (@ 0x40008000) Divisor Latch LSB. Least significant byte of the baud rate divisor value. The full divisor is used to generate a baud rate from the fractional rate divider. (DLAB=1) */
-		uint32_t THR;                      /*!< (@ 0x40008000) Transmit Holding Register. The next character to be transmitted is written here. (DLAB=0) */
-		uint32_t RBR;                      /*!< (@ 0x40008000) Receiver Buffer Register. Contains the next received character to be read. (DLAB=0) */
+		volatile uint32_t DLL;                      /*!< (@ 0x40008000) Divisor Latch LSB. Least significant byte of the baud rate divisor value. The full divisor is used to generate a baud rate from the fractional rate divider. (DLAB=1) */
+		volatile uint32_t THR;                      /*!< (@ 0x40008000) Transmit Holding Register. The next character to be transmitted is written here. (DLAB=0) */
+		volatile uint32_t RBR;                      /*!< (@ 0x40008000) Receiver Buffer Register. Contains the next received character to be read. (DLAB=0) */
 	};
 
 	union {
-		uint32_t IER;                      /*!< (@ 0x40008004) Interrupt Enable Register. Contains individual interrupt enable bits for the 7 potential USART interrupts. (DLAB=0) */
-		uint32_t DLM;                      /*!< (@ 0x40008004) Divisor Latch MSB. Most significant byte of the baud rate divisor value. The full divisor is used to generate a baud rate from the fractional rate divider. (DLAB=1) */
+		volatile uint32_t IER;                      /*!< (@ 0x40008004) Interrupt Enable Register. Contains individual interrupt enable bits for the 7 potential USART interrupts. (DLAB=0) */
+		volatile uint32_t DLM;                      /*!< (@ 0x40008004) Divisor Latch MSB. Most significant byte of the baud rate divisor value. The full divisor is used to generate a baud rate from the fractional rate divider. (DLAB=1) */
 	};
 
 	union {
-		uint32_t FCR;                      /*!< (@ 0x40008008) FIFO Control Register. Controls USART FIFO usage and modes. */
-		uint32_t IIR;                      /*!< (@ 0x40008008) Interrupt ID Register. Identifies which interrupt(s) are pending. */
+		volatile uint32_t FCR;                      /*!< (@ 0x40008008) FIFO Control Register. Controls USART FIFO usage and modes. */
+		volatile uint32_t IIR;                      /*!< (@ 0x40008008) Interrupt ID Register. Identifies which interrupt(s) are pending. */
 	};
-	uint32_t LCR;                        /*!< (@ 0x4000800C) Line Control Register. Contains controls for frame formatting and break generation. */
-	uint32_t MCR;                        /*!< (@ 0x40008010) Modem Control Register. */
-	uint32_t LSR;                        /*!< (@ 0x40008014) Line Status Register. Contains flags for transmit and receive status, including line errors. */
-	uint32_t MSR;                        /*!< (@ 0x40008018) Modem Status Register. */
-	uint32_t SCR;                        /*!< (@ 0x4000801C) Scratch Pad Register. Eight-bit temporary storage for software. */
-	uint32_t ACR;                        /*!< (@ 0x40008020) Auto-baud Control Register. Contains controls for the auto-baud feature. */
-	uint32_t ICR;                        /*!< (@ 0x40008024) IrDA Control Register. Enables and configures the IrDA (remote control) mode. */
-	uint32_t FDR;                        /*!< (@ 0x40008028) Fractional Divider Register. Generates a clock input for the baud rate divider. */
-	uint32_t OSR;                        /*!< (@ 0x4000802C) Oversampling Register. Controls the degree of oversampling during each bit time. */
-	uint32_t TER;                        /*!< (@ 0x40008030) Transmit Enable Register. Turns off USART transmitter for use with software flow control. */
+	volatile uint32_t LCR;                        /*!< (@ 0x4000800C) Line Control Register. Contains controls for frame formatting and break generation. */
+	volatile uint32_t MCR;                        /*!< (@ 0x40008010) Modem Control Register. */
+	volatile uint32_t LSR;                        /*!< (@ 0x40008014) Line Status Register. Contains flags for transmit and receive status, including line errors. */
+	volatile uint32_t MSR;                        /*!< (@ 0x40008018) Modem Status Register. */
+	volatile uint32_t SCR;                        /*!< (@ 0x4000801C) Scratch Pad Register. Eight-bit temporary storage for software. */
+	volatile uint32_t ACR;                        /*!< (@ 0x40008020) Auto-baud Control Register. Contains controls for the auto-baud feature. */
+	volatile uint32_t ICR;                        /*!< (@ 0x40008024) IrDA Control Register. Enables and configures the IrDA (remote control) mode. */
+	volatile uint32_t FDR;                        /*!< (@ 0x40008028) Fractional Divider Register. Generates a clock input for the baud rate divider. */
+	volatile uint32_t OSR;                        /*!< (@ 0x4000802C) Oversampling Register. Controls the degree of oversampling during each bit time. */
+	volatile uint32_t TER;                        /*!< (@ 0x40008030) Transmit Enable Register. Turns off USART transmitter for use with software flow control. */
 
 } LPCUARTREG;
 
 #pragma pack(pop)
 
-// Possible baudrate values
-// 110, 300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
-// 230400, 460800, 921600
-
-#define LPCUART_NB_PINS			8
-
-#pragma pack(push, 4)
-
-typedef struct {
-	int DevNo;					// UART device number
-	IOPINCFG PinCfg[LPCUART_NB_PINS];	// I/O pin to configure for UART
-	int Rate;					// Baudrate, set to 0 for auto baudrate
-	int DataBits;				// Number of data bits
-	UART_PARITY Parity;			// Data parity
-	int StopBits;				// Number of stop bits
-	UART_FLWCTRL FlowControl;	//
+// Device driver data require by low level functions
+typedef struct _PLC_UART_Dev {
+	int DevNo;				// UART interface number
+	LPCUARTREG *pUartReg;		// Pointer to UART register map
 	bool DMAMode;				// DMA transfer support
-	bool IrDAMode;				// Enable IrDA
-	bool IrDAInvert;			// IrDA input inverted
-	bool IrDAFixPulse;			// Enable IrDA fix pulse
-	int	IrDAPulseDiv;			// Fix pulse divider
-} UARTCFG;
+	UARTDEV	*pUartDev;		// Pointer to generic UART dev. data
+} LPCUARTDEV;
 
-typedef struct {
-	LPCUARTREG *pUartReg;				// Pointer to UART registers
-	UARTCFG Cfg;
-} UARTDEV;
-
-#pragma pack(pop)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// Require implementation for each processor type
-bool LpcUARTInit(UARTDEV *pDev, const UARTCFG *pCfg);
-
 // Common to all LPC series
-int LpcUARTGetRate(UARTDEV *pDev);
-int LpcUARTSetRate(UARTDEV *pDev, int Rate);
-int LpcUARTRxData(UARTDEV *pDev, uint8_t *pBuff, int Bufflen);
-bool LpcUARTStartTx(UARTDEV *pDev);
-int LpcUARTTxData(UARTDEV *pDev, uint8_t *pData, int Datalen);
-void LpcUARTStopTx(UARTDEV *pDev);
-bool LpcUARTWaitForRxFifo(UARTDEV *pDev, int Timeout);
-bool LpcUARTWaitForTxFifo(UARTDEV *pDev, int Timeout);
-UART_STATUS LpcUARTGetStatus(UARTDEV *pDev);
-void LpcUARTprintf(UARTDEV *pDev, char *pFormat, ...);
-void LpcUARTvprintf(UARTDEV *pDev, char *pFormat, va_list vl);
+static inline void LpcUARTDisable(SERINTRFDEV *pDev) {}
+static inline void LpcUARTEnable(SERINTRFDEV *pDev) {}
+int LpcUARTGetRate(SERINTRFDEV *pDev);
+int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate);
+static inline bool LpcUARTStartRx(SERINTRFDEV *pSerDev, int DevAddr) { return true; }
+int LpcUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen);
+static inline void LpcUARTStopRx(SERINTRFDEV *pSerDev) {}
+bool LpcUARTStartTx(SERINTRFDEV *pDev, int DevAddr);
+int LpcUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen);
+void LpcUARTStopTx(SERINTRFDEV *pDev);
+bool LpcUARTWaitForRxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
+bool LpcUARTWaitForTxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
+UART_STATUS LpcUARTGetStatus(LPCUARTDEV *pDev);
 
 #ifdef __cplusplus
 }
-
-#include "serialintrf.h"
-
-// C++ class wrapper
-class LpcUART: public SerialIntrf {
-public:
-	LpcUART() {
-		memset(&vDevData, 0, sizeof(vDevData));
-	}
-	virtual ~LpcUART() {}
-	LpcUART(LpcUART&);
-
-	bool Init(const UARTCFG &CfgData) {
-		return LpcUARTInit(&vDevData, &CfgData);
-	}
-	// ++ ** Require implementation for SerialCom
-	// Set data baudrate
-	virtual int Rate(int DataRate) { return LpcUARTSetRate(&vDevData, DataRate); }
-	// Get current data baudrate
-	virtual int Rate(void) { return LpcUARTGetRate(&vDevData); }
-	// Initiate receive
-	virtual bool StartRx(int DevAddr) { return true; }
-	// Receive Data only, no Start/Stop condition
-	virtual int RxData(uint8_t *pBuff, int BuffLen) {
-		return LpcUARTRxData(&vDevData, pBuff, BuffLen);
-	}
-	// Stop receive
-	virtual void StopRx(void) {}
-	// Initiate transmit
-	virtual bool StartTx(int DevAddr) { return LpcUARTStartTx(&vDevData); }
-	// Transmit Data only, no Start/Stop condition
-	virtual int TxData(uint8_t *pData, int DataLen) {
-		return LpcUARTTxData(&vDevData, pData, DataLen);
-	}
-	// Stop transmit
-	virtual void StopTx(void) { LpcUARTStopTx(&vDevData); }
-	// -- **
-	void printf(char *pFormat, ...) {
-		va_list vl;
-	    va_start(vl, pFormat);
-	    LpcUARTvprintf(&vDevData, pFormat, vl);
-	    va_end(vl);
-	}
-
-	operator UARTDEV * () { return &vDevData; }
-
-private:
-	UARTDEV	vDevData;
-};
-
 #endif
 
 #endif // __LPCUART_H__

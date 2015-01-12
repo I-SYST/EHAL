@@ -416,8 +416,6 @@ typedef struct {
 	uint32_t (*SendNotification)(USBD_HANDLE_T hCdc, uint8_t bNotification, uint16_t data);
 } USBD_CDC_API_T;
 
-#pragma pack(pop)
-
 //
 // Undocumented structure require by API
 //
@@ -450,5 +448,8 @@ typedef struct _CDC_CTRL_T
   uint32_t (*CIC_SetRequest)( USBD_HANDLE_T hCdc, USB_SETUP_PACKET* pSetup, uint8_t** pBuffer, uint16_t length);
 
 } USB_CDC_CTRL_T;
+
+#pragma pack(pop)
+
 
 #endif // __LPC11UXX_USBCDC_H__ 

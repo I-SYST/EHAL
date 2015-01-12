@@ -19,7 +19,7 @@
 /* A table of pointers to the USBD functions contained in ROM is located at the address contained at this location */
 #define USBD_FUNCTION_TABLE_PTR_ADDR                    (0x1FFF1FF8UL)
 
-#define USBD_API ((USBD_API_T*)(*((uint32_t *)(*(void**)USBD_FUNCTION_TABLE_PTR_ADDR))))
+#define USBD_API ((USBD_API_T*)(*((USBD_API_T **)(*(void**)USBD_FUNCTION_TABLE_PTR_ADDR))))
 
 
 

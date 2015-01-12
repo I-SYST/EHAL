@@ -36,6 +36,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/base64.h</locationURI>
 		</link>
 		<link>
+			<name>include/cfifo.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/cfifo.h</locationURI>
+		</link>
+		<link>
 			<name>include/crc.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/crc.h</locationURI>
@@ -151,6 +156,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sysstatusdef.h</locationURI>
 		</link>
 		<link>
+			<name>include/uart.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/uart.h</locationURI>
+		</link>
+		<link>
 			<name>include/usb_cdcdef.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/usb_cdcdef.h</locationURI>
@@ -189,6 +199,11 @@
 			<name>src/base64.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/base64.c</locationURI>
+		</link>
+		<link>
+			<name>src/cfifo.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/src/cfifo.c</locationURI>
 		</link>
 		<link>
 			<name>src/crc.c</name>
@@ -259,6 +274,11 @@
 			<name>src/sysstatus_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sysstatus_impl.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/uart.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/uart.c</locationURI>
 		</link>
 		<link>
 			<name>src/utf8.c</name>

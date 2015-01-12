@@ -39,15 +39,25 @@ Modified by          Date              Description
 #define LPC_SYSAHBCLKCTRL_UART1_EN		(1 << 20)
 #define LPC_SYSAHBCLKCTRL_UART2_EN		(1 << 21)
 
-bool LpcUARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
+#define LPC17XX_UART_MAX_DEV		1
+
+extern int g_UartClkDiv;
+
+LPCUARTDEV g_LpcUartDev[LPC17XX_UART_MAX_DEV] = {
+	{0, (LPCUARTREG*)LPC_USART, }
+};
+
+bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 {
+	LPCUARTREG *reg = NULL;
+	g_UartClkDiv = 1;
 
 	switch (pCfg->DevNo)
 	{
 		case 0:
 	        LPC_SYSCON->SYSAHBCLKCTRL |= LPC_SYSAHBCLKCTRL_UART0_EN;
-	        pDev->pUartReg = (void*)LPC_USART;
-	        LPC_SYSCON->UARTCLKDIV = 4; //PCLKSEL0 &= ~LPC_PCLKSEL0_UART0_MASK;	// CCLK/4
+	        reg = (void*)LPC_USART;
+	        LPC_SYSCON->UARTCLKDIV = g_UartClkDiv; //PCLKSEL0 &= ~LPC_PCLKSEL0_UART0_MASK;	// CCLK/4
 			break;
 /*		case 1:
 	        LPC_SYSCON->SYSAHBCLKCTRL |= LPC_SYSAHBCLKCTRL_UART1_EN;
@@ -63,18 +73,17 @@ bool LpcUARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 			return false;
 	}
 
-	LPC_USART_Type *reg = (LPC_USART_Type *)pDev->pUartReg;
+	//LPC_USART_Type *reg = (LPC_USART_Type *)pDev->pUartReg;
 
 	// Configure I/O pins
 	int idx = 0;
 
-	while (pCfg->PinCfg[idx].PortNo >= 0 && idx < LPCUART_NB_PINS)
+	while (pCfg->PinCfg[idx].PortNo >= 0 && idx < UART_NB_PINS)
 	{
 		IOPinCfg(&pCfg->PinCfg[idx], 1);
 		idx++;
 	}
 
-	pDev->Cfg = *pCfg;
 
 	reg->TER = 0;	// Disable Tx
 	reg->IER = 0;	// Disable all interrupts
@@ -82,6 +91,7 @@ bool LpcUARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
 	// Clear all FIFO
 	reg->FCR = LPCUART_FCR_RST_RXFIFO | LPCUART_FCR_RST_TXFIFO;
+
 
 //	if (pCfg->DMAMode)
 //		pDev->pUartReg->FCR |= LPCUART_FCR_DMA_MODE | LPCUART_FCR_RX_TRIG8;
@@ -105,15 +115,56 @@ bool LpcUARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 		reg->ICR |= LPCUART_ICR_IRDAEN;
 	}
 
+	g_LpcUartDev[pCfg->DevNo].DMAMode = pCfg->DMAMode;
+	g_LpcUartDev[pCfg->DevNo].pUartReg = reg;
+	g_LpcUartDev[pCfg->DevNo].pUartDev = pDev;
+
+	pDev->SerIntrf.pDevData = (void*)&g_LpcUartDev[pCfg->DevNo];
+
 	if (pCfg->Rate)
-		pDev->Cfg.Rate = LpcUARTSetRate(pDev, pCfg->Rate);
+		pDev->Rate = LpcUARTSetRate(&pDev->SerIntrf, pCfg->Rate);
 	else
 	{
 		// Auto baudrate
 		reg->ACR = 7;
 	}
-
 	reg->FCR |= LPCUART_FCR_FIFOEN;
+
+	uint32_t val = 0;
+
+	while (LPC_USART->LSR & ~(3<<5))
+	{
+		val = LPC_USART->RBR;
+	}
+
+	val = LPC_USART->IIR;	// Clear interrupts
+
+	// Start tx
+	LPC_USART->TER = LPCUART_TER_TXEN;
+
+
+	pDev->DataBits = pCfg->DataBits;
+	pDev->FlowControl = pCfg->FlowControl;
+	pDev->StopBits = pCfg->StopBits;
+	pDev->IrDAFixPulse = pCfg->IrDAFixPulse;
+	pDev->IrDAInvert = pCfg->IrDAInvert;
+	pDev->IrDAMode = pCfg->IrDAMode;
+	pDev->IrDAPulseDiv = pCfg->IrDAPulseDiv;
+	pDev->Parity = pCfg->Parity;
+	pDev->SerIntrf.Disable = LpcUARTDisable;
+	pDev->SerIntrf.Enable = LpcUARTEnable;
+	pDev->SerIntrf.GetRate = LpcUARTGetRate;
+	pDev->SerIntrf.SetRate = LpcUARTSetRate;
+	pDev->SerIntrf.StartRx = LpcUARTStartRx;
+	pDev->SerIntrf.RxData = LpcUARTRxData;
+	pDev->SerIntrf.StopRx = LpcUARTStopRx;
+	pDev->SerIntrf.StartTx = LpcUARTStartTx;
+	pDev->SerIntrf.TxData = LpcUARTTxData;
+	pDev->SerIntrf.StopTx = LpcUARTStopTx;
+
+	NVIC_EnableIRQ(UART_IRQn);
+	LPC_USART->IER = LPCUART_IER_RBR | LPCUART_IER_RLS;	/* Enable UART interrupt */
+
 
 	return true;
 }

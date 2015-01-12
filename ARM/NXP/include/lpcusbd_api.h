@@ -19,7 +19,7 @@
 
 #pragma pack(push, 1)
 
-typedef struct USBD_API {
+typedef struct {
 	const USBD_HW_API_T* hw;		// Pointer to USB stack core layer to function table
 	const USBD_CORE_API_T* core;	// Pointer to USB device controller hardware function table
 	const USBD_MSC_API_T* msc;		// Pointer to Mass Storage Controller function table

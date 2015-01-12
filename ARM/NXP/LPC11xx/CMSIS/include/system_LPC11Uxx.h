@@ -80,6 +80,7 @@ extern "C" {
 #define USBCLKSEL_MAINCLK		1
 
 extern uint32_t SystemCoreClock;     /*!< System Clock Frequency (Core Clock)  */
+extern const uint32_t g_iVectorSize;
 
 
 /**
