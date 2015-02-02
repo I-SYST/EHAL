@@ -196,22 +196,18 @@ uint32_t ble_blinkys_init(ble_blinkys_t * p_blinkys, const ble_blinkys_init_t * 
     return NRF_SUCCESS;
 }
 
-uint32_t ble_blinkys_on_data_change(ble_blinkys_t * p_blinkys)
+uint32_t ble_blinkys_on_data_change(ble_blinkys_t * p_blinkys, uint8_t *data, uint16_t len)
 {
     ble_gatts_hvx_params_t params;
-    uint8_t data;
-    uint16_t len = sizeof(data);
 
     memset(&params, 0, sizeof(params));
     params.type = BLE_GATT_HVX_NOTIFICATION;
     params.handle = p_blinkys->blinky_char_handles.value_handle;
-    params.p_data = &data;
+    params.p_data = data;
     params.p_len = &len;
 
     return sd_ble_gatts_hvx(p_blinkys->conn_handle, &params);
 }
-
-
 
 
 

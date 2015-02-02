@@ -80,6 +80,7 @@ extern "C" {
 
 uint32_t ble_blinkys_init(ble_blinkys_t * p_blinkys, const ble_blinkys_init_t * p_blinkys_init);
 void ble_blinkys_on_ble_evt(ble_blinkys_t * p_blinkys, ble_evt_t * p_ble_evt);
+uint32_t ble_blinkys_on_data_change(ble_blinkys_t * p_blinkys, uint8_t *data, uint16_t len);
 
 
 #ifdef __cplusplus

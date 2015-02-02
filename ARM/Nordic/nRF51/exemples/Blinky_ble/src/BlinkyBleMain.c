@@ -65,6 +65,7 @@ Modified by          Date              Description
 #define PRODUCT_NAME              "IMM-NRF51822"    /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME         "I-SYST inc."		/**< Manufacturer. Will be passed to Device Information Service. */
 
+#define LED_CON		30
 #define IS_SRVC_CHANGED_CHARACT_PRESENT      	1                                          /**< Include or not the service_changed characteristic. if not enabled, the server's database cannot be changed for the lifetime of the device*/
 #define BASE_USB_HID_SPEC_VERSION        		0x0101                                         /**< Version number of base USB HID Specification implemented by this application. */
 
@@ -124,6 +125,19 @@ static ble_gap_sec_params_t         g_GAPSecParams;                             
 static dm_application_instance_t    g_AppHandle; /**< Application identifier allocated by device manager */
 static ble_dfu_t                             m_dfus;                                    /**< Structure used to identify the DFU service. */
 
+
+// GPIOTE event handler.
+static void gpiote_event_handler(uint32_t event_pins_low_to_high, uint32_t event_pins_high_to_low)
+{
+	uint8_t data[16];
+	uint32_t *p = (uint32_t *)data;
+
+	*p = event_pins_low_to_high | event_pins_high_to_low;
+	p++;
+	*p = NRF_GPIO->IN;
+
+	ble_blinkys_on_data_change(&g_BlinkyServ, data, 2 * sizeof(uint32_t));
+}
 
 /**@brief Function for error handling, which is called when an error has occurred.
  *
@@ -483,13 +497,13 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
     switch (p_ble_evt->header.evt_id)
     {
         case BLE_GAP_EVT_CONNECTED:
-            nrf_gpio_pin_clear(28);
+            nrf_gpio_pin_set(LED_CON);
 
             g_BlinkyServ.conn_handle  = p_ble_evt->evt.gap_evt.conn_handle;
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
-            nrf_gpio_pin_set(28);
+            nrf_gpio_pin_clear(LED_CON);
             g_BlinkyServ.conn_handle = BLE_CONN_HANDLE_INVALID;
 
             advertising_start();
@@ -572,7 +586,9 @@ static void ble_stack_init(void)
     uint32_t err_code;
 
     // Initialize the SoftDevice handler module.
-    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_SYNTH_250_PPM, true);
+    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_XTAL_30_PPM, true);
+    //SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_SYNTH_250_PPM, true);
+    //SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_250MS_CALIBRATION, true);
 
     // Enable BLE stack
 
@@ -697,15 +713,24 @@ void blink()
 
 int main()
 {
-	//APP_GPIOTE_INIT(APP_GPIOTE_MAX_USERS);
-	nrf_gpio_cfg_output(24);
+	NRF_POWER->DCDCEN = 1;
+	uint32_t err_code;
+
+	APP_GPIOTE_INIT(APP_GPIOTE_MAX_USERS);
+	nrf_gpio_cfg_output(LED_CON);
 	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
 	timers_init();
 
 //	blink();
-	nrf_gpio_pin_set(24);
+	nrf_gpio_pin_clear(LED_CON);
+	err_code = app_gpiote_user_register(&g_GpioteId,
+	                                  0xffffffff,
+	                                  0xffffffff,
+	                                  gpiote_event_handler);
+	APP_ERROR_CHECK(err_code);
 
 	BLEStart();
+	app_gpiote_user_enable(g_GpioteId);
 //	timers_start();
 //	blink();
 
@@ -713,7 +738,7 @@ int main()
 	while (1)
 	{
 		app_sched_execute();
-		uint32_t err_code = sd_app_evt_wait();
+		err_code = sd_app_evt_wait();
 		APP_ERROR_CHECK(err_code);
 		//BlueIOADCStart();
 	}
