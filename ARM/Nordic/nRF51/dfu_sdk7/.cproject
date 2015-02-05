@@ -112,6 +112,8 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.691362206" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="PSTORAGE_RAW_ACCESS"/>
+									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
+									<listOptionValue builtIn="false" value="S110"/>
 									<listOptionValue builtIn="false" value="BOARD_PCA10001"/>
 									<listOptionValue builtIn="false" value="NRF51"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>
@@ -285,7 +287,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.2977961" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="PSTORAGE_RAW_ACCESS"/>
+									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
+									<listOptionValue builtIn="false" value="S110"/>
 									<listOptionValue builtIn="false" value="BOARD_PCA10001"/>
 									<listOptionValue builtIn="false" value="NRF51"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>

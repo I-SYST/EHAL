@@ -15,8 +15,14 @@
 #include "nrf_error.h"
 #include "crc16.h"
 
+#if defined   ( __GNUC__ )
+static dfu_ble_peer_data_t m_peer_data;
+static uint16_t            m_peer_data_crc;
+
+#else
 static dfu_ble_peer_data_t m_peer_data __attribute__((section("NoInit"), zero_init));     /**< This variable should be placed in a non initialized RAM section in order to be valid upon soft reset from application into bootloader. */
 static uint16_t            m_peer_data_crc __attribute__((section("NoInit"), zero_init)); /**< CRC variable to ensure the integrity of the peer data provided. */
+#endif
 
 
 /**@brief Function for setting the peer data from application in bootloader before reset.
@@ -100,7 +106,7 @@ void SVC_Handler(void)
 {
 __asm ("EXC_RETURN_CMD_PSP  = 0xFFFFFFFD\n"	//  ; EXC_RETURN using PSP for ARM Cortex. If Link register contains this value it indicates the PSP was used before the SVC, otherwise the MSP was used.
 
-    //"IMPORT C_SVC_Handler\n"
+    //".IMPORT C_SVC_Handler\n"
     "LDR   R0, =EXC_RETURN_CMD_PSP\n" // ; Load the EXC_RETURN into R0 to be able to compare against LR to determine stack pointer used.
     "CMP   R0, LR\n"                // ; Compare the link register with R0. If equal then PSP was used, otherwise MSP was used before SVC.
     "BNE   UseMSP\n"                // ; Branch to code fetching SVC arguments using MSP.
