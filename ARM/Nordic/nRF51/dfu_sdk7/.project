@@ -45,11 +45,6 @@
 			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/util/app_error.c</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/app_fifo.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/fifo/app_fifo.c</locationURI>
-		</link>
-		<link>
 			<name>src/nrf51_sdk/app_gpiote.c</name>
 			<type>1</type>
 			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/gpiote/app_gpiote.c</locationURI>
@@ -65,9 +60,9 @@
 			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/timer/app_timer.c</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/app_uart_fifo.c</name>
+			<name>src/nrf51_sdk/app_uart.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/drivers_nrf/uart/app_uart_fifo.c</locationURI>
+			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/drivers_nrf/uart/app_uart.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/app_util_platform.c</name>
