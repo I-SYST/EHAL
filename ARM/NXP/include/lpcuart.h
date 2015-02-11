@@ -61,10 +61,10 @@ Modified by          Date              Description
 										// 010 2a - Receive Data Available (RDA).
 										// 110 2b - Character Time-out Indicator (CTI).
 										// 001 3 - THRE Interrupt
-#define LPCUART_IIR_ID_THRE		0x2
-#define LPCUART_IIR_ID_RDA		0x4
-#define LPCUART_IIR_ID_RLS		0x6
-#define LPCUART_IIR_ID_CTIMOUT	0xc
+#define LPCUART_IIR_ID_THRE		0x2		// THRE Interrupt.
+#define LPCUART_IIR_ID_RDA		0x4		// Receive Data Available (RDA)
+#define LPCUART_IIR_ID_RLS		0x6		// Receive Line Status (RLS).
+#define LPCUART_IIR_ID_CTIMOUT	0xc		// Character Time-out Indicator (CTI).
 
 #define LPCUART_IIR_FIFO_MASK	0xc0	// FIFO Enable Copies of UnFCR[0].
 #define LPCUART_IIR_ABEO 		0x100	// End of auto-baud interrupt. True if auto-baud has finished successfully and

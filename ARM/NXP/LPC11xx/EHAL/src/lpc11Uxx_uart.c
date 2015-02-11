@@ -163,8 +163,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->SerIntrf.StopTx = LpcUARTStopTx;
 
 	NVIC_EnableIRQ(UART_IRQn);
-	LPC_USART->IER = LPCUART_IER_RBR | LPCUART_IER_RLS;	/* Enable UART interrupt */
-
+	LPC_USART->IER = LPCUART_IER_THRE | LPCUART_IER_RBR | LPCUART_IER_RLS;
 
 	return true;
 }

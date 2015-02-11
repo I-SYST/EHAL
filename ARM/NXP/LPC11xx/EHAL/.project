@@ -41,6 +41,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/cfifo.h</locationURI>
 		</link>
 		<link>
+			<name>include/convutil.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/convutil.h</locationURI>
+		</link>
+		<link>
 			<name>include/crc.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/crc.h</locationURI>
@@ -54,6 +59,11 @@
 			<name>include/i2c.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/i2c.h</locationURI>
+		</link>
+		<link>
+			<name>include/intelhex.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/intelhex.h</locationURI>
 		</link>
 		<link>
 			<name>include/iopincfg.h</name>
@@ -214,6 +224,11 @@
 			<name>src/fats_vdisk.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/fats_vdisk.c</locationURI>
+		</link>
+		<link>
+			<name>src/intelhex.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/src/intelhex.c</locationURI>
 		</link>
 		<link>
 			<name>src/ledmx.c</name>

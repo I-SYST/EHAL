@@ -103,6 +103,7 @@
 						</toolChain>
 					</folderInfo>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.2069093586.1655045797" name="usbdef.h" rcbsApplicability="disable" resourcePath="include/usb_def.h" toolsToInvoke=""/>
+					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.2069093586.1306203770" name="convutil.h" rcbsApplicability="disable" resourcePath="include/convutil.h" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>

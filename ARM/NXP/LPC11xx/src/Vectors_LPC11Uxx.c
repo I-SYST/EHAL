@@ -85,7 +85,8 @@ void (* const g_Vectors[])(void) =
 	0,
 	0,
 	0,
-	0, 0, 0, 0,
+	(void (*) )0xefffc825,		// Checksum value
+	0, 0, 0,
 	SVC_Handler,
 	0,
 	0,
@@ -127,3 +128,4 @@ void (* const g_Vectors[])(void) =
     0,                                // 31 - Reserved
 };
 
+const uint32_t g_iVectorSize = sizeof(g_Vectors) + 4;
