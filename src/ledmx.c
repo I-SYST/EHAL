@@ -1,5 +1,5 @@
 ﻿/*--------------------------------------------------------------------------
-File   : ledmx.cpp
+File   : ledmx.c
 
 Author : Hoang Nguyen Hoan          Feb. 28, 2011
 
@@ -38,6 +38,9 @@ Modified by          Date              Description
 #include "istddef.h"
 #include "ledmx.h"
 #include "ledmxfont.h"
+
+extern char s_Buffer[];	// defined in sbuffer.c
+extern int s_BufferSize;
 
 void LedMxPrintAt(LEDMXDEV *pDev, int col, const char *pStr)
 {
@@ -177,12 +180,10 @@ void LedMxPrintScrollRight(LEDMXDEV *pDev, const char *pStr)
 
 }
 
-static char s_Buffer[512] = {0,};// __attribute__ ((section(".RAMAHB")));
-
 void LedMxvPrintf(LEDMXDEV *pDev, LEDMXPRTMODE Mode, const char *pFormat, va_list vl)
 {
-    vsnprintf(s_Buffer, sizeof(s_Buffer), pFormat, vl);
-    s_Buffer[sizeof(s_Buffer) - 1] = '\0';
+    vsnprintf(s_Buffer, s_BufferSize, pFormat, vl);
+    s_Buffer[s_BufferSize - 1] = '\0';
 
     switch (Mode)
     {
