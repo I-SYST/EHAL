@@ -5,7 +5,7 @@ Author : Hoang Nguyen Hoan          Nov. 3, 2014
 
 Desc   : FAT file system definitions
 
-Copyright (c) 2011, I-SYST, all rights reserved
+Copyright (c) 2014, I-SYST, all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright

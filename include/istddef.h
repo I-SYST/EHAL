@@ -53,14 +53,6 @@ typedef bool	Bool;
 #define TRUE		true
 #endif
 
-#ifndef min
-#define min(x, y)	((x) > (y) ? (y) : (x))
-#endif
-
-#ifndef max
-#define max(x, y)	((x) > (y) ? (x) : (y))
-#endif
-
 #pragma pack(push, 1)
 typedef struct {
 	char Name[16];			// Application signature
@@ -71,14 +63,19 @@ typedef struct {
 			uint32_t	Major:16;
 		};
 	};
-	uint32_t	Build;		// Build number
-} VER;
+	uint32_t Build;		// Build number
+} VERS;
 #pragma pack(pop)
 
-#define EndianCvt16(x) ((((x) >> 8) & 0xff) | (((x) << 8) & 0xff00))
-#define EndianCvt32(x) ((((x) >> 24L) & 0xff) | (((x) << 24L) & 0xff000000L) | \
-					   (((x) >> 8L) & 0xff00L) | (((x) << 8L) | 0xff0000L))
+// min function
+#ifndef min
+static inline int min(int x, int y) { return x > y ? y : x; }
+#endif
 
+// max function
+#ifndef max
+static inline int max(int x, int y) { return x > y ? x : y; }
+#endif
 
 #endif // __ISTDDEF_H__
 
