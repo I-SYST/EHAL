@@ -61,16 +61,13 @@ static uint32_t g_PinPortOffset[3] = {
  */
 void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resistor, IOPINTYPE Type)
 {
-	uint32_t *pincfgreg = (uint32_t *)LPC_IOCON  + g_PinPortOffset[PortNo];
+	uint32_t *pincfgreg = (uint32_t *)((uint32_t)LPC_IOCON  + g_PinPortOffset[PortNo]);
 
 	// Configure direction
 	if (Dir == IOPINDIR_OUTPUT)
 		LPC_GPIO->DIR[PortNo] |= (1 << PinNo);
 	else
 		LPC_GPIO->DIR[PortNo] &= ~(1 << PinNo);
-
-	if (PortNo > 0)
-		PinNo -= 15;
 
 	pincfgreg += PinNo;
 

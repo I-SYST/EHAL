@@ -91,6 +91,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/lpcerror.h</locationURI>
 		</link>
 		<link>
+			<name>include/lpci2c.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/lpci2c.h</locationURI>
+		</link>
+		<link>
+			<name>include/lpcssp.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/lpcssp.h</locationURI>
+		</link>
+		<link>
 			<name>include/lpcuart.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/lpcuart.h</locationURI>
@@ -154,6 +164,11 @@
 			<name>include/sha256.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sha256.h</locationURI>
+		</link>
+		<link>
+			<name>include/spi.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/spi.h</locationURI>
 		</link>
 		<link>
 			<name>include/sysstatus.h</name>
@@ -239,6 +254,16 @@
 			<name>src/ledmxfont.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/ledmxfont.c</locationURI>
+		</link>
+		<link>
+			<name>src/lpci2c.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/lpci2c.c</locationURI>
+		</link>
+		<link>
+			<name>src/lpcssp.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/lpcssp.c</locationURI>
 		</link>
 		<link>
 			<name>src/lpcuart.c</name>
