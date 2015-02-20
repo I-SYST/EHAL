@@ -63,7 +63,7 @@ bool SDInit(SDDEV *pDev, SDCFG *pCfg)
 
 	// Send 80 x 0xff to reset card to native mode
 	memset(data, 0xff, 80);
-	SDTx(pDev, data, 80);
+	SDRx(pDev, data, 80);
 /*	LpcSSPStartTx(pDev->pCtrlInterf, 0);
 
 	for (int i = 0; i < 80; i++)
