@@ -70,11 +70,6 @@
 			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/ble/common/ble_conn_params.c</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/ble_dfu.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/ble/ble_services/ble_dfu/ble_dfu.c</locationURI>
-		</link>
-		<link>
 			<name>src/nrf51_sdk/ble_dis.c</name>
 			<type>1</type>
 			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/ble/ble_services/ble_dis/ble_dis.c</locationURI>
@@ -93,11 +88,6 @@
 			<name>src/nrf51_sdk/device_manager_peripheral.c</name>
 			<type>1</type>
 			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/ble/device_manager/device_manager_peripheral.c</locationURI>
-		</link>
-		<link>
-			<name>src/nrf51_sdk/dfu_app_handler.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/bootloader_dfu/experimental/dfu_app_handler.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/nrf_soc.c</name>

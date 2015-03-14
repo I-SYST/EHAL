@@ -28,7 +28,7 @@
 		<link>
 			<name>src/Vectors_nRF51.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/src/Vectors_nRF51.c</locationURI>
+			<location>/Users/hoan/I-SYST/swdev/fwdev/ARM/Nordic/nRF51/src/Vectors_nRF51.c</location>
 		</link>
 	</linkedResources>
 </projectDescription>
