@@ -35,7 +35,12 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 
 #include <stdlib.h>
+#include <memory>
 
+void* operator new[](size_t count ) throw()
+{
+	return malloc(count);
+}
 
 void *operator new(size_t size) throw()
 {
@@ -51,3 +56,4 @@ extern "C" void __cxa_pure_virtual()
 {
 	while(1);	// Freeze on call to an unimplemented pure virtual
 }
+
