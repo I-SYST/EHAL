@@ -72,8 +72,8 @@ Modified by          Date              Description
 #define ASSERT_LED_PIN_NO					18
 
 #define APP_GPIOTE_MAX_USERS			1
-#define SCHED_MAX_EVENT_DATA_SIZE       MAX(APP_TIMER_SCHED_EVT_SIZE,\
-                                            BLE_STACK_HANDLER_SCHED_EVT_SIZE)       /**< Maximum size of scheduler events. */
+#define SCHED_MAX_EVENT_DATA_SIZE       10 //MAX(APP_TIMER_SCHED_EVT_SIZE,\
+                                           // BLE_STACK_HANDLER_SCHED_EVT_SIZE)       /**< Maximum size of scheduler events. */
 #define SCHED_QUEUE_SIZE                10                                          /**< Maximum number of events in the scheduler queue. */
 
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
@@ -266,6 +266,7 @@ static void advertising_init(void)
     advdata.include_appearance      = true;
     advdata.flags.size              = sizeof(flags);
     advdata.flags.p_data            = &flags;
+    //advdata.flags                   = flags;
     advdata.uuids_complete.uuid_cnt = sizeof(std_uuids) / sizeof(std_uuids[0]);
     advdata.uuids_complete.p_uuids  = std_uuids;
 
@@ -359,7 +360,7 @@ static void bas_init(void)
  */
 static void sec_params_init(void)
 {
-	g_GAPSecParams.timeout      = SEC_PARAM_TIMEOUT;
+	//g_GAPSecParams.timeout      = SEC_PARAM_TIMEOUT;
 	g_GAPSecParams.bond         = SEC_PARAM_BOND;
 	g_GAPSecParams.mitm         = SEC_PARAM_MITM;
 	g_GAPSecParams.io_caps      = SEC_PARAM_IO_CAPABILITIES;
@@ -426,7 +427,7 @@ static void conn_params_init(void)
  */
 static uint32_t device_manager_evt_handler(dm_handle_t const    * p_handle,
                                            dm_event_t const     * p_event,
-                                           api_result_t           event_result)
+										   uint32_t           event_result)
 {
     APP_ERROR_CHECK(event_result);
     return NRF_SUCCESS;
@@ -453,7 +454,7 @@ static void device_manager_init(void)
 
     memset(&register_param.sec_param, 0, sizeof(ble_gap_sec_params_t));
 
-    register_param.sec_param.timeout      = SEC_PARAM_TIMEOUT;
+//    register_param.sec_param.timeout      = SEC_PARAM_TIMEOUT;
     register_param.sec_param.bond         = SEC_PARAM_BOND;
     register_param.sec_param.mitm         = SEC_PARAM_MITM;
     register_param.sec_param.io_caps      = SEC_PARAM_IO_CAPABILITIES;
@@ -461,7 +462,7 @@ static void device_manager_init(void)
     register_param.sec_param.min_key_size = SEC_PARAM_MIN_KEY_SIZE;
     register_param.sec_param.max_key_size = SEC_PARAM_MAX_KEY_SIZE;
     register_param.evt_handler            = device_manager_evt_handler;
-    register_param.service_type           = DM_PROTOCOL_CNTXT_NONE;
+    register_param.service_type           = DM_PROTOCOL_CNTXT_GATT_SRVR_ID;//DM_PROTOCOL_CNTXT_NONE;
 
     err_code = dm_register(&g_AppHandle, &register_param);
     APP_ERROR_CHECK(err_code);
@@ -514,10 +515,10 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             break;
 
         case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
-            err_code = sd_ble_gap_sec_params_reply(g_BlinkyServ.conn_handle,
-                                                   BLE_GAP_SEC_STATUS_SUCCESS,
-                                                   &g_GAPSecParams);
-            APP_ERROR_CHECK(err_code);
+       //     err_code = sd_ble_gap_sec_params_reply(g_BlinkyServ.conn_handle,
+       //                                            BLE_GAP_SEC_STATUS_SUCCESS,
+       //                                            &g_GAPSecParams);
+         //   APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_GAP_EVT_TIMEOUT:
@@ -560,7 +561,7 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     ble_bas_on_ble_evt(&g_BatServ, p_ble_evt);
     ble_conn_params_on_ble_evt(p_ble_evt);
     /** @snippet [Propagating BLE Stack events to DFU Service] */
-    ble_dfu_on_ble_evt(&m_dfus, p_ble_evt);
+    //ble_dfu_on_ble_evt(&m_dfus, p_ble_evt);
     /** @snippet [Propagating BLE Stack events to DFU Service] */
     on_ble_evt(p_ble_evt);
 }
@@ -586,9 +587,9 @@ static void ble_stack_init(void)
     uint32_t err_code;
 
     // Initialize the SoftDevice handler module.
-    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_XTAL_30_PPM, true);
+    //SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_XTAL_30_PPM, true);
     //SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_SYNTH_250_PPM, true);
-    //SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_250MS_CALIBRATION, true);
+    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_250MS_CALIBRATION, true);
 
     // Enable BLE stack
 
@@ -649,13 +650,13 @@ static void services_init(void)
     // Initialize the Device Firmware Update Service.
     memset(&dfus_init, 0, sizeof(dfus_init));
 
-    dfus_init.evt_handler    = dfu_app_on_dfu_evt;
-    dfus_init.error_handler  = NULL; //service_error_handler - Not used as only the switch from app to DFU mode is required and not full dfu service.
+    //dfus_init.evt_handler    = dfu_app_on_dfu_evt;
+    //dfus_init.error_handler  = NULL; //service_error_handler - Not used as only the switch from app to DFU mode is required and not full dfu service.
 
-    uint32_t err_code = ble_dfu_init(&m_dfus, &dfus_init);
-    APP_ERROR_CHECK(err_code);
+    //uint32_t err_code = ble_dfu_init(&m_dfus, &dfus_init);
+   // APP_ERROR_CHECK(err_code);
 
-    dfu_app_reset_prepare_set(reset_prepare);
+   // dfu_app_reset_prepare_set(reset_prepare);
     /** @snippet [DFU BLE Service initialization] */
 }
 
@@ -713,7 +714,7 @@ void blink()
 
 int main()
 {
-	NRF_POWER->DCDCEN = 1;
+//	NRF_POWER->DCDCEN = 1;
 	uint32_t err_code;
 
 	APP_GPIOTE_INIT(APP_GPIOTE_MAX_USERS);

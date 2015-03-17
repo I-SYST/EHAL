@@ -109,6 +109,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/bootloader_dfu&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/scheduler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/ble/common&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/ble/device_manager&quot;"/>
@@ -279,6 +280,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/bootloader_dfu&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/scheduler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/ble/common&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/ble/device_manager&quot;"/>
