@@ -12,7 +12,7 @@ Total Flash 256K,
 
 MEMORY
 {
-  FLASH (rx) : ORIGIN = 0x16000, LENGTH = 256K - 0x16000 - 15K 
+  FLASH (rx) : ORIGIN = 0x16000, LENGTH = 0x2A000 
   RAM (rwx) : ORIGIN = 0x20002000, LENGTH = 0x2000 /* 8 kB, 8 kB is taken by S110. */
 }
 

@@ -97,32 +97,33 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/hal}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/hci}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/examples/bsp}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/crc16}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_services/ble_dfu}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_services/ble_hids}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/bootloader_dfu/experimental}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/gpiote}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_debug_assert_handler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/ble_flash}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_error_log}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/pstorage}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/trace}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/softdevice/common/softdevice_handler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/timer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/softdevice/s110/headers}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/nrf_soc_nosd}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/bootloader_dfu}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/util}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/scheduler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/common}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/device_manager}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/bootloader_dfu/ble_transport}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_services/ble_bas}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_services/ble_dfu}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_services/ble_dis}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/hci&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/examples/bsp&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/crc16&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_services/ble_dfu&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_services/ble_hids&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/bootloader_dfu/experimental&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/gpiote&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_debug_assert_handler&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/drivers_nrf/ble_flash&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_error_log&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/drivers_nrf/pstorage&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/trace&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/softdevice/common/softdevice_handler&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/timer&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/softdevice/s110/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/bootloader_dfu&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/scheduler&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/device_manager&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/bootloader_dfu/hci_transport&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_services/ble_bas&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_services/ble_dfu&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_services/ble_dis&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/drivers_nrf/uart&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.691362206" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="PSTORAGE_RAW_ACCESS"/>
@@ -148,6 +149,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS/Release}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs.116274259" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.usenewlibnano.996578553" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.usenewlibnano" value="true" valueType="boolean"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker.input.900964935" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -266,33 +268,33 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/hal}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/hci}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/examples/bsp}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/crc16}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_services/ble_dfu}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_services/ble_hids}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/bootloader_dfu/experimental}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/gpiote}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_debug_assert_handler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/ble_flash}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_error_log}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/pstorage}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/trace}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/softdevice/common/softdevice_handler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/timer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/softdevice/s110/headers}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/nrf_soc_nosd}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/bootloader_dfu}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/util}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/scheduler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/common}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/device_manager}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/bootloader_dfu/hci_transport}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_services/ble_bas}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_services/ble_dfu}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/ble/ble_services/ble_dis}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/uart}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/hci&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/examples/bsp&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/crc16&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_services/ble_dfu&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_services/ble_hids&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/bootloader_dfu/experimental&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/gpiote&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_debug_assert_handler&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/drivers_nrf/ble_flash&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_error_log&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/drivers_nrf/pstorage&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/trace&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/softdevice/common/softdevice_handler&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/timer&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/softdevice/s110/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/bootloader_dfu&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/scheduler&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/device_manager&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/libraries/bootloader_dfu/hci_transport&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_services/ble_bas&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_services/ble_dfu&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/ble/ble_services/ble_dis&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/drivers_nrf/uart&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.2977961" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>

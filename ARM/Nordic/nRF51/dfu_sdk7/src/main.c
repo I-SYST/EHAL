@@ -155,7 +155,8 @@ static void ble_stack_init(bool init_softdevice)
     err_code = sd_softdevice_vector_table_base_set(BOOTLOADER_REGION_START);
     APP_ERROR_CHECK(err_code);
    
-    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_XTAL_20_PPM, true);
+    //SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_XTAL_20_PPM, true);
+    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_250MS_CALIBRATION, true);
 
     // Enable BLE stack 
     ble_enable_params_t ble_enable_params;
