@@ -46,28 +46,30 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.118798729" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.1232600765" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.1321044746" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/softdevice/s110/headers}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/util}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/scheduler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/nrf_soc_nosd}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/hal}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/softdevice/s110/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/scheduler&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/../../CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/include}&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input.1834796498" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.410723587" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.820323101" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/softdevice/s110/headers}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/util}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/scheduler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/nrf_soc_nosd}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/hal}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/softdevice/s110/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/scheduler&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/../../CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/include}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.1682076675" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
@@ -164,28 +166,30 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.971536815" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.691637309" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.2046729225" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/softdevice/s110/headers}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/util}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/scheduler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/nrf_soc_nosd}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/hal}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/softdevice/s110/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/scheduler&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/../../CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/include}&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input.858108715" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.171268187" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.336332368" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/softdevice/s110/headers}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/util}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/libraries/scheduler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/nrf_soc_nosd}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/nrf51_sdk/components/drivers_nrf/hal}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/softdevice/s110/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/libraries/scheduler&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/nrf51_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/../../CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/include}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.74404461" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
