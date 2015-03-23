@@ -139,7 +139,7 @@ public:
 
 	SPI(SPI&);	// Copy ctor not allowed
 
-	bool Init(SPICFG &CfgData) { return SPIInit(&vDevData, &CfgData); }
+	bool Init(const SPICFG &CfgData) { return SPIInit(&vDevData, &CfgData); }
 
 	operator SPIDEV& () { return vDevData; };	// Get config data
 	int Rate(int RateHz) { return SerialIntrfSetRate(&vDevData.SerIntrf, RateHz); }
