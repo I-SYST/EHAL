@@ -32,6 +32,7 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "stddev.h"
@@ -54,7 +55,7 @@ int InstallBlkDev(STDDEV *pDev, int MapId)
 		case STDIN_FILENO:
 		case STDOUT_FILENO:
 		case STDERR_FILENO:
-		case STDDEV_FATFS_FILENO:
+		case STDFS_FILENO:
 			retval = MapId;
 			break;
 		default:
@@ -95,16 +96,16 @@ int _open(const char *pPathName, int Flags, int Mode)
 
 	if (p == NULL || strncmp(pPathName, "FAT:", 4) == 0)
 	{
-		retval = g_DevTable[STDDEV_FATFS_FILENO]->Open(g_DevTable[STDDEV_FATFS_FILENO]->pDevObj, pPathName, Flags, Mode);
+		retval = g_DevTable[STDFS_FILENO]->Open(g_DevTable[STDFS_FILENO]->pDevObj, pPathName, Flags, Mode);
 		if (retval != -1)
 		{
-			retval = (retval << 4) | STDDEV_FATFS_FILENO;
+			retval = (retval << 4) | STDFS_FILENO;
 		}
 	}
 	else
 	{
 		// check for named device
-		for (int i = STDDEV_FATFS_FILENO; i < STDDEV_MAX; i++)
+		for (int i = STDFS_FILENO; i < STDDEV_MAX; i++)
 		{
 			if (strncmp(g_DevTable[i]->Name, pPathName, 4) == 0)
 			{
@@ -128,7 +129,7 @@ int _close(int Fd)
 	if (idx < 0 || idx >= STDDEV_MAX)
 		return -1;
 
-	if (idx >= STDDEV_FATFS_FILENO)
+	if (idx >= STDFS_FILENO)
 		Fd >>= STDDEV_FDIDX_NBITS;
 
 	if (g_DevTable[idx] && g_DevTable[idx]->Close)
@@ -144,7 +145,7 @@ int _lseek(int Fd, int Offset)
 	if (idx < 0 || idx >= STDDEV_MAX)
 		return -1;
 
-	if (idx >= STDDEV_FATFS_FILENO)
+	if (idx >= STDFS_FILENO)
 		Fd >>= STDDEV_FDIDX_NBITS;
 
 	if (g_DevTable[idx]  && g_DevTable[idx]->Seek)
@@ -160,11 +161,11 @@ int _read (int Fd, char *pBuff, size_t Len)
 	if (idx < 0 || idx >= STDDEV_MAX)
 		return -1;
 
-	if (idx >= STDDEV_FATFS_FILENO)
+	if (idx >= STDFS_FILENO)
 		Fd >>= STDDEV_FDIDX_NBITS;
 
 	if (g_DevTable[idx] && g_DevTable[idx]->Read)
-		return g_DevTable[idx]->Read(g_DevTable[idx]->pDevObj, Fd, pBuff, Len);
+		return g_DevTable[idx]->Read(g_DevTable[idx]->pDevObj, Fd, (uint8_t*)pBuff, Len);
 
 	return -1;
 }
@@ -176,12 +177,12 @@ int _write (int Fd, char *pBuff, size_t Len)
 	if (idx < 0 || idx >= STDDEV_MAX)
 		return -1;
 
-	if (idx >= STDDEV_FATFS_FILENO)
+	if (idx >= STDFS_FILENO)
 		Fd >>= STDDEV_FDIDX_NBITS;
 
 	if (g_DevTable[idx] && g_DevTable[idx]->Write)
 	{
-		return g_DevTable[idx]->Write(g_DevTable[idx]->pDevObj, Fd, pBuff, Len);
+		return g_DevTable[idx]->Write(g_DevTable[idx]->pDevObj, Fd, (uint8_t*)pBuff, Len);
 	}
 
 	return -1;

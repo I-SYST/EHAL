@@ -39,8 +39,9 @@ Modified by          Date              Description
 
 #define STDDEV_MAX				6		// Max number of standard device
 #define STDDEV_NAME_MAX			8
-#define STDDEV_FATFS_FILENO		3
-#define STDDEV_USER_FILENO		4		// Start of custom user fileno idx
+
+#define STDFS_FILENO			3		// Default File system
+#define STDDEV_USER_FILENO		4		// Start of user device fileno idx
 
 // open
 typedef int (*STDDEVOPEN)(void *pDevObj, const char *pDevName, int Flags, int Mode);

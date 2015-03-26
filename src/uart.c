@@ -39,9 +39,12 @@ Modified by          Date              Description
 #include "istddef.h"
 #include "uart.h"
 
-#define UARTPRINTF_BUFFMAX		128
-char s_Buffer[UARTPRINTF_BUFFMAX];	// defined in sbuffer.c
-int s_BufferSize = UARTPRINTF_BUFFMAX;
+extern char s_Buffer[];	// defined in sbuffer.c
+extern int s_BufferSize;
+
+//#define UARTPRINTF_BUFFMAX		128
+//char s_Buffer[UARTPRINTF_BUFFMAX];	// defined in sbuffer.c
+//int s_BufferSize = UARTPRINTF_BUFFMAX;
 //char g_UARTPrintfBuffer[UARTPRINTF_BUFFMAX] = {0,};
 
 int UARTRx(UARTDEV *pDev, uint8_t *pBuff, int Bufflen)

@@ -36,8 +36,17 @@ Modified by          Date              Description
 
 #include <stdint.h>
 #include "serialintrf.h"
+#include "diskio.h"
 
 #pragma pack(push, 4)
+
+// CSD register
+typedef struct {
+	uint32_t Vers:2;
+	uint32_t Rsvd1:6;
+	uint32_t Taac:8;
+	uint32_t Nsac:8;
+} SDCSD;
 
 typedef struct {
 	int Rate;
@@ -45,6 +54,9 @@ typedef struct {
 } SDCFG;
 
 typedef struct {
+	int SectSize;
+	int TotalSect;
+	SDCSD Csd;
 	SERINTRFDEV *pSerIntrf;
 } SDDEV;
 
@@ -59,9 +71,8 @@ typedef void*		HSDDEV;
 #ifdef __cplusplus
 
 #include <memory>
-//#include <tr1/shared_ptr.h>
 
-class SDCard {
+class SDCard : public DiskIO {
 public:
 	SDCard();
 	virtual ~SDCard();
@@ -71,14 +82,24 @@ public:
 	int GetResponse(uint8_t *pBuff, int BuffLen);
 	int ReadData(uint8_t *pBuff, int BuffLen);
 	int WriteData(uint8_t *pData, int Len);
+	int GetSectSize(void);
+	uint32_t GetNbSect(void);
+	// @return size in KB
 	uint32_t GetSize(void);
 	int ReadSingleBlock(uint32_t Addr, uint8_t *pData, int Len);
 	int WriteSingleBlock(uint32_t Addr, uint8_t *pData, int Len);
-	operator SDDEV *() { return &vDev; };
+	bool SectRead(uint32_t SectNo, uint8_t *pData) {
+		return ReadSingleBlock(SectNo, pData, vDev.SectSize) == vDev.SectSize;
+	}
+	bool SectWrite(uint32_t SectNo, uint8_t *pData) {
+		return WriteSingleBlock(SectNo, pData, vDev.SectSize) == vDev.SectSize;
+	}
+	//operator SDDEV *() { return &vDev; };
 
 protected:
 private:
 	std::shared_ptr<SerialIntrf> vpInterf;
+	//SerialIntrf *vpInterf;
 	SDDEV vDev;
 };
 

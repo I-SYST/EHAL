@@ -138,7 +138,7 @@ int utf8towcs(const char *pSrc, int *pSrcSize, wchar_t *pDest, int *pDestLen)
       if (cnt > 1)
       {
          char mask = (char)0x7f;
-         char *b = (char *)pSrc;
+         //char *b = (char *)pSrc;
          int i;
 
          *pDest = (*pSrc & (mask >> cnt));
@@ -188,7 +188,7 @@ int utf8towcs(const char *pSrc, int *pSrcSize, wchar_t *pDest, int *pDestLen)
  */ 
 int wcstoutf8(const wchar_t *pSrc, int *pSrcLen, char *pDest, int *pDestSize)
 {
-   int retval = 0;
+  // int retval = 0;
    wchar_t *srcend;
    char *destend;
    char *p, mask;

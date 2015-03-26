@@ -37,9 +37,6 @@ codecvt_base::result codecvt_utf8::do_in(mbstate_t &state, const char *from,
                                          wchar_t *to, wchar_t *to_limit, 
                                          wchar_t *&to_next) const
 {
-   char *p = (char *)from;
-   wchar_t *dest = to;
-
    int len = from_end - from;
    int destlen = to_limit - to;
    int res = utf8towcs(from, &len , to, &destlen);
