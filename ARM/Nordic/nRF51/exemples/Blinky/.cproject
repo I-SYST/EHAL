@@ -64,8 +64,8 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.1007074214" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS//CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/../../CMSIS//CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/CMSIS/include&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.1099196006" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.1886960356" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
@@ -196,8 +196,8 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.1723815000" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/nrf51_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS//CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/../../CMSIS//CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc}/CMSIS/include&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.711321047" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.1653821865" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
