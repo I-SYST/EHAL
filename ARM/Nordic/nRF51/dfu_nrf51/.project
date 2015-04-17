@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>dfu_nrf51</name>
+	<name>dfu_sdk7</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -25,19 +25,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>gcc_nrf51_s110_xxaa_dfu.ld</name>
+			<name>src/Abstract.txt</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/examples/dfu/bootloader/Abstract.txt</locationURI>
+		</link>
+		<link>
+			<name>src/Vectors_nRF51.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/Vectors_nRF51.c</locationURI>
+		</link>
+		<link>
+			<name>src/gcc_nrf51_s110_xxaa_dfu.ld</name>
 			<type>1</type>
 			<locationURI>WORKSPACE_LOC/src/gcc_nrf51_s110_xxaa_dfu.ld</locationURI>
-		</link>
-		<link>
-			<name>src/ResetEntry.c</name>
-			<type>1</type>
-			<location>/Users/hoan/I-SYST/swdev/fwdev/ARM/src/ResetEntry.c</location>
-		</link>
-		<link>
-			<name>src/Vectors_M0.c</name>
-			<type>1</type>
-			<location>/Users/hoan/I-SYST/swdev/fwdev/ARM/src/Vectors_M0.c</location>
 		</link>
 		<link>
 			<name>src/nrf51_sdk</name>
@@ -45,104 +45,144 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/system_nrf51.c</name>
+			<name>src/nrf51_sdk/app_error.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/src/system_nrf51.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/util/app_error.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/app_fifo.c</name>
+			<type>1</type>
+			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/fifo/app_fifo.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/app_gpiote.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/app_common/app_gpiote.c</locationURI>
+			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/gpiote/app_gpiote.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/app_scheduler.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/app_common/app_scheduler.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/scheduler/app_scheduler.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/app_timer.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/app_common/app_timer.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/timer/app_timer.c</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/app_uart.c</name>
+			<name>src/nrf51_sdk/app_timer_appsh.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/app_common/app_uart.c</locationURI>
+			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/timer/app_timer_appsh.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/app_uart_fifo.c</name>
+			<type>1</type>
+			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/drivers_nrf/uart/app_uart_fifo.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/app_util_platform.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/util/app_util_platform.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble_advdata.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/ble/ble_advdata.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/ble/common/ble_advdata.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/ble_advdata_parser.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/ble/common/ble_advdata_parser.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble_conn_params.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/ble/ble_conn_params.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/ble/common/ble_conn_params.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble_dfu.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/ble/ble_services/ble_dfu.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/ble/ble_services/ble_dfu/ble_dfu.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/ble_srv_common.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/ble/common/ble_srv_common.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/bootloader.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/bootloader_dfu/bootloader.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/bootloader_dfu/bootloader.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/bootloader_util_gcc.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/bootloader_dfu/bootloader_util_gcc.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/bootloader_dfu/bootloader_util_gcc.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/crc16.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/app_common/crc16.c</locationURI>
-		</link>
-		<link>
-			<name>src/nrf51_sdk/dfu_app_handler.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/bootloader_dfu/dfu_app_handler.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/crc16/crc16.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/dfu_dual_bank.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/bootloader_dfu/dfu_dual_bank.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/bootloader_dfu/dfu_dual_bank.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/dfu_init_template.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/bootloader_dfu/dfu_init_template.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/dfu_single_bank.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/bootloader_dfu/dfu_single_bank.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/dfu_transport_ble.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/bootloader_dfu/dfu_transport_ble.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/bootloader_dfu/dfu_transport_ble.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/dfu_transport_serial.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/bootloader_dfu/dfu_transport_serial.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/hci_mem_pool.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/app_common/hci_mem_pool.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/hci/hci_mem_pool.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/hci_slip.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/app_common/hci_slip.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/hci/hci_slip.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/hci_transport.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/app_common/hci_transport.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/hci/hci_transport.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/nrf_delay.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/nrf_delay/nrf_delay.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/drivers_nrf/hal/nrf_delay.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/pstorage.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/app_common/pstorage.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/drivers_nrf/pstorage/pstorage.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/softdevice_handler.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/nrf51822/Source/sd_common/softdevice_handler.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/softdevice/common/softdevice_handler/softdevice_handler.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/softdevice_handler_appsh.c</name>
+			<type>1</type>
+			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/softdevice/common/softdevice_handler/softdevice_handler_appsh.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

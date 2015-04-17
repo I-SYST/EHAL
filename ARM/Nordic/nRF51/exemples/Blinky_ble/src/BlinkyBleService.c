@@ -53,8 +53,8 @@ Modified by          Date              Description
 #include "ble_error_log.h"
 #include "ble_debug_assert_handler.h"
 #include "app_error.h"
-#include "app_timer.h"
-#include "softdevice_handler.h"
+#include "app_timer_appsh.h"
+#include "softdevice_handler_appsh.h"
 #include "BlinkyBleService.h"
 
 

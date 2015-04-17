@@ -51,6 +51,16 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/crc.h</locationURI>
 		</link>
 		<link>
+			<name>include/dirent.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/dirent.h</locationURI>
+		</link>
+		<link>
+			<name>include/diskio.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/diskio.h</locationURI>
+		</link>
+		<link>
 			<name>include/fatfs.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/fatfs.h</locationURI>
@@ -109,6 +119,11 @@
 			<name>include/sha256.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/sha256.h</locationURI>
+		</link>
+		<link>
+			<name>include/stddev.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/include/stddev.h</locationURI>
 		</link>
 		<link>
 			<name>include/sysstatus.h</name>
@@ -181,6 +196,16 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/crc.c</locationURI>
 		</link>
 		<link>
+			<name>src/diskio_impl.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/src/diskio_impl.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/fatfs.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/src/fatfs.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/intelhex.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/intelhex.c</locationURI>
@@ -229,6 +254,11 @@
 			<name>src/sha256.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/sha256.c</locationURI>
+		</link>
+		<link>
+			<name>src/stddev.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-WORKSPACE_LOC/src/stddev.c</locationURI>
 		</link>
 		<link>
 			<name>src/sysstatus.c</name>

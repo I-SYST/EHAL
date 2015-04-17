@@ -47,10 +47,10 @@ Modified by          Date              Description
 #include "ble_hci.h"
 #include "ble_conn_params.h"
 #include "device_manager.h"
-#include "softdevice_handler.h"
+#include "softdevice_handler_appsh.h"
 #include "ble_error_log.h"
 #include "ble_debug_assert_handler.h"
-#include "app_timer.h"
+#include "app_timer_appsh.h"
 #include "app_gpiote.h"
 #include "app_scheduler.h"
 #include "app_error.h"
@@ -264,9 +264,9 @@ static void advertising_init(void)
 
     advdata.name_type               = BLE_ADVDATA_FULL_NAME;
     advdata.include_appearance      = true;
-    advdata.flags.size              = sizeof(flags);
-    advdata.flags.p_data            = &flags;
-    //advdata.flags                   = flags;
+    //advdata.flags.size              = sizeof(flags);
+    //advdata.flags.p_data            = &flags;
+    advdata.flags                   = flags;
     advdata.uuids_complete.uuid_cnt = sizeof(std_uuids) / sizeof(std_uuids[0]);
     advdata.uuids_complete.p_uuids  = std_uuids;
 
@@ -522,7 +522,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             break;
 
         case BLE_GAP_EVT_TIMEOUT:
-            if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISEMENT)
+            if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
             {
             	nrf_gpio_pin_set(24);
 
@@ -589,7 +589,7 @@ static void ble_stack_init(void)
     // Initialize the SoftDevice handler module.
     //SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_XTAL_30_PPM, true);
     //SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_SYNTH_250_PPM, true);
-    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_250MS_CALIBRATION, true);
+    SOFTDEVICE_HANDLER_APPSH_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_250MS_CALIBRATION, true);
 
     // Enable BLE stack
 
@@ -684,7 +684,7 @@ static void timers_init(void)
     uint32_t err_code;
 
     // Initialize timer module.
-    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_MAX_TIMERS, APP_TIMER_OP_QUEUE_SIZE, false);
+    APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_MAX_TIMERS, APP_TIMER_OP_QUEUE_SIZE, false);
 
     // Create timers.
   //  err_code = app_timer_create(&m_battery_timer_id,
