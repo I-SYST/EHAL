@@ -47,10 +47,10 @@ Modified by          Date              Description
 #include "ble_hci.h"
 #include "ble_conn_params.h"
 #include "device_manager.h"
-#include "softdevice_handler.h"
+#include "softdevice_handler_appsh.h"
 #include "ble_error_log.h"
 #include "ble_debug_assert_handler.h"
-#include "app_timer.h"
+#include "app_timer_appsh.h"
 #include "app_gpiote.h"
 #include "app_scheduler.h"
 #include "app_error.h"
@@ -68,10 +68,11 @@ Modified by          Date              Description
 #define BASE_USB_HID_SPEC_VERSION        		0x0101                                         /**< Version number of base USB HID Specification implemented by this application. */
 
 #define ASSERT_LED_PIN_NO					18
+#define LED_CONNECTED					30
 
 #define APP_GPIOTE_MAX_USERS			1
-#define SCHED_MAX_EVENT_DATA_SIZE       MAX(APP_TIMER_SCHED_EVT_SIZE,\
-                                            BLE_STACK_HANDLER_SCHED_EVT_SIZE)       /**< Maximum size of scheduler events. */
+#define SCHED_MAX_EVENT_DATA_SIZE       10 //MAX(APP_TIMER_SCHED_EVT_SIZE,\
+                                           // BLE_STACK_HANDLER_SCHED_EVT_SIZE)       /**< Maximum size of scheduler events. */
 #define SCHED_QUEUE_SIZE                10                                          /**< Maximum number of events in the scheduler queue. */
 
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
@@ -253,8 +254,9 @@ static void advertising_init(void)
 
     advdata.name_type               = BLE_ADVDATA_FULL_NAME;
     advdata.include_appearance      = true;
-    advdata.flags.size              = sizeof(flags);
-    advdata.flags.p_data            = &flags;
+    //advdata.flags.size              = sizeof(flags);
+    //advdata.flags.p_data            = &flags;
+    advdata.flags = flags;
     advdata.uuids_complete.uuid_cnt = sizeof(std_uuids) / sizeof(std_uuids[0]);
     advdata.uuids_complete.p_uuids  = std_uuids;
 
@@ -313,7 +315,7 @@ static void bas_init(void)
  */
 static void sec_params_init(void)
 {
-	g_GAPSecParams.timeout      = SEC_PARAM_TIMEOUT;
+	//g_GAPSecParams.timeout      = SEC_PARAM_TIMEOUT;
 	g_GAPSecParams.bond         = SEC_PARAM_BOND;
 	g_GAPSecParams.mitm         = SEC_PARAM_MITM;
 	g_GAPSecParams.io_caps      = SEC_PARAM_IO_CAPABILITIES;
@@ -380,7 +382,7 @@ static void conn_params_init(void)
  */
 static uint32_t device_manager_evt_handler(dm_handle_t const    * p_handle,
                                            dm_event_t const     * p_event,
-                                           api_result_t           event_result)
+                                           uint32_t           event_result)
 {
     APP_ERROR_CHECK(event_result);
     return NRF_SUCCESS;
@@ -407,7 +409,7 @@ static void device_manager_init(void)
 
     memset(&register_param.sec_param, 0, sizeof(ble_gap_sec_params_t));
 
-    register_param.sec_param.timeout      = SEC_PARAM_TIMEOUT;
+    //register_param.sec_param.timeout      = SEC_PARAM_TIMEOUT;
     register_param.sec_param.bond         = SEC_PARAM_BOND;
     register_param.sec_param.mitm         = SEC_PARAM_MITM;
     register_param.sec_param.io_caps      = SEC_PARAM_IO_CAPABILITIES;
@@ -451,13 +453,13 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
     switch (p_ble_evt->header.evt_id)
     {
         case BLE_GAP_EVT_CONNECTED:
-            nrf_gpio_pin_set(30);
+            nrf_gpio_pin_set(LED_CONNECTED);
 
             g_UartServ.conn_handle  = p_ble_evt->evt.gap_evt.conn_handle;
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
-            nrf_gpio_pin_clear(30);
+            nrf_gpio_pin_clear(LED_CONNECTED);
             g_UartServ.conn_handle = BLE_CONN_HANDLE_INVALID;
 
             advertising_start();
@@ -468,16 +470,16 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             break;
 
         case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
-            err_code = sd_ble_gap_sec_params_reply(g_UartServ.conn_handle,
-                                                   BLE_GAP_SEC_STATUS_SUCCESS,
-                                                   &g_GAPSecParams);
-            APP_ERROR_CHECK(err_code);
+            //err_code = sd_ble_gap_sec_params_reply(g_UartServ.conn_handle,
+            //                                       BLE_GAP_SEC_STATUS_SUCCESS,
+            //                                       &g_GAPSecParams);
+            //APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_GAP_EVT_TIMEOUT:
-            if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISEMENT)
+            if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
             {
-            	nrf_gpio_pin_set(24);
+            	nrf_gpio_pin_set(LED_CONNECTED);
 
                     // Go to system-off mode.
                     // (this function will not return; wakeup will cause a reset).
@@ -537,7 +539,7 @@ static void ble_stack_init(void)
     uint32_t err_code;
 
     // Initialize the SoftDevice handler module.
-    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_SYNTH_250_PPM, true);
+    SOFTDEVICE_HANDLER_APPSH_INIT(NRF_CLOCK_LFCLKSRC_SYNTH_250_PPM, true);
 
     // Enable BLE stack
     ble_enable_params_t ble_enable_params;
@@ -604,7 +606,7 @@ static void timers_init(void)
     uint32_t err_code;
 
     // Initialize timer module.
-    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_MAX_TIMERS, APP_TIMER_OP_QUEUE_SIZE, false);
+    APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_MAX_TIMERS, APP_TIMER_OP_QUEUE_SIZE, false);
 
     // Create timers.
   //  err_code = app_timer_create(&m_battery_timer_id,
@@ -673,7 +675,7 @@ void uart_init()
 	cfg.cts_pin_no = UART_CTS_PIN;
 	cfg.flow_control = APP_UART_FLOW_CONTROL_DISABLED;
 	cfg.use_parity = false;
-	cfg.baud_rate = UART_BAUDRATE_BAUDRATE_Baud230400;
+	cfg.baud_rate = UART_BAUDRATE_BAUDRATE_Baud115200;
 
 	APP_UART_FIFO_INIT(&cfg, 32, 32, uart_evt_handler, APP_IRQ_PRIORITY_LOW, err_code);
 }
@@ -681,12 +683,12 @@ void uart_init()
 int main()
 {
 	//APP_GPIOTE_INIT(APP_GPIOTE_MAX_USERS);
-	nrf_gpio_cfg_output(24);
+	nrf_gpio_cfg_output(LED_CONNECTED);
 	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
 	timers_init();
 	uart_init();
 //	blink();
-	nrf_gpio_pin_set(24);
+	nrf_gpio_pin_clear(LED_CONNECTED);
 
 	BLEStart();
 //	timers_start();
