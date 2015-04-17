@@ -1,7 +1,7 @@
 OUTPUT_FORMAT ("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 SEARCH_DIR(.)
 SEARCH_DIR("../../../../src")
-GROUP(-lgcc -lc -lnosys)
+GROUP(-lgcc -lc -lnosys -lCMSIS)
 
 MEMORY
 {
@@ -21,6 +21,7 @@ SECTIONS {
     {
         KEEP(*(.uicrBootStartAddress))
     } > NRF_UICR_BOOT_START
+    
 }
 
 INCLUDE "gcc_arm_flash.ld"
