@@ -38,7 +38,7 @@ Modified by          Date              Description
 #include <atomic>
 
 #define DISKIO_SECT_SIZE		512
-#define DISKIO_CACHE_SECT_MAX	2
+#define DISKIO_CACHE_SECT_MAX	1
 
 #pragma pack(push, 1)
 typedef struct _DiskPartition {
@@ -64,7 +64,7 @@ typedef struct _MasterBootRecord {
 typedef struct _Sect_Desc {
 	std::atomic_int UseCnt;		// semaphore
 	uint32_t SectNo;			// sector number of this cache
-	uint8_t Sect[DISKIO_SECT_SIZE];	// sector data
+	uint8_t *pSect;				// sector data
 } SECTDESC;
 
 #pragma pack(pop)
@@ -78,15 +78,20 @@ public:
 	virtual uint32_t GetSize(void) = 0;
 	virtual bool SectRead(uint32_t SectNo, uint8_t *pData) = 0;
 	virtual bool SectWrite(uint32_t SectNo, uint8_t *pData) = 0;
+	virtual int Read(uint32_t SetNo, uint32_t SectOffset, uint8_t *pBuff, uint32_t Len);
 	virtual int Read(uint64_t Offset, uint8_t *pBuff, uint32_t Len);
+	virtual int Write(uint32_t SetNo, uint32_t SectOffset, uint8_t *pBuff, uint32_t Len);
 	virtual int Write(uint64_t Offset, uint8_t *pBuff, uint32_t Len);
 	int	GetCacheSect(uint32_t SectNo, bool bLock = false);
+	void SetCache(uint8_t *pCacheBlk, size_t CacheSize);
 
 protected:
 
 private:
 	int vLastIdx;	// Last cach sector used
-	SECTDESC vCacheSect[DISKIO_CACHE_SECT_MAX];
+	int vNbCache;
+	bool vExtCache;
+	SECTDESC *vpCacheSect;//[DISKIO_CACHE_SECT_MAX];
 };
 
 #ifdef __cplusplus
