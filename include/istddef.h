@@ -67,6 +67,10 @@ typedef struct {
 } VERS;
 #pragma pack(pop)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // min function
 #ifndef min
 static inline int min(int x, int y) { return x > y ? y : x; }
@@ -77,5 +81,11 @@ static inline int min(int x, int y) { return x > y ? y : x; }
 static inline int max(int x, int y) { return x > y ? x : y; }
 #endif
 
+uint32_t DisableInterrupt();
+void EnableInterrupt(uint32_t State);
+
+#ifdef __cplusplus
+}
+#endif
 #endif // __ISTDDEF_H__
 

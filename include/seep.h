@@ -71,7 +71,8 @@ public:
 	virtual int Write(int Addr, uint8_t *pData, int Len);
 
 private:
-	std::shared_ptr<SerialIntrf> vpInterf;
+	//std::shared_ptr<SerialIntrf> vpInterf;
+	SerialIntrf *vpInterf;
 	int vDevAddr;		// SEEP I2C address
 	int vPageSize;
 	int vAddrLen;

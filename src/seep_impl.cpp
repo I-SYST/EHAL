@@ -48,8 +48,8 @@ Seep::~Seep()
 
 bool Seep::Init(int DevAddr, int PageSize, int AddrLen, SerialIntrf *pInterf)
 {
-	vpInterf = shared_ptr<SerialIntrf>(pInterf);
-	//vpInterf = pInterf;
+	//vpInterf = shared_ptr<SerialIntrf>(pInterf);
+	vpInterf = pInterf;
 	vDevAddr = DevAddr;
 	vPageSize = PageSize;
 	vAddrLen = AddrLen;
@@ -67,7 +67,7 @@ int Seep::Read(int Addr, uint8_t *pData, int Len)
 		ad[i] = p[vAddrLen - i - 1];
 	}
 
-	SerialIntrf *pI = vpInterf.get() ;
+	SerialIntrf *pI = vpInterf ;
 
 	//if (vpInterf->Tx(vDevAddr, (uint8_t*)ad, vAddrLen))
 	if (pI->Tx(vDevAddr, (uint8_t*)ad, vAddrLen))

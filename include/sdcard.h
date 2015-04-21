@@ -35,6 +35,7 @@ Modified by          Date              Description
 #define __SDCARD_H__
 
 #include <stdint.h>
+
 #include "serialintrf.h"
 #include "diskio.h"
 
@@ -77,7 +78,7 @@ public:
 	SDCard();
 	virtual ~SDCard();
 
-	virtual bool Init(SerialIntrf *pSerInterf);
+	virtual bool Init(SerialIntrf *pSerInterf, uint8_t *pCacheBlk = NULL, size_t CacheSize = 0);
 	int Cmd(uint8_t Cmd, uint32_t param);
 	int GetResponse(uint8_t *pBuff, int BuffLen);
 	int ReadData(uint8_t *pBuff, int BuffLen);

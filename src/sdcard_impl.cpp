@@ -33,6 +33,7 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #include <string.h>
 
+#include "istddef.h"
 #include "iopincfg.h"
 #include "sdcard.h"
 #include "crc.h"
@@ -47,7 +48,7 @@ SDCard::~SDCard()
 
 }
 
-bool SDCard::Init(SerialIntrf *pSerInterf)
+bool SDCard::Init(SerialIntrf *pSerInterf, uint8_t *pCacheBlk, size_t CacheSize)
 {
 	uint8_t data[4];
 	uint16_t r = 0xffff;
@@ -119,6 +120,10 @@ bool SDCard::Init(SerialIntrf *pSerInterf)
 	vDev.SectSize = 512;		// Default always
 	vDev.TotalSect = GetSize() * 1024LL / vDev.SectSize;
 
+	if (pCacheBlk && CacheSize > 0)
+	{
+		SetCache(pCacheBlk, CacheSize);
+	}
 	return true;
 }
 
@@ -300,23 +305,31 @@ uint32_t SDCard::GetSize(void)
 
 int SDCard::ReadSingleBlock(uint32_t Addr, uint8_t *pData, int len)
 {
+	int retval = 0;
+
 	if (pData)
 	{
+		//uint32_t state = DisableInterrupt();
 		int r = Cmd(17, Addr);
 		if (r == 0)
-			return ReadData(pData, len);
+			retval = ReadData(pData, len);
+		//EnableInterrupt(state);
 	}
-	return 0;
+	return retval;
 }
 
 int SDCard::WriteSingleBlock(uint32_t Addr, uint8_t *pData, int Len)
 {
+	int retval = 0;
+
 	if (pData)
 	{
+		//uint32_t state = DisableInterrupt();
 		int r = Cmd(24, Addr);
 		if (r == 0)
-			return WriteData(pData, Len);
+			retval =  WriteData(pData, Len);
+		//EnableInterrupt(state);
 	}
 
-	return 0;
+	return retval;
 }
