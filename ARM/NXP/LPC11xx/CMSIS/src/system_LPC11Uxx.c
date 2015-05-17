@@ -42,10 +42,10 @@ Modified by          Date              Description
 #define IRC_FREQ				(12000000UL)	// Internal RC freq */
 
 // Select system clock oscillator source
-#define DEF_CLK_SRC			IRC_FREQ
+#define DEF_CLK_SRC				IRC_FREQ
 
 uint32_t SystemCoreClock = 48000000UL;	// System Clock Frequency (Core Clock)
-uint32_t SystemClkFreq = IRC_FREQ;		// System clock frequency, reset default IRC
+uint32_t SystemMainClkFreq = IRC_FREQ;		// System clock frequency, reset default IRC
 
 static inline uint32_t GetSysPllClk(void)
 {
@@ -86,11 +86,11 @@ void SystemCoreClockUpdate(void)
 	}
 
 	// fclko = fcco /(p << 1);
-	SystemCoreClock = sysclk / (p << 1);
+	SystemMainClkFreq = sysclk / (p << 1);
 
 	/* adjust to cclk divider */
 	if (LPC_SYSCON->SYSAHBCLKDIV & 0xff)
-		SystemCoreClock /= (LPC_SYSCON->SYSAHBCLKDIV & 0xff);
+		SystemCoreClock = SystemMainClkFreq / (LPC_SYSCON->SYSAHBCLKDIV & 0xff);
 }
 
 uint32_t SystemSetCoreClock(bool Crystal, int ClkFreq)
@@ -122,6 +122,7 @@ uint32_t SystemSetCoreClock(bool Crystal, int ClkFreq)
 
 	// FCCO = M * Fclkin * 2 * P
 	// Find best fit m & p values
+	uint32_t fclko;
 
 	while (p < 4)
 	{
@@ -129,7 +130,7 @@ uint32_t SystemSetCoreClock(bool Crystal, int ClkFreq)
 
 		if (fcco > 156000000UL && fcco < 320000000)
 		{
-			uint32_t fclko = fcco /((1 << p) << 1);
+			fclko = fcco /((1 << p) << 1);
 			div = fclko / 48000000;
 			if ((fclko % 48000000) == 0)
 				break;
@@ -175,10 +176,11 @@ uint32_t SystemSetCoreClock(bool Crystal, int ClkFreq)
 	LPC_SYSCON->SYSAHBCLKCTRL |= (1<<16);				// Power-up IOCON
 	LPC_SYSCON->PDRUNCFG     &= ~PDRUNCFG_USBPAD_PD;	// Power-up USB PHY         */
 
-	return sysclk;
+	return fclko;
 }
 
 void SystemInit (void)
 {
 	SystemSetCoreClock(true, OSC_FREQ);
+	SystemCoreClockUpdate();
 }

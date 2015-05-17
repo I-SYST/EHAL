@@ -47,8 +47,8 @@ Modified by         Date            Description
 #define LPC11U_MAX_SSPDEV		2
 
 SSPDEV g_SspDev[LPC11U_MAX_SSPDEV] = {
-		{0, (LPCSSPREG*)LPC_SSP0,},
-		{1, (LPCSSPREG*)LPC_SSP1,},
+		{0, 0, (LPCSSPREG*)LPC_SSP0,},
+		{1, 0, (LPCSSPREG*)LPC_SSP1,},
 };
 
 bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
@@ -61,7 +61,7 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	{
 		LPC_SYSCON->PRESETCTRL |= LPC11U_PRESETCTRL_SSP0_RST;
 		LPC_SYSCON->SYSAHBCLKCTRL |= LPC11U_SYSAHBCLKCTRL_SSP0_EN;
-		LPC_SYSCON->SSP0CLKDIV = 0x2;			// Divided by 2
+		LPC_SYSCON->SSP0CLKDIV = 1;//0x2;			// Divided by 1
 
 		dev = &g_SspDev[0];
 		dev->pSspReg = (LPCSSPREG*)LPC_SSP0;
@@ -70,11 +70,13 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	{
 		LPC_SYSCON->PRESETCTRL |= LPC11U_PRESETCTRL_SSP1_RST;
 		LPC_SYSCON->SYSAHBCLKCTRL |= LPC11U_SYSAHBCLKCTRL_SSP1_EN;
-		LPC_SYSCON->SSP1CLKDIV = 0x02;			// Divided by 2
+		LPC_SYSCON->SSP1CLKDIV = 1;//0x02;			// Divided by 1
 
 		dev = &g_SspDev[1];
 		dev->pSspReg = (LPCSSPREG*)LPC_SSP1;
 	}
+
+	dev->PClkFreq = SystemCoreClock / LPC_SYSCON->SSP1CLKDIV;
 
 	uint32_t d = (pCfgData->DataSize - 1);
 	if (pCfgData->DataPhase == SPIDATAPHASE_SECOND_CLK)
@@ -82,6 +84,7 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 
 	if (pCfgData->ClkPol == SPICLKPOL_HIGH)
 		d |= LPCSSP_CR0_CPOL_HI;
+
 	dev->pSspReg->CR0 = d | LPCSSP_CR0_FRF_SPI;
 
 	d = LPCSSP_CR1_SSP_EN;

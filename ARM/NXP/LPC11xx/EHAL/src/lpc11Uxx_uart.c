@@ -41,23 +41,31 @@ Modified by          Date              Description
 
 #define LPC17XX_UART_MAX_DEV		1
 
-extern int g_UartClkDiv;
+//extern int g_UartClkDiv;
+extern uint32_t SystemCoreClock;
+extern uint32_t SystemMainClkFreq;
 
 LPCUARTDEV g_LpcUartDev[LPC17XX_UART_MAX_DEV] = {
 	{0, (LPCUARTREG*)LPC_USART, }
 };
 
+uint32_t LpcGetUartClk()
+{
+//	printf("Clock : %d %d\r\n", SystemClkFreq, SystemClkFreq / LPC_SYSCON->UARTCLKDIV);
+	return SystemMainClkFreq / LPC_SYSCON->UARTCLKDIV;
+}
+
 bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 {
 	LPCUARTREG *reg = NULL;
-	g_UartClkDiv = 1;
+	//g_UartClkDiv = 1;
 
 	switch (pCfg->DevNo)
 	{
 		case 0:
 	        LPC_SYSCON->SYSAHBCLKCTRL |= LPC_SYSAHBCLKCTRL_UART0_EN;
 	        reg = (void*)LPC_USART;
-	        LPC_SYSCON->UARTCLKDIV = g_UartClkDiv; //PCLKSEL0 &= ~LPC_PCLKSEL0_UART0_MASK;	// CCLK/4
+	        LPC_SYSCON->UARTCLKDIV = 2;//g_UartClkDiv; //PCLKSEL0 &= ~LPC_PCLKSEL0_UART0_MASK;	// CCLK/4
 			break;
 /*		case 1:
 	        LPC_SYSCON->SYSAHBCLKCTRL |= LPC_SYSAHBCLKCTRL_UART1_EN;

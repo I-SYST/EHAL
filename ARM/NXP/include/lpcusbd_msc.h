@@ -39,7 +39,7 @@ typedef struct {
 	//		[in]	 length	Number of bytes to be written.
 	// Returns:
 	// 		Nothing.
-	void (*MSC_Write )(uint32_t offset, uint8_t **src, uint32_t length);
+	void (*MSC_Write )(uint32_t offset, uint8_t **src, uint32_t length, uint32_t high_offset);
 
 	// MSC Read callback function.
 	//
@@ -67,7 +67,7 @@ typedef struct {
 	//		[in]	 length	Number of bytes to be read.
 	// Returns:
 	//		Nothing.
-	void (*MSC_Read )(uint32_t offset, uint8_t **dst, uint32_t length);
+	void (*MSC_Read )(uint32_t offset, uint8_t **dst, uint32_t length, uint32_t high_offset);
 
 	// MSC Verify callback function.
 	//
@@ -82,7 +82,7 @@ typedef struct {
 	// Returns:
 	//		LPC_OK	If data in the buffer matches the data at destination
 	//		ERR_FAILED	At least one byte is different.
-	uint32_t (*MSC_Verify)(uint32_t offset, uint8_t buf[], uint32_t length);
+	uint32_t (*MSC_Verify)(uint32_t offset, uint8_t buf[], uint32_t length, uint32_t high_offset);
 
 	// Optional callback function to optimize MSC_Write buffer transfer.
 	//
@@ -161,7 +161,7 @@ typedef struct {
 	//								callbacks are not defined.
 	//		ERR_USBD_BAD_INTF_DESC	Wrong interface descriptor is passed.
 	//		ERR_USBD_BAD_EP_DESC	Wrong endpoint descriptor is passed.
-	uint32_t (*init )(USBD_HANDLE_T hUsb, USBD_MSC_INIT_PARAM_T *param);
+	uint32_t (*init )(USBD_HANDLE_T hUsb, USBD_MSC_INIT_PARAM_T *param, void *);
 } USBD_MSC_API_T;
 
 //

@@ -36,6 +36,8 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
+// **** EEPROM data must be 16 bits aligned for both source and destination
+
 typedef enum {
 	IAPCMD_PREP_SECTOR 		= 50,		// Prepare sector(s) for write operation
 	IAPCMD_CPY_RAM_TO_FLASH	= 51,		// Copy RAM to flash

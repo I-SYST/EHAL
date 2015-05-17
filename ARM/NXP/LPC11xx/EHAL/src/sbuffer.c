@@ -34,7 +34,7 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
-char s_Buffer[512] = {0,};
+char s_Buffer[128] = {0,};
 int s_BufferSize = sizeof(s_Buffer);
 
 

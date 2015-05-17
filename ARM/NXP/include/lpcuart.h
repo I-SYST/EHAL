@@ -232,6 +232,7 @@ extern "C" {
 #endif
 
 // Common to all LPC series
+uint32_t LpcGetUartClk();
 static inline void LpcUARTDisable(SERINTRFDEV *pDev) {}
 static inline void LpcUARTEnable(SERINTRFDEV *pDev) {}
 int LpcUARTGetRate(SERINTRFDEV *pDev);
