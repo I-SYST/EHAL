@@ -45,29 +45,27 @@
 #include "app_scheduler.h"
 #include "app_timer_appsh.h"
 #include "nrf_error.h"
-#include "bsp.h"
+//#include "bsp.h"
 #include "softdevice_handler_appsh.h"
 #include "pstorage_platform.h"
 #include "nrf_mbr.h"
 
-#if BUTTONS_NUMBER < 1
+/*#if BUTTONS_NUMBER < 1
 #error "Not enough buttons on board"
 #endif
 
 #if LEDS_NUMBER < 1
 #error "Not enough LEDs on board"
 #endif
-
+*/
 #define IS_SRVC_CHANGED_CHARACT_PRESENT 1                                                       /**< Include the service_changed characteristic. For DFU this should normally be the case. */
 
-#define BOOTLOADER_BUTTON               7                                            /**< Button used to enter SW update mode. */
+#define BOOTLOADER_BUTTON               9                                            /**< Button used to enter SW update mode. */
 #define UPDATE_IN_PROGRESS_LED          30                                               /**< Led used to indicate that DFU is active. */
 
 #define APP_TIMER_PRESCALER             0                                                       /**< Value of the RTC1 PRESCALER register. */
 #define APP_TIMER_MAX_TIMERS            3                                                       /**< Maximum number of simultaneously created timers. */
 #define APP_TIMER_OP_QUEUE_SIZE         4                                                       /**< Size of timer operation queues. */
-
-#define BUTTON_DETECTION_DELAY          APP_TIMER_TICKS(50, APP_TIMER_PRESCALER)                /**< Delay from a GPIOTE event until a button is reported as pushed (in number of timer ticks). */
 
 #define SCHED_MAX_EVENT_DATA_SIZE       MAX(APP_TIMER_SCHED_EVT_SIZE, 0)                        /**< Maximum size of scheduler events. */
 
@@ -114,7 +112,7 @@ static void timers_init(void)
 static void buttons_init(void)
 {
     nrf_gpio_cfg_sense_input(BOOTLOADER_BUTTON,
-                             BUTTON_PULL, 
+    						 NRF_GPIO_PIN_PULLUP,
                              NRF_GPIO_PIN_SENSE_LOW);
 
 }
@@ -154,12 +152,18 @@ static void ble_stack_init(bool init_softdevice)
     
     err_code = sd_softdevice_vector_table_base_set(BOOTLOADER_REGION_START);
     APP_ERROR_CHECK(err_code);
-   
+
+    //SOFTDEVICE_HANDLER_APPSH_INIT(NRF_CLOCK_LFCLKSRC_XTAL_20_PPM, true);
     SOFTDEVICE_HANDLER_APPSH_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_250MS_CALIBRATION, true);
 
     // Enable BLE stack 
     ble_enable_params_t ble_enable_params;
     memset(&ble_enable_params, 0, sizeof(ble_enable_params));
+    
+    // Below code line is needed for s130. For s110 is inrrelevant - but executable
+    // can run with both s130 and s110.
+    ble_enable_params.gatts_enable_params.attr_tab_size   = BLE_GATTS_ATTR_TAB_SIZE_DEFAULT;
+
     ble_enable_params.gatts_enable_params.service_changed = IS_SRVC_CHANGED_CHARACT_PRESENT;
     err_code = sd_ble_enable(&ble_enable_params);
     APP_ERROR_CHECK(err_code);

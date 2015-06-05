@@ -112,12 +112,17 @@
 		<link>
 			<name>src/nrf51_sdk/bootloader.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/bootloader_dfu/bootloader.c</locationURI>
+			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/bootloader_dfu/bootloader.c</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/bootloader_util_gcc.c</name>
+			<name>src/nrf51_sdk/bootloader_settings.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/libraries/bootloader_dfu/bootloader_util_gcc.c</locationURI>
+			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/bootloader_dfu/bootloader_settings.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/bootloader_util.c</name>
+			<type>1</type>
+			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/bootloader_dfu/bootloader_util.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/crc16.c</name>
@@ -170,9 +175,9 @@
 			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/drivers_nrf/hal/nrf_delay.c</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/pstorage.c</name>
+			<name>src/nrf51_sdk/pstorage_raw.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/nrf51_sdk/components/drivers_nrf/pstorage/pstorage.c</locationURI>
+			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/drivers_nrf/pstorage/pstorage_raw.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/softdevice_handler.c</name>

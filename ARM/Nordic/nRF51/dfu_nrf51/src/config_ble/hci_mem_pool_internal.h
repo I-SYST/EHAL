@@ -22,7 +22,7 @@
 #ifndef MEM_POOL_INTERNAL_H__
 #define MEM_POOL_INTERNAL_H__
 
-#define TX_BUF_SIZE       10u    /**< TX buffer size in bytes. */
+#define TX_BUF_SIZE       4u    /**< TX buffer size in bytes. */
 #define RX_BUF_SIZE       32u   /**< RX buffer size in bytes. */
 
 #define RX_BUF_QUEUE_SIZE 8u    /**< RX buffer element size. */
