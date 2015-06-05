@@ -44,7 +44,6 @@
 static bool is_manual_peripheral_setup_needed(void);
 static bool is_disabled_in_debug_needed(void);
 
-
 #if defined ( __CC_ARM )
     uint32_t SystemCoreClock __attribute__((used)) = __SYSTEM_CLOCK;  
 #elif defined ( __ICCARM__ )
@@ -52,10 +51,12 @@ static bool is_disabled_in_debug_needed(void);
 #elif defined   ( __GNUC__ )
     uint32_t SystemCoreClock __attribute__((used)) = __SYSTEM_CLOCK;
 #endif
+uint32_t SystemMicroSecNopCnt = __SYSTEM_CLOCK / 16000000;
 
 void SystemCoreClockUpdate(void)
 {
     SystemCoreClock = __SYSTEM_CLOCK;
+    SystemMicroSecNopCnt = (SystemCoreClock / 16000000);
 }
 
 void SystemInit(void)
