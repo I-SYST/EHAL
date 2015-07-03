@@ -71,6 +71,9 @@ void ResetEntry (void)
 	 * Clear the ".bss" segment.
 	 */
 	memset((void *)&__bss_start__, 0, (size_t)&__bss_size__);
+	// Use for loop cause memset gets removed by linker ???
+//	for (int i = 0; i < (size_t)&__bss_size__; i++)
+//		((uint8_t *)&__bss_start__)[i] = 0;
 
 	/*
 	 * Call C++ library initialization
@@ -88,7 +91,11 @@ void ResetEntry (void)
 	/*
 	 * We are ready to enter main application
 	 */
-	main();
+#ifndef __CMSIS_RTOS
+	_start();
+#else
+	_rtx_start();
+#endif
 
 	/*
 	 * Embedded system don't return to OS.  main() should not mormally
