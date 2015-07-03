@@ -35,8 +35,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------
-Modified by          Date              Description
-
+Modified by        	Date        	Description
+Hoan				July 3, 2015	Add Freescale Flash security config area	
 ----------------------------------------------------------------------------*/
 
 /* 
@@ -63,8 +63,6 @@ SECTIONS {
 
 		/* interrupt vector */
 		KEEP(*(.intvect))
-		FILL(0xff)  /* fill unsused area to have consistant checksum */
-		. = __text_start__ + 0x400;
 	} > FLASH 
 	
 	/* This is where the firmware informaton is stored. Usefull for bootloader */
@@ -72,31 +70,44 @@ SECTIONS {
 	{
 		KEEP(*(.Version))
 		LONG(__CheckSum);
+		FILL(0xff)  /* fill unsused area to have consistant checksum */
+		. = 0x400 - SIZEOF(.ivector) - SIZEOF(.Version);
+	} > FLASH
+		
+	/* Require Frescale Flash security config */
+	/* Auto fill with 0xFF is section not present in code */
+	.FSec 0x400 : ALIGN(4)
+	{
+		KEEP(*(.fseccfg))
+		FILL(0xff)
+		. = 0x10;
+	} > FLASH
+	
+	.AppStart : ALIGN(4)
+	{
+		/* Application Entry point starts here.  Normaly is the ResetEntry function */ 
+		KEEP(*(.AppStart))
 	} > FLASH
 	
 	/* Code region starts here */
 	.text : ALIGN(4)
 	{	
-		/* Application Entry point starts here.  Normaly is the ResetEntry function */ 
-		KEEP(*(.AppStart))
-
 		KEEP(*(.init))
 		KEEP(*(.fini))
 		
 		/* .ctors */
-		*crtbegin.o(.ctors)
-		*crtbegin?.o(.ctors)
-		*(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
-		*(SORT(.ctors.*))
-		KEEP(*(.ctors))
+		KEEP(*crtbegin.o (.ctors))
+		KEEP(*crtbegin?.o(.ctors))
+		KEEP(*(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors))
+		KEEP(*(SORT(.ctors.*)))
+		KEEP(*crtend.o (.ctors))
 
 		/* .dtors */
- 		*crtbegin.o(.dtors)
- 		*crtbegin?.o(.dtors)
- 		*(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
- 		*(SORT(.dtors.*))
- 		*(.dtors)
-
+ 		KEEP(*crtbegin.o(.dtors))
+ 		KEEP(*crtbegin?.o(.dtors))
+ 		KEEP(*(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors))
+ 		KEEP(*(SORT(.dtors.*)))
+ 		KEEP(*crtend.o (.dtors))
 		*(.text*)
 		*(.rodata .rodata.* .rodata1)
 		*(.gnu.linkonce.r.*)
