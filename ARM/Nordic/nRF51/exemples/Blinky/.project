@@ -30,5 +30,10 @@
 			<type>1</type>
 			<location>/Users/hoan/I-SYST/swdev/fwdev/ARM/Nordic/nRF51/src/Vectors_nRF51.c</location>
 		</link>
+		<link>
+			<name>src/gcc_nrf51_blank_xxaa.ld</name>
+			<type>1</type>
+			<locationURI>WORKSPACE_LOC/src/gcc_nrf51_blank_xxaa.ld</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>
