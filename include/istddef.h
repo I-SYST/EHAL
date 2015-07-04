@@ -63,7 +63,8 @@ typedef struct {
 			uint32_t	Major:16;
 		};
 	};
-	uint32_t Build;		// Build number
+	uint32_t Build;			// Build number
+	uint8_t Private[16];	// 16 bytes private data
 } VERS;
 #pragma pack(pop)
 
