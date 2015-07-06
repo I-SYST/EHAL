@@ -71,7 +71,7 @@ SECTIONS {
 		KEEP(*(.Version))
 		LONG(__CheckSum);
 		FILL(0xff)  /* fill unsused area to have consistant checksum */
-		. = 0x400 - SIZEOF(.ivector) - SIZEOF(.Version);
+		. = 0x400 - SIZEOF(.ivector);/* - SIZEOF(.Version);*/
 	} > FLASH
 		
 	/* Require Frescale Flash security config */
