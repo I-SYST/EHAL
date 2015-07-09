@@ -236,11 +236,9 @@ typedef struct _FATFS_LongName {
 
 } FATFS_LONGNAME;
 
-typedef struct _FATFS_DirEntry {
-	union {
-		FATFS_SHORTNAME ShortName;
-		FATFS_LONGNAME LongName;
-	};
+typedef union _FATFS_DirEntry {
+	FATFS_SHORTNAME ShortName;
+	FATFS_LONGNAME LongName;
 } FATFS_DIR;
 
 #pragma pack(pop)
@@ -249,7 +247,7 @@ typedef struct _FATFS_DirEntry {
 
 typedef struct {
 	char 		VolName[12];	// Volume name
-	FATFS_TYPE	FatType;
+//	FATFS_TYPE	FatType;
 	int 		SectSize;
 	uint32_t 	DataSize;
 	const FATFS_DIR *pRootDir;
@@ -286,7 +284,7 @@ typedef struct {
 
 class FatFS {
 public:
-	FatFS() { memset(vOpenFiles, 0, sizeof(vOpenFiles)); }
+	FatFS() { }//memset(vOpenFiles, 0, sizeof(vOpenFiles)); }
 	virtual ~FatFS() {}
 	bool Init(DiskIO *pDiskIO);
 	bool Find(char *pPathName, DIR *pDir);
