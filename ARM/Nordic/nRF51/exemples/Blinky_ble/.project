@@ -27,7 +27,7 @@
 		<link>
 			<name>src/Vectors_nRF51.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/src/Vectors_nRF51.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/Vectors_nRF51.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk</name>

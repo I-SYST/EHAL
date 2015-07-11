@@ -160,6 +160,9 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.2042895464.1007331910" name="Vectors_nRF51.c" rcbsApplicability="disable" resourcePath="src/Vectors_nRF51.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1239002272.695524931">
+						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1239002272.695524931" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1239002272"/>
+					</fileInfo>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry excluding="nrf51_sdk/bootloader_util_gcc.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
