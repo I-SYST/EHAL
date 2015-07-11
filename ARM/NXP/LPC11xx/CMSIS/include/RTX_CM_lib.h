@@ -341,7 +341,12 @@ __attribute ((noreturn)) void __cs3_start_c (void){
 #else
 
 __attribute__((naked)) void _rtx_start (void) {
-  __asm (
+	 __libc_init_array();
+
+	  osKernelInitialize();
+	  osThreadCreate(&os_thread_def_main, NULL);
+	  osKernelStart();
+/*  __asm (
     ".syntax unified\n"
     ".thumb\n"
     "movs r0,#0\n"
@@ -359,7 +364,7 @@ __attribute__((naked)) void _rtx_start (void) {
     "bl   osThreadCreate\n"
     "bl   osKernelStart\n"
     "bl   exit\n"
-  );
+  );*/
 }
 
 #endif

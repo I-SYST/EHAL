@@ -46,7 +46,7 @@ Modified by          Date              Description
 
 uint32_t SystemCoreClock = 48000000UL;	// System Clock Frequency (Core Clock)
 uint32_t SystemMainClkFreq = IRC_FREQ;		// System clock frequency, reset default IRC
-uint32_t SystemMicroSecNopCnt = IRC_FREQ / 16000000;
+extern uint32_t SystemMicroSecNopCnt;
 
 static inline uint32_t GetSysPllClk(void)
 {
