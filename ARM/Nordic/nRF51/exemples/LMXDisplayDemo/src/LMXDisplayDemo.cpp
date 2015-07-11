@@ -6,7 +6,7 @@
 // Description : Hello World in C++
 //============================================================================
 
-#include "nrf_delay.h"
+#include "idelay.h"
 #include "ledmxio.h"
 
 using namespace std;
