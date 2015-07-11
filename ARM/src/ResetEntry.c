@@ -44,10 +44,16 @@ extern unsigned long __bss_start__;
 extern unsigned long __bss_end__;
 extern unsigned long __bss_size__;
 
+extern void _start();
+extern void _rtx_start();
 extern int main (void);
 extern void __libc_init_array(void);
 extern void SystemInit(void);
 extern void SystemCoreClockUpdate(void);
+extern uint32_t SystemCoreClock;
+
+// Nop count for usDelay base on ARM NOP instruction timming on 16MHz clock
+uint32_t SystemMicroSecNopCnt = 1;
 
 /**
  *	This is entry point after reset
@@ -71,16 +77,12 @@ void ResetEntry (void)
 	 * Clear the ".bss" segment.
 	 */
 	memset((void *)&__bss_start__, 0, (size_t)&__bss_size__);
-	// Use for loop cause memset gets removed by linker ???
-//	for (int i = 0; i < (size_t)&__bss_size__; i++)
-//		((uint8_t *)&__bss_start__)[i] = 0;
+
 
 	/*
 	 * Call C++ library initialization
 	 */
-//#ifdef __CPP_SUPPORT
-	__libc_init_array();
-//#endif
+//	__libc_init_array();
 
 	/*
 	 * Now memory has been initialized
@@ -88,12 +90,17 @@ void ResetEntry (void)
 	 */
 	SystemCoreClockUpdate();
 
+	// Update count for usDelay
+	SystemMicroSecNopCnt = (SystemCoreClock / 16000000);
+
 	/*
 	 * We are ready to enter main application
 	 */
 #ifndef __CMSIS_RTOS
+	// Bare bone app
 	_start();
 #else
+	// RTX based app
 	_rtx_start();
 #endif
 
