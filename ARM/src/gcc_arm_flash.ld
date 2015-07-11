@@ -79,8 +79,10 @@ SECTIONS {
 	.FSec : ALIGN(4)
 	{
 		KEEP(*(.fseccfg))
-		FILL(0xff)
-		. = 0x10;
+		LONG(0xffffffff);
+		LONG(0xffffffff);
+		LONG(0xffffffff);
+		LONG(0xfffffffe);
 	} > FLASH
 	
 	.AppStart : ALIGN(4)
