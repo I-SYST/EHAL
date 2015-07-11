@@ -32,6 +32,7 @@ Modified by         Date            Description
 ----------------------------------------------------------------------------*/
 #ifndef __IDELAY_H__
 #define __IDELAY_H__
+#include <stdint.h>
 
 extern uint32_t SystemMicroSecNopCnt;
 
