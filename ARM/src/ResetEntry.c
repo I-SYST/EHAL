@@ -45,7 +45,7 @@ extern unsigned long __bss_end__;
 extern unsigned long __bss_size__;
 
 extern void _start();
-extern void _rtx_start();
+extern void _rtos_start();
 extern int main (void);
 extern void __libc_init_array(void);
 extern void SystemInit(void);
@@ -101,7 +101,7 @@ void ResetEntry (void)
 	_start();
 #else
 	// RTX based app
-	_rtx_start();
+	_rtos_start();
 #endif
 
 	/*

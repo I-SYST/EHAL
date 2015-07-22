@@ -340,7 +340,7 @@ __attribute ((noreturn)) void __cs3_start_c (void){
 
 #else
 
-__attribute__((naked)) void _rtx_start (void) {
+__attribute__((naked)) void _rtos_start (void) {
 	 __libc_init_array();
 
 	  osKernelInitialize();
