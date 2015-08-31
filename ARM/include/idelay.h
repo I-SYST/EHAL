@@ -47,6 +47,7 @@ static inline __attribute__((always_inline)) void usDelay(uint32_t cnt) {
 		".syntax unified\n"
 			"ORRS %0, %0\n"
 			"BEQ 3f\n"
+			"MOVS r3, %0"
 		"1:\n"
 			"MOVS r2, %1\n"
 		"2:\n"
@@ -60,8 +61,30 @@ static inline __attribute__((always_inline)) void usDelay(uint32_t cnt) {
 			" NOP\n"
 			" NOP\n"
 			" NOP\n"
+			" NOP\n"
+			" NOP\n"
 			" SUBS r2, r2, #1\n"
 			" BGT 2b\n"
+			" SUBS r3, r3, #1\n"
+			" BGT 1b\n"
+		"3:\n"
+		".syntax divided\n"
+		:
+		:"r" (cnt), "r" (SystemMicroSecNopCnt)
+		:"r2", "r3"
+		 );
+}
+
+static inline __attribute__((always_inline)) void nsDelay(uint32_t cnt) {
+	asm volatile (
+		".syntax unified\n"
+			"ORRS %0, %0\n"
+			"BEQ 3f\n"
+		"1:\n"
+//			"MOVS r2, %1\n"
+//		"2:\n"
+//			" SUBS r2, r2, #1\n"
+//			" BGT 2b\n"
 			" SUBS %0, %0, #1\n"
 			" BGT 1b\n"
 		"3:\n"
