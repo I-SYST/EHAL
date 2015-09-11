@@ -71,6 +71,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/i2c.h</locationURI>
 		</link>
 		<link>
+			<name>include/idelay.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/include/idelay.h</locationURI>
+		</link>
+		<link>
 			<name>include/intelhex.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/intelhex.h</locationURI>
