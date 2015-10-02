@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>CMSIS</name>
+	<name>Blinky</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -25,9 +25,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/ResetEntry.c</name>
+			<name>src/Vectors_KL26xx.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/src/ResetEntry.c</locationURI>
+			<locationURI>WORKSPACE_LOC/src/Vectors_KL26xx.c</locationURI>
+		</link>
+		<link>
+			<name>src/gcc_kl26z128.ld</name>
+			<type>1</type>
+			<locationURI>WORKSPACE_LOC/src/gcc_kl26z128.ld</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
