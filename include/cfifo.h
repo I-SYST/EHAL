@@ -53,7 +53,15 @@ typedef struct {
 extern "C" {
 #endif
 
+/**
+ * Initialize FIFO
+ *
+ * @params	pMemBlk :		Pointer to memory block to be used for fifo
+ * 			TotalMemSize : 	Total memory size in byte
+ * 			BlkSize : 		Block size in bytes
+ */
 CFIFOHDL *CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize);
+
 /*
  * Retreive FIFO data
  *
@@ -85,6 +93,21 @@ uint8_t *CFifoPut(CFIFOHDL *pFifo);
  * @return pointer to the inserted FIFO buffer.
  */
 uint8_t *CFifoPutMultiple(CFIFOHDL *pFifo, int *pCnt);
+
+/**
+ * Flush Fifo
+ */
+void CFifoFlush(CFIFOHDL *pFifo);
+
+/**
+ * Get available blocks in fifo
+ */
+int CFifoAvail(CFIFOHDL *pFifo);
+
+/**
+ * Get occupied blocks
+ */
+int CFifoLen(CFIFOHDL *pFifo);
 
 #ifdef __cplusplus
 }
