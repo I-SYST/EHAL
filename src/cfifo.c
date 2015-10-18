@@ -75,19 +75,21 @@ uint8_t *CFifoGet(CFIFOHDL *pFifo)
 
 uint8_t *CFifoGetMultiple(CFIFOHDL *pFifo, int *pCnt)
 {
-	if (pFifo == NULL || pFifo->GetIdx < 0)
-	{
-		return NULL;
-	}
-
 	if (pCnt == NULL)
 		return CFifoGet(pFifo);
 
+	if (pFifo == NULL || pFifo->GetIdx < 0)
+	{
+		*pCnt = 0;
+		return NULL;
+	}
+
 	uint8_t *p = pFifo->pMemStart + pFifo->GetIdx * pFifo->BlkSize;
 	int cnt = 0;
+	int putidx = pFifo->PutIdx;
 
-	if (pFifo->GetIdx < pFifo->PutIdx)
-		cnt = min(*pCnt, pFifo->PutIdx - pFifo->GetIdx);
+	if (pFifo->GetIdx < putidx)
+		cnt = min(*pCnt, putidx - pFifo->GetIdx);
 	else
 		cnt = min(*pCnt, pFifo->MaxIdxCnt - pFifo->GetIdx);
 
@@ -134,11 +136,14 @@ uint8_t *CFifoPut(CFIFOHDL *pFifo)
 
 uint8_t *CFifoPutMultiple(CFIFOHDL *pFifo, int *pCnt)
 {
-	if (pFifo == NULL || pFifo->PutIdx == pFifo->GetIdx)
-		return NULL;
-
 	if (pCnt == NULL)
 		return CFifoPut(pFifo);
+
+	if (pFifo == NULL || pFifo->PutIdx == pFifo->GetIdx)
+	{
+		*pCnt = 0;
+		return NULL;
+	}
 
 	uint8_t *p = pFifo->pMemStart + pFifo->PutIdx * pFifo->BlkSize;
 	int cnt = 0;
@@ -152,8 +157,9 @@ uint8_t *CFifoPutMultiple(CFIFOHDL *pFifo, int *pCnt)
 	}
 	else
 	{
-		if (pFifo->PutIdx < pFifo->GetIdx)
-			cnt = min(*pCnt, pFifo->GetIdx - pFifo->PutIdx);
+		int getidx = pFifo->GetIdx;
+		if (pFifo->PutIdx < getidx)
+			cnt = min(*pCnt, getidx - pFifo->PutIdx);
 		else
 			cnt = min(*pCnt, pFifo->MaxIdxCnt - pFifo->PutIdx);
 	}
@@ -181,11 +187,13 @@ int CFifoAvail(CFIFOHDL *pFifo)
 {
 	int len = 0;
 
+	if (pFifo->GetIdx < 0)
+		return pFifo->MaxIdxCnt;
+
 	if (pFifo->PutIdx > pFifo->GetIdx)
 	{
-		len = pFifo->MemSize - pFifo->PutIdx;
-		if (pFifo->GetIdx - 1 > 0)
-			len += pFifo->GetIdx - 1;
+		len = pFifo->MaxIdxCnt - pFifo->PutIdx;
+		len += pFifo->GetIdx;
 	}
 	else if (pFifo->PutIdx < pFifo->GetIdx)
 	{
@@ -195,18 +203,22 @@ int CFifoAvail(CFIFOHDL *pFifo)
 	return len;
 }
 
-int CFifoLen(CFIFOHDL *pFifo)
+int CFifoLUsed(CFIFOHDL *pFifo)
 {
 	int len = 0;
 
-	if (pFifo->GetIdx <= pFifo->PutIdx)
+	if (pFifo->GetIdx < 0)
+		return 0;
+
+	if (pFifo->GetIdx < pFifo->PutIdx)
 	{
 		len = pFifo->PutIdx - pFifo->GetIdx;
 	}
 	else
 	{
-		len = pFifo->MemSize - pFifo->GetIdx + pFifo->PutIdx;
+		len = pFifo->MaxIdxCnt - pFifo->GetIdx + pFifo->PutIdx;
 	}
 
 	return len;
 }
+

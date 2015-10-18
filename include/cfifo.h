@@ -3,7 +3,9 @@ File   : cfifo.h
 
 Author : Hoang Nguyen Hoan          Jan. 3, 2014
 
-Desc   : Implementation of a simple circular FIFO buffer
+Desc   : Implementation of an overly simple circular FIFO buffer with minimal thread safe.
+		There is no Queuing implementation. The Put functions are used to get pointer to free
+ 	 	 block for writing. The Get functions are for retrieving data blocks.
 
 Copyright (c) 2014, I-SYST, all rights reserved
 
@@ -40,12 +42,12 @@ Modified by          Date              Description
 
 #pragma pack(push,4)
 typedef struct {
-	volatile int32_t PutIdx;
-	volatile int32_t GetIdx;
-	int32_t MaxIdxCnt;
-	uint32_t BlkSize;
-	uint32_t MemSize;
-	uint8_t *pMemStart;
+	volatile int32_t PutIdx;	// Idx to start of empty data block
+	volatile int32_t GetIdx;	// Idx to start of used data block
+	int32_t MaxIdxCnt;			// Max block count
+	uint32_t BlkSize;			// Block size in bytes
+	uint32_t MemSize;			// Total fifo memory size allocated
+	uint8_t *pMemStart;			// Start of fifo data memory
 } CFIFOHDL;
 #pragma pack(pop)
 
@@ -105,9 +107,9 @@ void CFifoFlush(CFIFOHDL *pFifo);
 int CFifoAvail(CFIFOHDL *pFifo);
 
 /**
- * Get occupied blocks
+ * Get number of block used blocks
  */
-int CFifoLen(CFIFOHDL *pFifo);
+int CFifoUsed(CFIFOHDL *pFifo);
 
 #ifdef __cplusplus
 }
