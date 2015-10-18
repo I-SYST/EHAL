@@ -43,6 +43,7 @@ Modified by          Date              Description
 #define IOCON_PIN_MODE				3
 #define IOCON_PIN_MODE_MASK			3
 #define IOCON_PIN_OPENDRAIN			10
+#define IOCON_PIN_HYS				5
 
 static uint32_t g_PinPortOffset[3] = {
 	0, 0x60, 0xf0
@@ -99,6 +100,7 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 	}
 	*pincfgreg &= ~(3 << IOCON_PIN_MODE);
 	*pincfgreg |= (rmode & 3) << IOCON_PIN_MODE;
+	*pincfgreg |= 1 << IOCON_PIN_HYS;
 }
 
 

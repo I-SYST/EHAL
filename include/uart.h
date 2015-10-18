@@ -64,7 +64,52 @@ typedef enum {
 	UART_FLWCTRL_HW,
 } UART_FLWCTRL;
 
+#define UART_LINESTATE_DCD		1		// Rx Carrier detect
+#define UART_LINESTATE_DSR		2		// Tx Carrier detect
+#define UART_LINESTATE_BRK		4		// Break
+#define UART_LINESTATE_RI		8		// Ring detect
+#define UART_LINESTATE_FRMERR	0x10	// Frame error
+#define UART_LINESTATE_PARERR	0x20	// Parity error
+#define UART_LINESTATE_OVR		0x40	// Overrun
+
 #define UART_NB_PINS			8
+
+// I/O pin configuration list ordering
+#define UARTPIN_RX_IDX			0
+#define UARTPIN_TX_IDX			1
+#define UARTPIN_CTS_IDX			2
+#define UARTPIN_RTS_IDX			3
+#define UARTPIN_DCD_IDX			4
+#define UARTPIN_DTE_IDX			5
+#define UARTPIN_DTR_IDX			6
+#define UARTPIN_RI_IDX			7
+
+typedef struct __Uart_Dev UARTDEV;
+
+typedef enum {
+	UART_EVT_RXTIMEOUT,
+	UART_EVT_RXDATA,
+	UART_EVT_TXREADY,
+	UART_EVT_LINESTATE
+} UART_EVT;
+
+/**
+ * @brief
+ *
+ * Event handler callback. This is normally being called within interrupts, avoid blocking
+ *
+ * @param pDev : Device handle
+ * @param EvtId : Event code
+ * @param pBuffer : In/Out Buffer containing data
+ * 					on UART_EVT_RXTIMEOUT & UART_EVT_RXDATA, buffer contains data received
+ * 					on UART_EVT_TXREADY, buffer allocated for data to be transmit with max length BufferLen (fifo size)
+ * 					on UART_EVT_LINESTATE, buffer contains 1 byte Line Status
+ *
+ * @param BufferLen : Max buffer length
+ *
+ * @return number of bytes written to pBuffer for transmit
+ */
+typedef int (*UARTEVTCB)(UARTDEV*pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 
 #pragma pack(push, 4)
 
@@ -76,16 +121,19 @@ typedef struct {
 	int DataBits;				// Number of data bits
 	UART_PARITY Parity;			// Data parity
 	int StopBits;				// Number of stop bits
-	UART_FLWCTRL FlowControl;	//
-	bool DMAMode;				// DMA transfer support
-	bool IrDAMode;				// Enable IrDA
-	bool IrDAInvert;			// IrDA input inverted
-	bool IrDAFixPulse;			// Enable IrDA fix pulse
+	UART_FLWCTRL FlowControl;	// Flow control
+	bool bIntMode;				// Interrupt mode support
+	int IntPrio;				// Interrupt priority
+	UARTEVTCB EvtCallback;		// UART event callback
+	bool bDMAMode;				// DMA transfer support
+	bool bIrDAMode;				// Enable IrDA
+	bool bIrDAInvert;			// IrDA input inverted
+	bool bIrDAFixPulse;			// Enable IrDA fix pulse
 	int	IrDAPulseDiv;			// Fix pulse divider
 } UARTCFG;
 
 // Device driver data require by low level fonctions
-typedef struct {
+struct __Uart_Dev {
 //	UARTCFG Cfg;
 	int Rate;					// Baudrate, set to 0 for auto baudrate
 	int DataBits;				// Number of data bits
@@ -97,7 +145,9 @@ typedef struct {
 	bool IrDAFixPulse;			// Enable IrDA fix pulse
 	int	IrDAPulseDiv;			// Fix pulse divider
 	SERINTRFDEV	SerIntrf;		// I2C device interface implementation
-} UARTDEV;
+	UARTEVTCB EvtCallback;		// UART event callback
+	void *pObj;					// Pointer to UART object instance
+};
 
 #pragma pack(pop)
 
@@ -129,7 +179,7 @@ public:
 	virtual ~UART() {}
 	UART(UART&);
 
-	bool Init(const UARTCFG &CfgData) {
+	virtual bool Init(const UARTCFG &CfgData) {
 		return UARTInit(&vDevData, &CfgData);
 	}
 	// ++ ** Require implementation

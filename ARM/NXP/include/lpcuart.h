@@ -49,6 +49,7 @@ Modified by          Date              Description
 #define LPCUART_IER_RBR			1 		// RBR Interrupt enable
 #define LPCUART_IER_THRE		2		// THRE Interrupt enable
 #define LPCUART_IER_RLS			4		// RX Line Status Interrupt enable
+#define LPCUART_IER_MS			8		// Modem Status interrupt enable
 #define LPCUART_IER_ABEO 		0x10	// ABEOIntEn Enables the end of auto-baud interrupt.
 #define LPCUART_IER_ABTO		0x20	// ABTOIntEn Enables the auto-baud time-out interrupt.
 
@@ -56,15 +57,17 @@ Modified by          Date              Description
 #define LPCUART_IIR_STATUS 		1		// IntStatus Interrupt status. Note that UnIIR[0] is active low.
 										// 0 At least one interrupt is pending.
 										// 1 No interrupt is pending.
-#define LPCUART_IIR_ID_MASK		0xe		// IntId Interrupt identification.
+#define LPCUART_IIR_ID_MASK		(7<<1)		// IntId Interrupt identification.
 										// 011 1 - Receive Line Status (RLS).
 										// 010 2a - Receive Data Available (RDA).
 										// 110 2b - Character Time-out Indicator (CTI).
 										// 001 3 - THRE Interrupt
-#define LPCUART_IIR_ID_THRE		0x2		// THRE Interrupt.
-#define LPCUART_IIR_ID_RDA		0x4		// Receive Data Available (RDA)
-#define LPCUART_IIR_ID_RLS		0x6		// Receive Line Status (RLS).
-#define LPCUART_IIR_ID_CTIMOUT	0xc		// Character Time-out Indicator (CTI).
+										// 000 4 - Modem status
+#define LPCUART_IIR_ID_MS		(0<<1)	// Modem status
+#define LPCUART_IIR_ID_THRE		(1<<1)	// THRE Interrupt.
+#define LPCUART_IIR_ID_RDA		(2<<1)	// Receive Data Available (RDA)
+#define LPCUART_IIR_ID_RLS		(3<<1)	// Receive Line Status (RLS).
+#define LPCUART_IIR_ID_CTIMOUT	(6<<1)	// Character Time-out Indicator (CTI).
 
 #define LPCUART_IIR_FIFO_MASK	0xc0	// FIFO Enable Copies of UnFCR[0].
 #define LPCUART_IIR_ABEO 		0x100	// End of auto-baud interrupt. True if auto-baud has finished successfully and
@@ -85,12 +88,12 @@ Modified by          Date              Description
 										// 1 - Writing a logic 1 to UnFCR[2] will clear all bytes in UARTn TX FIFO, reset the
 										// pointer logic. This bit is self-clearing.
 #define LPCUART_FCR_DMA_MODE		8	// DMA Mode
-#define LPCUART_FCR_RX_TRIG_MASK	0xc0	// RX Trigger Level. These two bits determine how many receiver UARTn FIFO characters must be
+#define LPCUART_FCR_RX_TRIG_MASK	(3<<6)	// RX Trigger Level. These two bits determine how many receiver UARTn FIFO characters must be
 											// written before an interrupt or DMA request is activated.
-#define LPCUART_FCR_RX_TRIG1		0		// 00 Trigger level 0 (1 character or 0x01)
-#define LPCUART_FCR_RX_TRIG4		1		// 01 Trigger level 1 (4 characters or 0x04)
-#define LPCUART_FCR_RX_TRIG8		2		// 10 Trigger level 2 (8 characters or 0x08)
-#define LPCUART_FCR_RX_TRIG14		3		// 11 Trigger level 3 (14 characters or 0x0E)
+#define LPCUART_FCR_RX_TRIG1		(0<<6)		// 00 Trigger level 0 (1 character or 0x01)
+#define LPCUART_FCR_RX_TRIG4		(1<<6)		// 01 Trigger level 1 (4 characters or 0x04)
+#define LPCUART_FCR_RX_TRIG8		(2<<6)		// 10 Trigger level 2 (8 characters or 0x08)
+#define LPCUART_FCR_RX_TRIG14		(3<<6)		// 11 Trigger level 3 (14 characters or 0x0E)
 
 // LCR - Line Control Register
 #define LPCUART_LCR_WLEN_MASK		3		// Word Length Select
@@ -149,6 +152,28 @@ Modified by          Date              Description
 #define LPCUART_LSR_RXFE			0x80	// Error in RX FIFO (RXFE)
 											// 0 UnRBR contains no UARTn RX errors or UnFCR[0]=0.
 											// 1 UARTn RBR contains at least one UARTn RX error.
+
+#define LPCUART_MSR_DCTS			1		// Delta CTS. 0 Set upon state change of input CTS. Cleared on an MSR read.
+											// 	0 - No change detected on modem input, CTS.
+											//	1 - State change detected on modem input, CTS.
+#define LPCUART_MSR_DDSR			2		// Delta DSR. 0 Set upon state change of input DSR. Cleared on an MSR read.
+											// 	0 - No change detected on modem input, DSR.
+											//	1 - State change detected on modem input, DSR.
+#define LPCUART_MSR_TERI			4		// Trailing Edge RI. 0 Set upon low to high transition of input RI. Cleared on an
+											// MSR read.
+											// 	0 - No change detected on modem input, RI.
+											//	1 - Low-to-high transition detected on RI.
+#define LPCUART_MSR_DDCD			8		// Delta DCD. Set upon state change of input DCD. Cleared on 0 an MSR read.
+											//	0 - No change detected on modem input, DCD.
+											//	1 - State change detected on modem input, DCD.
+#define LPCUART_MSR_CTS				0x10	// Clear To Send State. Complement of input signal CTS. This 0 bit is connected to MCR[1]
+											// in modem loopback mode.
+#define LPCUART_MSR_DSR				0x20	// Data Set Ready State. Complement of input signal DSR. 0 This bit is connected to MCR[0]
+											// in modem loopback mode.
+#define LPCUART_MSR_RI				0x40	// Ring Indicator State. Complement of input RI. This bit is 0 connected to MCR[2]
+											// in modem loopback mode.
+#define LPCUART_MSR_DCD				0x80	// Data Carrier Detect State. Complement of input DCD. This 0 bit is connected to MCR[3]
+											// in modem loopback mode.
 
 // ACR - Auto-baud Control Register
 #define LPCUART_ACR_START			1		// Start This bit is automatically cleared after auto-baud completion.
@@ -224,6 +249,7 @@ typedef struct _PLC_UART_Dev {
 	LPCUARTREG *pUartReg;		// Pointer to UART register map
 	bool DMAMode;				// DMA transfer support
 	UARTDEV	*pUartDev;		// Pointer to generic UART dev. data
+	volatile bool bSending;
 } LPCUARTDEV;
 
 
