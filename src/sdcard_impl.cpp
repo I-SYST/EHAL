@@ -52,8 +52,8 @@ bool SDCard::Init(SerialIntrf *pSerInterf, uint8_t *pCacheBlk, size_t CacheSize)
 {
 	uint8_t data[4];
 	uint16_t r = 0xffff;
-	vpInterf = std::shared_ptr<SerialIntrf>(pSerInterf);
-	//vpInterf = pSerInterf;
+	//vpInterf = std::shared_ptr<SerialIntrf>(pSerInterf);
+	vpInterf = pSerInterf;
 
 	// Reset SD Card to SPI mode
 	// Need to send reset sequence at a lower rate
@@ -309,11 +309,11 @@ int SDCard::ReadSingleBlock(uint32_t Addr, uint8_t *pData, int len)
 
 	if (pData)
 	{
-		//uint32_t state = DisableInterrupt();
+		uint32_t state = DisableInterrupt();
 		int r = Cmd(17, Addr);
 		if (r == 0)
 			retval = ReadData(pData, len);
-		//EnableInterrupt(state);
+		EnableInterrupt(state);
 	}
 	return retval;
 }
@@ -324,11 +324,11 @@ int SDCard::WriteSingleBlock(uint32_t Addr, uint8_t *pData, int Len)
 
 	if (pData)
 	{
-		//uint32_t state = DisableInterrupt();
+		uint32_t state = DisableInterrupt();
 		int r = Cmd(24, Addr);
 		if (r == 0)
 			retval =  WriteData(pData, Len);
-		//EnableInterrupt(state);
+		EnableInterrupt(state);
 	}
 
 	return retval;

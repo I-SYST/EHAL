@@ -71,7 +71,7 @@ __attribute__((weak, alias("DEF_IRQHandler"))) void USBWakeup_IRQHandler(void);
 
 /**
  * This interrupt vector is by default located in FLASH. Though it can not be
- * changed at runtime. All fcuntions in the vector are weak.  it can be
+ * changed at runtime. All functions in the vector are weak.  it can be
  * overloaded by application function
  *
  */
@@ -85,7 +85,7 @@ void (* const g_Vectors[])(void) =
 	0,
 	0,
 	0,
-	(void (*) )0xefffc825,		// Checksum value
+	(void (*) )0xefffd02d,		// Checksum value
 	0, 0, 0,
 	SVC_Handler,
 	0,

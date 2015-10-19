@@ -56,21 +56,22 @@ bool SDInit(SDDEV *pDev, SDCFG *pCfg)
 	if (pCfg->pSerIntrf == NULL)
 		return false;
 
-	uint8_t data[80];
+	uint8_t data[10];
 	uint8_t r = 0xff;
 
 	pDev->pSerIntrf = pCfg->pSerIntrf;
 
 	// Send 80 x 0xff to reset card to native mode
-	memset(data, 0xff, 80);
-	SDRx(pDev, data, 80);
-/*	LpcSSPStartTx(pDev->pCtrlInterf, 0);
+//	memset(data, 0xff, 80);
+//	SDRx(pDev, data, 80);
+
+//	LpcSSPStartTx(pDev->pCtrlInterf, 0);
 
 	for (int i = 0; i < 80; i++)
 	{
-		LpcSSPTxData(pDev->pSspDev, &r, 1);
+		SDTx(pDev, &r, 1);
 	}
-	LpcSSPStopTx(pDev->pSspDev);*/
+//	LpcSSPStopTx(pDev->pSspDev);
 
 
 	// Activate SPI mode
@@ -310,24 +311,35 @@ int SDWriteData(SDDEV *pDev, uint8_t *pData, int Len)
 uint32_t SDGetSize(SDDEV *pDev)
 {
 	uint8_t data[20];
-	uint32_t c_size, c_size_mult, read_bl_len;
+	uint32_t size = 0;
+
+	memset(data, 0, 20);
 
 	int r = SDCmd(pDev, 9, 0);
 	if (r == 0)
 		SDReadData(pDev, data, 16);
 
-	c_size = (uint16_t)data[7]<<2;
-	c_size |= (data[8] >> 6) & 0x03; // bit 62-63
-	c_size |= (data[6] & 3) << 10;
-	c_size++;
+	if ((data[0] & 0xc0) == 0)
+	{
+		// Vers 1.0
+		uint32_t c_size, c_size_mult, read_bl_len;
 
-	c_size_mult = 4 << ((data[10] >> 7) | ((data[9] & 3) << 1));
+		c_size = (uint16_t)data[7]<<2;
+		c_size |= (data[8] >> 6) & 0x03; // bit 62-63
+		c_size |= (data[6] & 3) << 10;
+		c_size++;
+		c_size_mult = 4 << ((data[10] >> 7) | ((data[9] & 3) << 1));
+		read_bl_len = 1 << (data[5] & 0x0F);
+		size = c_size * c_size_mult * read_bl_len / 1024;
+	}
+	else
+	{
+		// Vers 2.0
+		// Bits 48-69
+		size = (uint64_t)(((data[7] & 0x3f) << 16u) | (data[8] << 8u) | data[9]) * 512;
+	}
 
-	read_bl_len = 1 << (data[5] & 0x0F);
-
-//	printf("c_size : %d, c_mult : %d, read_bl_len = %d\n\r", c_size, c_size_mult, read_bl_len);
-
-	return c_size * c_size_mult * read_bl_len;
+	return size;
 }
 
 
