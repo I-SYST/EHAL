@@ -71,6 +71,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/i2c.h</locationURI>
 		</link>
 		<link>
+			<name>include/idelay.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/include/idelay.h</locationURI>
+		</link>
+		<link>
 			<name>include/intelhex.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/intelhex.h</locationURI>
@@ -94,6 +99,11 @@
 			<name>include/ledmxfont.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/ledmxfont.h</locationURI>
+		</link>
+		<link>
+			<name>include/nrf_uart.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/nrf_uart.h</locationURI>
 		</link>
 		<link>
 			<name>include/sdcard.h</name>
@@ -189,6 +199,16 @@
 			<name>src/ledmxfont.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/ledmxfont.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf_uart.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_uart.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf_uart_impl.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_uart_impl.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sdcard_impl.cpp</name>

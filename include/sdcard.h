@@ -99,8 +99,8 @@ public:
 
 protected:
 private:
-	std::shared_ptr<SerialIntrf> vpInterf;
-	//SerialIntrf *vpInterf;
+	//std::shared_ptr<SerialIntrf> vpInterf;
+	SerialIntrf *vpInterf;
 	SDDEV vDev;
 };
 

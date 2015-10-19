@@ -116,6 +116,31 @@ Modified by          Date              Description
 #define FLASH_PAGE_SYS_ATTR                  (PSTORAGE_FLASH_PAGE_END - 3)                  /**< Flash page used for bond manager system attribute information. */
 #define FLASH_PAGE_BOND                      (PSTORAGE_FLASH_PAGE_END - 1)                  /**< Flash page used for bond manager bonding information. */
 
+#define APP_BEACON_INFO_LENGTH          0x17                              /**< Total length of information advertised by the Beacon. */
+#define APP_ADV_DATA_LENGTH             0x15                              /**< Length of manufacturer specific data in the advertisement. */
+#define APP_DEVICE_TYPE                 0x02                              /**< 0x02 refers to Beacon. */
+#define APP_MEASURED_RSSI               0xC3                              /**< The Beacon's measured RSSI at 1 meter distance in dBm. */
+#define APP_COMPANY_IDENTIFIER          0x004c                            /**< Company identifier for Nordic Semiconductor ASA. as per www.bluetooth.org. */
+#define APP_MAJOR_VALUE                 0x00, 0x1                        /**< Major value used to identify Beacons. */
+#define APP_MINOR_VALUE                 0x01, 0x0                        /**< Minor value used to identify Beacons. */
+#define APP_BEACON_UUID                 0x01, 0x12, 0x23, 0x34, \
+                                        0x45, 0x56, 0x67, 0x78, \
+                                        0x89, 0x9a, 0xab, 0xbc, \
+                                        0xcd, 0xde, 0xef, 0xf0            /**< Proprietary UUID for Beacon. */
+
+static uint8_t m_beacon_info[APP_BEACON_INFO_LENGTH] =                    /**< Information advertised by the Beacon. */
+{
+    APP_DEVICE_TYPE,     // Manufacturer specific information. Specifies the device type in this
+                         // implementation.
+    APP_ADV_DATA_LENGTH, // Manufacturer specific information. Specifies the length of the
+                         // manufacturer specific data in this implementation.
+    APP_BEACON_UUID,     // 128 bit UUID value.
+    APP_MAJOR_VALUE,     // Major arbitrary value that can be used to distinguish between Beacons.
+    APP_MINOR_VALUE,     // Minor arbitrary value that can be used to distinguish between Beacons.
+    APP_MEASURED_RSSI    // Manufacturer specific information. The Beacon's measured TX power in
+                         // this implementation.
+};
+
 app_timer_id_t						g_BatTimerId;
 app_gpiote_user_id_t				g_GpioteId = 0;
 static ble_blinkys_t				g_BlinkyServ;
@@ -255,25 +280,26 @@ static void advertising_init(void)
 
     id = ((uint64_t)NRF_FICR->DEVICEID[1] << 32) | (uint64_t)NRF_FICR->DEVICEID[0];
 
-    data.company_identifier = 0x2082;
-    data.data.p_data = (uint8_t*)&id;
-    data.data.size = sizeof(id);
+    data.company_identifier = 0x004c;	//	0x2082;
+    data.data.p_data = (uint8_t *) m_beacon_info;//(uint8_t*)&id;
+    data.data.size = APP_BEACON_INFO_LENGTH;//sizeof(id);
 
     // Build and set advertising data
     memset(&advdata, 0, sizeof(advdata));
 
-    advdata.name_type               = BLE_ADVDATA_FULL_NAME;
-    advdata.include_appearance      = true;
+    advdata.name_type               = BLE_ADVDATA_NO_NAME;
+    advdata.include_appearance      = false;
     //advdata.flags.size              = sizeof(flags);
     //advdata.flags.p_data            = &flags;
     advdata.flags                   = flags;
-    advdata.uuids_complete.uuid_cnt = sizeof(std_uuids) / sizeof(std_uuids[0]);
-    advdata.uuids_complete.p_uuids  = std_uuids;
+    advdata.p_manuf_specific_data = &data;
+    //advdata.uuids_complete.uuid_cnt = sizeof(std_uuids) / sizeof(std_uuids[0]);
+    //advdata.uuids_complete.p_uuids  = std_uuids;
 
     memset(&scanrsp, 0, sizeof(scanrsp));
     scanrsp.uuids_complete.uuid_cnt = sizeof(blueio_uuids) / sizeof(blueio_uuids[0]);
     scanrsp.uuids_complete.p_uuids  = blueio_uuids;
-    scanrsp.p_manuf_specific_data = &data;
+    //scanrsp.p_manuf_specific_data = &data;
 
     err_code = ble_advdata_set(&advdata, &scanrsp);
     APP_ERROR_CHECK(err_code);
@@ -589,7 +615,7 @@ static void ble_stack_init(void)
     // Initialize the SoftDevice handler module.
     //SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_XTAL_30_PPM, true);
     //SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_SYNTH_250_PPM, true);
-    SOFTDEVICE_HANDLER_APPSH_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_250MS_CALIBRATION, true);
+    SOFTDEVICE_HANDLER_APPSH_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_4000MS_CALIBRATION, true);
 
     // Enable BLE stack
 

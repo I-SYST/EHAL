@@ -84,7 +84,7 @@ sig_atomic_t AtomicInc(sig_atomic_t *pVar);
 
 #else
 
-inline __attribute__((always_inline)) sig_atomic_t AtomicInc(sig_atomic_t *pVar) {
+static inline sig_atomic_t AtomicInc(sig_atomic_t *pVar) {
 
 #if defined(_WIN32) || defined(WIN32)
 //
@@ -122,7 +122,7 @@ sig_atomic_t AtomicDec(sig_atomic_t *pVar);
 
 #else
 
-inline __attribute__((always_inline)) sig_atomic_t AtomicDec(sig_atomic_t *pVar) {
+static inline sig_atomic_t AtomicDec(sig_atomic_t *pVar) {
 
 #if defined(_WIN32) || defined(WIN32)
 //
@@ -156,7 +156,7 @@ void AtomicAssign(sig_atomic_t *pVar, sig_atomic_t NewVal);
 
 #else
 
-inline __attribute__((always_inline)) void AtomicAssign(sig_atomic_t *pVar, sig_atomic_t NewVal) {
+static inline void AtomicAssign(sig_atomic_t *pVar, sig_atomic_t NewVal) {
 
 #if defined(_WIN32) || defined(WIN32)
 //
@@ -177,6 +177,20 @@ inline __attribute__((always_inline)) void AtomicAssign(sig_atomic_t *pVar, sig_
 #endif
 }
 #endif // __TSOK__
+
+static inline uint32_t EnterCriticalSection(void) {
+#ifdef __arm__
+	uint32_t state = __get_PRIMASK();
+	__disable_irq();
+	return state;
+#endif
+}
+
+static inline void ExitCriticalSection(uint32_t State) {
+#ifdef __arm__
+	__set_PRIMASK(State);
+#endif
+}
 
 #endif // __ATOMIC_H__
 

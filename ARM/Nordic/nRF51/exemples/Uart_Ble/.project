@@ -55,6 +55,11 @@
 			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/timer/app_timer.c</locationURI>
 		</link>
 		<link>
+			<name>src/nrf51_sdk/app_timer_appsh.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/nrf51_sdk/components/libraries/timer/app_timer_appsh.c</locationURI>
+		</link>
+		<link>
 			<name>src/nrf51_sdk/app_uart_fifo.c</name>
 			<type>1</type>
 			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/drivers_nrf/uart/app_uart_fifo.c</locationURI>
@@ -95,6 +100,21 @@
 			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/ble/device_manager/device_manager_peripheral.c</locationURI>
 		</link>
 		<link>
+			<name>src/nrf51_sdk/drivers_nrf</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/nrf_drv_common.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/nrf51_sdk/components/drivers_nrf/common/nrf_drv_common.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/nrf_drv_gpiote.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/nrf51_sdk/components/drivers_nrf/gpiote/nrf_drv_gpiote.c</locationURI>
+		</link>
+		<link>
 			<name>src/nrf51_sdk/pstorage.c</name>
 			<type>1</type>
 			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/drivers_nrf/pstorage/pstorage.c</locationURI>
@@ -108,6 +128,16 @@
 			<name>src/nrf51_sdk/softdevice_handler_appsh.c</name>
 			<type>1</type>
 			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/softdevice/common/softdevice_handler/softdevice_handler_appsh.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/drivers_nrf/gpiote</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/drivers_nrf/gpiote/nrf_drv_gpiote.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/nrf51_sdk/components/drivers_nrf/gpiote/nrf_drv_gpiote.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -33,56 +33,59 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include <stdio.h>
-
+#include "istddef.h"
 #include "lpcuart.h"
 
 extern uint32_t SystemCoreClock;
+extern uint32_t SystemClkFreq;
+//int g_UartClkDiv = 4;
 
-int LpcUARTGetRate(UARTDEV *pDev)
+int LpcUARTGetRate(SERINTRFDEV *pDev)
 {
-	return pDev->Cfg.Rate;
+	int rate = 0;
+
+	if (pDev && pDev->pDevData)
+		rate = ((LPCUARTDEV*)pDev->pDevData)->pUartDev->Rate;
+
+	return rate;
 }
 
-int LpcUARTSetRate(UARTDEV *pDev, int Rate)
+int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate)
 {
-	uint32_t pclk = SystemCoreClock >> 2;
+	uint32_t pclk = LpcGetUartClk();//SystemClkFreq  / g_UartClkDiv;// >> 2;
 	uint32_t rate16 = Rate << 4;
 	uint32_t dval, mval;
 	uint32_t dl;
-//	int32_t diff;
-//	float err;
+	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
 
-	// Note : PCLK is hardcoded default to CCLK / 4.  See LpcUARTInit
-	// Baurate clock must be 16 * Baurate
-	// Baudrate = PCLK / (16 * DL)
-	// DL : clock divider.
-	// DL = PCLK / (16 * Baudrate)
-	// The division is not integer, adjustment is requirde for the fractional part
-	// by the DivVal & MulVal. Hence
-	// DL = PCLK / (16 * Baudrate * (1 + DivVal/MulVal))
-	//
-	// The fractional part is calculated as
+	if (Rate <= 0)
+	{
+		dev->pUartReg->ACR = 7;	// Auto rate
+		return 0;
+	}
+
+	// The fractional is calculated as
 	// (PCLK  % (16 * Baudrate)) / (16 * Baudrate)
 	// Let's make it to be the ratio
 	// DivVal / MulVal
-	// DivVal = Reminder of PCLK / (16 * Baurate)
-	// MulVal = 16 * Baurate
-	// **** Note : do not pre-divide PCLK/16. We keep it in the multiplication
-	// to prserve precision for integer division
+	//
 	dval = pclk % rate16;
-
+	mval = rate16;
+	// The PCLK / (16 * Baudrate) is fractional
+	// => dval = pclk % rate16;
+	// mval = rate16;
+	// now mormalize the ratio
+	// dval / mval = 1 / new_mval;
+	// new_mval = mval / dval
+	// new_dval = 1
 	if (dval > 0)
 	{
-		// The PCLK / (16 * Baudrate) is fractional
-		// => dval = pclk % rate16;
-		// mval = rate16;
-		// now bring down equivalent ratio
-		// dval / mval = 1 / new_mval;
-		// new_mval = mval / dval
-		// new_dval = 1
 		mval = rate16 / dval;
 		dval = 1;
-		if (mval > 13)
+
+		// in case mval still bigger then 4 bits
+		// no adjustment require
+		if (mval > 15)
 			dval = 0;
 	}
 	dval &= 0xf;
@@ -90,67 +93,84 @@ int LpcUARTSetRate(UARTDEV *pDev, int Rate)
 
 	dl = pclk / (rate16 + rate16 * dval / mval);
 
-	pDev->pUartReg->LCR |= LPCUART_LCR_DLAB; 	// Enable Divisor Access
-	pDev->pUartReg->DLL = dl & 0xff;
-	pDev->pUartReg->DLM = (dl >> 8) & 0xff;
-	pDev->pUartReg->FDR = dval | (mval << 4);
-	pDev->pUartReg->LCR &= ~LPCUART_LCR_DLAB;	// Disable Divisor Access
+	//dl = pclk / rate16;
+
+	dev->pUartReg->LCR |= LPCUART_LCR_DLAB; 	// Enable Divisor Access
+	dev->pUartReg->DLL = dl & 0xff;
+	dev->pUartReg->DLM = (dl >> 8) & 0xff;
+	dev->pUartReg->LCR &= ~LPCUART_LCR_DLAB;	// Disable Divisor Access
+	dev->pUartReg->FDR = dval | (mval << 4);
 
 	// Recalculate actual rate
 	dl <<= 4;	// Mul by 16
 
 	// recalculate real data rate
-	pDev->Cfg.Rate = pclk / (dl + dl * dval / mval);
+	dev->pUartDev->Rate = pclk / (dl + dl * dval / mval);
 
-	//diff = pDev->Cfg.Rate - Rate;
-	//err = (float)diff * 100.0 / Rate;
+	uint32_t diff = dev->pUartDev->Rate - Rate;
+	float err = (float)diff * 100.0 / Rate;
 
-	return pDev->Cfg.Rate;
+	//printf("%d Rate : %d, %d\r\n", pclk, dev->pUartDev->Rate, Rate);
+	return dev->pUartDev->Rate;
 }
+/*
+bool LpcUARTStartRx(SERINTRFDEV *pSerDev, int DevAddr)
+{
+	return true;
+}*/
 
-int LpcUARTRxData(UARTDEV *pDev, uint8_t *pBuff, int Bufflen)
+int LpcUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 {
 	int idx = 0;
+	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
 
 	while (idx < Bufflen)
 	{
-		if (!LpcUARTWaitForRxFifo(pDev, 10000))
+		if (!LpcUARTWaitForRxFifo(dev, 100000))
 			break;
-		pBuff[idx] = pDev->pUartReg->RBR & 0xff;
+		pBuff[idx] = (uint8_t)(dev->pUartReg->RBR & 0xff);
 		idx++;
 	}
 
 	return idx;
 }
 
-bool LpcUARTStartTx(UARTDEV *pDev)
+bool LpcUARTStartTx(SERINTRFDEV *pDev, int DevAddr)
 {
-	pDev->pUartReg->TER = LPCUART_TER_TXEN;
+	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
+
+//	dev->pUartReg->TER = LPCUART_TER_TXEN;
 
 	return true;
 }
 
-int LpcUARTTxData(UARTDEV *pDev, uint8_t *pData, int Datalen)
+int LpcUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 {
-	int idx = 0;
+	int l;
+	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
 
-	while (idx < Datalen)
+	l = 0;
+
+	while (l < Datalen)
 	{
-		if (!LpcUARTWaitForTxFifo(pDev, 10000))
+		if (!LpcUARTWaitForTxFifo(dev, 10000000))
 			break;
-		pDev->pUartReg->THR = pData[idx] & 0xff;
-		idx++;
+
+		dev->pUartReg->THR = pData[l];
+		l++;
 	}
 
-	return idx;
+	return l;
 }
 
-void LpcUARTStopTx(UARTDEV *pDev)
+void LpcUARTStopTx(SERINTRFDEV *pDev)
 {
-	pDev->pUartReg->TER = 0;
+	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
+
+	//dev->pUartReg->TER = 0;
 }
 
-bool LpcUARTWaitForRxFifo(UARTDEV *pDev, int Timeout)
+bool LpcUARTWaitForRxFifo(LPCUARTDEV *pDev, uint32_t Timeout)
 {
 	do
 	{
@@ -161,37 +181,19 @@ bool LpcUARTWaitForRxFifo(UARTDEV *pDev, int Timeout)
 	return false;
 }
 
-bool LpcUARTWaitForTxFifo(UARTDEV *pDev, int Timeout)
+bool LpcUARTWaitForTxFifo(LPCUARTDEV *pDev, uint32_t Timeout)
 {
 	do
 	{
-		if (pDev->pUartReg->LSR & LPCUART_LSR_THRE)
+		//uint32_t lsr = pDev->pUartReg->LSR & LPCUART_LSR_THRE;
+		if (pDev->pUartReg->LSR & (LPCUART_LSR_TEMT | LPCUART_LSR_THRE))
 			return true;
 	} while (--Timeout > 0);
 
 	return false;
 }
 
-UART_STATUS LpcUARTGetStatus(UARTDEV *pDev)
+UART_STATUS LpcUARTGetStatus(LPCUARTDEV *pDev)
 {
 	return pDev->pUartReg->LSR;
-}
-
-#define UARTPRINTF_BUFFMAX		256
-char g_UARTPrintfBuffer[UARTPRINTF_BUFFMAX] = {0,};// __attribute__ ((section(".RAMAHB"))) = { 0, };
-
-void LpcUARTprintf(UARTDEV *pDev, char *pFormat, ...)
-{
-	va_list vl;
-    va_start(vl, pFormat);
-    LpcUARTvprintf(pDev, pFormat, vl);
-    va_end(vl);
-}
-
-void LpcUARTvprintf(UARTDEV *pDev, char *pFormat, va_list vl)
-{
-    vsnprintf(g_UARTPrintfBuffer, UARTPRINTF_BUFFMAX, pFormat, vl);
-    LpcUARTStartTx(pDev);
-    LpcUARTTxData(pDev, (uint8_t*)g_UARTPrintfBuffer, strlen(g_UARTPrintfBuffer));
-    LpcUARTStopTx(pDev);
 }

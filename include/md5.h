@@ -1,11 +1,12 @@
 /*--------------------------------------------------------------------------
-File   : convutil.h
+File   : md5.h
 
-Author : Hoang Nguyen Hoan          Feb. 8, 2015
+Author : Hoang Nguyen Hoan          Nov. 19, 2012
 
-Desc   : Conversion utilities
+Desc   : MD5 calculations
+		 reference : http://en.wikipedia.org/wiki/MD5
 
-Copyright (c) 2015, I-SYST inc., all rights reserved
+Copyright (c) 2012, I-SYST, all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -32,11 +33,9 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
-#ifndef __CONVUTIL_H__
-#define __CONVUTIL_H__
+#ifndef __MD5_H__
+#define __MD5_H__
 
-#include <stdio.h>
-#include <stdbool.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -44,40 +43,19 @@ extern "C" {
 #endif
 
 /*
- * 16 bits endianess conversion
- */
-static inline int16_t EndianCvt16(int16_t x) {
-	return ((x >> 8) & 0xff) | ((x << 8) & 0xff00);
-}
-
-/*
- * 32 bits endianess conversion
- */
-static inline uint32_t EndianCvt32(uint32_t x) {
-	return (((x >> 24UL) & 0xff) | ((x << 24UL) & 0xff000000) |
-			((x >> 8UL) & 0xff00) | ((x << 8UL) | 0xff0000));
-}
-
-/*
- * Convert ascii hex char to integer
+ * Calculate MD5 value
  *
- * @return -1 if wrong character
+ * @param	pData	: Pointer to source data
+ * 			DataLen	: Data length in bytes
+ * 			pRes	: Pointer to buffer to store MD5 value
+ *
+ * 	@return None.
  */
-static inline int chex2i(char c) {
-	int retval = -1;
+void md5(uint8_t *pData, int DataLen, uint8_t *pRes);
 
-	if (c >= 'a')
-		retval = c - 'a' + 10;
-	else if (c >= 'A')
-		retval = c - 'A' + 10;
-	else
-		retval = c - '0';
-
-	return retval;
-}
-	
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __CONVUTIL_H__
+
+#endif	// __MD5_H__

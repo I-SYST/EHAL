@@ -115,11 +115,16 @@ Modified by          Date              Description
 #define FLASH_PAGE_SYS_ATTR                  (PSTORAGE_FLASH_PAGE_END - 3)                  /**< Flash page used for bond manager system attribute information. */
 #define FLASH_PAGE_BOND                      (PSTORAGE_FLASH_PAGE_END - 1)                  /**< Flash page used for bond manager bonding information. */
 
+#define UART_TX_PIN			9	// 7
+#define UART_RX_PIN			11	// 8
+#define UART_RTS_PIN		8	// 11
+#define UART_CTS_PIN		10	// 12
+/*
 #define UART_TX_PIN			7
 #define UART_RX_PIN			8
 #define UART_RTS_PIN		9
 #define UART_CTS_PIN		10
-
+*/
 app_timer_id_t						g_BatTimerId;
 app_gpiote_user_id_t				g_GpioteId = 0;
 static ble_uarts_t					g_UartServ;
@@ -690,6 +695,7 @@ int main()
 //	blink();
 	nrf_gpio_pin_clear(LED_CONNECTED);
 
+	uarts_write_handler(&g_UartServ, "TEST UART\n", 10);
 	BLEStart();
 //	timers_start();
 //	blink();
