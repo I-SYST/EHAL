@@ -203,7 +203,7 @@ int CFifoAvail(CFIFOHDL *pFifo)
 	return len;
 }
 
-int CFifoLUsed(CFIFOHDL *pFifo)
+int CFifoUsed(CFIFOHDL *pFifo)
 {
 	int len = 0;
 

@@ -245,6 +245,15 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 		reg->ACR = 7;
 	}
 
+	if (pCfg->FlowControl == UART_FLWCTRL_HW)
+	{
+		reg->MCR |= (3 << 6);	// Auto CTS/RTS flow control
+	}
+	else
+	{
+		reg->MCR &= ~(3 << 6);
+	}
+
 	reg->FCR = LPCUART_FCR_FIFOEN | LPCUART_FCR_RST_RXFIFO | LPCUART_FCR_RST_TXFIFO |
 			   LPCUART_FCR_RX_TRIG8;
 
