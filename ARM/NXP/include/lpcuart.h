@@ -120,6 +120,15 @@ Modified by          Date              Description
 											// 0 - Disable access to Divisor Latches.
 											// 1 - Enable access to Divisor Latches.
 
+// MCR - Modem control register
+#define LPCUART_MCR_DTRCTRL			(1<<0)	// Source for modem output pin DTR. This bit reads as 0 when modem loopback
+											// mode is active
+#define LPCUART_MCR_RTSCTRL			(1<<1)	// Source for modem output pin RTS. This bit reads as 0 when modem loopback
+											// mode is active.
+#define LPCUART_MCR_LMS				(1<<4)	// Loopback Mode Select.
+#define LPCUART_MCR_RTSEN			(1<<6)	// RTS enable
+#define LPCUART_MCR_CTSEN			(1<<7)	// CTS enable
+
 // LSR - Line Status Register
 #define LPCUART_LSR_RDR				1		// Receiver Data Ready (RDR)
 											// UnLSR0 is set when the UnRBR holds an unread character and is cleared when

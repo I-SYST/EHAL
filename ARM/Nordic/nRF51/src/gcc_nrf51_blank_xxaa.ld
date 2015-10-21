@@ -1,8 +1,9 @@
 OUTPUT_FORMAT ("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 SEARCH_DIR(.)
+SEARCH_DIR("../")
 SEARCH_DIR("../../../../src")
 SEARCH_DIR("../../../../../src")
-GROUP(-lgcc -lc -lnosys -lCMSIS)
+GROUP(-lCMSIS -lgcc -lc -lnosys)
 
 MEMORY
 {
