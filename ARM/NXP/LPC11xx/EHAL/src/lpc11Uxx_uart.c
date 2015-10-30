@@ -83,7 +83,7 @@ void UART_IRQHandler(void)
 
 						r = LPC_USART->MSR;
 
-						//data |= (r & LPCUART_MSR_CTS) ? UART_LINESTATE_CTS : 0;
+						data |= (r & LPCUART_MSR_CTS) ? UART_LINESTATE_CTS : 0;
 						data |= (r & LPCUART_MSR_DSR) ? UART_LINESTATE_DSR : 0;
 						data |= (r & LPCUART_MSR_RI) ? UART_LINESTATE_RI : 0;
 						data |= (r & LPCUART_MSR_DCD) ? UART_LINESTATE_DCD : 0;
@@ -247,7 +247,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
 	if (pCfg->FlowControl == UART_FLWCTRL_HW)
 	{
-		reg->MCR |= (3 << 6);	// Auto CTS/RTS flow control
+		//reg->MCR |= (3 << 6);	// Auto CTS/RTS flow control
 	}
 	else
 	{
@@ -255,7 +255,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	}
 
 	reg->FCR = LPCUART_FCR_FIFOEN | LPCUART_FCR_RST_RXFIFO | LPCUART_FCR_RST_TXFIFO |
-			   LPCUART_FCR_RX_TRIG8;
+			   LPCUART_FCR_RX_TRIG14;
 
 	uint32_t val = 0;
 
