@@ -47,7 +47,7 @@ static inline __attribute__((always_inline)) void usDelay(uint32_t cnt) {
 		".syntax unified\n"
 			"ORRS %0, %0\n"
 			"BEQ 3f\n"
-			"MOVS r3, %0"
+			"MOVS r3, %0\n"
 		"1:\n"
 			"MOVS r2, %1\n"
 		"2:\n"
