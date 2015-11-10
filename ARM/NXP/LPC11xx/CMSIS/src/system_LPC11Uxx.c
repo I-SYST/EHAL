@@ -63,7 +63,7 @@ void SystemCoreClockUpdate(void)
 {
 	uint32_t sysclk;
 	uint32_t mainclk = LPC_SYSCON->MAINCLKSEL;
-	int32_t	p, m;
+	int32_t	p = 1, m;
 
 	//sysclk = GetSysClk();
 
@@ -81,6 +81,7 @@ void SystemCoreClockUpdate(void)
 		sysclk = GetSysPllClk() * 2 * m * p;
 		break;
 	case MAINCLKSEL_WDT:
+		sysclk = GetSysPllClk();
 		break;
 	case MAINCLKSEL_IRC:
 		sysclk = IRC_FREQ;
