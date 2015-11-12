@@ -59,7 +59,7 @@ Modified by          Date              Description
 #include "nrf_gpio.h"
 #include "ble_dfu.h"
 #include "dfu_app_handler.h"
-
+#include "idelay.h"
 #include "BlinkyBleService.h"
 
 #define PRODUCT_NAME              "IMM-NRF51822"    /**< Name of device. Will be included in the advertising data. */
@@ -710,7 +710,7 @@ static void timers_init(void)
     uint32_t err_code;
 
     // Initialize timer module.
-    APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_MAX_TIMERS, APP_TIMER_OP_QUEUE_SIZE, false);
+    APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, false);
 
     // Create timers.
   //  err_code = app_timer_create(&m_battery_timer_id,
@@ -726,16 +726,16 @@ static void timers_init(void)
 
 void blink()
 {
-	while (1)
+	int cnt = 10;
+	while (cnt-- > 0)
 	{
 		nrf_gpio_pin_set(30);
-		for (int i=0; i < 10000; i++)
-		__NOP();
+		for (int i=0; i < 500; i++)
+			usDelay(1000);
 		nrf_gpio_pin_clear(30);
-		for (int i=0; i < 10000; i++)
-		__NOP();
+		for (int i=0; i < 500; i++)
+			usDelay(1000);
 	}
-
 }
 
 int main()
@@ -745,10 +745,10 @@ int main()
 
 	APP_GPIOTE_INIT(APP_GPIOTE_MAX_USERS);
 	nrf_gpio_cfg_output(LED_CON);
+	blink();
 	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
 	timers_init();
 
-//	blink();
 	nrf_gpio_pin_clear(LED_CON);
 	err_code = app_gpiote_user_register(&g_GpioteId,
 	                                  0xffffffff,

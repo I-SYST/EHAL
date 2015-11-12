@@ -82,6 +82,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../EHAL/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS/CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/ble/ble_services/ble_hids&quot;"/>
@@ -89,6 +90,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/libraries/gpiote&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/ble/ble_debug_assert_handler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/drivers_nrf/ble_flash&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/drivers_nrf/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/ble/ble_error_log&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/drivers_nrf/pstorage&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/libraries/trace&quot;"/>
@@ -160,9 +162,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.2042895464.1007331910" name="Vectors_nRF51.c" rcbsApplicability="disable" resourcePath="src/Vectors_nRF51.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1239002272.695524931">
-						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1239002272.695524931" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1239002272"/>
-					</fileInfo>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry excluding="nrf51_sdk/bootloader_util_gcc.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
@@ -252,6 +251,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../EHAL/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS/CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/ble/ble_services/ble_hids&quot;"/>
@@ -259,6 +259,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/libraries/gpiote&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/ble/ble_debug_assert_handler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/drivers_nrf/ble_flash&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/drivers_nrf/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/ble/ble_error_log&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/drivers_nrf/pstorage&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/libraries/trace&quot;"/>
