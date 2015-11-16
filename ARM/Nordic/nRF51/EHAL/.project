@@ -211,6 +211,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_uart_impl.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/sbuffer.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sbuffer.c</locationURI>
+		</link>
+		<link>
 			<name>src/sdcard_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sdcard_impl.cpp</locationURI>

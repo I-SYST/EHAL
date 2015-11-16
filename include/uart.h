@@ -64,13 +64,15 @@ typedef enum {
 	UART_FLWCTRL_HW,
 } UART_FLWCTRL;
 
-#define UART_LINESTATE_DCD		1		// Rx Carrier detect
-#define UART_LINESTATE_DSR		2		// Tx Carrier detect
-#define UART_LINESTATE_BRK		4		// Break
-#define UART_LINESTATE_RI		8		// Ring detect
-#define UART_LINESTATE_FRMERR	0x10	// Frame error
-#define UART_LINESTATE_PARERR	0x20	// Parity error
-#define UART_LINESTATE_OVR		0x40	// Overrun
+#define UART_LINESTATE_DCD		(1<<0)		// Rx Carrier detect
+#define UART_LINESTATE_DSR		(1<<1)		// Tx Carrier detect
+#define UART_LINESTATE_BRK		(1<<2)		// Break
+#define UART_LINESTATE_RI		(1<<3)		// Ring detect
+#define UART_LINESTATE_FRMERR	(1<<4)		// Frame error
+#define UART_LINESTATE_PARERR	(1<<5)		// Parity error
+#define UART_LINESTATE_OVR		(1<<6)		// Overrun
+#define UART_LINESTATE_CTS		(1<<7)
+#define UART_LINESTATE_RTS		(1<<8)
 
 #define UART_NB_PINS			8
 
@@ -90,7 +92,8 @@ typedef enum {
 	UART_EVT_RXTIMEOUT,
 	UART_EVT_RXDATA,
 	UART_EVT_TXREADY,
-	UART_EVT_LINESTATE
+	UART_EVT_LINESTATE,
+	UART_EVT_ERROR
 } UART_EVT;
 
 /**
@@ -140,6 +143,7 @@ struct __Uart_Dev {
 	UART_PARITY Parity;			// Data parity
 	int StopBits;				// Number of stop bits
 	UART_FLWCTRL FlowControl;	//
+	bool bIntMode;				// Interrupt mdoe
 	bool IrDAMode;				// Enable IrDA
 	bool IrDAInvert;			// IrDA input inverted
 	bool IrDAFixPulse;			// Enable IrDA fix pulse
@@ -157,6 +161,7 @@ extern "C" {
 
 // Require impplementations
 bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfgData);
+void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState);
 
 inline int UARTGetRate(UARTDEV *pDev) { return pDev->SerIntrf.GetRate(&pDev->SerIntrf); }
 inline int UARTSetRate(UARTDEV *pDev, int Rate) { return pDev->SerIntrf.SetRate(&pDev->SerIntrf, Rate); }
@@ -187,6 +192,7 @@ public:
 	virtual int Rate(int DataRate) { return UARTSetRate(&vDevData, DataRate); }
 	// Get current data baudrate
 	virtual int Rate(void) { return UARTGetRate(&vDevData); }
+	virtual void SetCtrlLineState(int LineState) { UARTSetCtrlLineState(&vDevData, LineState); }
 	virtual int Rx(uint8_t *pBuff, uint32_t Len) { return ((SerialIntrf *)this)->Rx(0, pBuff, Len); }
 	// Initiate receive
 	virtual bool StartRx(int DevAddr) { return true; }

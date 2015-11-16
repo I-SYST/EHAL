@@ -67,10 +67,12 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/libraries/scheduler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/gpiote&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 								</option>
@@ -91,10 +93,12 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/libraries/scheduler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/gpiote&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 								</option>
@@ -126,7 +130,7 @@
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582.1927089570" name="ledmxio.h" rcbsApplicability="disable" resourcePath="include/ledmxio.h" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="nrf_uart.c|nrf_uart_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="nrf_uart_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -198,10 +202,12 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/libraries/scheduler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/gpiote&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 								</option>
@@ -222,10 +228,12 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/libraries/scheduler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/gpiote&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 								</option>
@@ -256,7 +264,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="nrf_uart.c|nrf_uart_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="nrf_uart_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
