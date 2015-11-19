@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#ifndef __I2C_H__
-#define __I2C_H__
+#ifndef __UART_H__
+#define __UART_H__
 
 #include <stdint.h>
 #include <string.h>
@@ -152,6 +152,8 @@ struct __Uart_Dev {
 	UARTEVTCB EvtCallback;		// UART event callback
 	void *pObj;					// Pointer to UART object instance
 	uint32_t LineState;			// Line state
+	int hStdIn;					// Handle to retarget stdin
+	int hStdOut;				// Handle to retarget stdout
 };
 
 #pragma pack(pop)
@@ -170,6 +172,8 @@ int UARTRx(UARTDEV *pDev, uint8_t *pBuff, int Bufflen);
 int UARTTx(UARTDEV *pDev, uint8_t *pData, int Datalen);
 void UARTprintf(UARTDEV *pDev, char *pFormat, ...);
 void UARTvprintf(UARTDEV *pDev, char *pFormat, va_list vl);
+void UARTRetargetEnable(UARTDEV *pDev, int FileNo);
+void UartRetargetDisable(UARTDEV *pDev, int FileNo);
 
 #ifdef __cplusplus
 }
@@ -181,6 +185,7 @@ class UART: public SerialIntrf {
 public:
 	UART() {
 		memset(&vDevData, 0, sizeof(vDevData));
+		vDevData.pObj = this;
 	}
 	virtual ~UART() {}
 	UART(UART&);
@@ -229,4 +234,4 @@ private:
 
 #endif	// __cplusplus
 
-#endif	// __I2C_H__
+#endif	// __UART_H__
