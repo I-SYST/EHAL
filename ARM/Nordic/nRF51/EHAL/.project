@@ -101,9 +101,9 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/ledmxfont.h</locationURI>
 		</link>
 		<link>
-			<name>include/nrf_uart.h</name>
+			<name>include/nrf5x_uart.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/nrf_uart.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/nrf5x_uart.h</locationURI>
 		</link>
 		<link>
 			<name>include/sdcard.h</name>

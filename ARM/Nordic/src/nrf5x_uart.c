@@ -42,7 +42,7 @@ Modified by          Date              Description
 //#include "nrf_drv_gpiote.h"
 
 #include "istddef.h"
-#include "nrf_uart.h"
+#include "nrf5x_uart.h"
 #include "idelay.h"
 
 extern char s_Buffer[];	// defined in sbuffer.c
