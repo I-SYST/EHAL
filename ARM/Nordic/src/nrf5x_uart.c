@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : nrf_uart.c
+File   : nrf5x_uart.c
 
 Author : Hoang Nguyen Hoan          Aug. 30, 2015
 
@@ -162,12 +162,26 @@ void UART0_IRQHandler()
 	if (s_nRFUartDev.pReg->EVENTS_ERROR)
 	{
 		s_nRFUartDev.pReg->EVENTS_ERROR = 0;
-		buff[0] = s_nRFUartDev.pReg->ERRORSRC;
-		len = 1;
+		if (s_nRFUartDev.pReg->ERRORSRC & 1)	// Overrrun
+		{
+			len = 0;
+			do {
+				s_nRFUartDev.pReg->EVENTS_RXDRDY = 0;
+				buff[len] = s_nRFUartDev.pReg->RXD;
+				len++;
+			} while (len < NRF51UART_FIFO_MAX && s_nRFUartDev.pReg->EVENTS_RXDRDY);
+			if (s_nRFUartDev.pUartDev->EvtCallback)
+			{
+				s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_RXDATA, buff, len);
+			}
+		}
+		s_nRFUartDev.pReg->ERRORSRC = 0;
+		//len = 1;
 		if (s_nRFUartDev.pUartDev->EvtCallback)
 		{
 			s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_ERROR, buff, len);
 		}
+		NRF_UART0->TASKS_STARTRX = 1;
 	}
 
 	if (s_nRFUartDev.pReg->EVENTS_CTS)
@@ -208,10 +222,9 @@ int nRFUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 
 	while (cnt < Bufflen)
 	{
-		if (nRFUARTWaitForRxFifo(dev, 1000) == false)
+		if (nRFUARTWaitForRxFifo(dev, 800000) == false)
 			break;
 		pBuff[cnt++] = dev->pReg->RXD;
-//		dev->pReg->TASKS_STARTRX = 1;
 	}
 
 	return cnt;
@@ -239,7 +252,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 //	NRFUARTDEV *dev = (NRFUARTDEV*)pDev->SerIntrf.pDevData;
 	// Config I/O pins
 
-	NRF_GPIO->OUTSET = (1 << pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
+	//NRF_GPIO->OUTSET = (1 << pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
 	IOPinCfg(pCfg->PinCfg, UART_NB_PINS);
 //    nrf_gpio_pin_set(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
 //    nrf_gpio_cfg_output(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
@@ -267,6 +280,8 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	}
 
     NRF_UART0->ENABLE = (UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
+    NRF_UART0->EVENTS_RXDRDY = 0;
+    NRF_UART0->EVENTS_TXDRDY = 0;
 
     if (pCfg->FlowControl == UART_FLWCTRL_HW)
 	{
@@ -316,8 +331,6 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->SerIntrf.TxData = nRFUARTTxData;
 	pDev->SerIntrf.StopTx = nRFUARTStopTx;
 
-    NRF_UART0->EVENTS_RXDRDY = 0;
-    NRF_UART0->EVENTS_TXDRDY = 0;
     NRF_UART0->TASKS_STARTTX = 1;
     NRF_UART0->TASKS_STARTRX = 1;
 
@@ -370,14 +383,14 @@ void nRFUARTEnable(SERINTRFDEV *pDev)
 {
 	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
 
-	dev->pReg->TASKS_STARTRX = 1;
-
 	dev->pReg->PSELRXD = dev->RxPin;
 	dev->pReg->PSELTXD = dev->TxPin;
 	dev->pReg->PSELCTS = dev->CtsPin;
 	dev->pReg->PSELRTS = dev->RtsPin;
 
 	dev->pReg->ENABLE  |= (UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
+	dev->pReg->TASKS_STARTRX = 1;
+	dev->pReg->TASKS_STARTTX = 1;
 }
 
 void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState)
