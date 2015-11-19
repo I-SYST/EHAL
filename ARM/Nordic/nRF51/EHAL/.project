@@ -201,9 +201,9 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/ledmxfont.c</locationURI>
 		</link>
 		<link>
-			<name>src/nrf_uart.c</name>
+			<name>src/nrf5x_uart.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_uart.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/nrf5x_uart.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf_uart_impl.cpp</name>

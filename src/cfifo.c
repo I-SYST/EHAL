@@ -42,12 +42,12 @@ CFIFOHDL *CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize)
 		return NULL;
 
 	CFIFOHDL *hdr = (CFIFOHDL *)pMemBlk;
-	hdr->pMemStart = pMemBlk + sizeof(CFIFOHDL);
-	hdr->MemSize = TotalMemSize;
-	hdr->BlkSize = BlkSize;
-	hdr->MaxIdxCnt = (TotalMemSize - sizeof(CFIFOHDL)) / BlkSize;
 	hdr->PutIdx = 0;
 	hdr->GetIdx = -1;
+	hdr->BlkSize = BlkSize;
+	hdr->MemSize = TotalMemSize;
+	hdr->MaxIdxCnt = (TotalMemSize - sizeof(CFIFOHDL)) / BlkSize;
+	hdr->pMemStart = (uint8_t*)(pMemBlk + sizeof(CFIFOHDL));
 
 	return hdr;
 }

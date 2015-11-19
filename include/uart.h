@@ -144,13 +144,14 @@ struct __Uart_Dev {
 	int StopBits;				// Number of stop bits
 	UART_FLWCTRL FlowControl;	//
 	bool bIntMode;				// Interrupt mdoe
-	bool IrDAMode;				// Enable IrDA
-	bool IrDAInvert;			// IrDA input inverted
-	bool IrDAFixPulse;			// Enable IrDA fix pulse
+	bool bIrDAMode;				// Enable IrDA
+	bool bIrDAInvert;			// IrDA input inverted
+	bool bIrDAFixPulse;			// Enable IrDA fix pulse
 	int	IrDAPulseDiv;			// Fix pulse divider
 	SERINTRFDEV	SerIntrf;		// I2C device interface implementation
 	UARTEVTCB EvtCallback;		// UART event callback
 	void *pObj;					// Pointer to UART object instance
+	uint32_t LineState;			// Line state
 };
 
 #pragma pack(pop)

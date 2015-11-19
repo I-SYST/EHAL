@@ -100,9 +100,10 @@ bool nRFUARTWaitForRxFifo(NRFUARTDEV *pDev, uint32_t Timeout)
 bool nRFUARTWaitForTxFifo(NRFUARTDEV *pDev, uint32_t Timeout)
 {
 	do {
-		if (pDev->pReg->EVENTS_TXDRDY)
+		if (pDev->pReg->EVENTS_TXDRDY || pDev->bTxReady == true)
 		{
 			pDev->pReg->EVENTS_TXDRDY = 0;
+			pDev->bTxReady = true;
 			return true;
 		}
 	} while (Timeout-- > 0);
@@ -119,8 +120,7 @@ void UART0_IRQHandler()
 	{
 		do {
 			s_nRFUartDev.pReg->EVENTS_RXDRDY = 0;
-			buff[len] = s_nRFUartDev.pReg->RXD;
-			len++;
+			buff[len++] = s_nRFUartDev.pReg->RXD;
 		} while (len < NRF51UART_FIFO_MAX && s_nRFUartDev.pReg->EVENTS_RXDRDY);
 
 		if (s_nRFUartDev.pUartDev->EvtCallback)
@@ -130,6 +130,7 @@ void UART0_IRQHandler()
 	}
 	if (s_nRFUartDev.pReg->EVENTS_RXTO)
 	{
+		s_nRFUartDev.pReg->EVENTS_RXTO = 0;
 		len = 0;
 		if (s_nRFUartDev.pUartDev->EvtCallback)
 		{
@@ -139,18 +140,28 @@ void UART0_IRQHandler()
 
 	if (s_nRFUartDev.pReg->EVENTS_TXDRDY)
 	{
-		len = 1;
-		s_nRFUartDev.bTxReady = true;
-		//s_nRFUartDev.pReg->TXD = 'A';
-		s_nRFUartDev.pReg->EVENTS_TXDRDY = 0;
+		len = NRF51UART_FIFO_MAX;
 		if (s_nRFUartDev.pUartDev->EvtCallback)
 		{
-			s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_TXREADY, buff, len);
+			len = s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_TXREADY, buff, len);
+			uint8_t *p = buff;
+			while (len > 0)
+			{
+				if (nRFUARTWaitForTxFifo(&s_nRFUartDev, 1000))
+				{
+					s_nRFUartDev.pReg->EVENTS_TXDRDY = 0;
+					s_nRFUartDev.pReg->TXD = *p++;
+					len--;
+				}
+			}
 		}
+		s_nRFUartDev.pReg->EVENTS_TXDRDY = 0;
+		s_nRFUartDev.bTxReady = true;
 	}
 
 	if (s_nRFUartDev.pReg->EVENTS_ERROR)
 	{
+		s_nRFUartDev.pReg->EVENTS_ERROR = 0;
 		buff[0] = s_nRFUartDev.pReg->ERRORSRC;
 		len = 1;
 		if (s_nRFUartDev.pUartDev->EvtCallback)
@@ -195,16 +206,9 @@ int nRFUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
 	int cnt = 0;
 
-	if (dev->pReg->EVENTS_CTS == 1)
-	{
-		dev->pReg->EVENTS_CTS = 0;
-		dev->pReg->TASKS_STARTRX = 1;
-		pBuff[cnt++] = dev->pReg->RXD;
-	}
-
 	while (cnt < Bufflen)
 	{
-		if (nRFUARTWaitForRxFifo(dev, 100000) == false)
+		if (nRFUARTWaitForRxFifo(dev, 1000) == false)
 			break;
 		pBuff[cnt++] = dev->pReg->RXD;
 //		dev->pReg->TASKS_STARTRX = 1;
@@ -218,15 +222,13 @@ int nRFUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
 	int cnt = 0;
 
-	while (cnt < Datalen && dev->bTxReady)
+	while (cnt < Datalen)
 	{
+		if (nRFUARTWaitForTxFifo(dev, 1000) == false)
+			break;
+		dev->bTxReady = false;
 		dev->pReg->TXD = pData[cnt];
 		cnt++;
-		dev->bTxReady = false;
-		if (nRFUARTWaitForTxFifo(dev, 100000) == false)
-			break;
-		dev->bTxReady = true;
-		dev->pReg->EVENTS_TXDRDY = 0;
 	}
 
 	return cnt;
@@ -237,11 +239,11 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 //	NRFUARTDEV *dev = (NRFUARTDEV*)pDev->SerIntrf.pDevData;
 	// Config I/O pins
 
-//	NRF_GPIO->OUTSET = (1 << pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
-//	IOPinCfg(pCfg->PinCfg, UART_NB_PINS);
-    nrf_gpio_pin_set(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
-    nrf_gpio_cfg_output(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
-    nrf_gpio_cfg_input(pCfg->PinCfg[UARTPIN_RX_IDX].PinNo, NRF_GPIO_PIN_PULLUP);
+	NRF_GPIO->OUTSET = (1 << pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
+	IOPinCfg(pCfg->PinCfg, UART_NB_PINS);
+//    nrf_gpio_pin_set(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
+//    nrf_gpio_cfg_output(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
+//    nrf_gpio_cfg_input(pCfg->PinCfg[UARTPIN_RX_IDX].PinNo, NRF_GPIO_PIN_PULLUP);
 
 	pDev->SerIntrf.pDevData = &s_nRFUartDev;
 	s_nRFUartDev.pUartDev = pDev;
@@ -265,14 +267,13 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	}
 
     NRF_UART0->ENABLE = (UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
-    NRF_UART0->EVENTS_RXDRDY = 0;
-    NRF_UART0->EVENTS_TXDRDY = 0;
 
     if (pCfg->FlowControl == UART_FLWCTRL_HW)
 	{
 		NRF_UART0->CONFIG |= (UART_CONFIG_HWFC_Enabled << UART_CONFIG_HWFC_Pos);
 		NRF_UART0->PSELCTS = pCfg->PinCfg[UARTPIN_CTS_IDX].PinNo;
 		NRF_UART0->PSELRTS = pCfg->PinCfg[UARTPIN_RTS_IDX].PinNo;
+		NRF_GPIO->OUTCLR = (1 << pCfg->PinCfg[UARTPIN_CTS_IDX].PinNo);
         // Setup the gpiote to handle pin events on cts-pin.
         // For the UART we want to detect both low->high and high->low transitions in order to
         // know when to activate/de-activate the TX/RX in the UART.
@@ -297,9 +298,9 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->DataBits = pCfg->DataBits;
 	pDev->FlowControl = pCfg->FlowControl;
 	pDev->StopBits = pCfg->StopBits;
-	pDev->IrDAFixPulse = pCfg->bIrDAFixPulse;
-	pDev->IrDAInvert = pCfg->bIrDAInvert;
-	pDev->IrDAMode = pCfg->bIrDAMode;
+	pDev->bIrDAFixPulse = pCfg->bIrDAFixPulse;
+	pDev->bIrDAInvert = pCfg->bIrDAInvert;
+	pDev->bIrDAMode = pCfg->bIrDAMode;
 	pDev->IrDAPulseDiv = pCfg->IrDAPulseDiv;
 	pDev->Parity = pCfg->Parity;
 	pDev->bIntMode = pCfg->bIntMode;
@@ -315,6 +316,8 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->SerIntrf.TxData = nRFUARTTxData;
 	pDev->SerIntrf.StopTx = nRFUARTStopTx;
 
+    NRF_UART0->EVENTS_RXDRDY = 0;
+    NRF_UART0->EVENTS_TXDRDY = 0;
     NRF_UART0->TASKS_STARTTX = 1;
     NRF_UART0->TASKS_STARTRX = 1;
 
@@ -329,14 +332,14 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
     NRF_UART0->INTENCLR = 0xffffffffUL;
 
+	NRF_UART0->INTENSET = (UART_INTENSET_RXDRDY_Set << UART_INTENSET_RXDRDY_Pos) |
+						  (UART_INTENSET_RXTO_Set << UART_INTENSET_RXTO_Pos) |
+						  (UART_INTENSET_TXDRDY_Set << UART_INTENSET_TXDRDY_Pos) |
+						  (UART_INTENSET_ERROR_Set << UART_INTENSET_ERROR_Pos) |
+						  (UART_INTENSET_CTS_Set << UART_INTENSET_CTS_Pos) |
+						  (UART_INTENSET_NCTS_Set << UART_INTENSET_NCTS_Pos);
     if (pCfg->bIntMode)
     {
-    	NRF_UART0->INTENSET = (UART_INTENSET_RXDRDY_Set << UART_INTENSET_RXDRDY_Pos) |
-    						  (UART_INTENSET_RXTO_Set << UART_INTENSET_RXTO_Pos) |
-							  (UART_INTENSET_TXDRDY_Set << UART_INTENSET_TXDRDY_Pos);// |
-							 // (UART_INTENSET_ERROR_Set << UART_INTENSET_ERROR_Pos) |
-							 // (UART_INTENSET_CTS_Set << UART_INTENSET_CTS_Pos) |
-							 // (UART_INTENSET_NCTS_Set << UART_INTENSET_NCTS_Pos);
 
 		NVIC_ClearPendingIRQ(UART0_IRQn);
 		NVIC_SetPriority(UART0_IRQn, pCfg->IntPrio);
