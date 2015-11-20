@@ -140,7 +140,7 @@ void UART0_IRQHandler()
 
 	if (s_nRFUartDev.pReg->EVENTS_TXDRDY)
 	{
-		len = NRF51UART_FIFO_MAX;
+		len = 1; // nRF51 only 1 byte;
 		if (s_nRFUartDev.pUartDev->EvtCallback)
 		{
 			len = s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_TXREADY, buff, len);
