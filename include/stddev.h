@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#ifndef __SDTDEV_H__
+#ifndef __STDDEV_H__
 #define __STDDEV_H__
 
 #include <stdint.h>
