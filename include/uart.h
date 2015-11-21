@@ -162,7 +162,7 @@ struct __Uart_Dev {
 extern "C" {
 #endif	// __cplusplus
 
-// Require impplementations
+// Require implementations
 bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfgData);
 void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState);
 
