@@ -252,7 +252,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 //	NRFUARTDEV *dev = (NRFUARTDEV*)pDev->SerIntrf.pDevData;
 	// Config I/O pins
 
-	//NRF_GPIO->OUTSET = (1 << pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
+	NRF_GPIO->OUTSET = (1 << pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
 	IOPinCfg(pCfg->PinCfg, UART_NB_PINS);
 //    nrf_gpio_pin_set(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
 //    nrf_gpio_cfg_output(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
