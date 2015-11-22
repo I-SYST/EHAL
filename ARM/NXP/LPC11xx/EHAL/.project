@@ -306,6 +306,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/lpcuart.c</locationURI>
 		</link>
 		<link>
+			<name>src/sbuffer.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sbuffer.c</locationURI>
+		</link>
+		<link>
 			<name>src/sdcard.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sdcard.c</locationURI>

@@ -40,6 +40,14 @@ extern uint32_t SystemCoreClock;
 extern uint32_t SystemClkFreq;
 //int g_UartClkDiv = 4;
 
+void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState)
+{
+	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->SerIntrf.pDevData;
+
+	dev->pUartReg->MCR &= 3 | (3<<6);
+	dev->pUartReg->MCR |= LineState & (3 | (3<<6));
+}
+
 int LpcUARTGetRate(SERINTRFDEV *pDev)
 {
 	int rate = 0;
@@ -126,7 +134,7 @@ int LpcUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 
 	while (idx < Bufflen)
 	{
-		if (!LpcUARTWaitForRxFifo(dev, 100000))
+		if (!LpcUARTWaitForRxFifo(dev, 1000))
 			break;
 		pBuff[idx] = (uint8_t)(dev->pUartReg->RBR & 0xff);
 		idx++;
@@ -153,7 +161,7 @@ int LpcUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 
 	while (l < Datalen)
 	{
-		if (!LpcUARTWaitForTxFifo(dev, 10000000))
+		if (!LpcUARTWaitForTxFifo(dev, 1000))
 			break;
 
 		dev->pUartReg->THR = pData[l];
@@ -176,7 +184,7 @@ bool LpcUARTWaitForRxFifo(LPCUARTDEV *pDev, uint32_t Timeout)
 	{
 		if (pDev->pUartReg->LSR & LPCUART_LSR_RDR)
 			return true;
-	} while (--Timeout > 0);
+	} while (Timeout-- > 0);
 
 	return false;
 }
@@ -188,7 +196,7 @@ bool LpcUARTWaitForTxFifo(LPCUARTDEV *pDev, uint32_t Timeout)
 		//uint32_t lsr = pDev->pUartReg->LSR & LPCUART_LSR_THRE;
 		if (pDev->pUartReg->LSR & (LPCUART_LSR_TEMT | LPCUART_LSR_THRE))
 			return true;
-	} while (--Timeout > 0);
+	} while (Timeout-- > 0);
 
 	return false;
 }

@@ -7,6 +7,12 @@ Desc   : This file contains a static temp buffer for string formating usage
 		 It is a single buffer being use through out EHAL lib and
 		 application when using sprintf et al.
 
+		 The buffer size must be define per platform with macro define
+
+		 EHAL_SBUFFER_SIZE=256
+
+		 This macro should be defined in the EHAL project preprocessor settings
+
 Copyright (c) 2014, I-SYST inc., all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
@@ -34,7 +40,7 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
-char s_Buffer[64] = {0,};
+char s_Buffer[EHAL_SBUFFER_SIZE] = {0,};
 int s_BufferSize = sizeof(s_Buffer);
 
 
