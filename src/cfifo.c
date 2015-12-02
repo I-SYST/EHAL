@@ -47,7 +47,7 @@ CFIFOHDL *CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize)
 	hdr->BlkSize = BlkSize;
 	hdr->MemSize = TotalMemSize;
 	hdr->MaxIdxCnt = (TotalMemSize - sizeof(CFIFOHDL)) / BlkSize;
-	hdr->pMemStart = (uint8_t*)(pMemBlk + sizeof(CFIFOHDL));
+//	hdr->pMemStart = (uint8_t*)(pMemBlk + sizeof(CFIFOHDL));
 
 	return hdr;
 }
@@ -57,7 +57,8 @@ uint8_t *CFifoGet(CFIFOHDL *pFifo)
 	if (pFifo == NULL || pFifo->GetIdx < 0)
 		return NULL;
 
-	uint8_t *p = pFifo->pMemStart + pFifo->GetIdx * pFifo->BlkSize;
+//	uint8_t *p = pFifo->pMemStart + pFifo->GetIdx * pFifo->BlkSize;
+	uint8_t *p = (uint8_t*)pFifo + sizeof(CFIFOHDL) + pFifo->GetIdx * pFifo->BlkSize;
 
 	//AtomicInc((sig_atomic_t *)&pFifo->GetIdx);
 	int32_t idx = pFifo->GetIdx + 1;
@@ -84,7 +85,8 @@ uint8_t *CFifoGetMultiple(CFIFOHDL *pFifo, int *pCnt)
 		return NULL;
 	}
 
-	uint8_t *p = pFifo->pMemStart + pFifo->GetIdx * pFifo->BlkSize;
+//	uint8_t *p = pFifo->pMemStart + pFifo->GetIdx * pFifo->BlkSize;
+	uint8_t *p = (uint8_t*)pFifo + sizeof(CFIFOHDL) + pFifo->GetIdx * pFifo->BlkSize;
 	int cnt = 0;
 	int putidx = pFifo->PutIdx;
 
@@ -117,7 +119,8 @@ uint8_t *CFifoPut(CFIFOHDL *pFifo)
 	if (pFifo == NULL || pFifo->PutIdx == pFifo->GetIdx)
 		return NULL;
 
-	uint8_t *p = pFifo->pMemStart + pFifo->PutIdx * pFifo->BlkSize;
+//	uint8_t *p = pFifo->pMemStart + pFifo->PutIdx * pFifo->BlkSize;
+	uint8_t *p = (uint8_t*)pFifo + sizeof(CFIFOHDL) + pFifo->PutIdx * pFifo->BlkSize;
 
 //	uint32_t state = DisableInterrupt();
 	// If empty
@@ -145,7 +148,8 @@ uint8_t *CFifoPutMultiple(CFIFOHDL *pFifo, int *pCnt)
 		return NULL;
 	}
 
-	uint8_t *p = pFifo->pMemStart + pFifo->PutIdx * pFifo->BlkSize;
+//	uint8_t *p = pFifo->pMemStart + pFifo->PutIdx * pFifo->BlkSize;
+	uint8_t *p = (uint8_t*)pFifo + sizeof(CFIFOHDL) + pFifo->PutIdx * pFifo->BlkSize;
 	int cnt = 0;
 
 //	uint32_t state = DisableInterrupt();

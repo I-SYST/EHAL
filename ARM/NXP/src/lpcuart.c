@@ -134,7 +134,7 @@ int LpcUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 
 	while (idx < Bufflen)
 	{
-		if (!LpcUARTWaitForRxFifo(dev, 1000))
+		if (!LpcUARTWaitForRxFifo(dev, 10000))
 			break;
 		pBuff[idx] = (uint8_t)(dev->pUartReg->RBR & 0xff);
 		idx++;
@@ -161,7 +161,7 @@ int LpcUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 
 	while (l < Datalen)
 	{
-		if (!LpcUARTWaitForTxFifo(dev, 1000))
+		if (!LpcUARTWaitForTxFifo(dev, 10000))
 			break;
 
 		dev->pUartReg->THR = pData[l];

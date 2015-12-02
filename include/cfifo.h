@@ -40,14 +40,14 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
-#pragma pack(push,4)
+#pragma pack(push,1)
 typedef struct {
 	volatile int32_t PutIdx;	// Idx to start of empty data block
 	volatile int32_t GetIdx;	// Idx to start of used data block
 	int32_t MaxIdxCnt;			// Max block count
 	uint32_t BlkSize;			// Block size in bytes
 	uint32_t MemSize;			// Total fifo memory size allocated
-	uint8_t *pMemStart;			// Start of fifo data memory
+//	uint8_t *pMemStart;			// Start of fifo data memory
 } CFIFOHDL;
 #pragma pack(pop)
 

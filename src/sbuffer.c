@@ -40,6 +40,10 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
+#ifndef EHAL_SBUFFER_SIZE
+#define EHAL_SBUFFER_SIZE	16
+#endif
+
 char s_Buffer[EHAL_SBUFFER_SIZE] = {0,};
 int s_BufferSize = sizeof(s_Buffer);
 

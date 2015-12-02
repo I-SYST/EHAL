@@ -52,6 +52,7 @@ LPCUARTDEV g_LpcUartDev[LPC11XX_UART_MAX_DEV] = {
 bool LpcUARTWaitForRxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
 bool LpcUARTWaitForTxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
 
+
 void UART_IRQHandler(void)
 {
 	uint32_t iir = LPC_USART->IIR;
@@ -62,7 +63,7 @@ void UART_IRQHandler(void)
 	//uint32_t lsr = LPC_USART->LSR;
 	uint32_t iid = iir & LPCUART_IIR_ID_MASK;
 	//bool flushrx = false;
-	static uint8_t d[20];
+	uint8_t d[20];
 
 	if ((iir & LPCUART_IIR_STATUS) == 0)
 	{
@@ -137,7 +138,7 @@ void UART_IRQHandler(void)
 				;
 		}
 	}
-	else
+/*	else
 	{
 		cnt = 0;
 		while (g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR)
@@ -160,7 +161,7 @@ void UART_IRQHandler(void)
 			}
 		}
 
-	}
+	}*/
 }
 
 uint32_t LpcGetUartClk()
@@ -274,7 +275,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	}
 
 	reg->FCR = LPCUART_FCR_FIFOEN | LPCUART_FCR_RST_RXFIFO | LPCUART_FCR_RST_TXFIFO |
-			   LPCUART_FCR_RX_TRIG8;
+			   LPCUART_FCR_RX_TRIG14;
 
 	uint32_t val = 0;
 
@@ -284,6 +285,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	}
 
 	val = LPC_USART->IIR;	// Clear interrupts
+	pDev->LineState = 0;
 
 	//LPC_USART->MCR |= (1<<4); // Loopback
 

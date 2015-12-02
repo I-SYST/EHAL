@@ -44,6 +44,7 @@ Modified by          Date              Description
 
 #include "iopincfg.h"
 #include "serialintrf.h"
+#include "cfifo.h"
 
 // Possible baudrate values
 // 110, 300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
@@ -93,7 +94,7 @@ typedef enum {
 	UART_EVT_RXDATA,
 	UART_EVT_TXREADY,
 	UART_EVT_LINESTATE,
-	UART_EVT_ERROR
+//	UART_EVT_ERROR
 } UART_EVT;
 
 /**
@@ -128,6 +129,10 @@ typedef struct {
 	bool bIntMode;				// Interrupt mode support
 	int IntPrio;				// Interrupt priority
 	UARTEVTCB EvtCallback;		// UART event callback
+	int RxMemSize;
+	uint8_t *pRxMem;			// Pointer to memory allocated for RX FIFO
+	int TxMemSize;
+	uint8_t *pTxMem;			// Pointer to memory allocated for TX FIFO
 	bool bDMAMode;				// DMA transfer support
 	bool bIrDAMode;				// Enable IrDA
 	bool bIrDAInvert;			// IrDA input inverted
@@ -148,9 +153,11 @@ struct __Uart_Dev {
 	bool bIrDAInvert;			// IrDA input inverted
 	bool bIrDAFixPulse;			// Enable IrDA fix pulse
 	int	IrDAPulseDiv;			// Fix pulse divider
-	SERINTRFDEV	SerIntrf;		// I2C device interface implementation
+	SERINTRFDEV	SerIntrf;		// Serial device interface implementation
 	UARTEVTCB EvtCallback;		// UART event callback
 	void *pObj;					// Pointer to UART object instance
+	CFIFOHDL *hRxFifo;
+	CFIFOHDL *hTxFifo;
 	uint32_t LineState;			// Line state
 	int hStdIn;					// Handle to retarget stdin
 	int hStdOut;				// Handle to retarget stdout
