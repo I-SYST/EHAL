@@ -49,6 +49,7 @@ extern char s_Buffer[];	// defined in sbuffer.c
 extern int s_BufferSize;
 
 #define NRF51UART_FIFO_MAX		6
+#define NRF51UART_RXTIMEOUT		15
 
 typedef struct {
 	int Baud;
@@ -83,8 +84,10 @@ NRFUARTDEV s_nRFUartDev = {
 	true,
 };
 
-uint8_t s_nRFUARTHoldBuffer[NRF51UART_FIFO_MAX];
-int s_nRFUARTHoldBuffLen = 0;
+static uint8_t s_nRFUARTHoldBuffer[NRF51UART_FIFO_MAX];
+static int s_nRFUARTHoldBuffLen = 0;
+static int s_nRF51RxTimeOutCnt = 0;
+uint32_t g_nRF51RxDropCnt = 0;
 
 #define NRFUART_CFIFO_SIZE		(16 + sizeof(CFIFOHDL))
 
@@ -130,6 +133,7 @@ void UART0_IRQHandler()
 		//if (CFifoAvail(s_nRFUartDev.pUartDev->hRxFifo) >= NRF51UART_FIFO_MAX)
 		if (len > 0)
 		{
+			s_nRF51RxTimeOutCnt = 0;
 			int l = 0;
 			do {
 				s_nRFUartDev.pReg->EVENTS_RXDRDY = 0;
@@ -150,10 +154,25 @@ void UART0_IRQHandler()
 				}
 			}
 		}
+		else
+		{
+			s_nRF51RxTimeOutCnt++;
+			if (s_nRF51RxTimeOutCnt > NRF51UART_RXTIMEOUT)
+			{
+				g_nRF51RxDropCnt++;
+				s_nRFUartDev.pReg->EVENTS_RXDRDY = 0;
+				buff[0] = s_nRFUartDev.pReg->RXD;
+				s_nRF51RxTimeOutCnt = 0;
+			}
+		}
+		//s_nRFUartDev.pReg->EVENTS_RXDRDY = 0;
 
 			if (s_nRFUartDev.pUartDev->EvtCallback)
 			{
+				len = CFifoUsed(s_nRFUartDev.pUartDev->hRxFifo);//, NRFUART_CFIFO_SIZE);
 				int l = s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_RXDATA, buff, len);
+				//if (len <= 0)
+//					uart_printf("Len %d\r\n", len);
 /*				if (l < len)
 				{
 					s_nRFUARTHoldBuffLen = len - l;
