@@ -34,6 +34,7 @@ Modified by          Date              Description
 
 #include "LPC11Uxx.h"
 #include "lpcuart.h"
+#include "idelay.h"
 
 #define LPC_SYSAHBCLKCTRL_UART0_EN		(1 << 12)
 #define LPC_SYSAHBCLKCTRL_UART1_EN		(1 << 20)
@@ -51,6 +52,15 @@ LPCUARTDEV g_LpcUartDev[LPC11XX_UART_MAX_DEV] = {
 
 bool LpcUARTWaitForRxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
 bool LpcUARTWaitForTxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
+
+#define UART_RX_CFIFO_SIZE			16
+#define UART_TX_CFIFO_SIZE			16
+
+#define UART_RX_CFIFO_MEM_SIZE			(UART_RX_CFIFO_SIZE + sizeof(CFIFOHDL))
+#define UART_TX_CFIFO_MEM_SIZE			(UART_TX_CFIFO_SIZE + sizeof(CFIFOHDL))
+
+uint8_t s_UARTRxFifoMem[UART_RX_CFIFO_MEM_SIZE];
+uint8_t s_UARTTxFifoMem[UART_TX_CFIFO_MEM_SIZE];
 
 
 void UART_IRQHandler(void)
@@ -108,9 +118,21 @@ void UART_IRQHandler(void)
 			case LPCUART_IIR_ID_RDA:
 			//case LPCUART_IIR_ID_THRE:
 				cnt = 0;
-				while (g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR && cnt < 16)
+				//while (g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR && cnt < 16)
+				while (LpcUARTWaitForRxFifo(&g_LpcUartDev, 300) && cnt < 14)
 				{
-					d[cnt++] = g_LpcUartDev->pUartReg->RBR;
+					uint8_t *p = CFifoPut(g_LpcUartDev->pUartDev->hRxFifo);
+					if (p)
+					{
+					//d[cnt++] = g_LpcUartDev->pUartReg->RBR;
+						*p = g_LpcUartDev->pUartReg->RBR;
+						cnt++;
+					}
+					else
+					{
+						//printf("drop2\r\n");
+						break;
+					}
 				}
 				//data = LPC_USART->RBR;
 				if (g_LpcUartDev->pUartDev->EvtCallback)
@@ -127,11 +149,24 @@ void UART_IRQHandler(void)
 				//data = LPC_USART->LSR;
 				if (g_LpcUartDev->pUartDev->EvtCallback)
 				{
-					cnt = g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_TXREADY, d, 16);
-					for (int i = 0; i < cnt; i++)
+					uint32_t state = DisableInterrupt();
+
+					for (int i = 0; i < 14; i++)
 					{
-						LPC_USART->THR = d[i];
+						if (LpcUARTWaitForTxFifo(&g_LpcUartDev, 300))
+						{
+							cnt = g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_TXREADY, d, 1);
+							if (cnt > 0)
+							{
+								LPC_USART->THR = d[0];
+							}
+							else
+								break;
+						}
+						else
+							break;
 					}
+					EnableInterrupt(state);
 				}
 				break;
 			default:
@@ -275,7 +310,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	}
 
 	reg->FCR = LPCUART_FCR_FIFOEN | LPCUART_FCR_RST_RXFIFO | LPCUART_FCR_RST_TXFIFO |
-			   LPCUART_FCR_RX_TRIG14;
+			   LPCUART_FCR_RX_TRIG8;
 
 	uint32_t val = 0;
 
@@ -288,6 +323,24 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->LineState = 0;
 
 	//LPC_USART->MCR |= (1<<4); // Loopback
+
+	if (pCfg->pRxMem && pCfg->RxMemSize > 0)
+	{
+		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1);
+	}
+	else
+	{
+		pDev->hRxFifo = CFifoInit(s_UARTRxFifoMem, UART_RX_CFIFO_MEM_SIZE, 1);
+	}
+
+	if (pCfg->pTxMem && pCfg->TxMemSize > 0)
+	{
+		pDev->hTxFifo = CFifoInit(pCfg->pTxMem, pCfg->TxMemSize, 1);
+	}
+	else
+	{
+		pDev->hTxFifo = CFifoInit(s_UARTTxFifoMem, UART_TX_CFIFO_MEM_SIZE, 1);
+	}
 
 	// Start tx
 	LPC_USART->TER = LPCUART_TER_TXEN;
