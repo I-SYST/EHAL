@@ -45,7 +45,7 @@ extern "C" {
 #include "nrf5x_uart.h"
 #include "idelay.h"
 
-#define TEST_INTERRUPT
+//#define TEST_INTERRUPT
 
 //#define NEB
 //#define NORDIC_DK
@@ -135,6 +135,9 @@ int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buffe
 		case UART_EVT_TXREADY:
 			break;
 		case UART_EVT_LINESTATE:
+			cnt = UARTRx(&g_UartDev, pBuffer, 6);
+			if (cnt > 0)
+				UARTTx(&g_UartDev, pBuffer, cnt);
 			break;
 	}
 
@@ -198,7 +201,7 @@ char *data = "nRF UART Hello World\r\n";
 			//usDelay(1000);
 		}
 #endif
-		__WFE();
+		__WFI();
 	}
 	return 0;
 }
