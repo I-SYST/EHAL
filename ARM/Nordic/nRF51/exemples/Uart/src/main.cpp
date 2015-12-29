@@ -45,7 +45,7 @@ extern "C" {
 #include "nrf5x_uart.h"
 #include "idelay.h"
 
-//#define TEST_INTERRUPT
+#define TEST_INTERRUPT
 
 //#define NEB
 //#define NORDIC_DK
@@ -88,7 +88,8 @@ const UARTCFG g_UartCfg = {
 		{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RI
 	},
 	//115200,	// Rate
-	230400,
+	//230400,
+	1000000,
 	8,
 	UART_PARITY_NONE,
 	1,	// Stop bit
@@ -117,18 +118,30 @@ UARTDEV g_UartDev;
 UART g_Uart;
 #endif
 
+int g_DelayCnt = 0;
+
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen)
 {
 	int cnt = 0;
+	uint8_t buff[20];
 
 	switch (EvtId)
 	{
 		case UART_EVT_RXTIMEOUT:
 		case UART_EVT_RXDATA:
 			{
-				cnt = UARTRx(&g_UartDev, pBuffer, 6);
-				if (cnt > 0)
-					UARTTx(&g_UartDev, pBuffer, cnt);
+/*				g_DelayCnt++;
+
+				if (g_DelayCnt > 20)
+				{
+					g_DelayCnt = 0;
+					cnt = UARTRx(&g_UartDev, buff, 20);
+					if (cnt > 0)
+						UARTTx(&g_UartDev, buff, cnt);
+				}*/
+				//cnt = UARTRx(&g_UartDev, buff, 1);
+				//if (cnt > 0)
+				//	UARTTx(&g_UartDev, buff, cnt);
 			}
 
 			break;
@@ -163,6 +176,7 @@ int main()
 {
 	bool res;
 char *data = "nRF UART Hello World\r\n";
+	uint8_t buff[20];
 
 /*	nrf_gpio_cfg_output(9);
 	while (1)
@@ -200,8 +214,23 @@ char *data = "nRF UART Hello World\r\n";
 		//	UARTTx(&g_UartDev, (uint8_t*)data, 22);
 			//usDelay(1000);
 		}
+#else
+		int cnt = UARTRx(&g_UartDev, buff, 20);
+		if (cnt > 0)
+		{
+			uint8_t *p = buff;
+			while (cnt > 0)
+			{
+				int l = UARTTx(&g_UartDev, p, cnt);
+				cnt -= l;
+				p += l;
+			}
+		//	UARTTx(&g_UartDev, (uint8_t*)data, 22);
+			//usDelay(1000);
+		}
+
 #endif
-		__WFI();
+		//__WFI();
 	}
 	return 0;
 }

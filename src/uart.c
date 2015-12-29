@@ -80,8 +80,16 @@ void UARTprintf(UARTDEV *pDev, char *pFormat, ...)
 void UARTvprintf(UARTDEV *pDev, char *pFormat, va_list vl)
 {
     vsnprintf(s_Buffer, s_BufferSize, pFormat, vl);
-    pDev->SerIntrf.StartTx(&pDev->SerIntrf, 0);
-    pDev->SerIntrf.TxData(&pDev->SerIntrf, (uint8_t*)s_Buffer, strlen(s_Buffer));
-    pDev->SerIntrf.StopTx(&pDev->SerIntrf);
+    int len = strlen(s_Buffer);
+    uint8_t *p = (uint8_t*)s_Buffer;
+    int to = 10;
+    while (len > 0 && to > 0)
+    {
+    	int l;
+    	l = UARTTx(pDev, p, len);
+    	len -= l;
+    	p += l;
+    	to--;
+    }
 }
 

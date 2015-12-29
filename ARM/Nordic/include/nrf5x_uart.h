@@ -50,7 +50,8 @@ typedef struct _nRF_UART_Dev {
 	int DevNo;				// UART interface number
 	NRF_UART_Type *pReg;	// UART registers
 	UARTDEV	*pUartDev;		// Pointer to generic UART dev. data
-	bool bTxReady;
+	volatile bool bRxReady;
+	volatile bool bTxReady;
 	uint32_t RxPin;
 	uint32_t TxPin;
 	uint32_t CtsPin;

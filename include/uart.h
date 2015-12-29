@@ -37,6 +37,7 @@ Modified by          Date              Description
 
 #include <stdint.h>
 #include <string.h>
+#include <stdarg.h>
 
 #ifndef __cplusplus
 #include <stdbool.h>
