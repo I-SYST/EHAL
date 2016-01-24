@@ -254,11 +254,11 @@ typedef struct {
 
 // Device driver data require by low level functions
 typedef struct _PLC_UART_Dev {
-	int DevNo;				// UART interface number
+	int DevNo;					// UART interface number
 	LPCUARTREG *pUartReg;		// Pointer to UART register map
 	bool DMAMode;				// DMA transfer support
-	UARTDEV	*pUartDev;		// Pointer to generic UART dev. data
-	volatile bool bSending;
+	UARTDEV	*pUartDev;			// Pointer to generic UART dev. data
+	volatile bool bTxReady;
 } LPCUARTDEV;
 
 

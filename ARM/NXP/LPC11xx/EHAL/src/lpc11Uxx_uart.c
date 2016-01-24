@@ -53,7 +53,7 @@ LPCUARTDEV g_LpcUartDev[LPC11XX_UART_MAX_DEV] = {
 bool LpcUARTWaitForRxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
 bool LpcUARTWaitForTxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
 
-#define UART_RX_CFIFO_SIZE			16
+#define UART_RX_CFIFO_SIZE			64
 #define UART_TX_CFIFO_SIZE			16
 
 #define UART_RX_CFIFO_MEM_SIZE			(UART_RX_CFIFO_SIZE + sizeof(CFIFOHDL))
@@ -62,18 +62,12 @@ bool LpcUARTWaitForTxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
 uint8_t s_UARTRxFifoMem[UART_RX_CFIFO_MEM_SIZE];
 uint8_t s_UARTTxFifoMem[UART_TX_CFIFO_MEM_SIZE];
 
-
 void UART_IRQHandler(void)
 {
 	uint32_t iir = LPC_USART->IIR;
 	uint32_t data;
-//	uint8_t d[80];
-//	int idx = 0;
 	int cnt;
-	//uint32_t lsr = LPC_USART->LSR;
 	uint32_t iid = iir & LPCUART_IIR_ID_MASK;
-	//bool flushrx = false;
-	uint8_t d[20];
 
 	if ((iir & LPCUART_IIR_STATUS) == 0)
 	{
@@ -110,17 +104,19 @@ void UART_IRQHandler(void)
 						g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_LINESTATE, (uint8_t*)&data, 1);
 					}
 				}
-				break;
+				//break;
 
 			case LPCUART_IIR_ID_CTIMOUT:
 				//flushrx = true;
 				//break;
 			case LPCUART_IIR_ID_RDA:
 			//case LPCUART_IIR_ID_THRE:
+			{
 				cnt = 0;
-				//while (g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR && cnt < 16)
-				while (LpcUARTWaitForRxFifo(&g_LpcUartDev, 300) && cnt < 14)
-				{
+				uint32_t state = DisableInterrupt();
+				while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 14) {
+				//while (LpcUARTWaitForRxFifo(&g_LpcUartDev, 10) && cnt < 8) {
+				//do {
 					uint8_t *p = CFifoPut(g_LpcUartDev->pUartDev->hRxFifo);
 					if (p)
 					{
@@ -134,69 +130,68 @@ void UART_IRQHandler(void)
 						break;
 					}
 				}
+				//while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 14);
+				cnt = CFifoUsed(g_LpcUartDev->pUartDev->hRxFifo);
+				EnableInterrupt(state);
 				//data = LPC_USART->RBR;
 				if (g_LpcUartDev->pUartDev->EvtCallback)
 				{
 					if (iid == LPCUART_IIR_ID_CTIMOUT)
-						g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXTIMEOUT, d, cnt);
-					else
-						g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXDATA, d, cnt);
+						g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXTIMEOUT, NULL, cnt);
+					else //if (cnt > 8)
+						g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXDATA, NULL, cnt);
 				}
+			}
 				break;
 
 			case LPCUART_IIR_ID_THRE:
-				g_LpcUartDev->bSending = false;
 				//data = LPC_USART->LSR;
+			{
+				cnt = 0;
+				uint32_t state = DisableInterrupt();
+				g_LpcUartDev->bTxReady = false;
+				do {
+					uint8_t *p = CFifoGet(g_LpcUartDev->pUartDev->hTxFifo);
+					if (p == NULL)
+					{
+						g_LpcUartDev->bTxReady = true;
+						break;
+					}
+					LPC_USART->THR = *p;
+					cnt++;
+				} //while (LpcUARTWaitForTxFifo(&g_LpcUartDev, 10) && cnt < 14);
+				  while (g_LpcUartDev->pUartReg->LSR & (LPCUART_LSR_TEMT | LPCUART_LSR_THRE) && cnt < 14);
+				EnableInterrupt(state);
+
 				if (g_LpcUartDev->pUartDev->EvtCallback)
 				{
-					uint32_t state = DisableInterrupt();
-
-					for (int i = 0; i < 14; i++)
+					int len = CFifoAvail(g_LpcUartDev->pUartDev->hTxFifo);
+					len = g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_TXREADY, NULL, len);
+					if (len > 0)
 					{
-						if (LpcUARTWaitForTxFifo(&g_LpcUartDev, 300))
-						{
-							cnt = g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_TXREADY, d, 1);
-							if (cnt > 0)
-							{
-								LPC_USART->THR = d[0];
-							}
-							else
-								break;
-						}
-						else
-							break;
+						//LpcUARTTxData(&g_LpcUartDev->pUartDev->SerIntrf, d, len);
+//								LPC_USART->THR = d[0];
 					}
-					EnableInterrupt(state);
+					if (g_LpcUartDev->bTxReady)
+					{
+						if (g_LpcUartDev->pUartReg->LSR & (LPCUART_LSR_TEMT | LPCUART_LSR_THRE))
+						{
+							uint8_t *p = CFifoGet(g_LpcUartDev->pUartDev->hTxFifo);
+							if (p == NULL)
+							{
+								g_LpcUartDev->bTxReady = true;
+								break;
+							}
+							LPC_USART->THR = *p;
+						}
+					}
 				}
+			}
 				break;
 			default:
 				;
 		}
 	}
-/*	else
-	{
-		cnt = 0;
-		while (g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR)
-		{
-			d[cnt++] = g_LpcUartDev->pUartReg->RBR;
-		}
-		if (g_LpcUartDev->pUartDev->EvtCallback)
-		{
-			if (iid == LPCUART_IIR_ID_CTIMOUT)
-				g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXTIMEOUT, d, cnt);
-			else
-				g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXDATA, d, cnt);
-		}
-		if ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_THRE) && g_LpcUartDev->pUartDev->EvtCallback)
-		{
-			cnt = g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_TXREADY, d, 16);
-			for (int i = 0; i < cnt; i++)
-			{
-				LPC_USART->THR = d[i];
-			}
-		}
-
-	}*/
 }
 
 uint32_t LpcGetUartClk()
@@ -365,6 +360,8 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->SerIntrf.TxData = LpcUARTTxData;
 	pDev->SerIntrf.StopTx = LpcUARTStopTx;
 	pDev->EvtCallback = pCfg->EvtCallback;
+
+	g_LpcUartDev[pCfg->DevNo].bTxReady = true;
 
 	pDev->LineState = 0;
 

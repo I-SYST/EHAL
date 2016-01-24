@@ -150,12 +150,14 @@ int LpcUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 	}
 	while (Bufflen > 0)
 	{
-		if (!LpcUARTWaitForRxFifo(dev, 100))
+		if (!LpcUARTWaitForRxFifo(dev, 10))
 			break;
-		*pBuff = (uint8_t)(dev->pUartReg->RBR & 0xff);
-		Bufflen--;
-		pBuff++;
-		cnt++;
+		{
+			*pBuff = (uint8_t)(dev->pUartReg->RBR & 0xff);
+			Bufflen--;
+			pBuff++;
+			cnt++;
+		}
 	}
 
 	return cnt;
@@ -172,23 +174,36 @@ bool LpcUARTStartTx(SERINTRFDEV *pDev, int DevAddr)
 
 int LpcUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 {
-	int l;
 	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
+	int cnt = 0;
 
-	l = 0;
-
-	while (l < Datalen)
+	while (Datalen > 0)
 	{
-		if (!LpcUARTWaitForTxFifo(dev, 10000))
-		{
+		int l = Datalen;
+		uint8_t *p = CFifoPutMultiple(dev->pUartDev->hTxFifo, &l);
+		if (p == NULL)
 			break;
-		}
-
-		dev->pUartReg->THR = pData[l];
-		l++;
+		memcpy(p, pData, l);
+		Datalen -= l;
+		pData += l;
+		cnt += l;
 	}
 
-	return l;
+	//while (l < Datalen)
+	if (dev->bTxReady)
+	{
+		if (LpcUARTWaitForTxFifo(dev, 1000))
+		{
+			uint8_t *p = CFifoGet(dev->pUartDev->hTxFifo);
+			if (p)
+			{
+				dev->bTxReady = false;
+				dev->pUartReg->THR = *p;
+			}
+		}
+	}
+
+	return cnt;
 }
 
 void LpcUARTStopTx(SERINTRFDEV *pDev)
