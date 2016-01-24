@@ -57,19 +57,17 @@ uint8_t *CFifoGet(CFIFOHDL *pFifo)
 	if (pFifo == NULL || pFifo->GetIdx < 0)
 		return NULL;
 
-//	uint8_t *p = pFifo->pMemStart + pFifo->GetIdx * pFifo->BlkSize;
-	uint8_t *p = (uint8_t*)pFifo + sizeof(CFIFOHDL) + pFifo->GetIdx * pFifo->BlkSize;
+	int32_t idx = pFifo->GetIdx;
+	int32_t getidx = idx + 1;
 
-	//AtomicInc((sig_atomic_t *)&pFifo->GetIdx);
-	int32_t idx = pFifo->GetIdx + 1;
-	if (idx >= pFifo->MaxIdxCnt)
-		idx = 0;
-	//AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, idx);
+	if (getidx >= pFifo->MaxIdxCnt)
+		getidx = 0;
+	if (getidx == pFifo->PutIdx)
+		getidx = -1;
 
-	if (idx == pFifo->PutIdx)
-		idx = -1;	// Empty
+	AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, getidx);
 
-	AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, idx);
+	uint8_t *p = (uint8_t*)pFifo + sizeof(CFIFOHDL) + idx * pFifo->BlkSize;
 
 	return p;
 }
@@ -85,31 +83,28 @@ uint8_t *CFifoGetMultiple(CFIFOHDL *pFifo, int *pCnt)
 		return NULL;
 	}
 
-//	uint8_t *p = pFifo->pMemStart + pFifo->GetIdx * pFifo->BlkSize;
-	uint8_t *p = (uint8_t*)pFifo + sizeof(CFIFOHDL) + pFifo->GetIdx * pFifo->BlkSize;
-	int cnt = 0;
-	int putidx = pFifo->PutIdx;
+	int32_t cnt;
+	int32_t putidx = pFifo->PutIdx;
+	int32_t getidx = pFifo->GetIdx;
+	int32_t idx = getidx;
 
-	if (pFifo->GetIdx < putidx)
-		cnt = min(*pCnt, putidx - pFifo->GetIdx);
+	if (getidx < putidx)
+		cnt = min(*pCnt, putidx - getidx);
 	else
-		cnt = min(*pCnt, pFifo->MaxIdxCnt - pFifo->GetIdx);
+		cnt = min(*pCnt, pFifo->MaxIdxCnt - getidx);
 
+	getidx += cnt;
+
+	if (getidx >= pFifo->MaxIdxCnt)
+		getidx = 0;
+
+	if (getidx == putidx)
+		getidx = -1;	// Empty
+
+	AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, getidx);
+
+	uint8_t *p = (uint8_t*)pFifo + sizeof(CFIFOHDL) + idx * pFifo->BlkSize;
 	*pCnt = cnt;
-
-//	uint32_t state = DisableInterrupt();
-	//AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, pFifo->GetIdx + cnt);
-	cnt += pFifo->GetIdx;
-	if (cnt >= pFifo->MaxIdxCnt)
-		cnt = 0;
-	//AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, cnt);
-
-	if (cnt == pFifo->PutIdx)
-		cnt = -1;	// Empty
-
-	AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, cnt);
-
-//	EnableInterrupt(state);
 
 	return p;
 }
@@ -119,21 +114,16 @@ uint8_t *CFifoPut(CFIFOHDL *pFifo)
 	if (pFifo == NULL || pFifo->PutIdx == pFifo->GetIdx)
 		return NULL;
 
-//	uint8_t *p = pFifo->pMemStart + pFifo->PutIdx * pFifo->BlkSize;
-	uint8_t *p = (uint8_t*)pFifo + sizeof(CFIFOHDL) + pFifo->PutIdx * pFifo->BlkSize;
-
-//	uint32_t state = DisableInterrupt();
-	// If empty
+	int32_t idx = pFifo->PutIdx;
+	int32_t putidx = idx + 1;
+	if (putidx >= pFifo->MaxIdxCnt)
+		putidx = 0;
+	AtomicAssign((sig_atomic_t *)&pFifo->PutIdx, putidx);
 	if (pFifo->GetIdx < 0)
-		AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, pFifo->PutIdx);
+		AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, idx);
 
-	//AtomicInc((sig_atomic_t *)&pFifo->PutIdx);
-	int32_t idx = pFifo->PutIdx + 1;
-	if (idx >= pFifo->MaxIdxCnt)
-		idx = 0;
-	AtomicAssign((sig_atomic_t *)&pFifo->PutIdx, idx);
+	uint8_t *p = (uint8_t*)pFifo + sizeof(CFIFOHDL) + idx * pFifo->BlkSize;
 
-//	EnableInterrupt(state);
 	return p;
 }
 
@@ -148,35 +138,35 @@ uint8_t *CFifoPutMultiple(CFIFOHDL *pFifo, int *pCnt)
 		return NULL;
 	}
 
-//	uint8_t *p = pFifo->pMemStart + pFifo->PutIdx * pFifo->BlkSize;
-	uint8_t *p = (uint8_t*)pFifo + sizeof(CFIFOHDL) + pFifo->PutIdx * pFifo->BlkSize;
-	int cnt = 0;
+	int32_t idx = pFifo->PutIdx;
+	int32_t getidx = pFifo->GetIdx;
+	int32_t putidx;
+	int32_t cnt;
 
-//	uint32_t state = DisableInterrupt();
-	// If empty
-	if (pFifo->GetIdx < 0)
+	if (getidx < 0)
 	{
-		AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, pFifo->PutIdx);
-		cnt = min(*pCnt, pFifo->MaxIdxCnt - pFifo->PutIdx);
+		//AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, idx);
+		getidx = idx;
+		cnt = min(*pCnt, pFifo->MaxIdxCnt - idx);
 	}
 	else
 	{
-		int getidx = pFifo->GetIdx;
-		if (pFifo->PutIdx < getidx)
-			cnt = min(*pCnt, getidx - pFifo->PutIdx);
+		if (idx < getidx)
+			cnt = min(*pCnt, getidx - idx);
 		else
-			cnt = min(*pCnt, pFifo->MaxIdxCnt - pFifo->PutIdx);
+			cnt = min(*pCnt, pFifo->MaxIdxCnt - idx);
 	}
 
+	putidx = idx + cnt;
+	if (putidx >= pFifo->MaxIdxCnt)
+		putidx = 0;
+
+	AtomicAssign((sig_atomic_t *)&pFifo->PutIdx, putidx);
+	AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, getidx);
+
+	uint8_t *p = (uint8_t*)pFifo + sizeof(CFIFOHDL) + idx * pFifo->BlkSize;
+
 	*pCnt = cnt;
-
-	//AtomicAssign((sig_atomic_t *)&pFifo->PutIdx, pFifo->PutIdx + cnt);
-	cnt += pFifo->PutIdx;
-	if (cnt >= pFifo->MaxIdxCnt)
-		cnt = 0;
-
-	AtomicAssign((sig_atomic_t *)&pFifo->PutIdx, cnt);
-//	EnableInterrupt(state);
 
 	return p;
 }
@@ -196,8 +186,7 @@ int CFifoAvail(CFIFOHDL *pFifo)
 
 	if (pFifo->PutIdx > pFifo->GetIdx)
 	{
-		len = pFifo->MaxIdxCnt - pFifo->PutIdx;
-		len += pFifo->GetIdx;
+		len = pFifo->MaxIdxCnt - pFifo->PutIdx + pFifo->GetIdx;
 	}
 	else if (pFifo->PutIdx < pFifo->GetIdx)
 	{
