@@ -64,12 +64,12 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.1007074214" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/drivers_nrf/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS_RTX/INC&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/drivers_nrf/delay&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.1099196006" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.files.2003155413" name="Include files (-include)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.files" useByScannerDiscovery="false"/>
@@ -204,12 +204,12 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.1723815000" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/drivers_nrf/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS_RTX/INC&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/drivers_nrf/delay&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.711321047" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.files.229035732" name="Include files (-include)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.files" useByScannerDiscovery="false"/>
@@ -345,12 +345,12 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.1842006949" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/drivers_nrf/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS_RTX/INC&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/drivers_nrf/delay&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.1807642534" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.files.1354305353" name="Include files (-include)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.files" useByScannerDiscovery="false"/>

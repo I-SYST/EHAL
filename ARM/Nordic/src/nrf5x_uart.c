@@ -169,6 +169,7 @@ void UART0_IRQHandler()
 
 		cnt = 0;
 
+		//while (nRFUARTWaitForTxReady(&s_nRFUartDev, 30) && cnt < NRF51UART_FIFO_MAX) {
 		do {
 			s_nRFUartDev.pReg->EVENTS_TXDRDY = 0;
 
@@ -181,8 +182,8 @@ void UART0_IRQHandler()
 			s_nRFUartDev.bTxReady = false;
 			s_nRFUartDev.pReg->TXD = *p;
 			cnt++;
-		} while (s_nRFUartDev.pReg->EVENTS_TXDRDY && cnt < NRF51UART_FIFO_MAX);
-
+		} //while (s_nRFUartDev.pReg->EVENTS_TXDRDY && cnt < NRF51UART_FIFO_MAX);
+		while (nRFUARTWaitForTxReady(&s_nRFUartDev, 100) && cnt < NRF51UART_FIFO_MAX);
 		if (s_nRFUartDev.pUartDev->EvtCallback)
 		{
 			//uint8_t buff[NRFUART_CFIFO_SIZE];
@@ -247,6 +248,7 @@ void UART0_IRQHandler()
 		s_nRFUartDev.pReg->EVENTS_NCTS = 0;
 		NRF_UART0->TASKS_STOPTX = 1;
 	}
+
 }
 
 int nRFUARTSetRate(SERINTRFDEV *pDev, int Rate)
@@ -272,6 +274,7 @@ int nRFUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
 	int cnt = 0;
 
+	uint32_t state = DisableInterrupt();
 	while (Bufflen)
 	{
 		int l  = Bufflen;
@@ -283,7 +286,8 @@ int nRFUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 		pBuff += l;
 		Bufflen -= l;
 	}
-
+	EnableInterrupt(state);
+/*
 	if (dev->bRxReady)
 	{
 		uint8_t *p = CFifoPut(dev->pUartDev->hRxFifo);
@@ -294,7 +298,7 @@ int nRFUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 			*p = dev->pReg->RXD;
 		}
 	}
-
+*/
 	return cnt;
 }
 
@@ -303,6 +307,7 @@ int nRFUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
 	int cnt = 0;
 
+	uint32_t state = DisableInterrupt();
 	while (Datalen > 0)
 	{
 		int l = Datalen;
@@ -328,6 +333,8 @@ int nRFUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 			}
 		}
 	}
+	EnableInterrupt(state);
+
 	return cnt;
 }
 

@@ -1,8 +1,8 @@
 #include <stdbool.h>
 #include <stdint.h>
-#include "nrf_delay.h"
+//#include "nrf_delay.h"
 #include "nrf_gpio.h"
-//#include "idelay.h"
+#include "idelay.h"
 #include <stdlib.h>
 
 #define LED_0	30
@@ -24,13 +24,13 @@ int main(void)
   while(true)
   {
     nrf_gpio_pin_clear(LED_0);
-    nrf_delay_us(1000000);
+    usDelay(1000000);
     nrf_gpio_pin_set(LED_0);
     nrf_gpio_pin_clear(LED_1);
-    nrf_delay_us(1000000);
+    usDelay(1000000);
     nrf_gpio_pin_set(LED_1);
     nrf_gpio_pin_clear(LED_2);
-    nrf_delay_us(1000000);
+    usDelay(1000000);
     nrf_gpio_pin_set(LED_2);
   }
 }
