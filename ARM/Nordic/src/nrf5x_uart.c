@@ -81,13 +81,15 @@ NRFUARTDEV s_nRFUartDev = {
 	0,
 	NRF_UART0,
 	NULL,
+	false,
 	true,
 };
 
 //static uint8_t s_nRFUARTHoldBuffer[NRF51UART_FIFO_MAX];
 //static int s_nRFUARTHoldBuffLen = 0;
 static int s_nRF51RxTimeOutCnt = 0;
-//uint32_t g_nRF51RxDropCnt = 0;
+uint32_t g_nRF51RxDropCnt = 0;
+uint32_t g_nRF51RxErrCnt = 0;
 
 #define NRFUART_CFIFO_SIZE		(16 + sizeof(CFIFOHDL))
 
@@ -126,7 +128,7 @@ void UART0_IRQHandler()
 {
 	uint8_t buff[NRFUART_CFIFO_SIZE];
 	int len = 0;
-	int cnt;
+	int cnt = 0;
 
 	if (s_nRFUartDev.pReg->EVENTS_RXDRDY || s_nRFUartDev.pReg->EVENTS_RXTO)
 	{
@@ -134,21 +136,23 @@ void UART0_IRQHandler()
 		//int l = 0;
 		uint8_t *d;
 
-		//while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10)) {
-		while (s_nRFUartDev.pReg->EVENTS_RXDRDY || s_nRFUartDev.bRxReady) {
+		cnt = 0;
+		while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10) && cnt < NRF51UART_FIFO_MAX) {
+		//while (s_nRFUartDev.pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX) {
 		//do {
+			s_nRFUartDev.bRxReady = false;
 			s_nRFUartDev.pReg->EVENTS_RXDRDY = 0;
 			d = CFifoPut(s_nRFUartDev.pUartDev->hRxFifo);
 			if (d == NULL)
 			{
 				s_nRFUartDev.bRxReady = true;
+				g_nRF51RxDropCnt++;
 				break;
 			}
-			s_nRFUartDev.bRxReady = false;
 			*d = s_nRFUartDev.pReg->RXD;
 			cnt++;
 		}// while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10));
-		// while (s_nRFUartDev.pReg->EVENTS_RXDRDY);// && cnt < NRF51UART_FIFO_MAX) ;
+		// while (s_nRFUartDev.pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX) ;
 
 		if (s_nRFUartDev.pUartDev->EvtCallback)
 		{
@@ -169,7 +173,6 @@ void UART0_IRQHandler()
 
 		cnt = 0;
 
-		//while (nRFUARTWaitForTxReady(&s_nRFUartDev, 30) && cnt < NRF51UART_FIFO_MAX) {
 		do {
 			s_nRFUartDev.pReg->EVENTS_TXDRDY = 0;
 
@@ -182,8 +185,8 @@ void UART0_IRQHandler()
 			s_nRFUartDev.bTxReady = false;
 			s_nRFUartDev.pReg->TXD = *p;
 			cnt++;
-		} //while (s_nRFUartDev.pReg->EVENTS_TXDRDY && cnt < NRF51UART_FIFO_MAX);
-		while (nRFUARTWaitForTxReady(&s_nRFUartDev, 100) && cnt < NRF51UART_FIFO_MAX);
+		} while (s_nRFUartDev.pReg->EVENTS_TXDRDY && cnt < NRF51UART_FIFO_MAX);
+
 		if (s_nRFUartDev.pUartDev->EvtCallback)
 		{
 			//uint8_t buff[NRFUART_CFIFO_SIZE];
@@ -194,7 +197,7 @@ void UART0_IRQHandler()
 			if (len > 0)
 			{
 				//s_nRFUartDev.bTxReady = false;
-				nRFUARTTxData(&s_nRFUartDev.pUartDev->SerIntrf, buff, len);
+				//nRFUARTTxData(&s_nRFUartDev.pUartDev->SerIntrf, buff, len);
 			}
 		}
 	}
@@ -204,6 +207,7 @@ void UART0_IRQHandler()
 		s_nRFUartDev.pReg->EVENTS_ERROR = 0;
 		if (s_nRFUartDev.pReg->ERRORSRC & 1)	// Overrrun
 		{
+			g_nRF51RxErrCnt++;
 			len = 0;
 			cnt = 0;
 			//int l = 0;
@@ -220,7 +224,7 @@ void UART0_IRQHandler()
 				*d = s_nRFUartDev.pReg->RXD;
 				cnt++;
 			} //while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10));
-			while (s_nRFUartDev.pReg->EVENTS_RXDRDY);
+			while (s_nRFUartDev.pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX);
 
 			if (s_nRFUartDev.pUartDev->EvtCallback)
 			{
@@ -240,15 +244,15 @@ void UART0_IRQHandler()
 	if (s_nRFUartDev.pReg->EVENTS_CTS)
 	{
 		s_nRFUartDev.pReg->EVENTS_CTS = 0;
-		NRF_UART0->TASKS_STARTTX = 1;
+		//NRF_UART0->TASKS_STARTTX = 1;
+		//s_nRFUartDev.bTxReady = true;
 	}
 
 	if (s_nRFUartDev.pReg->EVENTS_NCTS)
 	{
 		s_nRFUartDev.pReg->EVENTS_NCTS = 0;
-		NRF_UART0->TASKS_STOPTX = 1;
+		//NRF_UART0->TASKS_STOPTX = 1;
 	}
-
 }
 
 int nRFUARTSetRate(SERINTRFDEV *pDev, int Rate)
@@ -319,22 +323,22 @@ int nRFUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 		pData += l;
 		cnt += l;
 	}
+	EnableInterrupt(state);
 
 	if (dev->bTxReady)
 	{
-		if (nRFUARTWaitForTxReady(dev, 1000))
+		//if (nRFUARTWaitForTxReady(dev, 1000))
 		{
+			dev->pReg->EVENTS_TXDRDY = 0;
+			dev->bTxReady = true;
 			uint8_t *p = CFifoGet(dev->pUartDev->hTxFifo);
 			if (p)
 			{
-				dev->pReg->EVENTS_TXDRDY = 0;
 				dev->bTxReady = false;
 				dev->pReg->TXD = *p;
 			}
 		}
 	}
-	EnableInterrupt(state);
-
 	return cnt;
 }
 
@@ -474,7 +478,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
     }
 
 	//NRF_UART0->TASKS_STARTTX = 1;
-    uint8_t d = NRF_UART0->RXD;	// Dummy read
+   // uint8_t d = NRF_UART0->RXD;	// Dummy read
 	return true;
 }
 

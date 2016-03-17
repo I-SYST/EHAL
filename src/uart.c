@@ -82,7 +82,7 @@ void UARTvprintf(UARTDEV *pDev, char *pFormat, va_list vl)
     vsnprintf(s_Buffer, s_BufferSize, pFormat, vl);
     int len = strlen(s_Buffer);
     uint8_t *p = (uint8_t*)s_Buffer;
-    int to = 10;
+    int to = 1000;
     while (len > 0 && to > 0)
     {
     	int l;
