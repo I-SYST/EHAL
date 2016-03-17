@@ -291,7 +291,7 @@ int nRFUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 		Bufflen -= l;
 	}
 	EnableInterrupt(state);
-/*
+
 	if (dev->bRxReady)
 	{
 		uint8_t *p = CFifoPut(dev->pUartDev->hRxFifo);
@@ -302,7 +302,7 @@ int nRFUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 			*p = dev->pReg->RXD;
 		}
 	}
-*/
+
 	return cnt;
 }
 
