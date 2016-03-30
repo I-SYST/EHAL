@@ -1,3 +1,7 @@
+/*
+S130 Peripheral mode
+*/
+
 OUTPUT_FORMAT ("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 SEARCH_DIR(.)
 SEARCH_DIR("../../../../src")
@@ -7,8 +11,8 @@ GROUP(-lgcc -lc -lnosys -lCMSIS)
 
 MEMORY
 {
-  FLASH (rx) : ORIGIN = 0x0001C000, LENGTH = 0x24000 
-  RAM (rwx) :  ORIGIN = 0x20002800, LENGTH = 0x5800 
+  FLASH (rx) : ORIGIN = 0x0001B000, LENGTH = 0x25000 
+  RAM (rwx) :  ORIGIN = 0x20001F00, LENGTH = 0x6100 
 }
 
 SECTIONS

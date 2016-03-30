@@ -48,8 +48,9 @@ Modified by          Date              Description
 #include "ble_conn_params.h"
 #include "device_manager.h"
 #include "softdevice_handler_appsh.h"
-#include "ble_error_log.h"
-#include "ble_debug_assert_handler.h"
+#include "softdevice_handler.h"
+//#include "ble_error_log.h"
+//#include "ble_debug_assert_handler.h"
 #include "app_timer_appsh.h"
 #include "app_gpiote.h"
 #include "app_scheduler.h"
@@ -70,6 +71,9 @@ Modified by          Date              Description
 #define BASE_USB_HID_SPEC_VERSION        		0x0101                                         /**< Version number of base USB HID Specification implemented by this application. */
 
 #define ASSERT_LED_PIN_NO					18
+
+#define CENTRAL_LINK_COUNT               0                                          /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
+#define PERIPHERAL_LINK_COUNT            1                                          /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
 
 #define APP_GPIOTE_MAX_USERS			1
 #define SCHED_MAX_EVENT_DATA_SIZE       10 //MAX(APP_TIMER_SCHED_EVT_SIZE,\
@@ -128,6 +132,11 @@ Modified by          Date              Description
                                         0x89, 0x9a, 0xab, 0xbc, \
                                         0xcd, 0xde, 0xef, 0xf0            /**< Proprietary UUID for Beacon. */
 
+#define NRF_CLOCK_LFCLKSRC      {.source        = NRF_CLOCK_LF_SRC_RC,            \
+                                 .rc_ctiv       = 1,                                \
+                                 .rc_temp_ctiv  = 1,                                \
+                                 .xtal_accuracy = 0 }//NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM}
+
 static uint8_t m_beacon_info[APP_BEACON_INFO_LENGTH] =                    /**< Information advertised by the Beacon. */
 {
     APP_DEVICE_TYPE,     // Manufacturer specific information. Specifies the device type in this
@@ -141,7 +150,7 @@ static uint8_t m_beacon_info[APP_BEACON_INFO_LENGTH] =                    /**< I
                          // this implementation.
 };
 
-app_timer_id_t						g_BatTimerId;
+APP_TIMER_DEF(g_BatTimerId);
 app_gpiote_user_id_t				g_GpioteId = 0;
 static ble_blinkys_t				g_BlinkyServ;
 ble_bas_t                        	g_BatServ;                                         /**< Structure used to identify the battery service. */
@@ -164,31 +173,7 @@ static void gpiote_event_handler(uint32_t event_pins_low_to_high, uint32_t event
 	ble_blinkys_on_data_change(&g_BlinkyServ, data, 2 * sizeof(uint32_t));
 }
 
-/**@brief Function for error handling, which is called when an error has occurred.
- *
- * @warning This handler is an example only and does not fit a final product. You need to analyze
- *          how your product is supposed to react in case of error.
- *
- * @param[in] error_code  Error code supplied to the handler.
- * @param[in] line_num    Line number where the handler is called.
- * @param[in] p_file_name Pointer to the file name.
- */
-void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name)
-{
-    nrf_gpio_pin_set(ASSERT_LED_PIN_NO);
 
-    // This call can be used for debug purposes during application development.
-    // @note CAUTION: Activating this code will write the stack to flash on an error.
-    //                This function should NOT be used in a final product.
-    //                It is intended STRICTLY for development/debugging purposes.
-    //                The flash write will happen EVEN if the radio is active, thus interrupting
-    //                any communication.
-    //                Use with care. Un-comment the line below to use.
-    // ble_debug_assert_handler(error_code, line_num, p_file_name);
-
-    // On assert, the system can only recover on reset.
-    NVIC_SystemReset();
-}
 
 
 /**@brief Callback function for asserts in the SoftDevice.
@@ -612,17 +597,25 @@ static void ble_stack_init(void)
 {
     uint32_t err_code;
 
-    // Initialize the SoftDevice handler module.
-    //SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_XTAL_30_PPM, true);
-    //SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_SYNTH_250_PPM, true);
-    SOFTDEVICE_HANDLER_APPSH_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_4000MS_CALIBRATION, true);
+    nrf_clock_lf_cfg_t clock_lf_cfg = NRF_CLOCK_LFCLKSRC;
 
-    // Enable BLE stack
+    // Initialize the SoftDevice handler module.
+    SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, NULL);
 
     ble_enable_params_t ble_enable_params;
-    memset(&ble_enable_params, 0, sizeof(ble_enable_params));
-    ble_enable_params.gatts_enable_params.service_changed = IS_SRVC_CHANGED_CHARACT_PRESENT;
-    err_code = sd_ble_enable(&ble_enable_params);
+    err_code = softdevice_enable_get_default_config(CENTRAL_LINK_COUNT,
+                                                    PERIPHERAL_LINK_COUNT,
+                                                    &ble_enable_params);
+    APP_ERROR_CHECK(err_code);
+
+#ifdef BLE_DFU_APP_SUPPORT
+    ble_enable_params.gatts_enable_params.service_changed = 1;
+#endif // BLE_DFU_APP_SUPPORT
+    //Check the ram settings against the used number of links
+    CHECK_RAM_START_ADDR(CENTRAL_LINK_COUNT,PERIPHERAL_LINK_COUNT);
+
+    // Enable BLE stack.
+    err_code = softdevice_enable(&ble_enable_params);
     APP_ERROR_CHECK(err_code);
 
     // Register with the SoftDevice handler module for BLE events.
@@ -745,7 +738,7 @@ int main()
 
 	APP_GPIOTE_INIT(APP_GPIOTE_MAX_USERS);
 	nrf_gpio_cfg_output(LED_CON);
-	blink();
+	//blink();
 	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
 	timers_init();
 

@@ -45,7 +45,7 @@ Modified by          Date              Description
 #include "ble_hci.h"
 #include "ble_srv_common.h"
 #include "ble_advdata.h"
-#include "ble_hids.h"
+//#include "ble_hids.h"
 #include "ble_bas.h"
 #include "ble_dis.h"
 #include "ble_conn_params.h"
