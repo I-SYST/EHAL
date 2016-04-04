@@ -36,69 +36,179 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/app_scheduler.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/scheduler/app_scheduler.c</locationURI>
+			<name>src/nrf51_sdk/ble</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/app_timer.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/timer/app_timer.c</locationURI>
+			<name>src/nrf51_sdk/drivers_nrf</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/app_timer_appsh.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/timer/app_timer_appsh.c</locationURI>
+			<name>src/nrf51_sdk/libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/app_util_platform.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/libraries/util/app_util_platform.c</locationURI>
+			<name>src/nrf51_sdk/softdevice</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/ble_advdata.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/ble/common/ble_advdata.c</locationURI>
+			<name>src/nrf51_sdk/ble/ble_advertising</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/ble_bas.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/ble/ble_services/ble_bas/ble_bas.c</locationURI>
+			<name>src/nrf51_sdk/ble/ble_services</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/ble_conn_params.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/ble/common/ble_conn_params.c</locationURI>
+			<name>src/nrf51_sdk/ble/common</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/ble_dis.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/ble/ble_services/ble_dis/ble_dis.c</locationURI>
+			<name>src/nrf51_sdk/ble/device_manager</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/ble_srv_common.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/ble/common/ble_srv_common.c</locationURI>
+			<name>src/nrf51_sdk/drivers_nrf/common</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/device_manager_peripheral.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/ble/device_manager/device_manager_peripheral.c</locationURI>
+			<name>src/nrf51_sdk/drivers_nrf/pstorage</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/pstorage.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/drivers_nrf/pstorage/pstorage.c</locationURI>
+			<name>src/nrf51_sdk/libraries/gpiote</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/softdevice_handler.c</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/softdevice/common/softdevice_handler/softdevice_handler.c</locationURI>
+			<name>src/nrf51_sdk/libraries/scheduler</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf51_sdk/softdevice_handler_appsh.c</name>
+			<name>src/nrf51_sdk/libraries/timer</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/libraries/util</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/softdevice/common</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/ble/ble_advertising/ble_advertising.c</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/nrf51_sdk/components/softdevice/common/softdevice_handler/softdevice_handler_appsh.c</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/ble/ble_advertising/ble_advertising.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/ble/ble_services/ble_bas</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/ble/ble_services/ble_dis</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/ble/common/ble_advdata.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/ble/common/ble_advdata.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/ble/common/ble_conn_params.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/ble/common/ble_conn_params.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/ble/common/ble_srv_common.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/ble/common/ble_srv_common.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/ble/device_manager/device_manager_peripheral.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/ble/device_manager/device_manager_peripheral.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/drivers_nrf/common/nrf_drv_common.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/drivers_nrf/common/nrf_drv_common.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/drivers_nrf/pstorage/pstorage.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/drivers_nrf/pstorage/pstorage.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/libraries/gpiote/app_gpiote.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/libraries/gpiote/app_gpiote.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/libraries/scheduler/app_scheduler.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/libraries/scheduler/app_scheduler.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/libraries/timer/app_timer.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/libraries/timer/app_timer.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/libraries/timer/app_timer_appsh.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/libraries/timer/app_timer_appsh.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/libraries/util/app_error.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/libraries/util/app_error.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/libraries/util/app_util_platform.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/libraries/util/app_util_platform.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/softdevice/common/softdevice_handler</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/ble/ble_services/ble_bas/ble_bas.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/ble/ble_services/ble_bas/ble_bas.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/ble/ble_services/ble_dis/ble_dis.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/ble/ble_services/ble_dis/ble_dis.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/softdevice/common/softdevice_handler/softdevice_handler.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/softdevice/common/softdevice_handler/softdevice_handler.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf51_sdk/softdevice/common/softdevice_handler/softdevice_handler_appsh.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/nrf5_sdk/components/softdevice/common/softdevice_handler/softdevice_handler_appsh.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

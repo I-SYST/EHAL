@@ -68,12 +68,15 @@ Modified by          Date              Description
 #define IS_SRVC_CHANGED_CHARACT_PRESENT      	1                                          /**< Include or not the service_changed characteristic. if not enabled, the server's database cannot be changed for the lifetime of the device*/
 #define BASE_USB_HID_SPEC_VERSION        		0x0101                                         /**< Version number of base USB HID Specification implemented by this application. */
 
+#define CENTRAL_LINK_COUNT               0                                          /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
+#define PERIPHERAL_LINK_COUNT            1                                          /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
+
 #define ASSERT_LED_PIN_NO					18
 #define CONNECT_LED						30
 
 #define APP_GPIOTE_MAX_USERS			1
-#define SCHED_MAX_EVENT_DATA_SIZE       10 //MAX(APP_TIMER_SCHED_EVT_SIZE,\
-                                            //BLE_STACK_HANDLER_SCHED_EVT_SIZE)       /**< Maximum size of scheduler events. */
+#define SCHED_MAX_EVENT_DATA_SIZE       MAX(APP_TIMER_SCHED_EVT_SIZE,\
+                                            BLE_STACK_HANDLER_SCHED_EVT_SIZE)       /**< Maximum size of scheduler events. */
 #define SCHED_QUEUE_SIZE                10                                          /**< Maximum number of events in the scheduler queue. */
 
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
@@ -115,6 +118,11 @@ Modified by          Date              Description
 
 #define FLASH_PAGE_SYS_ATTR                  (PSTORAGE_FLASH_PAGE_END - 3)                  /**< Flash page used for bond manager system attribute information. */
 #define FLASH_PAGE_BOND                      (PSTORAGE_FLASH_PAGE_END - 1)                  /**< Flash page used for bond manager bonding information. */
+
+#define NRF_CLOCK_LFCLKSRC      {.source        = NRF_CLOCK_LF_SRC_RC,            \
+                                 .rc_ctiv       = 2,                                \
+                                 .rc_temp_ctiv  = 1,                                \
+                                 .xtal_accuracy = 0 }//NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM}
 
 app_timer_id_t						g_BatTimerId;
 app_gpiote_user_id_t				g_GpioteId = 0;
@@ -159,7 +167,7 @@ LEDMXDEV g_LmxDev1 = {0,};*/
  * @param[in] line_num    Line number where the handler is called.
  * @param[in] p_file_name Pointer to the file name.
  */
-void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name)
+/*void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name)
 {
     nrf_gpio_pin_set(ASSERT_LED_PIN_NO);
 
@@ -175,7 +183,7 @@ void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p
     // On assert, the system can only recover on reset.
     NVIC_SystemReset();
 }
-
+*/
 
 /**@brief Callback function for asserts in the SoftDevice.
  *
@@ -460,7 +468,7 @@ static void advertising_start(void)
 
     err_code = sd_ble_gap_adv_start(&adv_params);
     APP_ERROR_CHECK(err_code);
-    nrf_gpio_pin_clear(IMM_NRF51_CONNECT_LED);
+    nrf_gpio_pin_clear(IMM_NRF5_CONNECT_LED);
 }
 
 /**@brief Function for handling the Application's BLE Stack events.
@@ -474,13 +482,13 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
     switch (p_ble_evt->header.evt_id)
     {
         case BLE_GAP_EVT_CONNECTED:
-            nrf_gpio_pin_set(IMM_NRF51_CONNECT_LED);
+            nrf_gpio_pin_set(IMM_NRF5_CONNECT_LED);
 
             g_LmxServ.conn_handle  = p_ble_evt->evt.gap_evt.conn_handle;
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
-            nrf_gpio_pin_clear(IMM_NRF51_CONNECT_LED);
+            nrf_gpio_pin_clear(IMM_NRF5_CONNECT_LED);
             g_LmxServ.conn_handle = BLE_CONN_HANDLE_INVALID;
 
             advertising_start();
@@ -500,7 +508,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
         case BLE_GAP_EVT_TIMEOUT:
             if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
             {
-            	nrf_gpio_pin_clear(IMM_NRF51_CONNECT_LED);
+            	nrf_gpio_pin_clear(IMM_NRF5_CONNECT_LED);
 
                     // Go to system-off mode.
                     // (this function will not return; wakeup will cause a reset).
@@ -562,13 +570,22 @@ static void ble_stack_init(void)
     uint32_t err_code;
 
     // Initialize the SoftDevice handler module.
-    SOFTDEVICE_HANDLER_APPSH_INIT(NRF_CLOCK_LFCLKSRC_SYNTH_250_PPM, true);
+    nrf_clock_lf_cfg_t clock_lf_cfg = NRF_CLOCK_LFCLKSRC;
 
-    // Enable BLE stack
+    // Initialize the SoftDevice handler module.
+    SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, NULL);
+
     ble_enable_params_t ble_enable_params;
-    memset(&ble_enable_params, 0, sizeof(ble_enable_params));
+    err_code = softdevice_enable_get_default_config(CENTRAL_LINK_COUNT,
+                                                    PERIPHERAL_LINK_COUNT,
+                                                    &ble_enable_params);
+    APP_ERROR_CHECK(err_code);
     ble_enable_params.gatts_enable_params.service_changed = IS_SRVC_CHANGED_CHARACT_PRESENT;
-    err_code = sd_ble_enable(&ble_enable_params);
+    //Check the ram settings against the used number of links
+    CHECK_RAM_START_ADDR(CENTRAL_LINK_COUNT,PERIPHERAL_LINK_COUNT);
+
+    // Enable BLE stack.
+    err_code = softdevice_enable(&ble_enable_params);
     APP_ERROR_CHECK(err_code);
 
     // Register with the SoftDevice handler module for BLE events.
@@ -661,8 +678,8 @@ static void timers_init(void)
 void HardwareInit()
 {
 	// config Bluetooth connection state LED
-	nrf_gpio_cfg_output(IMM_NRF51_CONNECT_LED);
-	nrf_gpio_pin_clear(IMM_NRF51_CONNECT_LED);
+	nrf_gpio_cfg_output(IMM_NRF5_CONNECT_LED);
+	nrf_gpio_pin_clear(IMM_NRF5_CONNECT_LED);
 
 	// Initialize IDM-LMX3208 series displays
 	LedMxInit(&g_LmxDev, &g_LmxCfg);

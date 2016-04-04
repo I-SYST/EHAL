@@ -46,7 +46,7 @@ Modified by          Date              Description
 #include "ble_hci.h"
 #include "ble_srv_common.h"
 #include "ble_advdata.h"
-#include "ble_hids.h"
+//#include "ble_hids.h"
 #include "ble_bas.h"
 #include "ble_dis.h"
 #include "ble_conn_params.h"
@@ -78,7 +78,7 @@ uint8_t g_GatWriteBuff[GATTWRBUFF_SIZE_MAX];
 static void on_connect(ble_lmxs_t * p_lmxs, ble_evt_t * p_ble_evt)
 {
 	p_lmxs->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
-	nrf_gpio_pin_set(IMM_NRF51_CONNECT_LED);
+	nrf_gpio_pin_set(IMM_NRF5_CONNECT_LED);
 }
 
 
@@ -86,7 +86,7 @@ static void on_disconnect(ble_lmxs_t * p_lmxs, ble_evt_t * p_ble_evt)
 {
     UNUSED_PARAMETER(p_ble_evt);
     p_lmxs->conn_handle = BLE_CONN_HANDLE_INVALID;
-	nrf_gpio_pin_clear(IMM_NRF51_CONNECT_LED);
+	nrf_gpio_pin_clear(IMM_NRF5_CONNECT_LED);
 }
 
 
