@@ -119,8 +119,14 @@ Modified by          Date              Description
 #define FLASH_PAGE_SYS_ATTR                  (PSTORAGE_FLASH_PAGE_END - 3)                  /**< Flash page used for bond manager system attribute information. */
 #define FLASH_PAGE_BOND                      (PSTORAGE_FLASH_PAGE_END - 1)                  /**< Flash page used for bond manager bonding information. */
 
+//NRF_CLOCK_LFCLKSRC_RC_250_PPM_TEMP_1000MS_CALIBRATION
+//nrf_clock_lf_cfg_t rc_cfg = {
+//    .source = NRF_CLOCK_LF_SRC_RC,
+//    .rc_ctiv = 4,      // Check temperature every 4 * 250ms
+//    .rc_temp_ctiv = 1, // Only calibrate if temperature has changed.
+//};
 #define NRF_CLOCK_LFCLKSRC      {.source        = NRF_CLOCK_LF_SRC_RC,            \
-                                 .rc_ctiv       = 2,                                \
+                                 .rc_ctiv       = 4,                                \
                                  .rc_temp_ctiv  = 1,                                \
                                  .xtal_accuracy = 0 }//NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM}
 
@@ -573,7 +579,7 @@ static void ble_stack_init(void)
     nrf_clock_lf_cfg_t clock_lf_cfg = NRF_CLOCK_LFCLKSRC;
 
     // Initialize the SoftDevice handler module.
-    SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, NULL);
+    SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, true);
 
     ble_enable_params_t ble_enable_params;
     err_code = softdevice_enable_get_default_config(CENTRAL_LINK_COUNT,
@@ -661,7 +667,7 @@ static void timers_init(void)
     uint32_t err_code;
 
     // Initialize timer module.
-    APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, false);
+    APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
 
     // Create timers.
   //  err_code = app_timer_create(&m_battery_timer_id,

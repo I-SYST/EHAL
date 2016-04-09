@@ -64,7 +64,7 @@
  *       be stored. In such cases, application will be notified with DM_DEVICE_CONTEXT_FULL 
  *       as event result at the completion of the security procedure.
  */
-#define DEVICE_MANAGER_MAX_BONDS         7
+#define DEVICE_MANAGER_MAX_BONDS         2
 
 
 /**
