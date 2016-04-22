@@ -51,13 +51,13 @@
 									<listOptionValue builtIn="false" value="NRF52"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.1600746741" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf52_sdk/examples/bsp&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf52_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/examples/bsp&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf52_sdk/components/drivers_nrf/gpiote&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf52_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/drivers_nrf/gpiote&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf52_sdk/components/drivers_nrf/delay&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/drivers_nrf/delay&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.921406767" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -164,13 +164,13 @@
 									<listOptionValue builtIn="false" value="NRF52"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.2092642267" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf52_sdk/examples/bsp&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf52_sdk/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/examples/bsp&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf52_sdk/components/drivers_nrf/gpiote&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf52_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/drivers_nrf/gpiote&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf52_sdk/components/drivers_nrf/delay&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../nrf5_sdk/components/drivers_nrf/delay&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.1107724001" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
