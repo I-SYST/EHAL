@@ -25,26 +25,30 @@
 #include "nrf_gpio.h"
 #include "boards.h"
 
-const uint8_t leds_list[LEDS_NUMBER] = LEDS_LIST;
+#define LED_0	30
+#define LED_1	29
+#define LED_2	28
 
-/**
- * @brief Function for application main entry.
- */
 int main(void)
 {
-    // Configure LED-pins as outputs.
-    LEDS_CONFIGURE(LEDS_MASK);
 
-    // Toggle LEDs.
-    while (true)
-    {
-        for (int i = 0; i < LEDS_NUMBER; i++)
-        {
-            LEDS_INVERT(1 << leds_list[i]);
-            nrf_delay_ms(500);
-        }
-    }
+  nrf_gpio_cfg_output(LED_0);
+  nrf_gpio_pin_set(LED_0);
+  nrf_gpio_cfg_output(LED_1);
+  nrf_gpio_pin_set(LED_1);
+  nrf_gpio_cfg_output(LED_2);
+  nrf_gpio_pin_set(LED_2);
+
+  while(true)
+  {
+    nrf_gpio_pin_clear(LED_0);
+    nrf_delay_us(1000000);
+    nrf_gpio_pin_set(LED_0);
+    nrf_gpio_pin_clear(LED_1);
+    nrf_delay_us(1000000);
+    nrf_gpio_pin_set(LED_1);
+    nrf_gpio_pin_clear(LED_2);
+    nrf_delay_us(1000000);
+    nrf_gpio_pin_set(LED_2);
+  }
 }
-
-
-/** @} */
