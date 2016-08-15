@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : nrf5x_uart.h
+File   : uart_nrf5x.h
 
 Author : Hoang Nguyen Hoan          Aug. 30, 2015
 
@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#ifndef __NRF5x_UART_H__
-#define __NRF5x_UART_H__
+#ifndef __UART_NRF5X_H__
+#define __UART_NRF5X_H__
 
 #include <stdint.h>
 #include <string.h>
@@ -105,5 +105,5 @@ private:
 */
 #endif	// __cplusplus
 
-#endif // __NRF5x_UART_H__
+#endif // __UART_NRF5X_H__
 
