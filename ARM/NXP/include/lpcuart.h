@@ -218,8 +218,6 @@ typedef enum {
 } UART_STATUS;
 
 
-#pragma pack(push, 1)
-
 // Partial common UART register mapping
 typedef struct {
 	union {
@@ -249,8 +247,6 @@ typedef struct {
 	volatile uint32_t TER;                        /*!< (@ 0x40008030) Transmit Enable Register. Turns off USART transmitter for use with software flow control. */
 
 } LPCUARTREG;
-
-#pragma pack(pop)
 
 // Device driver data require by low level functions
 typedef struct _PLC_UART_Dev {
