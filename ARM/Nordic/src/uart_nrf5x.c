@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : nrf5x_uart.c
+File   : uart_nrf5x.c
 
 Author : Hoang Nguyen Hoan          Aug. 30, 2015
 
@@ -36,13 +36,10 @@ Modified by          Date              Description
 #include <stdint.h>
 #include <stdarg.h>
 
-#include "nrf51_bitfields.h"
-#include "nrf51.h"
 #include "nrf_gpio.h"
-//#include "nrf_drv_gpiote.h"
 
 #include "istddef.h"
-#include "nrf5x_uart.h"
+#include "uart_nrf5x.h"
 #include "idelay.h"
 
 extern char s_Buffer[];	// defined in sbuffer.c
@@ -421,8 +418,8 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	}
 
 
-    s_nRFUartDev.RxPin = pCfg->PinCfg[UARTPIN_RX_IDX].PinNo;
-    s_nRFUartDev.TxPin = pCfg->PinCfg[UARTPIN_TX_IDX].PinNo;
+	s_nRFUartDev.RxPin = pCfg->PinCfg[UARTPIN_RX_IDX].PinNo;
+	s_nRFUartDev.TxPin = pCfg->PinCfg[UARTPIN_TX_IDX].PinNo;
 	s_nRFUartDev.CtsPin = pCfg->PinCfg[UARTPIN_CTS_IDX].PinNo;
 	s_nRFUartDev.RtsPin = pCfg->PinCfg[UARTPIN_RTS_IDX].PinNo;
 	s_nRFUartDev.bRxReady = false;
