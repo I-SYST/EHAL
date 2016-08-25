@@ -34,7 +34,7 @@ Hoan				Feb. 20, 2015	New EHAL
 #include <stdio.h>
 #include <string.h>
 #include "iopincfg.h"
-#include "lpcssp.h"
+#include "ssp_lpcxx.h"
 
 extern uint32_t SystemCoreClock;
 
@@ -90,7 +90,7 @@ int LpcSSPRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 	SSPDEV *dev = (SSPDEV *)pDev-> pDevData;
 	int cnt = 0;
 	bool bw = true;
-	uint16_t *p16 = (uint16_t *)pBuff;
+	//uint16_t *p16 = (uint16_t *)pBuff;
 	uint16_t d = 0xff;
 
 	if (dev->pSspReg->CR0 & 0x8)
@@ -173,7 +173,7 @@ int LpcSSPTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 		bw = false;
 	}
 
-	while (DataLen > cnt)
+	while (DataLen > 0)//cnt)
 	{
 		if (LpcSSPWaitTxFifo(dev, 100000))
 		{
@@ -182,12 +182,19 @@ int LpcSSPTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 				dev->pSspReg->DR = *pData & 0xff;
 				pData++;
 				cnt++;
+				DataLen--;
+
 			}
 			else
 			{
 				dev->pSspReg->DR = *(uint16_t *)pData & LPCSSP_DR_MASK;
 				pData += 2;
 				cnt += 2;
+				DataLen -= 2;
+			}
+			//if (LpcSSPWaitRxFifo(dev, 100000))
+			{
+				int d = dev->pSspReg->DR;
 			}
 		}
 	}

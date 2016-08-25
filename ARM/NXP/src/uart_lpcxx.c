@@ -35,7 +35,7 @@ Modified by          Date              Description
 #include <stdio.h>
 #include <stdbool.h>
 #include "istddef.h"
-#include "lpcuart.h"
+#include "uart_lpcxx.h"
 
 extern uint32_t SystemCoreClock;
 extern uint32_t SystemClkFreq;
@@ -96,10 +96,10 @@ int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate)
 			for (uint32_t mv = 1; mv <= 15; mv++)
 			{
 				uint32_t div = (rate16 + rate16 * dv / mv);
-				uint32_t x = pclk / div;
-
+				uint32_t x = (pclk + (div >> 1)) / div;
+				x <<= 4;
 				// recalculate real data rate
-				div = ((x << 4) + (x << 4) * dv / mv);
+				div = (x + x * dv / mv);
 				int r = pclk / div;
 				int rd = Rate < r ? r - Rate : Rate - r;
 				if (rd < diff)
@@ -107,7 +107,6 @@ int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate)
 					mval = mv;
 					dval = dv;
 					diff = rd;
-					dl = x;
 				}
 			}
 		}
@@ -115,8 +114,8 @@ int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate)
 	dval &= 0xf;
 	mval &= 0xf;
 
-//	int div = (rate16 + rate16 * dval / mval);
-//	dl = (pclk + (div >> 1)) / div;
+	int div = (rate16 + rate16 * dval / mval);
+	dl = (pclk + (div >> 1)) / div;
 
 	//dl = pclk / rate16;
 

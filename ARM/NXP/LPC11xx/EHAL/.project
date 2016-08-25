@@ -71,6 +71,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/i2c.h</locationURI>
 		</link>
 		<link>
+			<name>include/i2c_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/i2c_lpcxx.h</locationURI>
+		</link>
+		<link>
 			<name>include/idelay.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-WORKSPACE_LOC/include/idelay.h</locationURI>
@@ -104,21 +109,6 @@
 			<name>include/lpcerror.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/lpcerror.h</locationURI>
-		</link>
-		<link>
-			<name>include/lpci2c.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/lpci2c.h</locationURI>
-		</link>
-		<link>
-			<name>include/lpcssp.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/lpcssp.h</locationURI>
-		</link>
-		<link>
-			<name>include/lpcuart.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/lpcuart.h</locationURI>
 		</link>
 		<link>
 			<name>include/lpcusbd_api.h</name>
@@ -186,6 +176,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/spi.h</locationURI>
 		</link>
 		<link>
+			<name>include/ssp_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ssp_lpcxx.h</locationURI>
+		</link>
+		<link>
 			<name>include/stddev.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/stddev.h</locationURI>
@@ -204,6 +199,11 @@
 			<name>include/uart.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/uart.h</locationURI>
+		</link>
+		<link>
+			<name>include/uart_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/uart_lpcxx.h</locationURI>
 		</link>
 		<link>
 			<name>include/usb_cdcdef.h</name>
@@ -276,6 +276,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/fatfs_vdisk.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/i2c_lpcxx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_lpcxx.c</locationURI>
+		</link>
+		<link>
 			<name>src/intelhex.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/intelhex.c</locationURI>
@@ -289,21 +294,6 @@
 			<name>src/ledmxfont.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/ledmxfont.c</locationURI>
-		</link>
-		<link>
-			<name>src/lpci2c.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/lpci2c.c</locationURI>
-		</link>
-		<link>
-			<name>src/lpcssp.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/lpcssp.c</locationURI>
-		</link>
-		<link>
-			<name>src/lpcuart.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/lpcuart.c</locationURI>
 		</link>
 		<link>
 			<name>src/sbuffer.c</name>
@@ -346,6 +336,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/sha256.c</locationURI>
 		</link>
 		<link>
+			<name>src/ssp_lpcxx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ssp_lpcxx.c</locationURI>
+		</link>
+		<link>
 			<name>src/stddev.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/stddev.c</locationURI>
@@ -364,6 +359,11 @@
 			<name>src/uart.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/uart.c</locationURI>
+		</link>
+		<link>
+			<name>src/uart_lpcxx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/uart_lpcxx.c</locationURI>
 		</link>
 		<link>
 			<name>src/utf8.c</name>

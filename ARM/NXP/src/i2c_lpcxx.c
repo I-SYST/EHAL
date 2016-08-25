@@ -35,9 +35,7 @@ Modified by          Date              Description
 #include <stdio.h>
 #include <string.h>
 
-//#include "LPC17xx.h"
-//#include "system_ISLPC17xx.h"
-#include "lpci2c.h"
+#include "i2c_lpcxx.h"
 #include "iopincfg.h"
 /*
 bool LpcI2CInit(I2CDEV *pDev, I2CCFG *pCfgData)
