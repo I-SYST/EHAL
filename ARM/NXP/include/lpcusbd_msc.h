@@ -171,7 +171,7 @@ typedef struct _MSC_CTRL_T
 {
 	/* If it's a USB HS, the max packet is 512, if it's USB FS,
 	the max packet is 64. Use 512 for both HS and FS. */
-	uint8_t  BulkBuf[USB_HS_MAX_BULK_PACKET]; /* Bulk In/Out Buffer */
+	uint8_t  BulkBuf[USB_MAX_BULK_PACKET]; /* Bulk In/Out Buffer */
 	USB_MSC_CBW CBW;                   /* Command Block Wrapper */
 	USB_MSC_CSW CSW;                   /* Command Status Wrapper */
 

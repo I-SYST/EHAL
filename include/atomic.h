@@ -180,9 +180,9 @@ static inline void AtomicAssign(sig_atomic_t *pVar, sig_atomic_t NewVal) {
 
 static inline uint32_t EnterCriticalSection(void) {
 #ifdef __arm__
-	uint32_t state = __get_PRIMASK();
+	uint32_t __state = __get_PRIMASK();
 	__disable_irq();
-	return state;
+	return __state;
 #endif
 }
 
@@ -191,6 +191,15 @@ static inline void ExitCriticalSection(uint32_t State) {
 	__set_PRIMASK(State);
 #endif
 }
+
+#ifdef __cpluspplus
+extern "C" {
+#endif
+void EnableInterrupt(uint32_t State);
+uint32_t DisableInterrupt();
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __ATOMIC_H__
 

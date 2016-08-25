@@ -33,6 +33,7 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "istddef.h"
 #include "lpcuart.h"
 
@@ -88,18 +89,34 @@ int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate)
 	// new_dval = 1
 	if (dval > 0)
 	{
-		mval = rate16 / dval;
-		dval = 1;
+		// Find closest fractional
+		int diff = 0x7FFFFFF;
+		for (uint32_t dv = 1; dv <= 15; dv++)
+		{
+			for (uint32_t mv = 1; mv <= 15; mv++)
+			{
+				uint32_t div = (rate16 + rate16 * dv / mv);
+				uint32_t x = pclk / div;
 
-		// in case mval still bigger then 4 bits
-		// no adjustment require
-		if (mval > 15)
-			dval = 0;
+				// recalculate real data rate
+				div = ((x << 4) + (x << 4) * dv / mv);
+				int r = pclk / div;
+				int rd = Rate < r ? r - Rate : Rate - r;
+				if (rd < diff)
+				{
+					mval = mv;
+					dval = dv;
+					diff = rd;
+					dl = x;
+				}
+			}
+		}
 	}
 	dval &= 0xf;
 	mval &= 0xf;
 
-	dl = pclk / (rate16 + rate16 * dval / mval);
+//	int div = (rate16 + rate16 * dval / mval);
+//	dl = (pclk + (div >> 1)) / div;
 
 	//dl = pclk / rate16;
 
@@ -116,22 +133,18 @@ int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate)
 	dev->pUartDev->Rate = pclk / (dl + dl * dval / mval);
 
 	uint32_t diff = dev->pUartDev->Rate - Rate;
-	float err = (float)diff * 100.0 / Rate;
+	//float err = (float)diff * 100.0 / Rate;
 
 	//printf("%d Rate : %d, %d\r\n", pclk, dev->pUartDev->Rate, Rate);
 	return dev->pUartDev->Rate;
 }
-/*
-bool LpcUARTStartRx(SERINTRFDEV *pSerDev, int DevAddr)
-{
-	return true;
-}*/
 
 int LpcUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 {
 	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
 	int cnt = 0;
 
+	uint32_t state = DisableInterrupt();
 	while (Bufflen > 0)
 	{
 		int l = Bufflen;
@@ -148,6 +161,8 @@ int LpcUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 			break;
 		}
 	}
+	EnableInterrupt(state);
+
 	while (Bufflen > 0)
 	{
 		if (!LpcUARTWaitForRxFifo(dev, 10))
@@ -177,6 +192,7 @@ int LpcUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
 	int cnt = 0;
 
+	uint32_t state = DisableInterrupt();
 	while (Datalen > 0)
 	{
 		int l = Datalen;
@@ -188,7 +204,7 @@ int LpcUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 		pData += l;
 		cnt += l;
 	}
-
+	EnableInterrupt(state);
 	//while (l < Datalen)
 	if (dev->bTxReady)
 	{

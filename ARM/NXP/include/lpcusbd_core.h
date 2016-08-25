@@ -18,7 +18,10 @@ interface also exposes function to register custom endpoint interrupt handler.
 
 #include "usb_def.h"
 
+#define USB_FS_MAX_BULK_PACKET		64
 #define USB_HS_MAX_BULK_PACKET		512
+
+#define USB_MAX_BULK_PACKET 		USB_FS_MAX_BULK_PACKET
 
 typedef void* USBD_HANDLE_T;
 

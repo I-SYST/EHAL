@@ -19,6 +19,8 @@ typedef struct {
 	uint8_t 	bParityType;
 	uint8_t 	bDataBits;
 } CDC_LINE_CODING;
+#pragma pack(pop)
+
 
 typedef struct {
 	uint32_t 	mem_base;		// Base memory location from where the stack can
@@ -448,8 +450,6 @@ typedef struct _CDC_CTRL_T
   uint32_t (*CIC_SetRequest)( USBD_HANDLE_T hCdc, USB_SETUP_PACKET* pSetup, uint8_t** pBuffer, uint16_t length);
 
 } USB_CDC_CTRL_T;
-
-#pragma pack(pop)
 
 
 #endif // __LPC11UXX_USBCDC_H__ 

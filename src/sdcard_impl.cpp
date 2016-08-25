@@ -130,7 +130,7 @@ bool SDCard::Init(SerialIntrf *pSerInterf, uint8_t *pCacheBlk, size_t CacheSize)
 int SDCard::Cmd(uint8_t Cmd, uint32_t param)
 {
 	int t;
-	uint8_t data[7];
+	uint8_t data[8];
 	uint8_t r;
 
 	// wait for busy
