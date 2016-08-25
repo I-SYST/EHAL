@@ -36,6 +36,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/base64.h</locationURI>
 		</link>
 		<link>
+			<name>include/blueio_svc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_svc.h</locationURI>
+		</link>
+		<link>
 			<name>include/cfifo.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/cfifo.h</locationURI>
@@ -166,9 +171,19 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/CppRuntimeOverload.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/atomic.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/atomic.c</locationURI>
+		</link>
+		<link>
 			<name>src/base64.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/base64.c</locationURI>
+		</link>
+		<link>
+			<name>src/blueio_svc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/blueio_svc.c</locationURI>
 		</link>
 		<link>
 			<name>src/cfifo.c</name>
@@ -199,11 +214,6 @@
 			<name>src/ledmxfont.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/ledmxfont.c</locationURI>
-		</link>
-		<link>
-			<name>src/nrf5x_uart.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/nrf5x_uart.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf_uart_impl.cpp</name>
@@ -259,6 +269,11 @@
 			<name>src/uart.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/uart.c</locationURI>
+		</link>
+		<link>
+			<name>src/uart_nrf5x.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrf5x.c</locationURI>
 		</link>
 		<link>
 			<name>src/utf8.c</name>

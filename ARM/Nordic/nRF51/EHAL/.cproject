@@ -61,9 +61,9 @@
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.410723587" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.820323101" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/drivers_nrf/uart&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s110/headers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s130/headers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/libraries/scheduler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
@@ -88,9 +88,9 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.760761494" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.633640502" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.701008382" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/uart&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/softdevice/s110/headers&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s130/headers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/libraries/scheduler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
@@ -198,9 +198,9 @@
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.171268187" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.336332368" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/drivers_nrf/uart&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s110/headers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s130/headers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/libraries/scheduler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>
@@ -225,9 +225,9 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.536398360" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.1948262147" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.1745822235" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/uart&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/softdevice/s110/headers&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s130/headers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/libraries/scheduler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../nrf51_sdk/components/drivers_nrf/nrf_soc_nosd&quot;"/>

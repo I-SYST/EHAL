@@ -10,12 +10,12 @@
 
 #include <stdint.h>
 
-#include "lpcusbd_hw.h"
-#include "lpcusbd_core.h"
-#include "lpcusbd_msc.h"
-#include "lpcusbd_dfu.h"
-#include "lpcusbd_hid.h"
-#include "lpcusbd_cdc.h"
+#include "usbd_hw_lpcxx.h"
+#include "usbd_core_lpcxx.h"
+#include "usbd_msc_lpcxx.h"
+#include "usbd_dfu_lpcxx.h"
+#include "usbd_hid_lpcxx.h"
+#include "usbd_cdc_lpcxx.h"
 
 #pragma pack(push, 1)
 

@@ -9,7 +9,7 @@
 #define __LPC11UXX_USBCDC_H__
 
 #include "usb_cdcdef.h"
-#include "lpcusbd_core.h"
+#include "usbd_core_lpcxx.h"
 
 #pragma pack(push, 1)
 

@@ -35,7 +35,7 @@ Modified by         Date            Description
 ----------------------------------------------------------------------------*/
 #include "LPC11Uxx.h"
 
-#include "lpcssp.h"
+#include "ssp_lpcxx.h"
 
 #define LPC11U_SYSAHBCLKCTRL_SSP0_EN		(1 << 11)
 #define LPC11U_SYSAHBCLKCTRL_SSP1_EN		(1 << 18)

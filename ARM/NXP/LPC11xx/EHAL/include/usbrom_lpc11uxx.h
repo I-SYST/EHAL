@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-#include "lpcusbd_api.h"
+#include "usbd_api_lpcxx.h"
 
 
 #define USBD_RAM_BASE      0x20004000

@@ -8,7 +8,7 @@
 #ifndef __LPC11UXX_USBDFU_H__
 #define __LPC11UXX_USBDFU_H__
 
-#include "lpcusbd_core.h"
+#include "usbd_core_lpcxx.h"
 
 #pragma pack(push, 1)
 

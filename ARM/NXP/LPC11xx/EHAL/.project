@@ -111,39 +111,9 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/lpcerror.h</locationURI>
 		</link>
 		<link>
-			<name>include/lpcusbd_api.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/lpcusbd_api.h</locationURI>
-		</link>
-		<link>
-			<name>include/lpcusbd_cdc.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/lpcusbd_cdc.h</locationURI>
-		</link>
-		<link>
-			<name>include/lpcusbd_core.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/lpcusbd_core.h</locationURI>
-		</link>
-		<link>
-			<name>include/lpcusbd_dfu.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/lpcusbd_dfu.h</locationURI>
-		</link>
-		<link>
-			<name>include/lpcusbd_hid.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/lpcusbd_hid.h</locationURI>
-		</link>
-		<link>
-			<name>include/lpcusbd_hw.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/lpcusbd_hw.h</locationURI>
-		</link>
-		<link>
 			<name>include/lpcusbd_msc.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/lpcusbd_msc.h</locationURI>
+			<location>/Users/hoan/I-SYST/swdev/fwdev/ARM/NXP/include/lpcusbd_msc.h</location>
 		</link>
 		<link>
 			<name>include/sdcard.h</name>
@@ -224,6 +194,46 @@
 			<name>include/usb_mscdef.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/usb_mscdef.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_api_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_api_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_cdc_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_cdc_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_core_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_core_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_dfu_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_dfu_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_hid_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_hid_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_hw_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_hw_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_msc_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_msc_lpcxx.h</locationURI>
 		</link>
 		<link>
 			<name>include/utf8.h</name>

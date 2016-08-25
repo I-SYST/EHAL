@@ -33,7 +33,7 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 
 #include "LPC11Uxx.h"
-#include "lpcuart.h"
+#include "uart_lpcxx.h"
 #include "idelay.h"
 
 #define LPC_SYSAHBCLKCTRL_UART0_EN		(1 << 12)
@@ -114,7 +114,7 @@ void UART_IRQHandler(void)
 			{
 				cnt = 0;
 				uint32_t state = DisableInterrupt();
-				while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 14) {
+				while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 8) {
 				//while (LpcUARTWaitForRxFifo(&g_LpcUartDev, 10) && cnt < 8) {
 				//do {
 					uint8_t *p = CFifoPut(g_LpcUartDev->pUartDev->hRxFifo);
@@ -192,6 +192,7 @@ void UART_IRQHandler(void)
 				;
 		}
 	}
+	NVIC_ClearPendingIRQ(UART_IRQn);
 }
 
 uint32_t LpcGetUartClk()

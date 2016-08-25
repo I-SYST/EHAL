@@ -222,7 +222,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS_RTX/SRC&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS_RTX/INC&quot;"/>
 								</option>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.1152177170" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.1152177170" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__CMSIS_RTOS"/>
 									<listOptionValue builtIn="false" value="__CORTEX_M0"/>
 								</option>
@@ -236,7 +236,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS_RTX/SRC&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS_RTX/INC&quot;"/>
 								</option>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.2059423189" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" valueType="definedSymbols">
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.2059423189" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__CMSIS_RTOS"/>
 									<listOptionValue builtIn="false" value="__CORTEX_M0"/>
 								</option>
@@ -321,7 +321,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS_RTX/SRC&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS_RTX/INC&quot;"/>
 								</option>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.355885187" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.355885187" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__CMSIS_RTOS"/>
 									<listOptionValue builtIn="false" value="__CORTEX_M0"/>
 								</option>
@@ -335,7 +335,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS_RTX/SRC&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS_RTX/INC&quot;"/>
 								</option>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1790036070" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" valueType="definedSymbols">
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1790036070" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__CMSIS_RTOS"/>
 									<listOptionValue builtIn="false" value="__CORTEX_M0"/>
 								</option>

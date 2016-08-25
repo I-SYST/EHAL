@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 #include "usb_def.h"
-#include "lpcusbd_core.h"
+#include "usbd_core_lpcxx.h"
 
 enum  USBD_EVENT_T {
   USB_EVT_SETUP			= 1,

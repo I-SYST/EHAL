@@ -1,11 +1,11 @@
 /*--------------------------------------------------------------------------
-File   : atomic.c
+File   : iopincfg_nrf51.c
 
-Author : Hoang Nguyen Hoan          Mar. 22, 2015
+Author : Hoang Nguyen Hoan          Nov. 20, 2011
 
-Desc   : atomic implemention using interrupt for Cortex-m0
+Desc   : Generic I/O pin config
 
-Copyright (c) 2011, I-SYST, all rights reserved
+Copyright (c) 2014, I-SYST inc., all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -31,38 +31,52 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#include "nrf.h"
 
-int __atomic_fetch_add_4(int *d, int val, int mem)
+#include <stdio.h>
+#include "nrf_gpio.h"
+#include "iopincfg.h"
+
+/*
+ * Configure individual I/O pin. nRF51 only have 1 port so PortNo is not used
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ * 			PinOp	: Pin function index from 0. MCU dependent
+ * 			Dir     : I/O direction
+ *			Resistor : Resistor config
+ *			Type	: I/O type
+ */
+void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resistor, IOPINTYPE Type)
 {
-	uint32_t primask = __get_PRIMASK();
-	__disable_irq();
-	*d += val;
-	__set_PRIMASK(primask);
+	uint32_t cnf = 0;
 
-	return *d;
+	if (PortNo == -1 || PinNo == -1)
+		return;
+
+	if (Dir == IOPINDIR_OUTPUT)
+	{
+		cnf |= (GPIO_PIN_CNF_INPUT_Disconnect << GPIO_PIN_CNF_INPUT_Pos)
+               | (GPIO_PIN_CNF_DIR_Output << GPIO_PIN_CNF_DIR_Pos);
+	}
+	else
+	{
+		cnf |= (GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos)
+				| (GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos);
+	}
+
+	switch (Resistor)
+	{
+		case IOPINRES_FOLLOW:	// nRF51 does not have follow mode, use pullup
+		case IOPINRES_PULLUP:
+			cnf |= (NRF_GPIO_PIN_PULLUP << GPIO_PIN_CNF_PULL_Pos);
+			break;
+		case IOPINRES_PULLDOWN:
+			cnf |= (NRF_GPIO_PIN_PULLDOWN << GPIO_PIN_CNF_PULL_Pos);
+			break;
+		case IOPINRES_NONE:
+			cnf |= (NRF_GPIO_PIN_NOPULL << GPIO_PIN_CNF_PULL_Pos);
+			break;
+	}
+
+	NRF_GPIO->PIN_CNF[PinNo] = cnf;
 }
-
-int __atomic_fetch_sub_4(int *d, int val, int mem)
-{
-	uint32_t primask = __get_PRIMASK();
-	__disable_irq();
-	*d -= val;
-	__set_PRIMASK(primask);
-
-	return *d;
-}
-
-uint32_t DisableInterrupt()
-{
-	uint32_t primask = __get_PRIMASK();
-	__disable_irq();
-
-	return primask;
-}
-
-void EnableInterrupt(uint32_t State)
-{
-	__set_PRIMASK(State);
-}
-

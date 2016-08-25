@@ -9,7 +9,7 @@
 #define __LPC11UXX_USBMSC_H__
 
 #include "usb_mscdef.h"
-#include "lpcusbd_core.h"
+#include "usbd_core_lpcxx.h"
 
 #pragma pack(push, 1)
 

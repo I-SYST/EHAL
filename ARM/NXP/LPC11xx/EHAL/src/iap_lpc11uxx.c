@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 
-#include "lpc11uxx_iap.h"
+#include "iap_lpc11uxx.h"
 
 #define IAP_LOCATION 0x1fff1ff1
 
