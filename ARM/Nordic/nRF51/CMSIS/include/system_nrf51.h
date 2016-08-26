@@ -1,4 +1,4 @@
-/* Copyright (c) 2013, Nordic Semiconductor ASA
+/* Copyright (c) 2015, Nordic Semiconductor ASA
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #ifndef SYSTEM_NRF51_H
 #define SYSTEM_NRF51_H
 

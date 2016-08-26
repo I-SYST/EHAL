@@ -30,6 +30,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/ARM/src/ResetEntry.c</locationURI>
 		</link>
 		<link>
+			<name>src/Vectors_nRF51.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/Vectors_nRF51.c</locationURI>
+		</link>
+		<link>
 			<name>src/rtx/GCC</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
