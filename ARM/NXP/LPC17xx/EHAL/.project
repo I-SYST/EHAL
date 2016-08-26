@@ -33,12 +33,32 @@
 		<link>
 			<name>include/base64.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/base64.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/base64.h</locationURI>
+		</link>
+		<link>
+			<name>include/cfifo.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/cfifo.h</locationURI>
+		</link>
+		<link>
+			<name>include/convutil.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/convutil.h</locationURI>
 		</link>
 		<link>
 			<name>include/crc.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/crc.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/crc.h</locationURI>
+		</link>
+		<link>
+			<name>include/dirent.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/dirent.h</locationURI>
+		</link>
+		<link>
+			<name>include/diskio.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/diskio.h</locationURI>
 		</link>
 		<link>
 			<name>include/fatfs.h</name>
@@ -48,52 +68,92 @@
 		<link>
 			<name>include/i2c.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/i2c.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/i2c.h</locationURI>
+		</link>
+		<link>
+			<name>include/i2c_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/i2c_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/idelay.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/include/idelay.h</locationURI>
+		</link>
+		<link>
+			<name>include/intelhex.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/intelhex.h</locationURI>
 		</link>
 		<link>
 			<name>include/iopincfg.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/iopincfg.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/iopincfg.h</locationURI>
 		</link>
 		<link>
 			<name>include/istddef.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/istddef.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/istddef.h</locationURI>
 		</link>
 		<link>
 			<name>include/ledmx.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/ledmx.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/ledmx.h</locationURI>
 		</link>
 		<link>
-			<name>include/lpcuart.h</name>
+			<name>include/ledmxfont.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/lpcuart.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/ledmxfont.h</locationURI>
+		</link>
+		<link>
+			<name>include/lpcerror.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/lpcerror.h</locationURI>
+		</link>
+		<link>
+			<name>include/md5.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/md5.h</locationURI>
 		</link>
 		<link>
 			<name>include/sdcard.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/sdcard.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sdcard.h</locationURI>
 		</link>
 		<link>
 			<name>include/seep.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/seep.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/seep.h</locationURI>
 		</link>
 		<link>
 			<name>include/serialintrf.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/serialintrf.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/serialintrf.h</locationURI>
 		</link>
 		<link>
 			<name>include/sha1.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/sha1.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sha1.h</locationURI>
 		</link>
 		<link>
 			<name>include/sha256.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/sha256.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sha256.h</locationURI>
+		</link>
+		<link>
+			<name>include/spi.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/spi.h</locationURI>
+		</link>
+		<link>
+			<name>include/ssp_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ssp_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/stddev.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/stddev.h</locationURI>
 		</link>
 		<link>
 			<name>include/sysstatus.h</name>
@@ -104,6 +164,16 @@
 			<name>include/sysstatusdef.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sysstatusdef.h</locationURI>
+		</link>
+		<link>
+			<name>include/uart.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/uart.h</locationURI>
+		</link>
+		<link>
+			<name>include/uart_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/uart_lpcxx.h</locationURI>
 		</link>
 		<link>
 			<name>include/usb_cdcdef.h</name>
@@ -124,6 +194,46 @@
 			<name>include/usb_mscdef.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/usb_mscdef.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_api_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_api_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_cdc_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_cdc_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_core_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_core_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_dfu_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_dfu_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_hid_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_hid_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_hw_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_hw_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbd_msc_lpcxx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_msc_lpcxx.h</locationURI>
 		</link>
 		<link>
 			<name>include/usbhiddev.h</name>
@@ -148,72 +258,117 @@
 		<link>
 			<name>src/base64.c</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/base64.c</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/base64.c</locationURI>
+		</link>
+		<link>
+			<name>src/cfifo.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/cfifo.c</locationURI>
 		</link>
 		<link>
 			<name>src/crc.c</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/crc.c</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/crc.c</locationURI>
 		</link>
 		<link>
-			<name>src/fats_vdisk.c</name>
+			<name>src/diskio_impl.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/fats_vdisk.c</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_impl.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/fatfs.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/fatfs.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/i2c_lpcxx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_lpcxx.c</locationURI>
+		</link>
+		<link>
+			<name>src/intelhex.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/intelhex.c</locationURI>
 		</link>
 		<link>
 			<name>src/ledmx.c</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/ledmx.c</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/ledmx.c</locationURI>
 		</link>
 		<link>
 			<name>src/ledmxfont.c</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/ledmxfont.c</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/ledmxfont.c</locationURI>
 		</link>
 		<link>
-			<name>src/lpcuart.c</name>
+			<name>src/md5.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/lpcuart.c</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/md5.c</locationURI>
+		</link>
+		<link>
+			<name>src/sbuffer.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sbuffer.c</locationURI>
 		</link>
 		<link>
 			<name>src/sdcard.c</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/sdcard.c</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sdcard.c</locationURI>
 		</link>
 		<link>
 			<name>src/sdcard_impl.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/sdcard_impl.cpp</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sdcard_impl.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/seep.c</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/seep.c</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/seep.c</locationURI>
 		</link>
 		<link>
 			<name>src/seep_impl.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/seep_impl.cpp</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/seep_impl.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/serialintrf.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/serialintrf.cpp</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/serialintrf.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sha1.c</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/sha1.c</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sha1.c</locationURI>
 		</link>
 		<link>
 			<name>src/sha256.c</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/sha256.c</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sha256.c</locationURI>
+		</link>
+		<link>
+			<name>src/ssp_lpcxx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ssp_lpcxx.c</locationURI>
+		</link>
+		<link>
+			<name>src/stddev.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/stddev.c</locationURI>
 		</link>
 		<link>
 			<name>src/sysstatus.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sysstatus.c</locationURI>
+		</link>
+		<link>
+			<name>src/uart.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/uart.c</locationURI>
+		</link>
+		<link>
+			<name>src/uart_lpcxx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/uart_lpcxx.c</locationURI>
 		</link>
 		<link>
 			<name>src/utf8.c</name>

@@ -44,7 +44,6 @@ Modified by          Date              Description
 #include <stdbool.h>
 #endif
 
-//#include "LPC17xx.h"
 #include "i2c.h"
 
 // Power connect
@@ -89,11 +88,31 @@ Modified by          Date              Description
 
 #define LPCI2C_MAX_INTRF			3			// Max number of I2C interface
 
+typedef struct {
+	volatile uint32_t I2CONSET;
+	volatile  uint32_t I2STAT;
+	volatile uint32_t I2DAT;
+	volatile uint32_t I2ADR0;
+	volatile uint32_t I2SCLH;
+	volatile uint32_t I2SCLL;
+	volatile  uint32_t I2CONCLR;
+	volatile uint32_t MMCTRL;
+	volatile uint32_t I2ADR1;
+	volatile uint32_t I2ADR2;
+	volatile uint32_t I2ADR3;
+	volatile  uint32_t I2DATA_BUFFER;
+	volatile uint32_t I2MASK0;
+	volatile uint32_t I2MASK1;
+	volatile uint32_t I2MASK2;
+	volatile uint32_t I2MASK3;
+} LPCI2CREG;
+
 // Device driver data require by low level functions
 typedef struct {
 	int I2CNo;					// I2C interface number
+	uint32_t Rate;				// Data rate
 	I2CDEV	*pI2cDev;			// Pointer to generic I2C dev data
-	LPC_I2C_TypeDef *pI2CReg;	// pointer to I2C registers map
+	LPCI2CREG *pI2CReg;	// pointer to I2C registers map
 } LPCI2CDEV;
 
 #ifdef __cplusplus

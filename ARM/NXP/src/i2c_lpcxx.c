@@ -88,36 +88,42 @@ bool LpcI2CInit(I2CDEV *pDev, I2CCFG *pCfgData)
 	return true;
 }
 */
-void LpcI2CDisable(I2CDEV *pDev)
+void LpcI2CDisable(SERINTRFDEV *pDev)
 {
-	if (pDev->pI2CReg)
+	LPCI2CDEV *dev = (LPCI2CDEV*)pDev->pDevData;
+
+	if (dev->pI2CReg)
 	{
-		pDev->pI2CReg->I2CONCLR = LPCI2C_I2CONCLR_I2ENC;
+		dev->pI2CReg->I2CONCLR = LPCI2C_I2CONCLR_I2ENC;
 	}
 
 }
-void LpcI2CEnable(I2CDEV *pDev)
+void LpcI2CEnable(SERINTRFDEV *pDev)
 {
-	if (pDev->pI2CReg)
-		pDev->pI2CReg->I2CONSET |= LPCI2C_I2CONSET_I2EN;
+	LPCI2CDEV *dev = (LPCI2CDEV*)pDev->pDevData;
+
+	if (dev->pI2CReg)
+		dev->pI2CReg->I2CONSET |= LPCI2C_I2CONSET_I2EN;
 }
 
-int LpcI2CGetRate(I2CDEV *pDev)
+int LpcI2CGetRate(SERINTRFDEV *pDev)
 {
 	return pDev->Rate;
 }
 
-int LpcI2CSetRate(I2CDEV *pDev, int RateHz)
+int LpcI2CSetRate(SERINTRFDEV *pDev, int RateHz)
 {
-	if (pDev->pI2CReg == NULL)
+	LPCI2CDEV *dev = (LPCI2CDEV*)pDev->pDevData;
+
+	if (dev->pI2CReg == NULL)
 		return 0;
 
 	// our default clock setting PCLK div 4
 	uint32_t clk = (SystemCoreClock >> 2) / RateHz;
 
 	pDev->Rate = RateHz;
-	pDev->pI2CReg->I2SCLH = clk >> 1;
-	pDev->pI2CReg->I2SCLL = clk - pDev->pI2CReg->I2SCLH;
+	dev->pI2CReg->I2SCLH = clk >> 1;
+	dev->pI2CReg->I2SCLL = clk - pDev->pI2CReg->I2SCLH;
 
 	return pDev->Rate;
 }
@@ -161,7 +167,7 @@ void LpcI2CStopCond(I2CDEV *pDev)
 	pDev->pI2CReg->I2CONCLR = LPCI2C_I2CONCLR_I2ENC;
 }
 
-bool LpcI2CStartRx(I2CDEV *pDev, int DevAddr)
+bool LpcI2CStartRx(SERINTRFDEV *pDev, int DevAddr)
 {
 	if (LpcI2CStartCond(pDev))
 	{
@@ -177,7 +183,7 @@ bool LpcI2CStartRx(I2CDEV *pDev, int DevAddr)
 }
 
 // Receive Data only, no Start/Stop condition
-int LpcI2CRxData(I2CDEV *pDev, uint8_t *pBuff, int BuffLen)
+int LpcI2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 {
 	I2CSTATUS status;
 	int rcount = 0;
@@ -204,7 +210,7 @@ int LpcI2CRxData(I2CDEV *pDev, uint8_t *pBuff, int BuffLen)
 }
 
 // Send Data only, no Start/Stop condition
-int LpcI2CTxData(I2CDEV *pDev, uint8_t *pData, int DataLen)
+int LpcI2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 {
 	I2CSTATUS status;
 	int tcount = 0;
@@ -226,12 +232,12 @@ int LpcI2CTxData(I2CDEV *pDev, uint8_t *pData, int DataLen)
 	return tcount;
 }
 
-void LpcI2CStopRx(I2CDEV *pDev)
+void LpcI2CStopRx(SERINTRFDEV *pDev)
 {
 	LpcI2CStopCond(pDev);
 }
 
-bool LpcI2CStartTx(I2CDEV *pDev, int DevAddr)
+bool LpcI2CStartTx(SERINTRFDEV *pDev, int DevAddr)
 {
 	if (LpcI2CStartCond(pDev))
 	{
@@ -250,7 +256,7 @@ bool LpcI2CStartTx(I2CDEV *pDev, int DevAddr)
 	return false;
 }
 
-void LpcI2CStopTx(I2CDEV *pDev)
+void LpcI2CStopTx(SERINTRFDEV *pDev)
 {
 	LpcI2CStopCond(pDev);
 }
