@@ -54,12 +54,9 @@ static bool is_peripheral_domain_setup_needed(void);
     uint32_t SystemCoreClock __attribute__((used)) = __SYSTEM_CLOCK;
 #endif
 
-extern uint32_t SystemMicroSecNopCnt;
-
 void SystemCoreClockUpdate(void)
 {
     SystemCoreClock = __SYSTEM_CLOCK;
-    SystemMicroSecNopCnt = (SystemCoreClock / 16000000);
 }
 
 void SystemInit(void)
