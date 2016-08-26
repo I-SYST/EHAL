@@ -449,15 +449,6 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
     NRF_UART0->TASKS_STARTTX = 1;
     NRF_UART0->TASKS_STARTRX = 1;
 
-
-/*    usDelay(10000);
-    NRF_UART0->EVENTS_RXDRDY = 0;
-    NRF_UART0->EVENTS_TXDRDY = 0;
-    NRF_UART0->EVENTS_CTS = 0;
-    NRF_UART0->EVENTS_NCTS = 0;
-    NRF_UART0->EVENTS_RXTO = 0;
-    NRF_UART0->EVENTS_ERROR = 0;*/
-
     NRF_UART0->INTENCLR = 0xffffffffUL;
 
 	if (pCfg->bIntMode)
@@ -474,8 +465,6 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 		NVIC_EnableIRQ(UART0_IRQn);
     }
 
-	//NRF_UART0->TASKS_STARTTX = 1;
-   // uint8_t d = NRF_UART0->RXD;	// Dummy read
 	return true;
 }
 

@@ -106,11 +106,15 @@ typedef enum {
  * @param pDev : Device handle
  * @param EvtId : Event code
  * @param pBuffer : In/Out Buffer containing data
- * 					on UART_EVT_RXTIMEOUT & UART_EVT_RXDATA, buffer contains data received
- * 					on UART_EVT_TXREADY, buffer allocated for data to be transmit with max length BufferLen (fifo size)
+ * 					on UART_EVT_RXTIMEOUT & UART_EVT_RXDATA, buffer contains data received. If
+ * 					driver implements CFIFO, this parameter is NULL with BufferLen indicating total data
+ * 					in fifo.
+ * 					on UART_EVT_TXREADY, buffer allocated for data to be transmit with max length
+ * 					BufferLen (fifo size). If driver implements CFIFO, this parameter is NULL and BufferLen
+ * 					indicates max avaible space in fifo
  * 					on UART_EVT_LINESTATE, buffer contains 1 byte Line Status
  *
- * @param BufferLen : Max buffer length
+ * @param BufferLen : Max buffer length.  See above description
  *
  * @return number of bytes written to pBuffer for transmit
  */
@@ -143,7 +147,6 @@ typedef struct {
 
 // Device driver data require by low level fonctions
 struct __Uart_Dev {
-//	UARTCFG Cfg;
 	int Rate;					// Baudrate, set to 0 for auto baudrate
 	int DataBits;				// Number of data bits
 	UART_PARITY Parity;			// Data parity
