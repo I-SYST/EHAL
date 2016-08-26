@@ -37,6 +37,7 @@ Modified by          Date              Description
 #include "iopincfg.h"
 #include "sdcard.h"
 #include "crc.h"
+#include "atomic.h"
 
 SDCard::SDCard()
 {

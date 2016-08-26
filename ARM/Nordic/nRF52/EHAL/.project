@@ -246,11 +246,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/ledmxio_nrf5x.c</locationURI>
 		</link>
 		<link>
-			<name>src/md5.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/md5.c</locationURI>
-		</link>
-		<link>
 			<name>src/sbuffer.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sbuffer.c</locationURI>

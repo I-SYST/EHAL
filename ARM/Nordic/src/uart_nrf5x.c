@@ -41,6 +41,7 @@ Modified by          Date              Description
 #include "istddef.h"
 #include "uart_nrf5x.h"
 #include "idelay.h"
+#include "atomic.h"
 
 extern char s_Buffer[];	// defined in sbuffer.c
 extern int s_BufferSize;

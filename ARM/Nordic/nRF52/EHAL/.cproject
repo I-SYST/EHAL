@@ -45,16 +45,24 @@
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm.431977654" name="Remove command" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm" value="rm" valueType="string"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash.564109736" name="Create flash image" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash" value="true" valueType="boolean"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize.428539383" name="Print size" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize" value="true" valueType="boolean"/>
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.thumbinterwork.233933230" name="Thumb interwork (-mthumb-interwork)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.thumbinterwork" value="true" valueType="boolean"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform.2016699547" isAbstract="false" osList="all" superClass="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform"/>
 							<builder buildPath="${workspace_loc:/EHAL}/Debug" id="ilg.gnuarmeclipse.managedbuild.cross.builder.1691269141" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="ilg.gnuarmeclipse.managedbuild.cross.builder"/>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.1990904118" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.574790184" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.1737446712" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../,,/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${PorjDirPath}/../../nrf5_sdk/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.42360020" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="ENABLE_SWO"/>
@@ -69,12 +77,13 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/libraries/util&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/ble/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s132/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1097513215" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NRF52"/>
@@ -95,12 +104,13 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/libraries/util&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/ble/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s132/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.121160035" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
@@ -127,7 +137,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="atomic.c|sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -177,16 +187,24 @@
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm.16919301" name="Remove command" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm" value="rm" valueType="string"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash.156474158" name="Create flash image" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash" value="true" valueType="boolean"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize.403067167" name="Print size" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize" value="true" valueType="boolean"/>
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.thumbinterwork.1102637377" name="Thumb interwork (-mthumb-interwork)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.thumbinterwork" value="true" valueType="boolean"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform.360800945" isAbstract="false" osList="all" superClass="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform"/>
 							<builder buildPath="${workspace_loc:/EHAL}/Release" id="ilg.gnuarmeclipse.managedbuild.cross.builder.939043454" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="ilg.gnuarmeclipse.managedbuild.cross.builder"/>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.232174512" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.922226146" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.2081667761" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../,,/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${PorjDirPath}/../../nrf5_sdk/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.1078594646" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NRF52"/>
@@ -200,12 +218,13 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/libraries/util&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/ble/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s132/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.787369261" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NRF52"/>
@@ -226,12 +245,13 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/libraries/util&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/ble/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s132/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.10049004" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
@@ -258,7 +278,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="atomic.c|sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -316,11 +336,18 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.1707197513" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.979208144" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.411397433" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../,,/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${PorjDirPath}/../../nrf5_sdk/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.732073825" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="ENABLE_SWO"/>
@@ -336,12 +363,13 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/libraries/util&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/ble/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s132/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.153822490" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
@@ -364,12 +392,13 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/libraries/util&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/ble/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s132/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.1338360085" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
@@ -396,7 +425,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="atomic.c|sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -454,11 +483,18 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.1668072187" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.1712862586" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.800244800" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../,,/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${PorjDirPath}/../../nrf5_sdk/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.1201109073" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
@@ -473,12 +509,13 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/libraries/util&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/ble/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s132/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.128254274" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
@@ -501,12 +538,13 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/libraries/util&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/ble/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf5_sdk/components/softdevice/s132/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_root}/external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.1963251856" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
@@ -533,7 +571,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="atomic.c|sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
