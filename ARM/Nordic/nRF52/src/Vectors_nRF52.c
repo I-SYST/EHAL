@@ -40,7 +40,11 @@ extern void ResetEntry(void);
 void DEF_IRQHandler(void) { while(1); }
 __attribute__((weak, alias("DEF_IRQHandler"))) void NMI_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void HardFault_Handler(void);
+__attribute__((weak, alias("DEF_IRQHandler"))) void MemoryManagement_Handler(void);
+__attribute__((weak, alias("DEF_IRQHandler"))) void BusFault_Handler(void);
+__attribute__((weak, alias("DEF_IRQHandler"))) void UsageFault_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void SVC_Handler(void);
+__attribute__((weak, alias("DEF_IRQHandler"))) void DebugMonitor_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void PendSV_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void SysTick_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void POWER_CLOCK_IRQHandler(void);
@@ -79,26 +83,27 @@ __attribute__((weak, alias("DEF_IRQHandler"))) void PWM2_IRQHandler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void SPIM2_SPIS2_SPI2_IRQHandler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void RTC2_IRQHandler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void I2S_IRQHandler(void);
+__attribute__((weak, alias("DEF_IRQHandler"))) void FPU_IRQHandler(void);
 
 /**
  * This interrupt vector is by default located in FLASH. Though it can not be
- * changed at runtime. All fcuntions in the vector are weak.  it can be
+ * changed at runtime. All functions in the vector are weak.  it can be
  * overloaded by application function
  *
  */
 __attribute__ ((section(".intvect"), used))
-void (* const g_Vectors[])(void) =
+void (* const g_Vectors[100])(void) =
 {
 	/*(void (*) )((int32_t)&__StackTop), This stack pointer address is hnadled in ld script*/
 	ResetEntry,
 	NMI_Handler,
 	HardFault_Handler,
-	0,
-	0,
-	0,
+	0,//MemoryManagement_Handler,
+	0,//BusFault_Handler,
+	0,//UsageFault_Handler,
 	0, 0, 0, 0,
 	SVC_Handler,
-	0,
+	DebugMonitor_Handler,
 	0,
 	PendSV_Handler,
 	SysTick_Handler,
@@ -142,7 +147,7 @@ void (* const g_Vectors[])(void) =
 	SPIM2_SPIS2_SPI2_IRQHandler,
 	RTC2_IRQHandler,
 	I2S_IRQHandler,
-	0,
+	FPU_IRQHandler,
 	0
 };
 
