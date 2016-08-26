@@ -111,7 +111,7 @@ typedef enum {
  * 					in fifo.
  * 					on UART_EVT_TXREADY, buffer allocated for data to be transmit with max length
  * 					BufferLen (fifo size). If driver implements CFIFO, this parameter is NULL and BufferLen
- * 					indicates max avaible space in fifo
+ * 					indicates max available space in fifo
  * 					on UART_EVT_LINESTATE, buffer contains 1 byte Line Status
  *
  * @param BufferLen : Max buffer length.  See above description

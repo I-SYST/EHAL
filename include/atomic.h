@@ -63,6 +63,22 @@ Hoan				17 nov. 2014	Adapt to GNU GCC
 #include <ccblkfn.h>
 #elif defined(__GNUC__)
 //GCC_VERSION) && GCC_VERSION >= 40700
+#ifdef __arm__
+#if defined ( __GNUC__ )
+#ifndef __ASM
+	#define __ASM            __asm                                      /*!< asm keyword for GNU Compiler */
+#endif
+#ifndef __INLINE
+	#define __INLINE         inline                                     /*!< inline keyword for GNU Compiler */
+#endif
+#ifndef __STATIC_INLINE
+	#define __STATIC_INLINE  static inline
+#endif
+#endif
+
+#include "core_cmFunc.h"
+#endif
+
 #else
 #pragma message ("Platform undefined")
 #error Platform not implemented
@@ -192,12 +208,15 @@ static inline void ExitCriticalSection(uint32_t State) {
 #endif
 }
 
-#ifdef __cpluspplus
-extern "C" {
-#endif
-void EnableInterrupt(uint32_t State);
-uint32_t DisableInterrupt();
-#ifdef __cplusplus
+#ifdef __arm__
+static inline uint32_t DisableInterrupt() {
+	uint32_t __primmask = __get_PRIMASK();
+	__disable_irq();
+	return __primmask;
+}
+
+static inline void EnableInterrupt(uint32_t __primmask) {
+	__set_PRIMASK(__primmask);
 }
 #endif
 
