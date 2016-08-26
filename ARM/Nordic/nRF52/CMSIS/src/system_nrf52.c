@@ -54,12 +54,9 @@ static bool errata_66(void);
     uint32_t SystemCoreClock __attribute__((used)) = __SYSTEM_CLOCK_64M;
 #endif
 
-extern uint32_t SystemMicroSecNopCnt;
-
 void SystemCoreClockUpdate(void)
 {
     SystemCoreClock = __SYSTEM_CLOCK_64M;
-    SystemMicroSecNopCnt = SystemCoreClock / 64000000;
 }
 
 void SystemInit(void)
