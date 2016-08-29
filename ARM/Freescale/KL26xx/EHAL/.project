@@ -53,12 +53,7 @@
 		<link>
 			<name>src/fatfs.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/fatfs.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/fatfs_vdisk.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/src/fatfs_vdisk.cpp</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/fatfs.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/intelhex.c</name>
