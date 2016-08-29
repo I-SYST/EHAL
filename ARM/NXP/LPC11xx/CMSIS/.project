@@ -27,7 +27,12 @@
 		<link>
 			<name>src/ResetEntry.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/src/ResetEntry.c</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC/src/ResetEntry.c</locationURI>
+		</link>
+		<link>
+			<name>src/Vectors_LPC11Uxx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/Vectors_LPC11Uxx.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/GCC</name>
@@ -37,157 +42,167 @@
 		<link>
 			<name>src/rtx/HAL_CM.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/HAL_CM.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/HAL_CM.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/RTX_Config.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/RTX_Config.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/RTX_Config.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_CMSIS.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_CMSIS.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_CMSIS.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Event.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Event.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Event.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Event.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Event.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Event.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_HAL_CM.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_HAL_CM.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_HAL_CM.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_List.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_List.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_List.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_List.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_List.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_List.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Mailbox.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Mailbox.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Mailbox.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Mailbox.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Mailbox.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Mailbox.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_MemBox.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_MemBox.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_MemBox.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_MemBox.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_MemBox.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_MemBox.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Memory.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Memory.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Memory.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Memory.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Memory.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Memory.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Mutex.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Mutex.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Mutex.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Mutex.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Mutex.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Mutex.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Robin.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Robin.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Robin.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Robin.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Robin.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Robin.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Semaphore.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Semaphore.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Semaphore.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Semaphore.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Semaphore.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Semaphore.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_System.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_System.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_System.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_System.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_System.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_System.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Task.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Task.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Task.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Task.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Task.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Task.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Time.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Time.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Time.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Time.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Time.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Time.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Timer.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Timer.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Timer.c</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_Timer.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_Timer.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_Timer.h</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/rt_TypeDef.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/rt_TypeDef.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/rt_TypeDef.h</locationURI>
 		</link>
 		<link>
-			<name>src/rtx/GCC/HAL_CM0.S</name>
+			<name>src/rtx/GCC/HAL_CM0.s</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/GCC/HAL_CM0.S</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/GCC/HAL_CM0.s</locationURI>
+		</link>
+		<link>
+			<name>src/rtx/GCC/RTE</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/rtx/GCC/SVC_Table.S</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/CMSIS/CMSIS_RTX/SRC/GCC/SVC_Table.S</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/GCC/SVC_Table.S</locationURI>
+		</link>
+		<link>
+			<name>src/rtx/GCC/RTE/RTE_Components.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/CMSIS/CMSIS/RTOS/RTX/SRC/GCC/RTE/RTE_Components.h</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

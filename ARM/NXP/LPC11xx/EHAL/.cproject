@@ -46,25 +46,29 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.1975171656" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.555192517" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.557080251" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/${ProjName}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_loc}/external/CMSIS/CMSIS/Include&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input.1148003440" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1572038066" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.1577769440" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/include/usbd}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/${ProjName}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_loc}/external/CMSIS/CMSIS/Include&quot;"/>
 								</option>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.163832641" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.163832641" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu11" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.39188753" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="EHAL_SBUFFER_SIZE=32"/>
 								</option>
@@ -72,13 +76,14 @@
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.170693434" name="Cross ARM C++ Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.1010332737" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/include/usbd}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/${ProjName}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_loc}/external/CMSIS/CMSIS/Include&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.std.1835459793" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.std.gnucpp11" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.511969438" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -111,9 +116,8 @@
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.2069093586.1655045797" name="usbdef.h" rcbsApplicability="disable" resourcePath="include/usb_def.h" toolsToInvoke=""/>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.2069093586.1306203770" name="convutil.h" rcbsApplicability="disable" resourcePath="include/convutil.h" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/atomic.c|src/sysstatus_impl.cpp|src/sdcard.c|src/i2c_lpcxx.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="i2c_lpcxx.c|sdcard.c|diskio.c|lpci2c.c|sysstatus_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -164,25 +168,29 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.835476467" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.1951963711" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.751035232" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/${ProjName}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_loc}/external/CMSIS/CMSIS/Include&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input.296230118" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.2110781667" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.513278371" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/include/usbd}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/${ProjName}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_loc}/external/CMSIS/CMSIS/Include&quot;"/>
 								</option>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.109586985" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.109586985" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu11" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.620771985" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="EHAL_SBUFFER_SIZE=32"/>
 								</option>
@@ -190,13 +198,14 @@
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.1015250793" name="Cross ARM C++ Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.2114268313" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../CMSIS/CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/include/usbd}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/../../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/${ProjName}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:}/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${fwdev_loc}/external/CMSIS/CMSIS/Include&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.std.388701478" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.std.gnucpp11" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.2080400618" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -228,9 +237,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/atomic.c|src/sysstatus_impl.cpp|src/sdcard.c|src/i2c_lpcxx.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="i2c_lpcxx.c|sdcard.c|diskio.c|lpci2c.c|sysstatus_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

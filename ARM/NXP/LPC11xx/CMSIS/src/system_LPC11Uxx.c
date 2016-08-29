@@ -130,7 +130,7 @@ uint32_t SystemSetCoreClock(bool Crystal, int ClkFreq)
 
 	// FCCO = M * Fclkin * 2 * P
 	// Find best fit m & p values
-	uint32_t fclko;
+	uint32_t fclko = 48000000;
 
 	while (p < 4)
 	{

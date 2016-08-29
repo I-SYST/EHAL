@@ -27,7 +27,7 @@
 		<link>
 			<name>src/ResetEntry.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/src/ResetEntry.c</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC/src/ResetEntry.c</locationURI>
 		</link>
 		<link>
 			<name>src/Vectors_LPC17xx.c</name>
