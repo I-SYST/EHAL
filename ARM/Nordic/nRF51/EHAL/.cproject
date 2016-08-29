@@ -70,7 +70,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/softdevice/s130/headers&quot;"/>
@@ -97,7 +97,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/softdevice/s130/headers&quot;"/>
@@ -211,7 +211,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/softdevice/s130/headers&quot;"/>
@@ -238,7 +238,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/softdevice/s130/headers&quot;"/>
