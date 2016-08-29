@@ -81,6 +81,15 @@ void DiskIO::SetCache(uint8_t *pCacheBlk, size_t CacheSize)
 	}
 }
 
+void DiskIO::Reset()
+{
+	for (int i = 0; i < vNbCache; i++)
+	{
+		vpCacheSect[i].UseCnt = 0;
+		vpCacheSect[i].SectNo = -1;
+	}
+}
+
 int	DiskIO::GetCacheSect(uint32_t SectNo, bool bLock)
 {
 	for (int i = 0; i < DISKIO_CACHE_SECT_MAX; i++)

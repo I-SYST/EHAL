@@ -78,6 +78,7 @@ public:
 	virtual uint32_t GetSize(void) = 0;
 	virtual bool SectRead(uint32_t SectNo, uint8_t *pData) = 0;
 	virtual bool SectWrite(uint32_t SectNo, uint8_t *pData) = 0;
+	virtual void Reset();
 	virtual int Read(uint32_t SetNo, uint32_t SectOffset, uint8_t *pBuff, uint32_t Len);
 	virtual int Read(uint64_t Offset, uint8_t *pBuff, uint32_t Len);
 	virtual int Write(uint32_t SetNo, uint32_t SectOffset, uint8_t *pBuff, uint32_t Len);
