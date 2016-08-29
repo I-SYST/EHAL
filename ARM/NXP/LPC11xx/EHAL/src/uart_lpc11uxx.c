@@ -35,6 +35,7 @@ Modified by          Date              Description
 #include "LPC11Uxx.h"
 #include "uart_lpcxx.h"
 #include "idelay.h"
+#include "atomic.h"
 
 #define LPC_SYSAHBCLKCTRL_UART0_EN		(1 << 12)
 #define LPC_SYSAHBCLKCTRL_UART1_EN		(1 << 20)
@@ -59,6 +60,8 @@ bool LpcUARTWaitForTxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
 #define UART_RX_CFIFO_MEM_SIZE			(UART_RX_CFIFO_SIZE + sizeof(CFIFOHDL))
 #define UART_TX_CFIFO_MEM_SIZE			(UART_TX_CFIFO_SIZE + sizeof(CFIFOHDL))
 
+uint32_t s_ErrCnt = 0;
+
 uint8_t s_UARTRxFifoMem[UART_RX_CFIFO_MEM_SIZE];
 uint8_t s_UARTTxFifoMem[UART_TX_CFIFO_MEM_SIZE];
 
@@ -74,6 +77,7 @@ void UART_IRQHandler(void)
 		switch (iid)//r & LPCUART_IIR_ID_MASK)
 		{
 			case LPCUART_IIR_ID_MS:
+				s_ErrCnt++;
 //				data = LPC_USART->MCR;
 //				break;
 			case LPCUART_IIR_ID_RLS:	// Line status
@@ -107,41 +111,31 @@ void UART_IRQHandler(void)
 				//break;
 
 			case LPCUART_IIR_ID_CTIMOUT:
-				//flushrx = true;
-				//break;
 			case LPCUART_IIR_ID_RDA:
-			//case LPCUART_IIR_ID_THRE:
-			{
-				cnt = 0;
-				uint32_t state = DisableInterrupt();
-				while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 8) {
-				//while (LpcUARTWaitForRxFifo(&g_LpcUartDev, 10) && cnt < 8) {
-				//do {
-					uint8_t *p = CFifoPut(g_LpcUartDev->pUartDev->hRxFifo);
-					if (p)
-					{
-					//d[cnt++] = g_LpcUartDev->pUartReg->RBR;
+				{
+					cnt = 0;
+					uint32_t state = DisableInterrupt();
+					while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 8) {
+					//do {
+						uint8_t *p = CFifoPut(g_LpcUartDev->pUartDev->hRxFifo);
+						if (p == NULL)
+							break;
 						*p = g_LpcUartDev->pUartReg->RBR;
 						cnt++;
 					}
-					else
+					//while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 14);
+					cnt = CFifoUsed(g_LpcUartDev->pUartDev->hRxFifo);
+					EnableInterrupt(state);
+
+					if (g_LpcUartDev->pUartDev->EvtCallback)
 					{
-						//printf("drop2\r\n");
-						break;
+						int l = CFifoUsed(g_LpcUartDev->pUartDev->hRxFifo);
+						if (iid == LPCUART_IIR_ID_CTIMOUT)
+							g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXTIMEOUT, NULL, l);
+						else
+							g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXDATA, NULL, l);
 					}
 				}
-				//while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 14);
-				cnt = CFifoUsed(g_LpcUartDev->pUartDev->hRxFifo);
-				EnableInterrupt(state);
-				//data = LPC_USART->RBR;
-				if (g_LpcUartDev->pUartDev->EvtCallback)
-				{
-					if (iid == LPCUART_IIR_ID_CTIMOUT)
-						g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXTIMEOUT, NULL, cnt);
-					else //if (cnt > 8)
-						g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXDATA, NULL, cnt);
-				}
-			}
 				break;
 
 			case LPCUART_IIR_ID_THRE:
@@ -192,7 +186,7 @@ void UART_IRQHandler(void)
 				;
 		}
 	}
-	NVIC_ClearPendingIRQ(UART_IRQn);
+	//NVIC_ClearPendingIRQ(UART_IRQn);
 }
 
 uint32_t LpcGetUartClk()

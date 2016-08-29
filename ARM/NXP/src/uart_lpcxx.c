@@ -36,6 +36,7 @@ Modified by          Date              Description
 #include <stdbool.h>
 #include "istddef.h"
 #include "uart_lpcxx.h"
+#include "atomic.h"
 
 extern uint32_t SystemCoreClock;
 extern uint32_t SystemClkFreq;

@@ -62,7 +62,7 @@ typedef struct _MasterBootRecord {
 #pragma pack(push, 4)
 
 typedef struct _Sect_Desc {
-	std::atomic_int UseCnt;		// semaphore
+	volatile int UseCnt;		// semaphore
 	uint32_t SectNo;			// sector number of this cache
 	uint8_t *pSect;				// sector data
 } SECTDESC;

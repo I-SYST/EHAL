@@ -145,7 +145,7 @@ typedef struct {
 	int	IrDAPulseDiv;			// Fix pulse divider
 } UARTCFG;
 
-// Device driver data require by low level fonctions
+// Device driver data require by low level functions
 struct __Uart_Dev {
 	int Rate;					// Baudrate, set to 0 for auto baudrate
 	int DataBits;				// Number of data bits
