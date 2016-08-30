@@ -74,21 +74,24 @@ typedef enum _SPI_Data_Phase {
 
 // Configuration data used to initialize device
 typedef struct _SPI_Config {
-	int DevNo;			// SPI interface number
-	SPIMODE Mode;		// Master/Slave mode
+	int DevNo;				// SPI interface number
+	SPIMODE Mode;			// Master/Slave mode
 	IOPINCFG IOPinMap[SPI_MAX_NB_IOPIN];	// Define I/O pins used by SPI
-	int Rate;			// Speed in Hz
-	uint32_t DataSize; 	// Data Size 4-16 bits
-	int SlaveAddr;		// slave address used in slave mode only
-	int MaxRetry;		// Max number of retry
+	int Rate;				// Speed in Hz
+	uint32_t DataSize; 		// Data Size 4-16 bits
+	int SlaveAddr;			// slave address used in slave mode only
+	int MaxRetry;			// Max number of retry
 	SPIDATAPHASE DataPhase;	// Data Out Phase.
 	SPICLKPOL ClkPol;		// Clock Out Polarity.
+	bool bManSel;        	// Set to true for manual select
 } SPICFG;
 
 // Device driver data require by low level fonctions
 typedef struct {
-	SPICFG 	Cfg;
-	SERINTRFDEV	SerIntrf;		// device interface implementation
+	SPICFG 	Cfg;			// Config data
+	SERINTRFDEV	SerIntrf;	// device interface implementation
+	int		FirstRdData;	// This is to keep the first dummy read data of SPI
+							// there are devices that may return a status code through this
 } SPIDEV;
 
 #pragma pack(pop)
@@ -162,7 +165,8 @@ public:
 		return SerialIntrfTxData(&vDevData.SerIntrf, pData, DataLen);
 	}
 	virtual void StopTx(void) { SerialIntrfStopTx(&vDevData.SerIntrf); }
-	
+	int GetFirstRead(void) {return vDevData.FirstRdData;}
+
 private:
 	SPIDEV vDevData;
 };

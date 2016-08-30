@@ -75,6 +75,10 @@ public:
 
 	virtual int GetSectSize(void) = 0;
 	virtual uint32_t GetNbSect(void) = 0;
+	/**
+	 *
+	 * @return total disk size in KB
+	 */
 	virtual uint32_t GetSize(void) = 0;
 	virtual bool SectRead(uint32_t SectNo, uint8_t *pData) = 0;
 	virtual bool SectWrite(uint32_t SectNo, uint8_t *pData) = 0;
@@ -83,6 +87,7 @@ public:
 	virtual int Read(uint64_t Offset, uint8_t *pBuff, uint32_t Len);
 	virtual int Write(uint32_t SetNo, uint32_t SectOffset, uint8_t *pBuff, uint32_t Len);
 	virtual int Write(uint64_t Offset, uint8_t *pBuff, uint32_t Len);
+	virtual void Erase() {}
 	int	GetCacheSect(uint32_t SectNo, bool bLock = false);
 	void SetCache(uint8_t *pCacheBlk, size_t CacheSize);
 
