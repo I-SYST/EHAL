@@ -36,9 +36,19 @@ Modified by          Date              Description
 #ifndef __BLUEIO_BOARD_H__
 #define __BLUEIO_BOARD_H__
 
+#ifndef BLUEIO_BOARD
+#define BLUEIO_BOARD				1
+#endif
+
+#define BLUEIO_LED1					30
+#define BLUEIO_LED2					29
+#define BLUEIO_LED3					28
+#define BLUEIO_LED_BLUE				BLUEIO_LED1
+#define BLUEIO_LED_GREEN			BLUEIO_LED2
+#define BLUEIO_LED_RED				BLUEIO_LED3
+
 // Most IMM-NRF5x base boards use P0.30 for Bluetooth connection state LED
-#define BLUEIO_LED_CONNECTED		30
-#define BLUEIO_LED_RED				28
+#define BLUEIO_CONNECT_LED			BLUEIO_LED1
 
 // UART pins
 #define BLUEIO_UART_TX				7

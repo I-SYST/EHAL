@@ -36,6 +36,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/base64.h</locationURI>
 		</link>
 		<link>
+			<name>include/blueio_board.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_board.h</locationURI>
+		</link>
+		<link>
 			<name>include/blueio_svc.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_svc.h</locationURI>
@@ -91,6 +96,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/iopincfg.h</locationURI>
 		</link>
 		<link>
+			<name>include/iopinctrl.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/iopinctrl.h</locationURI>
+		</link>
+		<link>
 			<name>include/istddef.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/istddef.h</locationURI>
@@ -104,6 +114,11 @@
 			<name>include/ledmxfont.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/ledmxfont.h</locationURI>
+		</link>
+		<link>
+			<name>include/prbs.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/prbs.h</locationURI>
 		</link>
 		<link>
 			<name>include/sdcard.h</name>
@@ -219,6 +234,11 @@
 			<name>src/nrf_uart_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_uart_impl.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/prbs.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/prbs.c</locationURI>
 		</link>
 		<link>
 			<name>src/sbuffer.c</name>
