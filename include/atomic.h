@@ -199,6 +199,8 @@ static inline uint32_t EnterCriticalSection(void) {
 	uint32_t __state = __get_PRIMASK();
 	__disable_irq();
 	return __state;
+#else
+    return 0;
 #endif
 }
 
