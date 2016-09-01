@@ -47,6 +47,8 @@ Hoan				Feb. 20, 2015	New EHAL
 #include "iopincfg.h"
 #include "serialintrf.h"
 
+
+
 // SPI Status code
 typedef enum _SPI_Status {
 	SPISTATUS_OK
@@ -67,8 +69,17 @@ typedef enum _SPI_Data_Phase {
 	SPIDATAPHASE_SECOND_CLK		// Data phase starts on 2nd clock
 } SPIDATAPHASE;
 
-#define SPI_MAX_RETRY		5
-#define SPI_MAX_NB_IOPIN	4
+typedef enum _SPI_Data_Bit_Order {
+	SPIDATABIT_MSB,				// Most significant bit first
+	SPIDATABIT_LSB				// Least significant bit first
+} SPIDATABIT;
+
+#define SPI_MAX_RETRY			5
+#define SPI_MAX_NB_IOPIN		4
+#define SPI_SCK_IOPIN_IDX		1
+#define SPI_MISO_IOPIN_IDX		2
+#define SPI_MOSI_IOPIN_IDX		3
+#define SPI_SS_IOPIN_IDX		4
 
 #pragma pack(push, 4)
 
@@ -81,6 +92,7 @@ typedef struct _SPI_Config {
 	uint32_t DataSize; 		// Data Size 4-16 bits
 	int SlaveAddr;			// slave address used in slave mode only
 	int MaxRetry;			// Max number of retry
+	SPIDATABIT BitOrder;	// Data bit ordering
 	SPIDATAPHASE DataPhase;	// Data Out Phase.
 	SPICLKPOL ClkPol;		// Clock Out Polarity.
 	bool bManSel;        	// Set to true for manual select

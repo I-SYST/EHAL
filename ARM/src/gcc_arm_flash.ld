@@ -75,10 +75,11 @@ SECTIONS {
 	} > FLASH
 		
 	/* Require Frescale Flash security config */
-	/* Auto fill with 0xFF if section not present in code */
+	/* Auto fill with 0xFF is section not present in code */
 	.FSec : ALIGN(4)
 	{
 		KEEP(*(.fseccfg))
+		/* in case security config is not defined, fill in default */
 		LONG(0xffffffff);
 		LONG(0xffffffff);
 		LONG(0xffffffff);
