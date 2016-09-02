@@ -70,12 +70,12 @@ public:
 	virtual int Read(int Addr, uint8_t *pData, int Len);
 	virtual int Write(int Addr, uint8_t *pData, int Len);
 
-private:
+protected:
 	//std::shared_ptr<SerialIntrf> vpInterf;
-	SerialIntrf *vpInterf;
 	int vDevAddr;		// SEEP I2C address
 	int vPageSize;
 	int vAddrLen;
+	SerialIntrf *vpInterf;
 };
 
 extern "C" {
