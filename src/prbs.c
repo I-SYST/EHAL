@@ -39,6 +39,7 @@ Modified by          Date              Description
  * 8-bit PRBS generator ( X^7 + X^6 + 1 ).  Repetition period = 127
  *
  * @param  CurVal : Current PRBS value
+ * 					Initial value must be non zero
  *
  * @return Next PRBS value
  */
