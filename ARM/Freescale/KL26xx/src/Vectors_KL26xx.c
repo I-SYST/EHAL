@@ -83,7 +83,7 @@ __attribute__((weak, alias("DEF_IRQHandler"))) void PORTD_IRQHandler(void);
 __attribute__ ((section(".intvect"), used))
 void (* const g_Vectors[])(void) =
 {
-	/*(void (*) )((int32_t)&__StackTop), This stack pointer address is hnadled in ld script*/
+	(void (*) )((int32_t)&__StackTop),
 	ResetEntry,
 	NMI_Handler,
 	HardFault_Handler,

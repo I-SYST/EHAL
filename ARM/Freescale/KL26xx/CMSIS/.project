@@ -29,5 +29,10 @@
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/src/ResetEntry.c</locationURI>
 		</link>
+		<link>
+			<name>src/Vectors_KL26xx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/Vectors_KL26xx.c</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>

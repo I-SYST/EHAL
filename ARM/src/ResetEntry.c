@@ -52,7 +52,12 @@ extern void SystemInit(void);
 extern void SystemCoreClockUpdate(void);
 extern uint32_t SystemCoreClock;
 
-// Nop count for usDelay base on ARM NOP instruction timming on 16MHz clock
+extern	void (* const g_Vectors[])(void);
+
+// Just to make the linker to keep the g_Vectors
+__attribute__ ((used)) static uint32_t s_StackPtr = (uint32_t)g_Vectors;
+
+// Nop count for usDelay base on ARM NOP instruction timing on 16MHz clock
 uint32_t SystemMicroSecNopCnt = 1;
 
 /**

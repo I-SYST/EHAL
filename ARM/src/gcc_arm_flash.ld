@@ -59,10 +59,10 @@ SECTIONS {
 		__text_start__ = .;
 		
 		/* At addr zero is the stack pointer */
-		LONG(__StackTop);
+		/*LONG(__StackTop);*/
 
 		/* interrupt vector */
-		KEEP(*(.intvect))
+		KEEP(*(.intvect*))
 	} > FLASH 
 	
 	/* This is where the firmware informaton is stored. Usefull for bootloader */

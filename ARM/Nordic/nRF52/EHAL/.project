@@ -126,6 +126,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/md5.h</locationURI>
 		</link>
 		<link>
+			<name>include/prbs.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/prbs.h</locationURI>
+		</link>
+		<link>
 			<name>include/sdcard.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sdcard.h</locationURI>
@@ -249,6 +254,11 @@
 			<name>src/ledmxio_nrf5x.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ledmxio_nrf5x.c</locationURI>
+		</link>
+		<link>
+			<name>src/prbs.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/prbs.c</locationURI>
 		</link>
 		<link>
 			<name>src/sbuffer.c</name>

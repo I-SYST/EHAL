@@ -35,6 +35,7 @@ Modified by          Date              Description
 #include <string.h>
 #include <sys/types.h>
 
+extern unsigned long __StackTop;
 extern void ResetEntry(void);
 
 void DEF_IRQHandler(void) { while(1); }
@@ -91,13 +92,15 @@ __attribute__((weak, alias("DEF_IRQHandler"))) void QEI_IRQHandler(void);
 __attribute__ ((section(".intvect"), used))
 void (* const g_Vectors[])(void) =
 {
+	(void (*) )((int32_t)&__StackTop),
 	ResetEntry,
 	NMI_Handler,
 	HardFault_Handler,
 	MemManage_Handler,
 	BusFault_Handler,
 	UsageFault_Handler,
-	0, 0, 0, 0,
+	(void(*))0xefff4562, // Checksum
+	0, 0, 0,
 	SVC_Handler,
 	DebugMon_Handler,
 	0,
