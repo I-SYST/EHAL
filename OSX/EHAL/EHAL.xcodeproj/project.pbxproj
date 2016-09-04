@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		40DEF0391D7B981E00CEB34A /* uart_osx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40DEF0371D7B981E00CEB34A /* uart_osx.cpp */; };
+		40DEF03C1D7B985900CEB34A /* uart_osx.h in Headers */ = {isa = PBXBuildFile; fileRef = 40DEF03B1D7B985900CEB34A /* uart_osx.h */; };
+		40DEF03E1D7B988900CEB34A /* uart.h in Headers */ = {isa = PBXBuildFile; fileRef = 40DEF03D1D7B988900CEB34A /* uart.h */; };
+		40DEF0441D7C718800CEB34A /* prbs.c in Sources */ = {isa = PBXBuildFile; fileRef = 40DEF0411D7C718800CEB34A /* prbs.c */; };
+		40DEF0451D7C718800CEB34A /* serialintrf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40DEF0421D7C718800CEB34A /* serialintrf.cpp */; };
+		40DEF0461D7C718800CEB34A /* uart.c in Sources */ = {isa = PBXBuildFile; fileRef = 40DEF0431D7C718800CEB34A /* uart.c */; };
+		40DEF0481D7C915400CEB34A /* sbuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 40DEF0471D7C915400CEB34A /* sbuffer.c */; };
 		40F6A91A1D77990A0029F1AB /* usbhiddev_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40F6A9191D77990A0029F1AB /* usbhiddev_impl.cpp */; };
 		40F6A91C1D7799150029F1AB /* usbhiddev_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A91B1D7799150029F1AB /* usbhiddev_impl.h */; };
 		40F6A9231D7799530029F1AB /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = 40F6A91D1D7799530029F1AB /* base64.c */; };
@@ -36,6 +43,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		40DEF0371D7B981E00CEB34A /* uart_osx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uart_osx.cpp; path = ../src/uart_osx.cpp; sourceTree = "<group>"; };
+		40DEF03B1D7B985900CEB34A /* uart_osx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uart_osx.h; path = ../include/uart_osx.h; sourceTree = "<group>"; };
+		40DEF03D1D7B988900CEB34A /* uart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uart.h; path = ../../include/uart.h; sourceTree = "<group>"; };
+		40DEF0411D7C718800CEB34A /* prbs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = prbs.c; path = ../../src/prbs.c; sourceTree = "<group>"; };
+		40DEF0421D7C718800CEB34A /* serialintrf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = serialintrf.cpp; path = ../../src/serialintrf.cpp; sourceTree = "<group>"; };
+		40DEF0431D7C718800CEB34A /* uart.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = uart.c; path = ../../src/uart.c; sourceTree = "<group>"; };
+		40DEF0471D7C915400CEB34A /* sbuffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sbuffer.c; path = ../../src/sbuffer.c; sourceTree = "<group>"; };
 		40F6A9121D7798D60029F1AB /* libEHAL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libEHAL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		40F6A9191D77990A0029F1AB /* usbhiddev_impl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = usbhiddev_impl.cpp; path = ../src/usbhiddev_impl.cpp; sourceTree = "<group>"; };
 		40F6A91B1D7799150029F1AB /* usbhiddev_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = usbhiddev_impl.h; path = ../include/usbhiddev_impl.h; sourceTree = "<group>"; };
@@ -79,6 +93,13 @@
 		40F6A9091D7798D60029F1AB = {
 			isa = PBXGroup;
 			children = (
+				40DEF0471D7C915400CEB34A /* sbuffer.c */,
+				40DEF0411D7C718800CEB34A /* prbs.c */,
+				40DEF0421D7C718800CEB34A /* serialintrf.cpp */,
+				40DEF0431D7C718800CEB34A /* uart.c */,
+				40DEF03D1D7B988900CEB34A /* uart.h */,
+				40DEF03B1D7B985900CEB34A /* uart_osx.h */,
+				40DEF0371D7B981E00CEB34A /* uart_osx.cpp */,
 				40F6A9311D7799B30029F1AB /* atomic.h */,
 				40F6A9321D7799B30029F1AB /* base64.h */,
 				40F6A9331D7799B30029F1AB /* cfifo.h */,
@@ -127,6 +148,7 @@
 				40F6A9421D7799B30029F1AB /* cfifo.h in Headers */,
 				40F6A9451D7799B30029F1AB /* intelhex.h in Headers */,
 				40F6A9461D7799B30029F1AB /* istddef.h in Headers */,
+				40DEF03C1D7B985900CEB34A /* uart_osx.h in Headers */,
 				40F6A94E1D7799B30029F1AB /* utf8cvt.h in Headers */,
 				40F6A94B1D7799B30029F1AB /* sysstatusdef.h in Headers */,
 				40F6A91C1D7799150029F1AB /* usbhiddev_impl.h in Headers */,
@@ -137,6 +159,7 @@
 				40F6A9491D7799B30029F1AB /* sha256.h in Headers */,
 				40F6A94D1D7799B30029F1AB /* utf8.h in Headers */,
 				40F6A94A1D7799B30029F1AB /* sysstatus.h in Headers */,
+				40DEF03E1D7B988900CEB34A /* uart.h in Headers */,
 				40F6A9441D7799B30029F1AB /* crc.h in Headers */,
 				40F6A9411D7799B30029F1AB /* base64.h in Headers */,
 				40F6A9431D7799B30029F1AB /* convutil.h in Headers */,
@@ -204,10 +227,15 @@
 				40F6A9231D7799530029F1AB /* base64.c in Sources */,
 				40F6A9251D7799530029F1AB /* crc.c in Sources */,
 				40F6A92D1D7799800029F1AB /* sha1.c in Sources */,
+				40DEF0391D7B981E00CEB34A /* uart_osx.cpp in Sources */,
+				40DEF0441D7C718800CEB34A /* prbs.c in Sources */,
+				40DEF0461D7C718800CEB34A /* uart.c in Sources */,
 				40F6A9301D7799800029F1AB /* sysstatus.c in Sources */,
 				40F6A9281D7799530029F1AB /* utf8cvt.cpp in Sources */,
+				40DEF0451D7C718800CEB34A /* serialintrf.cpp in Sources */,
 				40F6A91A1D77990A0029F1AB /* usbhiddev_impl.cpp in Sources */,
 				40F6A92E1D7799800029F1AB /* sha256.c in Sources */,
+				40DEF0481D7C915400CEB34A /* sbuffer.c in Sources */,
 				40F6A9261D7799530029F1AB /* intelhex.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -252,6 +280,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../../../include,
+					../../include,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -290,6 +322,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../../../include,
+					../../include,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
@@ -331,6 +367,7 @@
 				40F6A9181D7798D60029F1AB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

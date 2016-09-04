@@ -95,11 +95,11 @@ void UART_IRQHandler(void)
 
 						if (r & LPCUART_MSR_DCTS)
 						{
-							g_LpcUartDev->pUartDev->LineState ^= UART_LINESTATE_CTS;
-							data |= (g_LpcUartDev->pUartDev->LineState & UART_LINESTATE_CTS);
+							g_LpcUartDev->pUartDev->LineState ^= UART_LINESTATE_DSR;
+							data |= (g_LpcUartDev->pUartDev->LineState & UART_LINESTATE_DSR);
 						}
 						//data |= (r & LPCUART_MSR_CTS) ? UART_LINESTATE_CTS : 0;
-						data |= (r & LPCUART_MSR_DDSR) ? UART_LINESTATE_DSR : 0;
+						//data |= (r & LPCUART_MSR_DDSR) ? UART_LINESTATE_DSR : 0;
 						data |= (r & LPCUART_MSR_RI) ? UART_LINESTATE_RI : 0;
 						data |= (r & LPCUART_MSR_DCD) ? UART_LINESTATE_DCD : 0;
 
@@ -199,6 +199,11 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 {
 	LPCUARTREG *reg = NULL;
 	//g_UartClkDiv = 1;
+	if (pCfg == NULL)
+		return false;
+
+	if (pCfg->pIoMap == NULL || pCfg->IoMapLen == 0)
+		return false;
 
 	switch (pCfg->DevNo)
 	{
@@ -225,22 +230,15 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
 	// Configure I/O pins
 	int idx = 0;
+	IOPINCFG *pincfg = (IOPINCFG *)pCfg->pIoMap;
 
-	while (pCfg->PinCfg[idx].PortNo >= 0 && idx < UART_NB_PINS)
+	IOPinCfg(pincfg, pCfg->IoMapLen);
+
+/*	while (pincfg[idx].PortNo >= 0 && idx < pCfg->IoMapLen)
 	{
-		IOPinCfg(&pCfg->PinCfg[idx], 1);
+		IOPinCfg(&pincfg[idx], 1);
 		idx++;
-	}
-/*
-	LPC_GPIO->SET[pCfg->PinCfg[UARTPIN_TX_IDX].PortNo] = (1 << pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
-	if (pCfg->PinCfg[UARTPIN_CTS_IDX].PortNo >= 0)
-		LPC_GPIO->CLR[pCfg->PinCfg[UARTPIN_CTS_IDX].PortNo] = (1 << pCfg->PinCfg[UARTPIN_CTS_IDX].PinNo);
-
-	if (pCfg->PinCfg[UARTPIN_RTS_IDX].PortNo >= 0)
-	{
-		LPC_GPIO->CLR[pCfg->PinCfg[UARTPIN_RTS_IDX].PortNo] = (1 << pCfg->PinCfg[UARTPIN_RTS_IDX].PinNo);
-	}
-*/
+	}*/
 
 	reg->TER = 0;	// Disable Tx
 	reg->IER = 0;	// Disable all interrupts

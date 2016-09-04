@@ -344,6 +344,11 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 {
 //	NRFUARTDEV *dev = (NRFUARTDEV*)pDev->SerIntrf.pDevData;
 	// Config I/O pins
+	if (pDev == NULL || pCfg == NULL)
+		return false;
+
+	if (pCfg->pIoMap == NULL || pCfg->IoMapLen <= 0)
+		return false;
 
 	if (pCfg->pRxMem && pCfg->RxMemSize > 0)
 	{
@@ -363,8 +368,10 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 		pDev->hTxFifo = CFifoInit(s_nRFUARTTxFifoMem, NRFUART_CFIFO_SIZE, 1);
 	}
 
-	NRF_GPIO->OUTSET = (1 << pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
-	IOPinCfg(pCfg->PinCfg, UART_NB_PINS);
+	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIoMap;
+
+	NRF_GPIO->OUTSET = (1 << pincfg[UARTPIN_TX_IDX].PinNo);
+	IOPinCfg(pincfg, pCfg->IoMapLen);
 //    nrf_gpio_pin_set(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
 //    nrf_gpio_cfg_output(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
 //    nrf_gpio_cfg_input(pCfg->PinCfg[UARTPIN_RX_IDX].PinNo, NRF_GPIO_PIN_PULLUP);
@@ -374,8 +381,8 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
 	//NRF_UART0->POWER = UART_POWER_POWER_Enabled << UART_POWER_POWER_Pos;
 
-    NRF_UART0->PSELRXD = pCfg->PinCfg[UARTPIN_RX_IDX].PinNo;
-	NRF_UART0->PSELTXD = pCfg->PinCfg[UARTPIN_TX_IDX].PinNo;
+    NRF_UART0->PSELRXD = pincfg[UARTPIN_RX_IDX].PinNo;
+	NRF_UART0->PSELTXD = pincfg[UARTPIN_TX_IDX].PinNo;
 
     // Set baud
     pDev->Rate = nRFUARTSetRate(&pDev->SerIntrf, pCfg->Rate);
@@ -400,10 +407,10 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
     if (pCfg->FlowControl == UART_FLWCTRL_HW)
 	{
 		NRF_UART0->CONFIG |= (UART_CONFIG_HWFC_Enabled << UART_CONFIG_HWFC_Pos);
-		NRF_UART0->PSELCTS = pCfg->PinCfg[UARTPIN_CTS_IDX].PinNo;
-		NRF_UART0->PSELRTS = pCfg->PinCfg[UARTPIN_RTS_IDX].PinNo;
-		NRF_GPIO->OUTCLR = (1 << pCfg->PinCfg[UARTPIN_CTS_IDX].PinNo);
-		NRF_GPIO->OUTCLR = (1 << pCfg->PinCfg[UARTPIN_RTS_IDX].PinNo);
+		NRF_UART0->PSELCTS = pincfg[UARTPIN_CTS_IDX].PinNo;
+		NRF_UART0->PSELRTS = pincfg[UARTPIN_RTS_IDX].PinNo;
+		NRF_GPIO->OUTCLR = (1 << pincfg[UARTPIN_CTS_IDX].PinNo);
+		NRF_GPIO->OUTCLR = (1 << pincfg[UARTPIN_RTS_IDX].PinNo);
         // Setup the gpiote to handle pin events on cts-pin.
         // For the UART we want to detect both low->high and high->low transitions in order to
         // know when to activate/de-activate the TX/RX in the UART.
@@ -419,10 +426,10 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	}
 
 
-	s_nRFUartDev.RxPin = pCfg->PinCfg[UARTPIN_RX_IDX].PinNo;
-	s_nRFUartDev.TxPin = pCfg->PinCfg[UARTPIN_TX_IDX].PinNo;
-	s_nRFUartDev.CtsPin = pCfg->PinCfg[UARTPIN_CTS_IDX].PinNo;
-	s_nRFUartDev.RtsPin = pCfg->PinCfg[UARTPIN_RTS_IDX].PinNo;
+	s_nRFUartDev.RxPin = pincfg[UARTPIN_RX_IDX].PinNo;
+	s_nRFUartDev.TxPin = pincfg[UARTPIN_TX_IDX].PinNo;
+	s_nRFUartDev.CtsPin = pincfg[UARTPIN_CTS_IDX].PinNo;
+	s_nRFUartDev.RtsPin = pincfg[UARTPIN_RTS_IDX].PinNo;
 	s_nRFUartDev.bRxReady = false;
 	s_nRFUartDev.bTxReady = true;
 

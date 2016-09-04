@@ -34,49 +34,21 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <chrono>
 
-#include "iopincfg.h"
 #include "uart.h"
-#include "blueio_board.h"
 #include "prbs.h"
 
-//#define NORDIC_DK
 
-#ifdef NORDIC_DK
-#define UART_TX_PIN			9//7
-#define UART_RX_PIN			11//8
-#define UART_RTS_PIN		8//11
-#define UART_CTS_PIN		10//12
-#else
-#define UART_TX_PIN			BLUEIO_UART_TX
-#define UART_RX_PIN			BLUEIO_UART_RX
-#define UART_RTS_PIN		BLUEIO_UART_RTS
-#define UART_CTS_PIN		BLUEIO_UART_CTS
-#endif
-
-int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
-
-#define CFIFOMEMSIZE		(256)
-
-uint8_t g_RxBuff[CFIFOMEMSIZE];
-uint8_t g_TxBuff[CFIFOMEMSIZE];
-
-static IOPINCFG s_UartPins[] = {
-	{0, UART_RX_PIN, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-	{0, UART_TX_PIN, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
-	{0, UART_CTS_PIN, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// CTS
-	{0, UART_RTS_PIN, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RTS
-//	{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// DCD
-//	{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// DTE
-//	{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// DTR
-//	{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RI
-};
+char s_DevPath[] = {"/dev/cu.usbmodem142122"};
 
 // UART configuration data
 const UARTCFG g_UartCfg = {
 	0,
-	s_UartPins,
-	sizeof(s_UartPins) / sizeof(IOPINCFG),
+	s_DevPath,
+	static_cast<int>(strlen(s_DevPath)),
 	1000000,	// Rate
 	8,
 	UART_PARITY_NONE,
@@ -84,13 +56,14 @@ const UARTCFG g_UartCfg = {
 	UART_FLWCTRL_NONE,
 	true,
 	1, //  use APP_IRQ_PRIORITY_LOW with Softdevice
-	nRFUartEvthandler,
-	CFIFOMEMSIZE,
-	g_RxBuff,
-	CFIFOMEMSIZE,
-	g_TxBuff,
+	nullptr,
+	0,
+	nullptr,
+	0,
+	nullptr,
 };
 
+#define DEMO_C
 #ifdef DEMO_C
 // For C
 UARTDEV g_UartDev;
@@ -99,27 +72,6 @@ UARTDEV g_UartDev;
 // UART object instance
 UART g_Uart;
 #endif
-
-int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen)
-{
-	int cnt = 0;
-	uint8_t buff[20];
-
-	switch (EvtId)
-	{
-		case UART_EVT_RXTIMEOUT:
-		case UART_EVT_RXDATA:
-
-			break;
-		case UART_EVT_TXREADY:
-			break;
-		case UART_EVT_LINESTATE:
-			break;
-	}
-
-	return cnt;
-}
-
 
 
 //
@@ -146,17 +98,48 @@ int main()
 #endif
 
 	uint8_t d = 0xff;
+    uint8_t val = 0xff;
+    uint32_t errcnt = 0;
+    uint32_t cnt = 0;
+    auto t_start = std::chrono::high_resolution_clock::now();
+    auto t_end = std::chrono::high_resolution_clock::now();
+    
+    std::chrono::duration<float> elapse = std::chrono::duration<float>(0);
 
+#ifdef DEMO_C
+    while (UARTRx(&g_UartDev, &d, 1) <= 0);
+#else
+    while (g_Uart.Rx(&d, 1) <= 0);
+#endif
+    val = Prbs8(d);
+    
 	while(1)
 	{
+        t_start = std::chrono::high_resolution_clock::now();
+
 #ifdef DEMO_C
-		if (UARTTx(&g_UartDev, &d, 1) > 0)
+		if (UARTRx(&g_UartDev, &d, 1) > 0)
 #else
-		if (g_Uart.Tx(&d, 1) > 0)
+		if (g_Uart.Rx(&d, 1) > 0)
 #endif
 		{
+            t_end = std::chrono::high_resolution_clock::now();
+            elapse += std::chrono::duration<float>(t_end-t_start);
+            cnt++;
+            
 			// If success send next code
-			d = Prbs8(d);
+           // printf("%x ", d);
+            if (val != d)
+            {
+                errcnt++;
+                printf("PRBS %u errors %x %x\n", errcnt, val, d);
+            }
+            else if ((cnt & 0xff) == 0)
+            {
+                printf("PRBS rate %.3f B/s, cnt : %u, err : %u\n", cnt / (elapse.count()), cnt, errcnt);
+
+            }
+			val = Prbs8(d);
 		}
 	}
 	return 0;

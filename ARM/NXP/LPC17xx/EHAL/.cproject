@@ -107,7 +107,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="i2c_lpcxx.c|i2c_lpc17xx.c|uart_lpc17xx.c|sdcard.c|lpci2c.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="i2c_lpcxx.c|i2c_lpc17xx.c|sdcard.c|lpci2c.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -219,7 +219,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="i2c_lpcxx.c|i2c_lpc17xx.c|uart_lpc17xx.c|sdcard.c|lpci2c.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="i2c_lpcxx.c|i2c_lpc17xx.c|sdcard.c|lpci2c.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

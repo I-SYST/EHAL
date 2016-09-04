@@ -1,0 +1,271 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		40DEF0401D7C70E000CEB34A /* libEHAL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DEF03F1D7C70E000CEB34A /* libEHAL.a */; };
+		40F3FDB21D7A7BBF0096DFAB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40F3FDB11D7A7BBF0096DFAB /* main.cpp */; };
+		40F3FDB91D7A7C6A0096DFAB /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F3FDB81D7A7C6A0096DFAB /* CoreFoundation.framework */; };
+		40F3FDBB1D7A7CA80096DFAB /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F3FDBA1D7A7CA80096DFAB /* IOKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		40F3FDAC1D7A7BBF0096DFAB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		40DEF03F1D7C70E000CEB34A /* libEHAL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libEHAL.a; path = ../../EHAL/DerivedData/Build/Products/Debug/libEHAL.a; sourceTree = "<group>"; };
+		40F3FDAE1D7A7BBF0096DFAB /* UartPrbsTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = UartPrbsTest; sourceTree = BUILT_PRODUCTS_DIR; };
+		40F3FDB11D7A7BBF0096DFAB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		40F3FDB81D7A7C6A0096DFAB /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		40F3FDBA1D7A7CA80096DFAB /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		40F3FDBC1D7A7CFC0096DFAB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		40F3FDAB1D7A7BBF0096DFAB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				40DEF0401D7C70E000CEB34A /* libEHAL.a in Frameworks */,
+				40F3FDBB1D7A7CA80096DFAB /* IOKit.framework in Frameworks */,
+				40F3FDB91D7A7C6A0096DFAB /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		40F3FDA51D7A7BBF0096DFAB = {
+			isa = PBXGroup;
+			children = (
+				40DEF03F1D7C70E000CEB34A /* libEHAL.a */,
+				40F3FDBC1D7A7CFC0096DFAB /* Foundation.framework */,
+				40F3FDBA1D7A7CA80096DFAB /* IOKit.framework */,
+				40F3FDB81D7A7C6A0096DFAB /* CoreFoundation.framework */,
+				40F3FDB01D7A7BBF0096DFAB /* UartPrbsTest */,
+				40F3FDAF1D7A7BBF0096DFAB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		40F3FDAF1D7A7BBF0096DFAB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				40F3FDAE1D7A7BBF0096DFAB /* UartPrbsTest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		40F3FDB01D7A7BBF0096DFAB /* UartPrbsTest */ = {
+			isa = PBXGroup;
+			children = (
+				40F3FDB11D7A7BBF0096DFAB /* main.cpp */,
+			);
+			path = UartPrbsTest;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		40F3FDAD1D7A7BBF0096DFAB /* UartPrbsTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 40F3FDB51D7A7BBF0096DFAB /* Build configuration list for PBXNativeTarget "UartPrbsTest" */;
+			buildPhases = (
+				40F3FDAA1D7A7BBF0096DFAB /* Sources */,
+				40F3FDAB1D7A7BBF0096DFAB /* Frameworks */,
+				40F3FDAC1D7A7BBF0096DFAB /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UartPrbsTest;
+			productName = UartPrbsTest;
+			productReference = 40F3FDAE1D7A7BBF0096DFAB /* UartPrbsTest */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		40F3FDA61D7A7BBF0096DFAB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "I-SYST inc.";
+				TargetAttributes = {
+					40F3FDAD1D7A7BBF0096DFAB = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+				};
+			};
+			buildConfigurationList = 40F3FDA91D7A7BBF0096DFAB /* Build configuration list for PBXProject "UartPrbsTest" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 40F3FDA51D7A7BBF0096DFAB;
+			productRefGroup = 40F3FDAF1D7A7BBF0096DFAB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				40F3FDAD1D7A7BBF0096DFAB /* UartPrbsTest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		40F3FDAA1D7A7BBF0096DFAB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				40F3FDB21D7A7BBF0096DFAB /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		40F3FDB31D7A7BBF0096DFAB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../../../../include,
+					../../../include,
+				);
+				LIBRARY_SEARCH_PATHS = ../../EHAL/DerivedData/Build/Products/Debug;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		40F3FDB41D7A7BBF0096DFAB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../../../../include,
+					../../../include,
+				);
+				LIBRARY_SEARCH_PATHS = ../../EHAL/DerivedData/Build/Products/Release;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		40F3FDB61D7A7BBF0096DFAB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		40F3FDB71D7A7BBF0096DFAB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		40F3FDA91D7A7BBF0096DFAB /* Build configuration list for PBXProject "UartPrbsTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40F3FDB31D7A7BBF0096DFAB /* Debug */,
+				40F3FDB41D7A7BBF0096DFAB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		40F3FDB51D7A7BBF0096DFAB /* Build configuration list for PBXNativeTarget "UartPrbsTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40F3FDB61D7A7BBF0096DFAB /* Debug */,
+				40F3FDB71D7A7BBF0096DFAB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 40F3FDA61D7A7BBF0096DFAB /* Project object */;
+}
