@@ -46,8 +46,8 @@ void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState)
 {
 	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->SerIntrf.pDevData;
 
-	dev->pUartReg->MCR &= 3 | (3<<6);
-	dev->pUartReg->MCR |= LineState & (3 | (3<<6));
+	dev->pUartReg->MCR &= ~3;
+	dev->pUartReg->MCR |= LineState & 3;
 }
 
 int LpcUARTGetRate(SERINTRFDEV *pDev)

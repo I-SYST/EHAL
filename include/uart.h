@@ -43,7 +43,6 @@ Modified by          Date              Description
 #include <stdbool.h>
 #endif
 
-#include "iopincfg.h"
 #include "serialintrf.h"
 #include "cfifo.h"
 
@@ -68,14 +67,14 @@ typedef enum {
 } UART_FLWCTRL;
 
 #define UART_LINESTATE_DCD		(1<<0)		// Rx Carrier detect
-#define UART_LINESTATE_DSR		(1<<1)		// Tx Carrier detect
+#define UART_LINESTATE_DSR		(1<<1)		// Tx Carrier detect (CTS/RTS)
 #define UART_LINESTATE_BRK		(1<<2)		// Break
 #define UART_LINESTATE_RI		(1<<3)		// Ring detect
 #define UART_LINESTATE_FRMERR	(1<<4)		// Frame error
 #define UART_LINESTATE_PARERR	(1<<5)		// Parity error
 #define UART_LINESTATE_OVR		(1<<6)		// Overrun
-#define UART_LINESTATE_CTS		(1<<7)
-#define UART_LINESTATE_RTS		(1<<8)
+//#define UART_LINESTATE_CTS		(1<<7)
+//#define UART_LINESTATE_RTS		(1<<8)
 
 #define UART_NB_PINS			8
 
@@ -96,7 +95,6 @@ typedef enum {
 	UART_EVT_RXDATA,
 	UART_EVT_TXREADY,
 	UART_EVT_LINESTATE,
-//	UART_EVT_ERROR
 } UART_EVT;
 
 /**
@@ -126,7 +124,9 @@ typedef int (*UARTEVTCB)(UARTDEV*pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buf
 // Configuration data used to initialize device
 typedef struct {
 	int DevNo;					// UART device number
-	IOPINCFG PinCfg[UART_NB_PINS];	// I/O pin to configure for UART
+	const void *pIoMap;			// Pointer to IO mapping.  This can be either IOPINCFG array or device path string
+	int IoMapLen;				// Nb of elements in IOPINCFG array or string length of device path
+	//IOPINCFG PinCfg[UART_NB_PINS];	// I/O pin to configure for UART
 	int Rate;					// Baudrate, set to 0 for auto baudrate
 	int DataBits;				// Number of data bits
 	UART_PARITY Parity;			// Data parity

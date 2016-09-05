@@ -15,7 +15,7 @@ class CommUART(object):
         self.sc = None
         while self.sc is None:
             try:
-                self.sc = serial.Serial(port=self.address, baudrate=1000000, rtscts=False)
+                self.sc = serial.Serial(port=self.address, baudrate=1000000, rtscts=True)
             except serial.serialutil.SerialException as se:
                 if 'Device or resource busy:' in se.__str__():
                     logging.info('Opening COM port is taking a little while, please stand by...')
@@ -54,7 +54,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(message)s')
 
     #comm = CommUART("/dev/cu.usbserial-A8UKQC7S")
-    comm = CommUART("/dev/cu.usbmodem142132")
+    comm = CommUART("/dev/cu.usbmodem142122")
     comm.connect()
 
     curval = 0
@@ -62,6 +62,7 @@ def main():
     curval = int.from_bytes(packet, byteorder = 'little')
     val = comm.prbs8(curval)
     byteCount = 0
+    dropcnt = 0
     deltatime = 0
     drop = False
     while True:
@@ -72,17 +73,18 @@ def main():
             deltatime += endTime - startTime
             curval = int.from_bytes(packet, byteorder = 'little')
             if curval != val:
-                drop = True
+                dropcnt += 1
             val = comm.prbs8(curval)
             byteCount += 1
 
             bytesPerSec = byteCount / deltatime #(endTime - startTime)
 
             #print("Bytes : {0}".format(bytes))
-            if drop:
-                print("Dropped.... Bytes/sec : {0}".format(bytesPerSec))
-            else:
-                print("Bytes/sec : {0}".format(bytesPerSec))
+            #if drop:
+            #    print("Dropped.... Bytes/sec : {0}".format(bytesPerSec))
+            #else:
+            if (byteCount & 0xff) == 0:
+                print("Bytes/sec : %.2f, drop %d " %(bytesPerSec, dropcnt))
         except KeyboardInterrupt:
             print("KeyboardInterrupt. Exiting.")
             break

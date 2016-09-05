@@ -37,6 +37,7 @@ Modified by          Date              Description
 #include <stdint.h>
 #include <string.h>
 #include <chrono>
+#include <time.h>
 
 #include "uart.h"
 #include "prbs.h"
@@ -98,33 +99,42 @@ int main()
 #endif
 
 	uint8_t d = 0xff;
-    uint8_t val = 0xff;
+    uint8_t val = 0;
     uint32_t errcnt = 0;
     uint32_t cnt = 0;
     auto t_start = std::chrono::high_resolution_clock::now();
     auto t_end = std::chrono::high_resolution_clock::now();
     
     std::chrono::duration<float> elapse = std::chrono::duration<float>(0);
+    t_start = std::chrono::high_resolution_clock::now();
 
+    time_t t;
+    double e = 0.0;
+    bool isOK = false;
+//    do {
 #ifdef DEMO_C
     while (UARTRx(&g_UartDev, &d, 1) <= 0);
 #else
     while (g_Uart.Rx(&d, 1) <= 0);
 #endif
-    val = Prbs8(d);
+    	if (val == d)
+            isOK = true;
+    	val = Prbs8(d);
+ //   } while (!isOK);
     
 	while(1)
 	{
-        t_start = std::chrono::high_resolution_clock::now();
-
+       // t_start = std::chrono::high_resolution_clock::now();
+        t = time(NULL);
 #ifdef DEMO_C
-		if (UARTRx(&g_UartDev, &d, 1) > 0)
+        while (UARTRx(&g_UartDev, &d, 1) <= 0);
 #else
-		if (g_Uart.Rx(&d, 1) > 0)
+        while (g_Uart.Rx(&d, 1) <= 0);
 #endif
 		{
-            t_end = std::chrono::high_resolution_clock::now();
-            elapse += std::chrono::duration<float>(t_end-t_start);
+            e += difftime(time(NULL), t);
+          //  t_end = std::chrono::high_resolution_clock::now();
+            //elapse += std::chrono::duration<float>(t_end-t_start);
             cnt++;
             
 			// If success send next code
@@ -132,11 +142,12 @@ int main()
             if (val != d)
             {
                 errcnt++;
-                printf("PRBS %u errors %x %x\n", errcnt, val, d);
+               // printf("PRBS %u errors %x %x\n", errcnt, val, d);
             }
-            else if ((cnt & 0xff) == 0)
+            else if ((cnt & 0x7fff) == 0)
             {
-                printf("PRBS rate %.3f B/s, cnt : %u, err : %u\n", cnt / (elapse.count()), cnt, errcnt);
+                printf("PRBS rate %.3f B/s, err : %u\n", cnt / e, errcnt);
+//                printf("PRBS rate %.3f B/s, err : %u\n", cnt / elapse.count(), errcnt);
 
             }
 			val = Prbs8(d);

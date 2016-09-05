@@ -39,6 +39,7 @@ Hoan						June 2009			Ekomini
 class UsbHidDevice {
 
 public:
+//    UsbHidDevice::UsbHidDevice() {}
 	
 	// Must be implemented per target implementation
 	static UsbHidDevice *Create();
@@ -52,7 +53,6 @@ public:
     virtual bool WaitResponse(int TimeOutSec) = 0;
     
 protected:
-	UsbHidDevice();
 	virtual void ReadDeviceInfo() = 0;
 	uint32_t vMaxInRepSize;
 	uint32_t vMaxOutRepSize;

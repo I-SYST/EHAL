@@ -211,6 +211,19 @@ typedef enum _USB_CDC_Notification_Code {
 	USB_CDC_NOTIFY_MDML_SEMANTIC			= 0x40	// MDML SEMANTIC-MODEL-SPECIFIC NOTIFICATION start here
 } USB_CDC_NOTIFY;
 
+// USB_CDC_REQ_SET_CTRL_LINE_STATE
+#define USB_CDC_CTRL_LINE_STATE_DTR		(1<<0)	// Data terminal ready
+#define USB_CDC_CTRL_LINE_STATE_RTS		(1<<1)	// Ready to send
+
+// USB_CDC_NOTIFY_LINE_STATE_CHANGE
+#define	USB_CDC_LINE_STATE_DCD			(1<<0) // Data carrier detect. This is asserted when a connection has been established with remote equipment
+#define	USB_CDC_LINE_STATE_DSR			(1<<1) // Data Set Ready. This is asserted to indicate an active connection. (CTS)
+#define	USB_CDC_LINE_STATE_BRK			(1<<2) // Break detection state
+#define	USB_CDC_LINE_STATE_RI			(1<<3) // Ring indicator state.
+#define	USB_CDC_LINE_STATE_FE			(1<<4) // Framing error detected.
+#define	USB_CDC_LINE_STATE_PE			(1<<5) // Parity error detected.
+#define	USB_CDC_LINE_STATE_OE			(1<<6) // Overrun error
+
 #pragma pack(push, 1)
 
 typedef struct _USB_Functional_Descriptor {
