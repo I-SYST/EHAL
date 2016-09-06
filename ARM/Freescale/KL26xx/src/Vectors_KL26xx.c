@@ -70,9 +70,9 @@ __attribute__((weak, alias("DEF_IRQHandler"))) void USB0_IRQHandler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void DAC0_IRQHandler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void TSI0_IRQHandler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void MCG_IRQHandler(void);
-__attribute__((weak, alias("DEF_IRQHandler"))) void LPTimer_IRQHandler(void);
+__attribute__((weak, alias("DEF_IRQHandler"))) void LPTMR0_IRQHandler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void PORTA_IRQHandler(void);
-__attribute__((weak, alias("DEF_IRQHandler"))) void PORTD_IRQHandler(void);
+__attribute__((weak, alias("DEF_IRQHandler"))) void PORTC_PORTD_IRQHandler(void);
 
 /**
  * This interrupt vector is by default located in FLASH. Though it can not be
@@ -127,10 +127,10 @@ void (* const g_Vectors[])(void) =
 	DAC0_IRQHandler,		// DAC0 interrupt
     TSI0_IRQHandler,		// TSI0 interrupt
     MCG_IRQHandler,			// MCG interrupt
-    LPTimer_IRQHandler,		// LPTimer interrupt
+	LPTMR0_IRQHandler,		// LPTimer interrupt
     0,						// Reserved interrupt 45
 	PORTA_IRQHandler,		// Port A interrupt
-	PORTD_IRQHandler,		// Port D interrupt
+	PORTC_PORTD_IRQHandler,		// Port D interrupt
 };
 
 const uint32_t g_iVectorSize = sizeof(g_Vectors) + 4;
