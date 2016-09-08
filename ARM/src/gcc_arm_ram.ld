@@ -60,12 +60,10 @@ SECTIONS {
 		__text_start__ = .;
 		
 		/* At addr zero is the stack pointer */
-		LONG(__StackTop);
+		/*LONG(__StackTop);*/
 
 		/* interrupt vector */
 		KEEP(*(.intvect))
-		FILL(0xff) /* fill unsused area to have consistant checksum */
-		. = __text_start__ + 0x400;
 	} > RAM 
 	
 	/* This is where the firmware informaton is stored. Usefull for bootloader */
@@ -73,6 +71,8 @@ SECTIONS {
 	{
 		KEEP(*(.Version))
 		LONG(__CheckSum);
+		FILL(0xff)  /* fill unsused area to have consistant checksum */
+		. = 0x400 - SIZEOF(.ivector);/* - SIZEOF(.Version);*/
 	} > RAM
 	
 	/* Code region starts here */
@@ -171,8 +171,11 @@ SECTIONS {
 	
 	__data_start__ = ADDR(.data);
    	__data_loc__ = LOADADDR(.data);
-   	__data_size__ = SIZEOF(.data);
 	
+	/* calculate size to take full range from .data to .bss in case other data sections
+   	   were inserted in between from outside of this file */
+   	__data_size__ = __bss_size__ - __data_start__ /*SIZEOF(.data);*/
+		
 	.bss : ALIGN(4)
 	{
 		__bss_start__ = .;
