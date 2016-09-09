@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#include "nrf.h"
-/*
+#include "atomic.h"
+
 int __atomic_fetch_add_4(int *d, int val, int mem)
 {
 	uint32_t primask = __get_PRIMASK();
@@ -52,7 +52,7 @@ int __atomic_fetch_sub_4(int *d, int val, int mem)
 
 	return *d;
 }
-*/
+/*
 uint32_t DisableInterrupt()
 {
 	uint32_t primask = __get_PRIMASK();
@@ -66,3 +66,4 @@ void EnableInterrupt(uint32_t State)
 	__set_PRIMASK(State);
 }
 
+*/

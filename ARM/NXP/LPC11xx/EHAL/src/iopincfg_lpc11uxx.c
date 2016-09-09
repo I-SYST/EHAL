@@ -62,6 +62,9 @@ static uint32_t g_PinPortOffset[3] = {
  */
 void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resistor, IOPINTYPE Type)
 {
+	if (PortNo < 0 || PinNo < 0)
+		return;
+
 	uint32_t *pincfgreg = (uint32_t *)((uint32_t)LPC_IOCON  + g_PinPortOffset[PortNo]);
 
 	// Configure direction

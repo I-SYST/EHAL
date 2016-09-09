@@ -38,7 +38,7 @@
 		<link>
 			<name>include/cfifo.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/cfifo.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/cfifo.h</locationURI>
 		</link>
 		<link>
 			<name>include/convutil.h</name>
@@ -249,6 +249,11 @@
 			<name>src/CppRuntimeOverload.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/CppRuntimeOverload.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/atomic.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/src/atomic.c</locationURI>
 		</link>
 		<link>
 			<name>src/base64.c</name>

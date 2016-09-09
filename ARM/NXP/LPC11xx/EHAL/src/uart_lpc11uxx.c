@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : lpc11uxx_uart.h
+File   : uart_lpc11uxx.h
 
 Author : Hoang Nguyen Hoan          Oct. 26, 2014
 
@@ -54,13 +54,11 @@ LPCUARTDEV g_LpcUartDev[LPC11XX_UART_MAX_DEV] = {
 bool LpcUARTWaitForRxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
 bool LpcUARTWaitForTxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
 
-#define UART_RX_CFIFO_SIZE			64
+#define UART_RX_CFIFO_SIZE			16
 #define UART_TX_CFIFO_SIZE			16
 
 #define UART_RX_CFIFO_MEM_SIZE			(UART_RX_CFIFO_SIZE + sizeof(CFIFOHDL))
 #define UART_TX_CFIFO_MEM_SIZE			(UART_TX_CFIFO_SIZE + sizeof(CFIFOHDL))
-
-uint32_t s_ErrCnt = 0;
 
 uint8_t s_UARTRxFifoMem[UART_RX_CFIFO_MEM_SIZE];
 uint8_t s_UARTTxFifoMem[UART_TX_CFIFO_MEM_SIZE];
@@ -77,7 +75,6 @@ void UART_IRQHandler(void)
 		switch (iid)//r & LPCUART_IIR_ID_MASK)
 		{
 			case LPCUART_IIR_ID_MS:
-				s_ErrCnt++;
 //				data = LPC_USART->MCR;
 //				break;
 			case LPCUART_IIR_ID_RLS:	// Line status
@@ -111,31 +108,41 @@ void UART_IRQHandler(void)
 				//break;
 
 			case LPCUART_IIR_ID_CTIMOUT:
+				//flushrx = true;
+				//break;
 			case LPCUART_IIR_ID_RDA:
-				{
-					cnt = 0;
-					uint32_t state = DisableInterrupt();
-					while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 8) {
-					//do {
-						uint8_t *p = CFifoPut(g_LpcUartDev->pUartDev->hRxFifo);
-						if (p == NULL)
-							break;
+			//case LPCUART_IIR_ID_THRE:
+			{
+				cnt = 0;
+				uint32_t state = DisableInterrupt();
+				while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 8) {
+				//while (LpcUARTWaitForRxFifo(&g_LpcUartDev, 10) && cnt < 8) {
+				//do {
+					uint8_t *p = CFifoPut(g_LpcUartDev->pUartDev->hRxFifo);
+					if (p)
+					{
+					//d[cnt++] = g_LpcUartDev->pUartReg->RBR;
 						*p = g_LpcUartDev->pUartReg->RBR;
 						cnt++;
 					}
-					//cnt = CFifoUsed(g_LpcUartDev->pUartDev->hRxFifo);
-					//while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 14);
-					EnableInterrupt(state);
-
-					if (g_LpcUartDev->pUartDev->EvtCallback)
+					else
 					{
-						int len = CFifoUsed(g_LpcUartDev->pUartDev->hRxFifo);
-						if (iid == LPCUART_IIR_ID_CTIMOUT)
-							g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXTIMEOUT, NULL, len);
-						else
-							g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXDATA, NULL, len);
+						//printf("drop2\r\n");
+						break;
 					}
 				}
+				//while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 14);
+				cnt = CFifoUsed(g_LpcUartDev->pUartDev->hRxFifo);
+				EnableInterrupt(state);
+				//data = LPC_USART->RBR;
+				if (g_LpcUartDev->pUartDev->EvtCallback)
+				{
+					if (iid == LPCUART_IIR_ID_CTIMOUT)
+						g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXTIMEOUT, NULL, cnt);
+					else //if (cnt > 8)
+						g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXDATA, NULL, cnt);
+				}
+			}
 				break;
 
 			case LPCUART_IIR_ID_THRE:
@@ -198,12 +205,7 @@ uint32_t LpcGetUartClk()
 bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 {
 	LPCUARTREG *reg = NULL;
-
-	if (pCfg == NULL)
-		return false;
-
-	if (pCfg->pIoMap == NULL || pCfg->IoMapLen == 0)
-		return false;
+	//g_UartClkDiv = 1;
 
 	switch (pCfg->DevNo)
 	{
@@ -212,14 +214,27 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	        reg = (void*)LPC_USART;
 	        LPC_SYSCON->UARTCLKDIV = 2;//g_UartClkDiv; //PCLKSEL0 &= ~LPC_PCLKSEL0_UART0_MASK;	// CCLK/4
 			break;
+/*		case 1:
+	        LPC_SYSCON->SYSAHBCLKCTRL |= LPC_SYSAHBCLKCTRL_UART1_EN;
+	        pDev->pUartReg = (LPC_UART_TypeDef*)LPC_UART1;
+	        LPC_SC->PCLKSEL0 &= ~LPC_PCLKSEL0_UART1_MASK;	// CCLK/4
+			break;
+		case 2:
+	        LPC_SYSCON->SYSAHBCLKCTRL |= LPC_SYSAHBCLKCTRL_UART2_EN;
+	        pDev->pUartReg = LPC_UART2;
+	        LPC_SC->PCLKSEL1 &= ~LPC_PCLKSEL1_UART2_MASK;	// CCLK/4
+			break;*/
 		default:
 			return false;
 	}
 
-	// Configure I/O pins
-	IOPINCFG *pincfg = (IOPINCFG *)pCfg->pIoMap;
+	//LPC_USART_Type *reg = (LPC_USART_Type *)pDev->pUartReg;
 
+	// Configure I/O pins
+	int idx = 0;
+	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIoMap;
 	IOPinCfg(pincfg, pCfg->IoMapLen);
+
 
 	reg->TER = 0;	// Disable Tx
 	reg->IER = 0;	// Disable all interrupts
@@ -228,6 +243,9 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	// Clear all FIFO
 	reg->FCR = LPCUART_FCR_RST_RXFIFO | LPCUART_FCR_RST_TXFIFO;
 
+
+//	if (pCfg->DMAMode)
+//		pDev->pUartReg->FCR |= LPCUART_FCR_DMA_MODE | LPCUART_FCR_RX_TRIG8;
 
 	// Data bis, Parity, Stop bit
 	reg->LCR = (pCfg->DataBits - 5);

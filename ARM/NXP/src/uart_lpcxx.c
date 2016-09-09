@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : lpcuart.c
+File   : uart_lpcxx.c
 
 Author : Hoang Nguyen Hoan          Jan. 16, 2012
 
@@ -111,14 +111,14 @@ int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate)
 				}
 			}
 		}
+		dval &= 0xf;
+		mval &= 0xf;
+
+		int div = (rate16 + rate16 * dval / mval);
+		dl = (pclk + (div >> 1)) / div;
 	}
-	dval &= 0xf;
-	mval &= 0xf;
-
-	int div = (rate16 + rate16 * dval / mval);
-	dl = (pclk + (div >> 1)) / div;
-
-	//dl = pclk / rate16;
+	else
+		dl = pclk / rate16;
 
 	dev->pUartReg->LCR |= LPCUART_LCR_DLAB; 	// Enable Divisor Access
 	dev->pUartReg->DLL = dl & 0xff;
@@ -132,7 +132,7 @@ int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate)
 	// recalculate real data rate
 	dev->pUartDev->Rate = pclk / (dl + dl * dval / mval);
 
-	uint32_t diff = dev->pUartDev->Rate - Rate;
+	//uint32_t diff = dev->pUartDev->Rate - Rate;
 	//float err = (float)diff * 100.0 / Rate;
 
 	//printf("%d Rate : %d, %d\r\n", pclk, dev->pUartDev->Rate, Rate);
@@ -165,14 +165,12 @@ int LpcUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 
 	while (Bufflen > 0)
 	{
-		if (!LpcUARTWaitForRxFifo(dev, 10))
+		if (!LpcUARTWaitForRxFifo(dev, 1))
 			break;
-		{
-			*pBuff = (uint8_t)(dev->pUartReg->RBR & 0xff);
-			Bufflen--;
-			pBuff++;
-			cnt++;
-		}
+		*pBuff = (uint8_t)(dev->pUartReg->RBR & 0xff);
+		Bufflen--;
+		pBuff++;
+		cnt++;
 	}
 
 	return cnt;
