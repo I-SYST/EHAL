@@ -101,7 +101,7 @@ int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate)
 				x <<= 4;
 				// recalculate real data rate
 				div = (x + x * dv / mv);
-				int r = pclk / div;
+				int r = (pclk + (div >> 1))/ div;
 				int rd = Rate < r ? r - Rate : Rate - r;
 				if (rd < diff)
 				{
@@ -111,14 +111,12 @@ int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate)
 				}
 			}
 		}
-		dval &= 0xf;
-		mval &= 0xf;
-
-		int div = (rate16 + rate16 * dval / mval);
-		dl = (pclk + (div >> 1)) / div;
 	}
-	else
-		dl = pclk / rate16;
+	dval &= 0xf;
+	mval &= 0xf;
+
+	int div = (rate16 + rate16 * dval / mval);
+	dl = (pclk + (div >> 1)) / div;
 
 	dev->pUartReg->LCR |= LPCUART_LCR_DLAB; 	// Enable Divisor Access
 	dev->pUartReg->DLL = dl & 0xff;
@@ -176,15 +174,6 @@ int LpcUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 	return cnt;
 }
 
-bool LpcUARTStartTx(SERINTRFDEV *pDev, int DevAddr)
-{
-//	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
-
-//	dev->pUartReg->TER = LPCUART_TER_TXEN;
-
-	return true;
-}
-
 int LpcUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 {
 	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
@@ -218,13 +207,6 @@ int LpcUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 	}
 
 	return cnt;
-}
-
-void LpcUARTStopTx(SERINTRFDEV *pDev)
-{
-//	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
-
-	//dev->pUartReg->TER = 0;
 }
 
 bool LpcUARTWaitForRxFifo(LPCUARTDEV *pDev, uint32_t Timeout)

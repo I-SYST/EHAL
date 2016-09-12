@@ -271,9 +271,9 @@ int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate);
 static inline bool LpcUARTStartRx(SERINTRFDEV *pSerDev, int DevAddr) { return true; }
 int LpcUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen);
 static inline void LpcUARTStopRx(SERINTRFDEV *pSerDev) {}
-bool LpcUARTStartTx(SERINTRFDEV *pDev, int DevAddr);
+static inline bool LpcUARTStartTx(SERINTRFDEV *pDev, int DevAddr) { return true; }
 int LpcUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen);
-void LpcUARTStopTx(SERINTRFDEV *pDev);
+static inline void LpcUARTStopTx(SERINTRFDEV *pDev) {}
 bool LpcUARTWaitForRxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
 bool LpcUARTWaitForTxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
 UART_STATUS LpcUARTGetStatus(LPCUARTDEV *pDev);

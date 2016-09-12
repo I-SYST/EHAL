@@ -370,7 +370,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
 	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIoMap;
 
-	NRF_GPIO->OUTSET = (1 << pincfg[UARTPIN_TX_IDX].PinNo);
+	//NRF_GPIO->OUTSET = (1 << pincfg[UARTPIN_TX_IDX].PinNo);
 	IOPinCfg(pincfg, pCfg->IoMapLen);
 //    nrf_gpio_pin_set(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
 //    nrf_gpio_cfg_output(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);

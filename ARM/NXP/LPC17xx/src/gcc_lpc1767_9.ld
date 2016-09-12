@@ -36,7 +36,7 @@ SEARCH_DIR(.)
 SEARCH_DIR("../../../src")
 SEARCH_DIR("../../../../src")
 SEARCH_DIR("../../../../../src")
-GROUP(-lgcc -lc -lnosys -lCMSIS)
+GROUP(-lCMSIS -lnosys -lstdc++ -lgcc -lc)
 
 /*
  * Define memory regions.
@@ -52,20 +52,17 @@ MEMORY
    RAMAHB1 (rwx) : ORIGIN = 0x20080000, LENGTH = 16K	/* Bank 1 */
 }
 
-ENTRY(ResetEntry)
+/*ENTRY(ResetEntry)*/
 
 /* Library configurations */
-GROUP (
-	/*libcr_newlib_semihost.a*/
-	/*libc.a*/
+/*GROUP (
 	
 	libgcc.a 
 	libc.a 
 	libstdc++.a 
 	libnosys.a
 )
-
-INCLUDE "gcc_arm_flash.ld"
+*/
 
 SECTIONS 
 {
@@ -90,4 +87,6 @@ SECTIONS
    	__data_ahb_loc__ = LOADADDR(.data_RAMAHB);
    	__data_ahb_size__ = SIZEOF(.data_RAMAHB);
 }
+
+INCLUDE "gcc_arm_flash.ld"
 
