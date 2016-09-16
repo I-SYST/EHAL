@@ -198,7 +198,7 @@ SECTIONS {
 
    	/* calculate size to take full range from .data to .bss in case other data sections
    	   were inserted in between from outside of this file */
-   	__data_size__ = SIZEOF(.data);
+   	__data_size__ = __bss_start__ - __data_start__ ; /* SIZEOF(.data);*/
 	
 	.bss : ALIGN(4)
 	{
