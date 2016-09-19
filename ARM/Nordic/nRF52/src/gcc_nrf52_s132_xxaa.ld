@@ -7,18 +7,18 @@ GROUP(-lgcc -lc -lnosys -lCMSIS)
 
 MEMORY
 {
-	FLASH (rx) : ORIGIN = 0x1C000, LENGTH = 0x64000
-	RAM (rwx) :  ORIGIN = 0x20002800, LENGTH = 0x5800
+	FLASH (rx) : ORIGIN = 0x1F000, LENGTH = 0x61000
+	RAM (rwx) :  ORIGIN = 0x20002200, LENGTH = 0xde00
 }
 
 SECTIONS
 {
-  .fs_data :
-  {
-    PROVIDE(__start_fs_data = .);
-    KEEP(*(.fs_data))
-    PROVIDE(__stop_fs_data = .);
-  } > RAM
+	.fs_data :
+	{
+		PROVIDE(__start_fs_data = .);
+		KEEP(*(.fs_data))
+		PROVIDE(__stop_fs_data = .);
+	} > RAM AT > FLASH
 } INSERT AFTER .data;
 
 INCLUDE "gcc_arm_flash.ld"
