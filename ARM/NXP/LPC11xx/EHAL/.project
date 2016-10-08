@@ -146,9 +146,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/spi.h</locationURI>
 		</link>
 		<link>
-			<name>include/ssp_lpcxx.h</name>
+			<name>include/spi_lpcxx.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/ssp_lpcxx.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/spi_lpcxx.h</locationURI>
 		</link>
 		<link>
 			<name>include/stddev.h</name>
@@ -351,9 +351,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sha256.c</locationURI>
 		</link>
 		<link>
-			<name>src/ssp_lpcxx.c</name>
+			<name>src/spi_lpcxx.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/ssp_lpcxx.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/spi_lpcxx.c</locationURI>
 		</link>
 		<link>
 			<name>src/stddev.c</name>

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : lpcssp.c
+File   : spi_lpcxx.c
 
 Author : Hoang Nguyen Hoan          Dec. 25, 2011
 
@@ -34,7 +34,7 @@ Hoan				Feb. 20, 2015	New EHAL
 #include <stdio.h>
 #include <string.h>
 #include "iopincfg.h"
-#include "ssp_lpcxx.h"
+#include "spi_lpcxx.h"
 
 extern uint32_t SystemCoreClock;
 

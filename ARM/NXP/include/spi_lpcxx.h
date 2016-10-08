@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : lpcssp.h
+File   : spi_lpc11.h
 
 Author : Hoang Nguyen Hoan          Nov. 24, 2011
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : lpc11uxx_ssp.h
+File   : spi_lpc11uxx.h
 
 Author : Hoang Nguyen Hoan          Feb. 20, 2015
 
@@ -35,7 +35,7 @@ Modified by         Date            Description
 ----------------------------------------------------------------------------*/
 #include "LPC11Uxx.h"
 
-#include "ssp_lpcxx.h"
+#include "spi_lpcxx.h"
 
 #define LPC11U_SYSAHBCLKCTRL_SSP0_EN		(1 << 11)
 #define LPC11U_SYSAHBCLKCTRL_SSP1_EN		(1 << 18)
