@@ -96,6 +96,8 @@ typedef struct _SPI_Config {
 	SPIDATAPHASE DataPhase;	// Data Out Phase.
 	SPICLKPOL ClkPol;		// Clock Out Polarity.
 	bool bManSel;        	// Set to true for manual select
+	int IntPrio;			// Interrupt priority
+	SERINTRFEVCB EvtCB;		// Event callback
 } SPICFG;
 
 // Device driver data require by low level fonctions

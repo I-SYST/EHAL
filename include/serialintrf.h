@@ -39,11 +39,56 @@ Modified by          Date              Description
 #include <stdint.h>
 #include <stdbool.h>
 
-#pragma pack(push, 4)
+/*
+ * Serial interface event types
+ */
+typedef enum {
+	SERINTRF_EVT_RX_TIMEOUT,	// Rx timeout
+	SERINTRF_EVT_RXDATA,		// Data received
+	SERINTRF_EVT_TX_TIMEOUT,	// Tx timeout
+	SERINTRF_EVT_TX_READY,		// Ready to transmit
+	UART_EVT_STATECHG,			// State changed. State data is device dependent.
+								// To be interpreted by implementation
+} SERINTRF_EVT;
 
 typedef struct _serialintrf_dev SERINTRFDEV;
+
+
+/**
+ * @brief
+ *
+ * Event handler callback. This is normally being called within interrupts, avoid blocking
+ *
+ * @param pDev : Device handle
+ * @param EvtId : Event code
+ * @param pBuffer : In/Out Buffer containing data
+ * 					on SERINTRF_EVT_RX_TIMEOUT & SERINTRF_EVT_RXDATA, pBuffer contains data received. If
+ * 					driver implements CFIFO, this parameter is NULL with BufferLen indicating total data
+ * 					in fifo.
+ * 					on SERINTRF_EVT_TX_READY, pBuffer contains data to be transmit with max length
+ * 					BufferLen. If driver implements CFIFO, this parameter is NULL and BufferLen
+ * 					indicates amount of data stored in fifo
+ * 					on UART_EVT_STATECHG, pBuffer contains state data. This is implementation specific
+ * 					for example UART implementation would contains line state info.
+ *
+ * @param BufferLen : Max buffer length.  See above description
+ *
+ * @return number of bytes processed.  Implementation specific
+ */
+typedef int (*SERINTRFEVCB)(SERINTRFDEV *pDev, SERINTRF_EVT EvtId, uint8_t *pBuffer, int BufferLen);
+
+#pragma pack(push, 4)
+
+/*
+ * Serial interface data structure.  This structure is the actual interface for both C++ & C code
+ * It is used to provide C compatibility instead of using C++ interface which is only for C++
+ */
 struct _serialintrf_dev {
-	void *pDevData;		// Private device interface implementation data
+	void *pDevData;			// Private device interface implementation data
+	int	IntPrio;			// Interrupt priority.  Value is implementation specific
+	SERINTRFEVCB EvtCB;		// Interrupt based event callback function pointer. Must be set to NULL if not used
+
+	// Bellow are all mandatory functions to implement
 	void (*Disable)(SERINTRFDEV *pSerDev);
 	void (*Enable)(SERINTRFDEV *pSerDev);
 	int (*GetRate)(SERINTRFDEV *pSerDev);
@@ -122,7 +167,9 @@ static inline void SerialIntrfStopTx(SERINTRFDEV *pDev) {
 
 
 #ifdef __cplusplus
-
+/*
+ * C++ interface class
+ */
 class SerialIntrf {
 public:
 	virtual ~SerialIntrf() {}

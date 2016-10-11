@@ -48,7 +48,7 @@ typedef struct {
 	int SpiNo;
 	SPIDEV *pSpiDev;
 	uint32_t Clk;
-	NRF5X_SPI_REG *pReg;	// Register map
+	NRF_SPIM_Type *pReg;	// Register map
 	int CsPin;				// Chip select pin, Nordic SPI has manual SS pin
 } NRF5X_SPIDEV;
 
@@ -56,13 +56,13 @@ typedef struct {
 
 static NRF5X_SPIDEV s_nRF5xDev[NRF5X_SPI_MAXDEV] = {
 	{
-		0, NULL, 0, (NRF5X_SPI_REG*)NRF_SPIM0_BASE, -1
+		0, NULL, 0, (NRF_SPIM_Type*)NRF_SPIM0_BASE, -1
 	},
 	{
-		1, NULL, 0, (NRF5X_SPI_REG*)NRF_SPIM1_BASE, -1
+		1, NULL, 0, (NRF_SPIM_Type*)NRF_SPIM1_BASE, -1
 	},
 	{
-		2, NULL, 0, (NRF5X_SPI_REG*)NRF_SPIM2_BASE, -1
+		2, NULL, 0, (NRF_SPIM_Type*)NRF_SPIM2_BASE, -1
 	},
 };
 
@@ -109,37 +109,37 @@ int nRF5xSPISetRate(SERINTRFDEV *pDev, int DataRate)
 
 	if (DataRate < 250000)
 	{
-		dev->pReg->FREQUENCY = SPI_FREQUENCY_FREQUENCY_K125;
+		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_K125;
 		dev->Clk = 125000;
 	}
 	else if (DataRate < 500000)
 	{
-		dev->pReg->FREQUENCY = SPI_FREQUENCY_FREQUENCY_K250;
+		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_K250;
 		dev->Clk = 250000;
 	}
 	else if (DataRate < 1000000)
 	{
-		dev->pReg->FREQUENCY = SPI_FREQUENCY_FREQUENCY_K500;
+		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_K500;
 		dev->Clk = 500000;
 	}
 	else if (DataRate < 2000000)
 	{
-		dev->pReg->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M1;
+		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M1;
 		dev->Clk = 1000000;
 	}
 	else if (DataRate < 4000000)
 	{
-		dev->pReg->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M2;
+		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M2;
 		dev->Clk = 2000000;
 	}
 	else if (DataRate < 8000000)
 	{
-		dev->pReg->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M4;
+		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M4;
 		dev->Clk = 4000000;
 	}
 	else
 	{
-		dev->pReg->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M8;
+		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M8;
 		dev->Clk = 8000000;
 	}
 
@@ -152,14 +152,14 @@ void nRF5xSPIDisable(SERINTRFDEV *pDev)
 {
 	NRF5X_SPIDEV *dev = (NRF5X_SPIDEV *)pDev->pDevData;
 
-	dev->pReg->ENABLE = (SPI_ENABLE_ENABLE_Disabled << SPI_ENABLE_ENABLE_Pos);
+	dev->pReg->ENABLE = (SPIM_ENABLE_ENABLE_Disabled << SPIM_ENABLE_ENABLE_Pos);
 }
 
 void nRF5xSPIEnable(SERINTRFDEV *pDev)
 {
 	NRF5X_SPIDEV *dev = (NRF5X_SPIDEV *)pDev->pDevData;
 
-	dev->pReg->ENABLE = (SPI_ENABLE_ENABLE_Enabled << SPI_ENABLE_ENABLE_Pos);
+	dev->pReg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
 }
 
 // Initial receive
@@ -183,6 +183,7 @@ int nRF5xSPIRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 	dev->pReg->TXD.PTR = 0;
 	dev->pReg->TXD.MAXCNT = 0;
 	dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
+	dev->pReg->TASKS_START = 1;
 
 	nRF5xSPIWaitDMA(dev, 10000);
 
@@ -218,6 +219,7 @@ int nRF5xSPITxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 	dev->pReg->TXD.PTR = (uint32_t)pData;
 	dev->pReg->TXD.MAXCNT = DataLen;
 	dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
+	dev->pReg->TASKS_START = 1;
 
 	nRF5xSPIWaitDMA(dev, 10000);
 
@@ -236,9 +238,13 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 {
 	NRF5X_SPI_REG *reg;
 	uint32_t err_code;
+	uint32_t cfgreg = 0;
 
 	if (pCfgData->DevNo < 0 || pCfgData->DevNo > 2)
 		return false;
+
+	// Get the correct register map
+	reg = s_nRF5xDev[pCfgData->DevNo].pReg;
 
 	// Configure I/O pins
 	IOPinCfg(pCfgData->IOPinMap, SPI_MAX_NB_IOPIN);
@@ -250,27 +256,22 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	s_nRF5xDev[pCfgData->DevNo].CsPin = pCfgData->IOPinMap[SPI_SS_IOPIN_IDX].PinNo;
 	IOPinSet(0, s_nRF5xDev[pCfgData->DevNo].CsPin);
 
-	// Get the correct register map
-	reg = s_nRF5xDev[pCfgData->DevNo].pReg;
-
-	uint32_t cfgreg = 0;
-
 	if (pCfgData->BitOrder == SPIDATABIT_LSB)
 	{
-		cfgreg |= SPI_CONFIG_ORDER_LsbFirst;
+		cfgreg |= SPIM_CONFIG_ORDER_LsbFirst;
 	}
 	else
 	{
-		cfgreg |= SPI_CONFIG_ORDER_MsbFirst;
+		cfgreg |= SPIM_CONFIG_ORDER_MsbFirst;
 	}
 
 	if (pCfgData->DataPhase == SPIDATAPHASE_SECOND_CLK)
 	{
-		cfgreg |= (SPI_CONFIG_CPHA_Trailing   << SPI_CONFIG_CPHA_Pos);
+		cfgreg |= (SPIM_CONFIG_CPHA_Trailing   << SPIM_CONFIG_CPHA_Pos);
 	}
 	else
 	{
-		cfgreg |= (SPI_CONFIG_CPHA_Leading    << SPI_CONFIG_CPHA_Pos);
+		cfgreg |= (SPIM_CONFIG_CPHA_Leading    << SPIM_CONFIG_CPHA_Pos);
 	}
 
 	//config.irq_priority = APP_IRQ_PRIORITY_LOW;
@@ -289,8 +290,6 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	reg->CONFIG = cfgreg;
 
 	reg->ORC = 0xFF;
-
-	//nrf_drv_spi_init(&g_nRF5xSPIDev[pCfgData->DevNo].Spi, &config, nRF5xSPIEventHandler);
 
 	pDev->Cfg = *pCfgData;
 	s_nRF5xDev[pCfgData->DevNo].pSpiDev  = pDev;
@@ -311,7 +310,7 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	pDev->SerIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->SerIntrf.EvtCB = pCfgData->EvtCB;
 
-	reg->ENABLE = (SPI_ENABLE_ENABLE_Enabled << SPI_ENABLE_ENABLE_Pos);
+	reg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
 }
 
 
