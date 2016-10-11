@@ -76,10 +76,10 @@ typedef enum _SPI_Data_Bit_Order {
 
 #define SPI_MAX_RETRY			5
 #define SPI_MAX_NB_IOPIN		4
-#define SPI_SCK_IOPIN_IDX		1
-#define SPI_MISO_IOPIN_IDX		2
-#define SPI_MOSI_IOPIN_IDX		3
-#define SPI_SS_IOPIN_IDX		4
+#define SPI_SCK_IOPIN_IDX		0
+#define SPI_MISO_IOPIN_IDX		1
+#define SPI_MOSI_IOPIN_IDX		2
+#define SPI_SS_IOPIN_IDX		3
 
 #pragma pack(push, 4)
 
