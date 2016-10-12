@@ -47,8 +47,8 @@ CFIFOHDL CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize)
 	hdr->GetIdx = -1;
 	hdr->BlkSize = BlkSize;
 	hdr->MemSize = TotalMemSize;
-	hdr->MaxIdxCnt = (TotalMemSize - sizeof(CFIFOHDL)) / BlkSize;
-	hdr->pMemStart = (uint8_t*)(pMemBlk + sizeof(CFIFOHDL));
+	hdr->MaxIdxCnt = (TotalMemSize - sizeof(CFIFOHDR)) / BlkSize;
+	hdr->pMemStart = (uint8_t*)(pMemBlk + sizeof(CFIFOHDR));
 
 	return hdr;
 }
