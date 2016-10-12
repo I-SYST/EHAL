@@ -79,13 +79,16 @@ bool nRF5xSPIWaitReady(NRF5X_SPIDEV *pDev, int32_t Timeout)
 	return false;
 }
 
-bool nRF5xSPIWaitDMA(NRF5X_SPIDEV *pDev, int32_t Timeout)
+bool nRF5xSPIWaitDMA(NRF5X_SPIDEV *pDev, uint32_t Timeout)
 {
 	uint32_t val = 0;
 
 	do {
 		if (pDev->pReg->EVENTS_END)
+		{
+			pDev->pReg->EVENTS_END = 0; // clear event
 			return true;
+		}
 	} while (Timeout-- > 0);
 
 	return false;
@@ -183,9 +186,10 @@ int nRF5xSPIRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 	dev->pReg->TXD.PTR = 0;
 	dev->pReg->TXD.MAXCNT = 0;
 	dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
+	dev->pReg->EVENTS_END = 0;
 	dev->pReg->TASKS_START = 1;
 
-	nRF5xSPIWaitDMA(dev, 10000);
+	nRF5xSPIWaitDMA(dev, 100000);
 
 	return dev->pReg->RXD.AMOUNT;
 }
@@ -213,15 +217,16 @@ int nRF5xSPITxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 {
 	NRF5X_SPIDEV *dev = (NRF5X_SPIDEV *)pDev-> pDevData;
 
-	dev->pReg->RXD.PTR = NULL;
+	dev->pReg->RXD.PTR = 0;
 	dev->pReg->RXD.MAXCNT = 0;
 	dev->pReg->RXD.LIST = 0; // Scatter/Gather not supported
 	dev->pReg->TXD.PTR = (uint32_t)pData;
 	dev->pReg->TXD.MAXCNT = DataLen;
 	dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
+	dev->pReg->EVENTS_END = 0;
 	dev->pReg->TASKS_START = 1;
 
-	nRF5xSPIWaitDMA(dev, 10000);
+	nRF5xSPIWaitDMA(dev, 100000);
 
 	return dev->pReg->TXD.AMOUNT;
 }
