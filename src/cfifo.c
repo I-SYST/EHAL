@@ -32,16 +32,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
+#include <stdint.h>
 #include <string.h>
 #include "atomic.h"
 #include "cfifo.h"
 
-CFIFOHDL *CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize)
+CFIFOHDL CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize)
 {
 	if (pMemBlk == NULL)
 		return NULL;
 
-	CFIFOHDL *hdr = (CFIFOHDL *)pMemBlk;
+	CFIFOHDR *hdr = (CFIFOHDR *)pMemBlk;
 	hdr->PutIdx = 0;
 	hdr->GetIdx = -1;
 	hdr->BlkSize = BlkSize;
@@ -52,7 +53,7 @@ CFIFOHDL *CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize)
 	return hdr;
 }
 
-uint8_t *CFifoGet(CFIFOHDL *pFifo)
+uint8_t *CFifoGet(CFIFOHDL pFifo)
 {
 	if (pFifo == NULL || pFifo->GetIdx < 0)
 		return NULL;
@@ -72,7 +73,7 @@ uint8_t *CFifoGet(CFIFOHDL *pFifo)
 	return p;
 }
 
-uint8_t *CFifoGetMultiple(CFIFOHDL *pFifo, int *pCnt)
+uint8_t *CFifoGetMultiple(CFIFOHDL pFifo, int *pCnt)
 {
 	if (pCnt == NULL)
 		return CFifoGet(pFifo);
@@ -113,7 +114,7 @@ uint8_t *CFifoGetMultiple(CFIFOHDL *pFifo, int *pCnt)
 	return p;
 }
 
-uint8_t *CFifoPut(CFIFOHDL *pFifo)
+uint8_t *CFifoPut(CFIFOHDL pFifo)
 {
 	if (pFifo == NULL || pFifo->PutIdx == pFifo->GetIdx)
 		return NULL;
@@ -131,7 +132,7 @@ uint8_t *CFifoPut(CFIFOHDL *pFifo)
 	return p;
 }
 
-uint8_t *CFifoPutMultiple(CFIFOHDL *pFifo, int *pCnt)
+uint8_t *CFifoPutMultiple(CFIFOHDL pFifo, int *pCnt)
 {
 	if (pCnt == NULL)
 		return CFifoPut(pFifo);
@@ -176,13 +177,13 @@ uint8_t *CFifoPutMultiple(CFIFOHDL *pFifo, int *pCnt)
 	return p;
 }
 
-void CFifoFlush(CFIFOHDL *pFifo)
+void CFifoFlush(CFIFOHDL pFifo)
 {
 	AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, -1);
 	AtomicAssign((sig_atomic_t *)&pFifo->PutIdx, 0);
 }
 
-int CFifoAvail(CFIFOHDL *pFifo)
+int CFifoAvail(CFIFOHDL pFifo)
 {
 	int len = 0;
 
@@ -201,7 +202,7 @@ int CFifoAvail(CFIFOHDL *pFifo)
 	return len;
 }
 
-int CFifoUsed(CFIFOHDL *pFifo)
+int CFifoUsed(CFIFOHDL pFifo)
 {
 	int len = 0;
 
@@ -218,5 +219,85 @@ int CFifoUsed(CFIFOHDL *pFifo)
 	}
 
 	return len;
+}
+
+int CFifoRead(CFIFOHDL pFifo, uint8_t *pBuff, int BuffLen)
+{
+	if (pFifo == NULL || pFifo->GetIdx < 0 || pBuff == NULL)
+		return 0;
+
+	int cnt = 0;
+
+	if (BuffLen <= pFifo->BlkSize)
+	{
+		// Single block
+		uint8_t *p = CFifoGet(pFifo);
+		if (p)
+		{
+			memcpy(pBuff, p, BuffLen);
+
+			return BuffLen;
+		}
+	}
+	else
+	{
+		// Span multiple blocks
+		while (BuffLen > 0)
+		{
+			int l = BuffLen / pFifo->BlkSize;
+			if ((BuffLen % pFifo->BlkSize) > 0)
+				l++;
+			uint8_t *p = CFifoGetMultiple(pFifo, &l);
+			if (p == NULL)
+				break;
+			l *= pFifo->BlkSize;
+			memcpy(pBuff, p, l);
+			pBuff += l;
+			BuffLen -= l;
+			cnt += l;
+		}
+	}
+
+	return cnt;
+}
+
+int CFifoWrite(CFIFOHDL pFifo, uint8_t *pData, int DataLen)
+{
+	if (pFifo == NULL || pFifo->PutIdx == pFifo->GetIdx || pData == NULL)
+		return 0;
+
+	int cnt = 0;
+
+	if (DataLen <= pFifo->BlkSize)
+	{
+		// Single block
+		uint8_t *p = CFifoPut(pFifo);
+		if (p)
+		{
+			memcpy(p, pData, DataLen);
+
+			return DataLen;
+		}
+	}
+	else
+	{
+		// Span multiple blocks
+		while (DataLen > 0)
+		{
+			int l = DataLen / pFifo->BlkSize;
+			if ((DataLen % pFifo->BlkSize) > 0)
+				l++;
+			uint8_t *p = CFifoPutMultiple(pFifo, &l);
+			if (p == NULL)
+				break;
+			l *= pFifo->BlkSize;
+			memcpy(p, pData, l);
+			pData += l;
+			DataLen -= l;
+			cnt += l;
+		}
+	}
+
+	return cnt;
 }
 

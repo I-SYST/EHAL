@@ -161,8 +161,8 @@ struct __Uart_Dev {
 	SERINTRFDEV	SerIntrf;		// Serial device interface implementation
 	UARTEVTCB EvtCallback;		// UART event callback
 	void *pObj;					// Pointer to UART object instance
-	CFIFOHDL *hRxFifo;
-	CFIFOHDL *hTxFifo;
+	CFIFOHDL hRxFifo;			// Rx FIFO handle
+	CFIFOHDL hTxFifo;			// Tx Fifo handle
 	uint32_t LineState;			// Line state
 	int hStdIn;					// Handle to retarget stdin
 	int hStdOut;				// Handle to retarget stdout

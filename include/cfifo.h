@@ -47,70 +47,103 @@ typedef struct {
 	uint32_t BlkSize;			// Block size in bytes
 	uint32_t MemSize;			// Total fifo memory size allocated
 	uint8_t *pMemStart;			// Start of fifo data memory
-} CFIFOHDL;
+} CFIFOHDR;
 
-#define CFIFO_MEMSIZE(FSIZE)					((FSIZE) + sizeof(CFIFOHDL))
-#define CFIFO_TOTAL_MEMSIZE(NbBlk, BlkSize)		((NbBlk) * (BlkSize) + sizeof(CFIFOHDL))
+// defines CFIFO handle
+typedef CFIFOHDR*	CFIFOHDL;
+
+#define CFIFO_MEMSIZE(FSIZE)					((FSIZE) + sizeof(CFIFOHDR))
+#define CFIFO_TOTAL_MEMSIZE(NbBlk, BlkSize)		((NbBlk) * (BlkSize) + sizeof(CFIFOHDR))
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
+/*
  * Initialize FIFO
  *
  * @params	pMemBlk :		Pointer to memory block to be used for fifo
  * 			TotalMemSize : 	Total memory size in byte
  * 			BlkSize : 		Block size in bytes
+ *
+ * 	@return CFifo Handle
  */
-CFIFOHDL *CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize);
+CFIFOHDL CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize);
 
 /*
- * Retreive FIFO data
+ * Retrieve FIFO data by returning pointer to data block
+ *
+ * @param	hFifo : CFIFO handle
  *
  * @return pointer to the FIFO buffer.
  */
-uint8_t *CFifoGet(CFIFOHDL *pFifo);
+uint8_t *CFifoGet(CFIFOHDL pFifo);
 
 /*
- * Retreive FIFO data in multiple blocks
+ * Retrieve FIFO data in multiple blocks by returning pointer to data blocks
  *
- * @params	pCnt	: in - Number of block to get, out - Number of blocks returned
+ * @param	hFifo : CFIFO handle
+ * 			pCnt  : in - Number of block to get, out - Number of blocks returned
  *
  * @return	Pointer to first block
  */
-uint8_t *CFifoGetMultiple(CFIFOHDL *pFifo, int *pCnt);
+uint8_t *CFifoGetMultiple(CFIFOHDL hFifo, int *pCnt);
 
 /*
- * Insert FIFO data
+ * Insert FIFO data by returning pointer to memory block
+ *
+ * @param	hFifo : CFIFO handle
  *
  * @return pointer to the inserted FIFO buffer.
  */
-uint8_t *CFifoPut(CFIFOHDL *pFifo);
+uint8_t *CFifoPut(CFIFOHDL hFifo);
 
 /*
- * Insert multiple FIFO blocks
+ * Insert multiple FIFO blocks by returning pointer to memory blocks
  *
- * @params	pCnt	: in - Number of block to gut, out - Number of blocks returned
+ * @param	hFifo : CFIFO handle
+ * 			pCnt  : in - Number of block to gut, out - Number of blocks returned
  *
  * @return pointer to the inserted FIFO buffer.
  */
-uint8_t *CFifoPutMultiple(CFIFOHDL *pFifo, int *pCnt);
+uint8_t *CFifoPutMultiple(CFIFOHDL hFifo, int *pCnt);
 
-/**
+/*
+ * Retrieve FIFO data into provided buffer
+ *
+ * @param	hFifo : CFIFO handle
+ * 			pBuff : Pointer to buffer container for returned data
+ * 			BuffLen : Size of container in bytes
+ *
+ * @return	Number of bytes copied into pBuff
+ */
+int CFifoRead(CFIFOHDL hFifo, uint8_t *pBuff, int BuffLen);
+
+/*
+ * Insert FIFO data with provided data
+ *
+ * @param	hFifo : CFIFO handle
+ * 			pData : Pointer to data to be inserted
+ * 			DataLen : Size of data in bytes
+ *
+ * @return	Number of bytes inserted into Fifo
+ */
+int CFifoWrite(CFIFOHDL hFifo, uint8_t *pData, int DataLen);
+
+/*
  * Flush Fifo
  */
-void CFifoFlush(CFIFOHDL *pFifo);
+void CFifoFlush(CFIFOHDL hFifo);
 
-/**
+/*
  * Get available blocks in fifo
  */
-int CFifoAvail(CFIFOHDL *pFifo);
+int CFifoAvail(CFIFOHDL hFifo);
 
-/**
+/*
  * Get number of block used blocks
  */
-int CFifoUsed(CFIFOHDL *pFifo);
+int CFifoUsed(CFIFOHDL hFifo);
 
 #ifdef __cplusplus
 }
