@@ -39,6 +39,13 @@ Modified by          Date              Description
 #include <stdbool.h>
 #include <stdint.h>
 
+#ifdef _MSC_VER
+// Microsoft does not support C99 inline
+#ifndef inline
+#define inline __forceinline
+#endif
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -55,7 +62,7 @@ static inline int16_t EndianCvt16(int16_t x) {
  */
 static inline uint32_t EndianCvt32(uint32_t x) {
 	return (((x >> 24UL) & 0xff) | ((x << 24UL) & 0xff000000) |
-			((x >> 8UL) & 0xff00) | ((x << 8UL) | 0xff0000));
+			((x >> 8UL) & 0xff00) | ((x << 8UL) & 0xff0000));
 }
 
 /*
@@ -64,16 +71,12 @@ static inline uint32_t EndianCvt32(uint32_t x) {
  * @return -1 if wrong character
  */
 static inline int chex2i(char c) {
-	int retval = -1;
-
 	if (c >= 'a')
-		retval = c - 'a' + 10;
+		return (c - 'a' + 10);
 	else if (c >= 'A')
-		retval = c - 'A' + 10;
-	else
-		retval = c - '0';
+		return (c - 'A' + 10);
 
-	return retval;
+	return (c - '0');
 }
 	
 #ifdef __cplusplus
