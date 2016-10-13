@@ -38,10 +38,9 @@ Modified by          Date              Description
 #define __IOPINCTRL_H__
 
 #include <stdint.h>
-#ifdef __plusplus
-extern "C"
-#endif
 #include "nrf_gpio.h"
+
+#include "iopincfg.h"
 
 static inline void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
 {
