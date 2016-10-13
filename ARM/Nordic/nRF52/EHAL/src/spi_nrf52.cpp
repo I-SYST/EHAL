@@ -31,30 +31,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by         Date            Description
 
 ----------------------------------------------------------------------------*/
-#include "spi_nrf52.h"
 #include "nrf.h"
 
+#include "spi_nrf52.h"
 #include "iopinctrl.h"
 
-#ifdef NRF52
-	typedef NRF_SPIM_Type	NRF5X_SPI_REG;	// Register map
-#else
-	typedef NRF_SPI_Type	NRF5X_SPI_REG;	// Register map
-#endif
-
-#define NRF_SPI_REG_EVENTS_READY		0x108
-
 typedef struct {
-	int SpiNo;
+	int DevNo;
 	SPIDEV *pSpiDev;
 	uint32_t Clk;
 	NRF_SPIM_Type *pReg;	// Register map
 	int CsPin;				// Chip select pin, Nordic SPI has manual SS pin
-} NRF5X_SPIDEV;
+} NRF52_SPIDEV;
 
-#define NRF5X_SPI_MAXDEV		3
+#define NRF52_SPI_MAXDEV		3
 
-static NRF5X_SPIDEV s_nRF5xDev[NRF5X_SPI_MAXDEV] = {
+static NRF52_SPIDEV s_nRF52SPIDev[NRF52_SPI_MAXDEV] = {
 	{
 		0, NULL, 0, (NRF_SPIM_Type*)NRF_SPIM0_BASE, -1
 	},
@@ -66,20 +58,7 @@ static NRF5X_SPIDEV s_nRF5xDev[NRF5X_SPI_MAXDEV] = {
 	},
 };
 
-bool nRF5xSPIWaitReady(NRF5X_SPIDEV *pDev, int32_t Timeout)
-{
-	uint32_t val = 0;
-
-	do {
-		val = *(uint32_t*)((uint32_t)pDev->pReg + NRF_SPI_REG_EVENTS_READY);
-		if (val)
-			return true;
-	} while (Timeout-- > 0);
-
-	return false;
-}
-
-bool nRF5xSPIWaitDMA(NRF5X_SPIDEV *pDev, uint32_t Timeout)
+bool nRF52SPIWaitDMA(NRF52_SPIDEV *pDev, uint32_t Timeout)
 {
 	uint32_t val = 0;
 
@@ -94,21 +73,21 @@ bool nRF5xSPIWaitDMA(NRF5X_SPIDEV *pDev, uint32_t Timeout)
 	return false;
 }
 
-int nRF5xSPIGetRate(SERINTRFDEV *pDev)
+int nRF52SPIGetRate(SERINTRFDEV *pDev)
 {
 	int rate = 0;
 
 	if (pDev && pDev->pDevData)
-		rate = ((NRF5X_SPIDEV*)pDev->pDevData)->pSpiDev->Cfg.Rate;
+		rate = ((NRF52_SPIDEV*)pDev->pDevData)->pSpiDev->Cfg.Rate;
 
 	return rate;
 }
 
 // Set data rate in bits/sec (Hz)
 // return actual rate
-int nRF5xSPISetRate(SERINTRFDEV *pDev, int DataRate)
+int nRF52SPISetRate(SERINTRFDEV *pDev, int DataRate)
 {
-	NRF5X_SPIDEV *dev = (NRF5X_SPIDEV *)pDev-> pDevData;
+	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
 	if (DataRate < 250000)
 	{
@@ -151,24 +130,24 @@ int nRF5xSPISetRate(SERINTRFDEV *pDev, int DataRate)
 	return dev->pSpiDev->Cfg.Rate;
 }
 
-void nRF5xSPIDisable(SERINTRFDEV *pDev)
+void nRF52SPIDisable(SERINTRFDEV *pDev)
 {
-	NRF5X_SPIDEV *dev = (NRF5X_SPIDEV *)pDev->pDevData;
+	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
 	dev->pReg->ENABLE = (SPIM_ENABLE_ENABLE_Disabled << SPIM_ENABLE_ENABLE_Pos);
 }
 
-void nRF5xSPIEnable(SERINTRFDEV *pDev)
+void nRF52SPIEnable(SERINTRFDEV *pDev)
 {
-	NRF5X_SPIDEV *dev = (NRF5X_SPIDEV *)pDev->pDevData;
+	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
 	dev->pReg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
 }
 
 // Initial receive
-bool nRF5xSPIStartRx(SERINTRFDEV *pDev, int DevAddr)
+bool nRF52SPIStartRx(SERINTRFDEV *pDev, int DevAddr)
 {
-	NRF5X_SPIDEV *dev = (NRF5X_SPIDEV *)pDev-> pDevData;
+	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
 	IOPinClear(0, dev->CsPin);
 
@@ -176,9 +155,9 @@ bool nRF5xSPIStartRx(SERINTRFDEV *pDev, int DevAddr)
 }
 
 // Receive Data only, no Start/Stop condition
-int nRF5xSPIRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
+int nRF52SPIRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 {
-	NRF5X_SPIDEV *dev = (NRF5X_SPIDEV *)pDev-> pDevData;
+	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
 	dev->pReg->RXD.PTR = (uint32_t)pBuff;
 	dev->pReg->RXD.MAXCNT = BuffLen;
@@ -189,23 +168,23 @@ int nRF5xSPIRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 	dev->pReg->EVENTS_END = 0;
 	dev->pReg->TASKS_START = 1;
 
-	nRF5xSPIWaitDMA(dev, 100000);
+	nRF52SPIWaitDMA(dev, 100000);
 
 	return dev->pReg->RXD.AMOUNT;
 }
 
 // Stop receive
-void nRF5xSPIStopRx(SERINTRFDEV *pDev)
+void nRF52SPIStopRx(SERINTRFDEV *pDev)
 {
-	NRF5X_SPIDEV *dev = (NRF5X_SPIDEV *)pDev-> pDevData;
+	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
 	IOPinSet(0, dev->CsPin);
 }
 
 // Initiate transmit
-bool nRF5xSPIStartTx(SERINTRFDEV *pDev, int DevAddr)
+bool nRF52SPIStartTx(SERINTRFDEV *pDev, int DevAddr)
 {
-	NRF5X_SPIDEV *dev = (NRF5X_SPIDEV *)pDev-> pDevData;
+	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
 	IOPinClear(0, dev->CsPin);
 
@@ -213,9 +192,9 @@ bool nRF5xSPIStartTx(SERINTRFDEV *pDev, int DevAddr)
 }
 
 // Transmit Data only, no Start/Stop condition
-int nRF5xSPITxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
+int nRF52SPITxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 {
-	NRF5X_SPIDEV *dev = (NRF5X_SPIDEV *)pDev-> pDevData;
+	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
 	dev->pReg->RXD.PTR = 0;
 	dev->pReg->RXD.MAXCNT = 0;
@@ -226,30 +205,30 @@ int nRF5xSPITxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 	dev->pReg->EVENTS_END = 0;
 	dev->pReg->TASKS_START = 1;
 
-	nRF5xSPIWaitDMA(dev, 100000);
+	nRF52SPIWaitDMA(dev, 100000);
 
 	return dev->pReg->TXD.AMOUNT;
 }
 
 // Stop transmit
-void nRF5xSPIStopTx(SERINTRFDEV *pDev)
+void nRF52SPIStopTx(SERINTRFDEV *pDev)
 {
-	NRF5X_SPIDEV *dev = (NRF5X_SPIDEV *)pDev-> pDevData;
+	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
 	IOPinSet(0, dev->CsPin);
 }
 
 bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 {
-	NRF5X_SPI_REG *reg;
+	NRF_SPIM_Type *reg;
 	uint32_t err_code;
 	uint32_t cfgreg = 0;
 
-	if (pCfgData->DevNo < 0 || pCfgData->DevNo > 2)
+	if (pCfgData->DevNo < 0 || pCfgData->DevNo >= NRF52_SPI_MAXDEV)
 		return false;
 
 	// Get the correct register map
-	reg = s_nRF5xDev[pCfgData->DevNo].pReg;
+	reg = s_nRF52SPIDev[pCfgData->DevNo].pReg;
 
 	// Configure I/O pins
 	IOPinCfg(pCfgData->IOPinMap, SPI_MAX_NB_IOPIN);
@@ -258,8 +237,8 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	reg->PSEL.MISO = pCfgData->IOPinMap[SPI_MISO_IOPIN_IDX].PinNo;
 	reg->PSEL.MOSI = pCfgData->IOPinMap[SPI_MOSI_IOPIN_IDX].PinNo;
 
-	s_nRF5xDev[pCfgData->DevNo].CsPin = pCfgData->IOPinMap[SPI_SS_IOPIN_IDX].PinNo;
-	IOPinSet(0, s_nRF5xDev[pCfgData->DevNo].CsPin);
+	s_nRF52SPIDev[pCfgData->DevNo].CsPin = pCfgData->IOPinMap[SPI_SS_IOPIN_IDX].PinNo;
+	IOPinSet(0, s_nRF52SPIDev[pCfgData->DevNo].CsPin);
 
 	if (pCfgData->BitOrder == SPIDATABIT_LSB)
 	{
@@ -297,21 +276,21 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	reg->ORC = 0xFF;
 
 	pDev->Cfg = *pCfgData;
-	s_nRF5xDev[pCfgData->DevNo].pSpiDev  = pDev;
-	pDev->SerIntrf.pDevData = (void*)&s_nRF5xDev[pCfgData->DevNo];
+	s_nRF52SPIDev[pCfgData->DevNo].pSpiDev  = pDev;
+	pDev->SerIntrf.pDevData = (void*)&s_nRF52SPIDev[pCfgData->DevNo];
 
-	nRF5xSPISetRate(&pDev->SerIntrf, pCfgData->Rate);
+	nRF52SPISetRate(&pDev->SerIntrf, pCfgData->Rate);
 
-	pDev->SerIntrf.Disable = nRF5xSPIDisable;
-	pDev->SerIntrf.Enable = nRF5xSPIEnable;
-	pDev->SerIntrf.GetRate = nRF5xSPIGetRate;
-	pDev->SerIntrf.SetRate = nRF5xSPISetRate;
-	pDev->SerIntrf.StartRx = nRF5xSPIStartRx;
-	pDev->SerIntrf.RxData = nRF5xSPIRxData;
-	pDev->SerIntrf.StopRx = nRF5xSPIStopRx;
-	pDev->SerIntrf.StartTx = nRF5xSPIStartTx;
-	pDev->SerIntrf.TxData = nRF5xSPITxData;
-	pDev->SerIntrf.StopTx = nRF5xSPIStopTx;
+	pDev->SerIntrf.Disable = nRF52SPIDisable;
+	pDev->SerIntrf.Enable = nRF52SPIEnable;
+	pDev->SerIntrf.GetRate = nRF52SPIGetRate;
+	pDev->SerIntrf.SetRate = nRF52SPISetRate;
+	pDev->SerIntrf.StartRx = nRF52SPIStartRx;
+	pDev->SerIntrf.RxData = nRF52SPIRxData;
+	pDev->SerIntrf.StopRx = nRF52SPIStopRx;
+	pDev->SerIntrf.StartTx = nRF52SPIStartTx;
+	pDev->SerIntrf.TxData = nRF52SPITxData;
+	pDev->SerIntrf.StopTx = nRF52SPIStopTx;
 	pDev->SerIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->SerIntrf.EvtCB = pCfgData->EvtCB;
 
