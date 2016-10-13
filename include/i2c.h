@@ -45,6 +45,7 @@ Modified by          Date              Description
 #endif
 
 #include "serialintrf.h"
+#include "iopincfg.h"
 
 // I2C Status code
 typedef enum _I2C_Status {
@@ -81,22 +82,22 @@ typedef enum _I2C_Mode {
 } I2CMODE;
 
 #define I2C_MAX_RETRY		5
+#define I2C_MAX_NB_IOPIN	2
+#define I2C_SDA_IOPIN_IDX	0
+#define I2C_SCL_IOPIN_IDX	1
 
 #pragma pack(push, 4)
 
 // Configuration data used to initialize device
 typedef struct _I2C_Config {
-	int I2CNo;			// I2C interface number
-	int SdaPortNo;		// I/O port used for SDA
-	int SdaPinNo;		// I/O pin used for SDA
-	int SdaPinOp;		// I/O pin operating function for SDA
-	int SclPortNo;		// I/O port used for SCL
-	int SclPinNo;		// I/O pin used for SCL
-	int SclPinOp;		// I/O pin operating function for SCL
+	int DevNo;			// I2C interface number
+	IOPINCFG IOPinMap[I2C_MAX_NB_IOPIN];	// Define I/O pins used by SPI
 	int Rate;			// Speed in Hz
 	I2CMODE Mode;		// Master/Slave mode
 	int SlaveAddr;		// I2C slave address used in slave mode only
 	int MaxRetry;		// Max number of retry
+	int	IntPrio;		// Interrupt priority.  Value is implementation specific
+	SERINTRFEVCB EvtCB;	// Interrupt based event callback function pointer. Must be set to NULL if not used
 } I2CCFG;
 
 // Device driver data require by low level fonctions
