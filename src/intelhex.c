@@ -54,19 +54,26 @@ bool IHexParseRecord(char *pRec, IHEXDATA *pData)
 	char *p = pRec + 1;
 	int8_t cs = 0;
 	
-	pData->Count = (chex2i(*p++) << 4) + chex2i(*p++);
-	pData->Offset = (chex2i(*p++) << 12) + (chex2i(*p++) << 8) + (chex2i(*p++) << 4) + chex2i(*p++);
-	pData->Type = (chex2i(*p++) << 4) + chex2i(*p++);
+	pData->Count = (chex2i(*p++) << 4);
+	pData->Count += chex2i(*p++);
+	pData->Offset = (chex2i(*p++) << 12);
+	pData->Offset += (chex2i(*p++) << 8);
+	pData->Offset += (chex2i(*p++) << 4);
+	pData->Offset += chex2i(*p++);
+	pData->Type = (chex2i(*p++) << 4);
+	pData->Type += chex2i(*p++);
 	
 	cs += pData->Count + (pData->Offset & 0xff) + ((pData->Offset >> 8u) & 0xff) + pData->Type;
 	
 	for (int i = 0; i < pData->Count; i++)
 	{
-		pData->Data[i] = (chex2i(*p++) << 4) + chex2i(*p++);
+		pData->Data[i] = (chex2i(*p++) << 4);
+		pData->Data[i] += chex2i(*p++);
 		cs += pData->Data[i];
 	}
 	
-	pData->Checksum = (chex2i(*p++) << 4) + chex2i(*p++);
+	pData->Checksum = (chex2i(*p++) << 4);
+	pData->Checksum += chex2i(*p++);
 	cs += pData->Checksum;
 	
 	return cs == 0;
