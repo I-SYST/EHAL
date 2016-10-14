@@ -37,7 +37,7 @@ Modified by          Date              Description
 #include "atomic.h"
 #include "cfifo.h"
 
-CFIFOHDL CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize)
+HCFIFO CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize)
 {
 	if (pMemBlk == NULL)
 		return NULL;
@@ -53,7 +53,7 @@ CFIFOHDL CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize)
 	return hdr;
 }
 
-uint8_t *CFifoGet(CFIFOHDL pFifo)
+uint8_t *CFifoGet(HCFIFO pFifo)
 {
 	if (pFifo == NULL || pFifo->GetIdx < 0)
 		return NULL;
@@ -73,7 +73,7 @@ uint8_t *CFifoGet(CFIFOHDL pFifo)
 	return p;
 }
 
-uint8_t *CFifoGetMultiple(CFIFOHDL pFifo, int *pCnt)
+uint8_t *CFifoGetMultiple(HCFIFO pFifo, int *pCnt)
 {
 	if (pCnt == NULL)
 		return CFifoGet(pFifo);
@@ -114,7 +114,7 @@ uint8_t *CFifoGetMultiple(CFIFOHDL pFifo, int *pCnt)
 	return p;
 }
 
-uint8_t *CFifoPut(CFIFOHDL pFifo)
+uint8_t *CFifoPut(HCFIFO pFifo)
 {
 	if (pFifo == NULL || pFifo->PutIdx == pFifo->GetIdx)
 		return NULL;
@@ -132,7 +132,7 @@ uint8_t *CFifoPut(CFIFOHDL pFifo)
 	return p;
 }
 
-uint8_t *CFifoPutMultiple(CFIFOHDL pFifo, int *pCnt)
+uint8_t *CFifoPutMultiple(HCFIFO pFifo, int *pCnt)
 {
 	if (pCnt == NULL)
 		return CFifoPut(pFifo);
@@ -177,13 +177,13 @@ uint8_t *CFifoPutMultiple(CFIFOHDL pFifo, int *pCnt)
 	return p;
 }
 
-void CFifoFlush(CFIFOHDL pFifo)
+void CFifoFlush(HCFIFO pFifo)
 {
 	AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, -1);
 	AtomicAssign((sig_atomic_t *)&pFifo->PutIdx, 0);
 }
 
-int CFifoAvail(CFIFOHDL pFifo)
+int CFifoAvail(HCFIFO pFifo)
 {
 	int len = 0;
 
@@ -202,7 +202,7 @@ int CFifoAvail(CFIFOHDL pFifo)
 	return len;
 }
 
-int CFifoUsed(CFIFOHDL pFifo)
+int CFifoUsed(HCFIFO pFifo)
 {
 	int len = 0;
 
@@ -221,7 +221,7 @@ int CFifoUsed(CFIFOHDL pFifo)
 	return len;
 }
 
-int CFifoRead(CFIFOHDL pFifo, uint8_t *pBuff, int BuffLen)
+int CFifoRead(HCFIFO pFifo, uint8_t *pBuff, int BuffLen)
 {
 	if (pFifo == NULL || pFifo->GetIdx < 0 || pBuff == NULL)
 		return 0;
@@ -261,7 +261,7 @@ int CFifoRead(CFIFOHDL pFifo, uint8_t *pBuff, int BuffLen)
 	return cnt;
 }
 
-int CFifoWrite(CFIFOHDL pFifo, uint8_t *pData, int DataLen)
+int CFifoWrite(HCFIFO pFifo, uint8_t *pData, int DataLen)
 {
 	if (pFifo == NULL || pFifo->PutIdx == pFifo->GetIdx || pData == NULL)
 		return 0;
