@@ -116,7 +116,7 @@
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.2069093586.1655045797" name="usbdef.h" rcbsApplicability="disable" resourcePath="include/usb_def.h" toolsToInvoke=""/>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.2069093586.1306203770" name="convutil.h" rcbsApplicability="disable" resourcePath="include/convutil.h" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="src/sysstatus_impl.cpp|src/sdcard.c|src/i2c_lpcxx.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/sbuffer.c|src/sysstatus_impl.cpp|src/sdcard.c|src/i2c_lpcxx.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
 					</sourceEntries>
 				</configuration>
@@ -237,7 +237,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/sysstatus_impl.cpp|src/sdcard.c|src/i2c_lpcxx.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/sbuffer.c|src/sysstatus_impl.cpp|src/sdcard.c|src/i2c_lpcxx.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
 					</sourceEntries>
 				</configuration>

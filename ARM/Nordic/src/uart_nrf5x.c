@@ -89,7 +89,7 @@ static int s_nRF51RxTimeOutCnt = 0;
 uint32_t g_nRF51RxDropCnt = 0;
 uint32_t g_nRF51RxErrCnt = 0;
 
-#define NRFUART_CFIFO_SIZE		(16 + sizeof(CFIFOHDL))
+#define NRFUART_CFIFO_SIZE		CFIFO_MEMSIZE(16)
 
 static uint8_t s_nRFUARTRxFifoMem[NRFUART_CFIFO_SIZE];
 static uint8_t s_nRFUARTTxFifoMem[NRFUART_CFIFO_SIZE];
