@@ -54,6 +54,33 @@ static NRF52_I2CDEV s_nRF52I2CDev[NRF52_I2C_MAXDEV] = {
 	},
 };
 
+bool nRF52I2CWaitRxComplete(NRF52_I2CDEV *pDev, int Timeout)
+{
+	do {
+		if (pDev->pReg->EVENTS_LASTRX)
+		{
+			pDev->pReg->EVENTS_LASTRX = 0;
+
+			return true;
+		}
+	} while (Timeout-- >  0);
+
+	return false;
+}
+
+bool nRF52I2CWaitTxComplete(NRF52_I2CDEV *pDev, int Timeout)
+{
+	do {
+		if (pDev->pReg->EVENTS_LASTTX)
+		{
+			pDev->pReg->EVENTS_LASTTX = 0;
+
+			return true;
+		}
+	} while (Timeout-- >  0);
+
+	return false;
+}
 
 void nRF52I2CDisable(SERINTRFDEV *pDev)
 {
@@ -122,82 +149,81 @@ bool nRF52I2CStartRx(SERINTRFDEV *pDev, int DevAddr)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
-	if (nRF52I2CStartCond(dev))
-	{
-		// Send I2C address
-		//dev->pReg->I2DAT = (DevAddr << 1)| 1;
-		//pDev->pI2CReg->I2CONCLR = LPCI2C_I2CONCLR_SIC;
-		//LpcI2CWaitInt(pDev, 100000);
-		//if (LpcI2CWaitStatus(pDev, 100000) == I2CSTATUS_SLAR_ACK)
-			return true;
-	}
+	//dev->pI2cDev->SlaveAddr = DevAddr;
+	dev->pReg->ADDRESS = DevAddr;
 
-	return false;
+	return true;
 }
 
 // Receive Data only, no Start/Stop condition
 int nRF52I2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
-	I2CSTATUS status;
-	int rcount = 0;
 
-	// Start read data
-	while (BuffLen > rcount)
-	{
-		if (status != I2CSTATUS_RXDATA_ACK && status != I2CSTATUS_RXDATA_NACK)
-			break;
-		pBuff++;
-		rcount++;
-	}
+	dev->pReg->RXD.PTR = (uint32_t)pBuff;
+	dev->pReg->RXD.MAXCNT = BuffLen;
+	dev->pReg->TASKS_STARTRX = 1;
 
-	return rcount;
-}
+	nRF52I2CWaitRxComplete(dev, 100000);
 
-// Send Data only, no Start/Stop condition
-int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
-{
-	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
-	I2CSTATUS status;
-	int tcount = 0;
-
-	// Start sending data
-	while (DataLen > 0)
-	{
-		if (status != I2CSTATUS_M_TXDAT_ACK && status != I2CSTATUS_M_TXDAT_NACK)
-			break;
-		pData++;
-		DataLen--;
-		tcount++;
-	}
-
-	return tcount;
+	return dev->pReg->RXD.AMOUNT;
 }
 
 void nRF52I2CStopRx(SERINTRFDEV *pDev)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
-	nRF52I2CStopCond(dev);
+	dev->pReg->TASKS_STOP = 1;
+
+	int t = 100000;
+
+	do {
+		if (dev->pReg->EVENTS_STOPPED)
+		{
+			dev->pReg->EVENTS_STOPPED = 0;
+		}
+
+	} while (t-- > 0);
 }
 
 bool nRF52I2CStartTx(SERINTRFDEV *pDev, int DevAddr)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
-	if (nRF52I2CStartCond(dev))
-	{
-			return true;
-	}
+	dev->pReg->ADDRESS = DevAddr << 1;
 
-	return false;
+	return true;
+}
+
+// Send Data only, no Start/Stop condition
+int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
+{
+	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
+
+	dev->pReg->TXD.PTR = (uint32_t)pData;
+	dev->pReg->TXD.MAXCNT = DataLen;
+	dev->pReg->TASKS_STARTTX;
+
+	nRF52I2CWaitTxComplete(dev, 100000);
+
+	return dev->pReg->TXD.AMOUNT;
 }
 
 void nRF52I2CStopTx(SERINTRFDEV *pDev)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
-	nRF52I2CStopCond(dev);
+	dev->pReg->TASKS_STOP = 1;
+
+	int t = 100000;
+
+	do {
+		if (dev->pReg->EVENTS_STOPPED)
+		{
+			dev->pReg->EVENTS_STOPPED = 0;
+		}
+
+	} while (t-- > 0);
 }
 
 bool I2CInit(I2CDEV *pDev, I2CCFG *pCfgData)

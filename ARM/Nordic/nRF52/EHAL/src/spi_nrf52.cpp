@@ -3,7 +3,7 @@ File   : spi_nrf5x.cpp
 
 Author : Hoang Nguyen Hoan          Oct. 6, 2016
 
-Desc   : SPI implementation on nRF5x series MCU
+Desc   : SPI implementation on nRF52 series MCU
 
 Copyright (c) 2016, I-SYST inc., all rights reserved
 
@@ -87,7 +87,7 @@ int nRF52SPIGetRate(SERINTRFDEV *pDev)
 // return actual rate
 int nRF52SPISetRate(SERINTRFDEV *pDev, int DataRate)
 {
-	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
+	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
 	if (DataRate < 250000)
 	{
