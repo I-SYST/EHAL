@@ -77,7 +77,7 @@ void UARTprintf(UARTDEV *pDev, char *pFormat, ...)
     va_end(vl);
 }
 
-void UARTvprintf(UARTDEV *pDev, char *pFormat, va_list vl)
+void UARTvprintf(UARTDEV *pDev, const char *pFormat, va_list vl)
 {
     vsnprintf(s_Buffer, s_BufferSize, pFormat, vl);
     int len = strlen(s_Buffer);

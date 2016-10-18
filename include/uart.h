@@ -182,8 +182,8 @@ inline int UARTGetRate(UARTDEV *pDev) { return pDev->SerIntrf.GetRate(&pDev->Ser
 inline int UARTSetRate(UARTDEV *pDev, int Rate) { return pDev->SerIntrf.SetRate(&pDev->SerIntrf, Rate); }
 int UARTRx(UARTDEV *pDev, uint8_t *pBuff, int Bufflen);
 int UARTTx(UARTDEV *pDev, uint8_t *pData, int Datalen);
-void UARTprintf(UARTDEV *pDev, char *pFormat, ...);
-void UARTvprintf(UARTDEV *pDev, char *pFormat, va_list vl);
+void UARTprintf(UARTDEV *pDev, const char *pFormat, ...);
+void UARTvprintf(UARTDEV *pDev, const char *pFormat, va_list vl);
 void UARTRetargetEnable(UARTDEV *pDev, int FileNo);
 void UartRetargetDisable(UARTDEV *pDev, int FileNo);
 
@@ -230,7 +230,7 @@ public:
 	// Stop transmit
 	virtual void StopTx(void) { SerialIntrfStopTx(&vDevData.SerIntrf); }
 	// -- **
-	void printf(char *pFormat, ...) {
+	void printf(const char *pFormat, ...) {
 		va_list vl;
 	    va_start(vl, pFormat);
 	    UARTvprintf(&vDevData, pFormat, vl);
