@@ -69,7 +69,7 @@ int UARTTx(UARTDEV *pDev, uint8_t *pData, int Datalen)
     return len;
 }
 
-void UARTprintf(UARTDEV *pDev, char *pFormat, ...)
+void UARTprintf(UARTDEV *pDev, const char *pFormat, ...)
 {
 	va_list vl;
     va_start(vl, pFormat);
