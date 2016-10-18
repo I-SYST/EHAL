@@ -3,7 +3,7 @@ File   : i2c_nrf52.cpp
 
 Author : Hoang Nguyen Hoan          Oct. 12, 2016
 
-Desc   : I2C implementation on nRF52 series MCU
+Desc   : I2C implementation on nRF52 series MCU using EasyDMA
 
 Copyright (c) 2016, I-SYST inc., all rights reserved
 
@@ -33,7 +33,7 @@ Modified by         Date            Description
 ----------------------------------------------------------------------------*/
 #include "nrf.h"
 
-#include "i2c_nrf52.h"
+#include "i2c.h"
 #include "iopinctrl.h"
 
 typedef struct {
@@ -57,10 +57,24 @@ static NRF52_I2CDEV s_nRF52I2CDev[NRF52_I2C_MAXDEV] = {
 bool nRF52I2CWaitRxComplete(NRF52_I2CDEV *pDev, int Timeout)
 {
 	do {
+		if (pDev->pReg->EVENTS_ERROR)
+		{
+			// Abort in case error
+			pDev->pReg->EVENTS_ERROR = 0;
+			pDev->pReg->TASKS_RESUME = 1;
+			pDev->pReg->TASKS_STOP;
+		}
 		if (pDev->pReg->EVENTS_LASTRX)
 		{
+			// Must wait for last DMA then issue a stop
 			pDev->pReg->EVENTS_LASTRX = 0;
-
+			pDev->pReg->TASKS_STOP = 1;
+		}
+		if (pDev->pReg->EVENTS_STOPPED)
+		{
+			// Must wait for stop, other wise DMA count would
+			// not be updated with correct value
+			pDev->pReg->EVENTS_STOPPED = 0;
 			return true;
 		}
 	} while (Timeout-- >  0);
@@ -70,11 +84,26 @@ bool nRF52I2CWaitRxComplete(NRF52_I2CDEV *pDev, int Timeout)
 
 bool nRF52I2CWaitTxComplete(NRF52_I2CDEV *pDev, int Timeout)
 {
+	uint32_t d;
 	do {
+		if (pDev->pReg->EVENTS_ERROR)
+		{
+			// Abort in case error
+			pDev->pReg->EVENTS_ERROR = 0;
+			pDev->pReg->TASKS_RESUME = 1;
+			pDev->pReg->TASKS_STOP = 1;
+		}
 		if (pDev->pReg->EVENTS_LASTTX)
 		{
+			// Must wait for last DMA then issue a stop
 			pDev->pReg->EVENTS_LASTTX = 0;
-
+			pDev->pReg->TASKS_STOP = 1;
+		}
+		if (pDev->pReg->EVENTS_STOPPED)
+		{
+			// Must wait for stop, other wise DMA count would
+			// not be updated with correct value
+			pDev->pReg->EVENTS_STOPPED = 0;
 			return true;
 		}
 	} while (Timeout-- >  0);
@@ -125,33 +154,12 @@ int nRF52I2CSetRate(SERINTRFDEV *pDev, int RateHz)
 	return dev->pI2cDev->Rate;
 }
 
-I2CSTATUS nRF52I2CGetStatus(I2CDEV *pDev)
-{
-//	return (I2CSTATUS)(pDev->pI2CReg->I2STAT & 0xF8);
-}
-
-bool nRF52I2CStartCond(NRF52_I2CDEV *pDev)
-{
-	I2CSTATUS status;
-
-	if (status != I2CSTATUS_START_COND && status != I2CSTATUS_RESTART_COND)
-		return false;
-	return true;
-}
-
-void nRF52I2CStopCond(NRF52_I2CDEV *pDev)
-{
-
-	// Disable I2C engine
-}
-
 bool nRF52I2CStartRx(SERINTRFDEV *pDev, int DevAddr)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
-	//dev->pI2cDev->SlaveAddr = DevAddr;
 	dev->pReg->ADDRESS = DevAddr;
-
+	dev->pReg->INTENCLR = 0xFFFFFFFF;
 	return true;
 }
 
@@ -159,9 +167,13 @@ bool nRF52I2CStartRx(SERINTRFDEV *pDev, int DevAddr)
 int nRF52I2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
+	uint32_t d;
 
+	dev->pReg->EVENTS_ERROR = 0;
+	dev->pReg->EVENTS_STOPPED = 0;
 	dev->pReg->RXD.PTR = (uint32_t)pBuff;
 	dev->pReg->RXD.MAXCNT = BuffLen;
+	dev->pReg->RXD.LIST = 0;
 	dev->pReg->TASKS_STARTRX = 1;
 
 	nRF52I2CWaitRxComplete(dev, 100000);
@@ -171,26 +183,16 @@ int nRF52I2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 
 void nRF52I2CStopRx(SERINTRFDEV *pDev)
 {
-	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
-
-	dev->pReg->TASKS_STOP = 1;
-
-	int t = 100000;
-
-	do {
-		if (dev->pReg->EVENTS_STOPPED)
-		{
-			dev->pReg->EVENTS_STOPPED = 0;
-		}
-
-	} while (t-- > 0);
+	// Nothing to do here since DMA has to be completed during
+	// RxData phase
 }
 
 bool nRF52I2CStartTx(SERINTRFDEV *pDev, int DevAddr)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
-	dev->pReg->ADDRESS = DevAddr << 1;
+	dev->pReg->ADDRESS = DevAddr;
+	dev->pReg->INTENCLR = 0xFFFFFFFF;
 
 	return true;
 }
@@ -199,10 +201,14 @@ bool nRF52I2CStartTx(SERINTRFDEV *pDev, int DevAddr)
 int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
+	uint32_t d;
 
+	dev->pReg->EVENTS_ERROR = 0;
+	dev->pReg->EVENTS_STOPPED = 0;
 	dev->pReg->TXD.PTR = (uint32_t)pData;
 	dev->pReg->TXD.MAXCNT = DataLen;
-	dev->pReg->TASKS_STARTTX;
+	dev->pReg->TXD.LIST = 0;
+	dev->pReg->TASKS_STARTTX = 1;
 
 	nRF52I2CWaitTxComplete(dev, 100000);
 
@@ -211,19 +217,8 @@ int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 
 void nRF52I2CStopTx(SERINTRFDEV *pDev)
 {
-	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
-
-	dev->pReg->TASKS_STOP = 1;
-
-	int t = 100000;
-
-	do {
-		if (dev->pReg->EVENTS_STOPPED)
-		{
-			dev->pReg->EVENTS_STOPPED = 0;
-		}
-
-	} while (t-- > 0);
+	// Nothing to do here since DMA has to be completed during
+	// TxData phase
 }
 
 bool I2CInit(I2CDEV *pDev, I2CCFG *pCfgData)
