@@ -41,7 +41,7 @@ typedef struct {
 	SPIDEV *pSpiDev;
 	uint32_t Clk;
 	NRF_SPIM_Type *pReg;	// Register map
-	int CsPin;				// Chip select pin, Nordic SPI has manual SS pin
+	int DevAddr;			// Current device number being accessed
 } NRF52_SPIDEV;
 
 #define NRF52_SPI_MAXDEV		3
@@ -147,9 +147,14 @@ void nRF52SPIEnable(SERINTRFDEV *pDev)
 // Initial receive
 bool nRF52SPIStartRx(SERINTRFDEV *pDev, int DevAddr)
 {
-	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
+	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
-	IOPinClear(0, dev->CsPin);
+	if (DevAddr < 0 || DevAddr >= dev->pSpiDev->Cfg.NbIOPins - SPI_SS_IOPIN_IDX)
+		return false;
+
+	dev->DevAddr = DevAddr;
+	IOPinClear(dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PortNo,
+			   dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PinNo);
 
 	return true;
 }
@@ -178,7 +183,8 @@ void nRF52SPIStopRx(SERINTRFDEV *pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
-	IOPinSet(0, dev->CsPin);
+	IOPinSet(dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PortNo,
+			 dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PinNo);
 }
 
 // Initiate transmit
@@ -186,7 +192,12 @@ bool nRF52SPIStartTx(SERINTRFDEV *pDev, int DevAddr)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
-	IOPinClear(0, dev->CsPin);
+	if (DevAddr < 0 || DevAddr >= dev->pSpiDev->Cfg.NbIOPins - 3)
+		return false;
+
+	dev->DevAddr = DevAddr;
+	IOPinClear(dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PortNo,
+			   dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PinNo);
 
 	return true;
 }
@@ -215,7 +226,8 @@ void nRF52SPIStopTx(SERINTRFDEV *pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
-	IOPinSet(0, dev->CsPin);
+	IOPinSet(dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PortNo,
+			   dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PinNo);
 }
 
 bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
@@ -224,21 +236,21 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	uint32_t err_code;
 	uint32_t cfgreg = 0;
 
-	if (pCfgData->DevNo < 0 || pCfgData->DevNo >= NRF52_SPI_MAXDEV)
+	if (pCfgData->DevNo < 0 || pCfgData->DevNo >= NRF52_SPI_MAXDEV || pCfgData->NbIOPins < 3)
 		return false;
 
 	// Get the correct register map
 	reg = s_nRF52SPIDev[pCfgData->DevNo].pReg;
 
 	// Configure I/O pins
-	IOPinCfg(pCfgData->IOPinMap, SPI_MAX_NB_IOPIN);
+	IOPinCfg(pCfgData->pIOPinMap, pCfgData->NbIOPins);
 
-	reg->PSEL.SCK = pCfgData->IOPinMap[SPI_SCK_IOPIN_IDX].PinNo;
-	reg->PSEL.MISO = pCfgData->IOPinMap[SPI_MISO_IOPIN_IDX].PinNo;
-	reg->PSEL.MOSI = pCfgData->IOPinMap[SPI_MOSI_IOPIN_IDX].PinNo;
+	reg->PSEL.SCK = pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo;
+	reg->PSEL.MISO = pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo;
+	reg->PSEL.MOSI = pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PinNo;
 
-	s_nRF52SPIDev[pCfgData->DevNo].CsPin = pCfgData->IOPinMap[SPI_SS_IOPIN_IDX].PinNo;
-	IOPinSet(0, s_nRF52SPIDev[pCfgData->DevNo].CsPin);
+	for (int i = SPI_SS_IOPIN_IDX; i < pCfgData->NbIOPins; i++)
+		IOPinSet(pCfgData->pIOPinMap[i].PortNo, pCfgData->pIOPinMap[i].PinNo);
 
 	if (pCfgData->BitOrder == SPIDATABIT_LSB)
 	{
@@ -263,12 +275,12 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	if (pCfgData->ClkPol == SPICLKPOL_LOW)
 	{
 		cfgreg |= (SPI_CONFIG_CPOL_ActiveLow  << SPI_CONFIG_CPOL_Pos);
-		IOPinSet(0, pCfgData->IOPinMap[SPI_SCK_IOPIN_IDX].PinNo);
+		IOPinSet(0, pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo);
 	}
 	else
 	{
 		cfgreg |= (SPI_CONFIG_CPOL_ActiveHigh << SPI_CONFIG_CPOL_Pos);
-		IOPinClear(0, pCfgData->IOPinMap[SPI_SCK_IOPIN_IDX].PinNo);
+		IOPinClear(0, pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo);
 	}
 
 	reg->CONFIG = cfgreg;

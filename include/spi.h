@@ -79,7 +79,8 @@ typedef enum _SPI_Data_Bit_Order {
 #define SPI_SCK_IOPIN_IDX		0
 #define SPI_MISO_IOPIN_IDX		1
 #define SPI_MOSI_IOPIN_IDX		2
-#define SPI_SS_IOPIN_IDX		3
+#define SPI_SS_IOPIN_IDX		3	// Starting index for SPI chip select. This can
+									// grow to allows multiple devices on same SPI.
 
 #pragma pack(push, 4)
 
@@ -87,7 +88,8 @@ typedef enum _SPI_Data_Bit_Order {
 typedef struct _SPI_Config {
 	int DevNo;				// SPI interface number
 	SPIMODE Mode;			// Master/Slave mode
-	IOPINCFG IOPinMap[SPI_MAX_NB_IOPIN];	// Define I/O pins used by SPI
+	const IOPINCFG *pIOPinMap;	// Define I/O pins used by SPI
+	int NbIOPins;			// Total number of I/O pins
 	int Rate;				// Speed in Hz
 	uint32_t DataSize; 		// Data Size 4-16 bits
 	int SlaveAddr;			// slave address used in slave mode only
@@ -114,7 +116,7 @@ typedef struct {
 extern "C" {
 #endif	// __cplusplus
 
-// Require impplementations
+// Require implementations
 bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData);
 
 static inline int SPIGetRate(SPIDEV *pDev) { return pDev->SerIntrf.GetRate(&pDev->SerIntrf); }
@@ -163,6 +165,9 @@ public:
 	int Rate(void) { return SPIGetRate(&vDevData); };	// Get rate in Hz
 	void Enable(void) { SerialIntrfEnable(&vDevData.SerIntrf); }
 	void Disable(void) { SerialIntrfDisable(&vDevData.SerIntrf); }
+
+	// DevAddr is the ordinal starting from 0 of device connected to the SPI bus.
+	// It is translated to CS index in the I/O pin map
 	virtual bool StartRx(int DevAddr) {
 		return SerialIntrfStartRx(&vDevData.SerIntrf, DevAddr);
 	}
@@ -171,6 +176,8 @@ public:
 		return SerialIntrfRxData(&vDevData.SerIntrf, pBuff, BuffLen);
 	}
 	virtual void StopRx(void) { SerialIntrfStopRx(&vDevData.SerIntrf); }
+	// DevAddr is the ordinal starting from 0 of device connected to the SPI bus.
+	// It is translated to CS index in the I/O pin map
 	virtual bool StartTx(int DevAddr) {
 		return SerialIntrfStartTx(&vDevData.SerIntrf, DevAddr);
 	}
