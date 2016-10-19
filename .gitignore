@@ -1,3 +1,6 @@
 ARM/Nordic/nRF52/CMSIS/Debug/makefile
 ARM/Nordic/nRF52/CMSIS/Debug/objects.mk
 ARM/Nordic/nRF52/CMSIS/Debug/sources.mk
+
+# Eclipse
+language.settings.xml
