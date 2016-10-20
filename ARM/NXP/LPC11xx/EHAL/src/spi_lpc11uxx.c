@@ -55,7 +55,7 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 {
 	SSPDEV *dev = NULL;
 
-	IOPinCfg(pCfgData->IOPinMap, SPI_MAX_NB_IOPIN);
+	IOPinCfg(pCfgData->pIOPinMap, pCfgData->NbIOPins);
 
 	if (pCfgData->DevNo == 0)
 	{

@@ -41,20 +41,19 @@ typedef struct {
 	SPIDEV *pSpiDev;
 	uint32_t Clk;
 	NRF_SPIM_Type *pReg;	// Register map
-	int DevAddr;			// Current device number being accessed
 } NRF52_SPIDEV;
 
 #define NRF52_SPI_MAXDEV		3
 
 static NRF52_SPIDEV s_nRF52SPIDev[NRF52_SPI_MAXDEV] = {
 	{
-		0, NULL, 0, (NRF_SPIM_Type*)NRF_SPIM0_BASE, -1
+		0, NULL, 0, (NRF_SPIM_Type*)NRF_SPIM0_BASE
 	},
 	{
-		1, NULL, 0, (NRF_SPIM_Type*)NRF_SPIM1_BASE, -1
+		1, NULL, 0, (NRF_SPIM_Type*)NRF_SPIM1_BASE
 	},
 	{
-		2, NULL, 0, (NRF_SPIM_Type*)NRF_SPIM2_BASE, -1
+		2, NULL, 0, (NRF_SPIM_Type*)NRF_SPIM2_BASE
 	},
 };
 
@@ -145,16 +144,16 @@ void nRF52SPIEnable(SERINTRFDEV *pDev)
 }
 
 // Initial receive
-bool nRF52SPIStartRx(SERINTRFDEV *pDev, int DevAddr)
+bool nRF52SPIStartRx(SERINTRFDEV *pDev, int DevCs)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
-	if (DevAddr < 0 || DevAddr >= dev->pSpiDev->Cfg.NbIOPins - SPI_SS_IOPIN_IDX)
+	if (DevCs < 0 || DevCs >= dev->pSpiDev->Cfg.NbIOPins - SPI_SS_IOPIN_IDX)
 		return false;
 
-	dev->DevAddr = DevAddr;
-	IOPinClear(dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PortNo,
-			   dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PinNo);
+	dev->pSpiDev->CurDevCs = DevCs;
+	IOPinClear(dev->pSpiDev->Cfg.pIOPinMap[DevCs + SPI_SS_IOPIN_IDX].PortNo,
+			   dev->pSpiDev->Cfg.pIOPinMap[DevCs + SPI_SS_IOPIN_IDX].PinNo);
 
 	return true;
 }
@@ -183,21 +182,21 @@ void nRF52SPIStopRx(SERINTRFDEV *pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
-	IOPinSet(dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PortNo,
-			 dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PinNo);
+	IOPinSet(dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PortNo,
+			 dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PinNo);
 }
 
 // Initiate transmit
-bool nRF52SPIStartTx(SERINTRFDEV *pDev, int DevAddr)
+bool nRF52SPIStartTx(SERINTRFDEV *pDev, int DevCs)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
-	if (DevAddr < 0 || DevAddr >= dev->pSpiDev->Cfg.NbIOPins - 3)
+	if (DevCs < 0 || DevCs >= dev->pSpiDev->Cfg.NbIOPins - SPI_SS_IOPIN_IDX)
 		return false;
 
-	dev->DevAddr = DevAddr;
-	IOPinClear(dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PortNo,
-			   dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PinNo);
+	dev->pSpiDev->CurDevCs = DevCs;
+	IOPinClear(dev->pSpiDev->Cfg.pIOPinMap[DevCs + SPI_SS_IOPIN_IDX].PortNo,
+			   dev->pSpiDev->Cfg.pIOPinMap[DevCs + SPI_SS_IOPIN_IDX].PinNo);
 
 	return true;
 }
@@ -226,8 +225,8 @@ void nRF52SPIStopTx(SERINTRFDEV *pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
-	IOPinSet(dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PortNo,
-			   dev->pSpiDev->Cfg.pIOPinMap[dev->DevAddr + SPI_SS_IOPIN_IDX].PinNo);
+	IOPinSet(dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PortNo,
+			   dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PinNo);
 }
 
 bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
