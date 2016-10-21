@@ -1,11 +1,14 @@
 /*--------------------------------------------------------------------------
 File   : serialintrf.h
 
-Author : Hoang Nguyen Hoan          Nov. 25, 2011
+Author : Hoang Nguyen Hoan          				Nov. 25, 2011
 
-Desc   : Generic serial interface class
+Desc   : Generic serial data transfer interface class
 		 This class is used to implement serial communication interfaces
-		 such as I2C, UART, etc...  Not limited to wired interface
+		 such as I2C, UART, etc...  Not limited to wired or
+		 physical interface.  It could be soft interface as well such
+		 as SLIP protocol or any mean of transferring data between 2
+		 entities.
 
 Copyright (c) 2011, I-SYST inc., all rights reserved
 
@@ -51,6 +54,11 @@ typedef enum {
 								// To be interpreted by implementation
 } SERINTRF_EVT;
 
+/*
+ * Serial Interface forward data structure type definition.
+ * This structure is the base object.  Pointer to an instance of this is passed
+ * to all function calls.  See structure definition bellow for more details
+ */
 typedef struct _serialintrf_dev SERINTRFDEV;
 
 
@@ -89,15 +97,141 @@ struct _serialintrf_dev {
 	SERINTRFEVCB EvtCB;		// Interrupt based event callback function pointer. Must be set to NULL if not used
 
 	// Bellow are all mandatory functions to implement
+	// On init, all implementation must fill these function, no NULL allowed
+	// If a function is not used. It must be implemented as do nothing function
+
+	/**
+	 * @brief - Disable
+	 * 		Turn off the interface.  If this is a physical interface, provide a
+	 * way to turn off for energy saving. Make sure the turn off procedure can
+	 * be turned back on without going through the full init sequence
+	 *
+	 * @param
+	 * 		pSerDev : Pointer to an instance of the Serial Interface
+	 *
+	 * @return None
+	 */
 	void (*Disable)(SERINTRFDEV *pSerDev);
+
+	/**
+	 * @brief - Enable
+	 * 		Turn on the interface.
+	 *
+	 * @param
+	 * 		pSerDev : Pointer to an instance of the Serial Interface
+	 *
+	 * @return None
+	 */
 	void (*Enable)(SERINTRFDEV *pSerDev);
+
+	/**
+	 * @brief - GetRate
+	 * 		Get data rate of the interface in Hertz.  This is not a clock frequency
+	 * but rather the transfer frequency (number of transfers per second). It has meaning base on the
+	 * implementation as bits/sec or bytes/sec or whatever the case
+	 *
+	 * @param
+	 * 		pSerDev : Pointer to an instance of the Serial Interface
+	 *
+	 * @return Transfer rate per second
+	 */
 	int (*GetRate)(SERINTRFDEV *pSerDev);
+
+	/**
+	 * @brief - SetRate
+	 * 		Set data rate of the interface in Hertz.  This is not a clock frequency
+	 * but rather the transfer frequency (number of transfers per second). It has meaning base on the
+	 * implementation as bits/sec or bytes/sec or whatever the case
+	 *
+	 * @param
+	 * 		pSerDev : Pointer to an instance of the Serial Interface
+	 * 		Rate 	: Data rate to be set in Hertz (transfer per second)
+	 *
+	 * @return 	Actual transfer rate per second set.  It is the real capable rate
+	 * 			closes to rate being requested.
+	 */
 	int (*SetRate)(SERINTRFDEV *pSerDev, int Rate);
+
+	/**
+	 * @brief - StartRx
+	 * 		Prepare start condition to receive data with subsequence RxData.
+	 * This can be in case such as start condition for I2C or Chip Select for
+	 * SPI or precondition for DMA transfer or whatever requires it or not
+	 *
+	 * @param
+	 * 		pSerDev : Pointer to an instance of the Serial Interface
+	 * 		DevAddr : The device selection id scheme
+	 *
+	 * @return 	true - Success
+	 * 			false - failed
+	 */
 	bool (*StartRx)(SERINTRFDEV *pSerDev, int DevAddr);
-	int (*RxData)(SERINTRFDEV *pSerDev, uint8_t *pData, int DataLen);
+
+	/**
+	 * @brief - RxData
+	 * 		Receive data into pBuff passed in parameter.  Assuming StartRx was
+	 * called prior calling this function to get the actual data
+	 *
+	 * @param
+	 * 		pSerDev : Pointer to an instance of the Serial Interface
+	 * 		pBuff 	: Pointer to memory area to receive data.
+	 * 		BuffLen : Length of buffer memory in bytes
+	 *
+	 * @return	Number of bytes read
+	 */
+	int (*RxData)(SERINTRFDEV *pSerDev, uint8_t *pBuff, int BuffLen);
+
+	/**
+	 * @brief - StopRx
+	 * 		Completion of read data phase. Do require post processing
+	 * after data has been received via RxData
+	 *
+	 * @param
+	 * 		pSerDev : Pointer to an instance of the Serial Interface
+	 *
+	 * @return	None
+	 */
 	void (*StopRx)(SERINTRFDEV *pSerDev);
+
+	/**
+	 * @brief - StartTx
+	 * 		Prepare start condition to transfer data with subsequence TxData.
+	 * This can be in case such as start condition for I2C or Chip Select for
+	 * SPI or precondition for DMA transfer or whatever requires it or not
+	 *
+	 * @param
+	 * 		pSerDev : Pointer to an instance of the Serial Interface
+	 * 		DevAddr : The device selection id scheme
+	 *
+	 * @return 	true - Success
+	 * 			false - failed
+	 */
 	bool (*StartTx)(SERINTRFDEV *pSerDev, int DevAddr);
+
+	/**
+	 * @brief - TxData
+	 * 		Transfer data from pData passed in parameter.  Assuming StartTx was
+	 * called prior calling this function to send the actual data
+	 *
+	 * @param
+	 * 		pSerDev : Pointer to an instance of the Serial Interface
+	 * 		pData 	: Pointer to memory area of data to send.
+	 * 		DataLen : Length of data memory in bytes
+	 *
+	 * @return	Number of bytes sent
+	 */
 	int (*TxData)(SERINTRFDEV *pSerDev, uint8_t *pData, int DataLen);
+
+	/**
+	 * @brief - StopRx
+	 * 		Completion of sending data via TxData.  Do require post processing
+	 * after all data was transmitted via TxData.
+	 *
+	 * @param
+	 * 		pSerDev : Pointer to an instance of the Serial Interface
+	 *
+	 * @return	None
+	 */
 	void (*StopTx)(SERINTRFDEV *pSerDev);
 };
 
