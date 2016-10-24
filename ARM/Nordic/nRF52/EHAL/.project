@@ -316,6 +316,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrf5x.c</locationURI>
 		</link>
 		<link>
+			<name>src/uart_retarget.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/uart_retarget.c</locationURI>
+		</link>
+		<link>
 			<name>src/utf8.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/utf8.c</locationURI>
