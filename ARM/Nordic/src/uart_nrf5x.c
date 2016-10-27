@@ -135,9 +135,9 @@ void UART0_IRQHandler()
 		uint8_t *d;
 
 		cnt = 0;
-		while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10) && cnt < NRF51UART_FIFO_MAX) {
+		//while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10) && cnt < NRF51UART_FIFO_MAX) {
 		//while (s_nRFUartDev.pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX) {
-		//do {
+		do {
 			s_nRFUartDev.bRxReady = false;
 			s_nRFUartDev.pReg->EVENTS_RXDRDY = 0;
 			d = CFifoPut(s_nRFUartDev.pUartDev->hRxFifo);
@@ -150,7 +150,7 @@ void UART0_IRQHandler()
 			*d = s_nRFUartDev.pReg->RXD;
 			cnt++;
 		}// while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10));
-		// while (s_nRFUartDev.pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX) ;
+		 while (s_nRFUartDev.pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX) ;
 
 		if (s_nRFUartDev.pUartDev->EvtCallback)
 		{
