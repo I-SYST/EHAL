@@ -50,7 +50,7 @@ typedef enum {
 	SERINTRF_EVT_RXDATA,		// Data received
 	SERINTRF_EVT_TX_TIMEOUT,	// Tx timeout
 	SERINTRF_EVT_TX_READY,		// Ready to transmit
-	UART_EVT_STATECHG,			// State changed. State data is device dependent.
+	SERINTRF_EVT_STATECHG,		// State changed. State data is device dependent.
 								// To be interpreted by implementation
 } SERINTRF_EVT;
 
@@ -67,19 +67,19 @@ typedef struct _serialintrf_dev SERINTRFDEV;
  *
  * Event handler callback. This is normally being called within interrupts, avoid blocking
  *
- * @param pDev : Device handle
- * @param EvtId : Event code
- * @param pBuffer : In/Out Buffer containing data
- * 					on SERINTRF_EVT_RX_TIMEOUT & SERINTRF_EVT_RXDATA, pBuffer contains data received. If
- * 					driver implements CFIFO, this parameter is NULL with BufferLen indicating total data
- * 					in fifo.
- * 					on SERINTRF_EVT_TX_READY, pBuffer contains data to be transmit with max length
- * 					BufferLen. If driver implements CFIFO, this parameter is NULL and BufferLen
- * 					indicates amount of data stored in fifo
- * 					on UART_EVT_STATECHG, pBuffer contains state data. This is implementation specific
- * 					for example UART implementation would contains line state info.
+ * @param 	pDev 	: Device handle
+ * 			EvtId 	: Event code
+ *  		pBuffer : In/Out Buffer containing data
+ * 					  on SERINTRF_EVT_RX_TIMEOUT & SERINTRF_EVT_RXDATA, pBuffer contains data received. If
+ * 					  driver implements CFIFO, this parameter is NULL with BufferLen indicating total data
+ * 					  in fifo.
+ * 					  on SERINTRF_EVT_TX_READY, pBuffer contains data to be transmit with max length
+ * 					  BufferLen. If driver implements CFIFO, this parameter is NULL and BufferLen
+ * 					  indicates amount of data stored in fifo
+ * 					  on UART_EVT_STATECHG, pBuffer contains state data. This is implementation specific
+ * 					  for example UART implementation would contains line state info.
  *
- * @param BufferLen : Max buffer length.  See above description
+ * 			BufferLen : Max buffer length.  See above description
  *
  * @return number of bytes processed.  Implementation specific
  */
@@ -223,7 +223,7 @@ struct _serialintrf_dev {
 	int (*TxData)(SERINTRFDEV *pSerDev, uint8_t *pData, int DataLen);
 
 	/**
-	 * @brief - StopRx
+	 * @brief - StopTx
 	 * 		Completion of sending data via TxData.  Do require post processing
 	 * after all data was transmitted via TxData.
 	 *
@@ -330,4 +330,4 @@ public:
 };
 #endif
 
-#endif	// __SERIALCOM_H__
+#endif	// __SERIALINTRF_H__

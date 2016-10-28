@@ -100,7 +100,7 @@ typedef struct _I2C_Config {
 	SERINTRFEVCB EvtCB;	// Interrupt based event callback function pointer. Must be set to NULL if not used
 } I2CCFG;
 
-// Device driver data require by low level fonctions
+// Device driver data require by low level functions
 typedef struct {
 	I2CMODE Mode;				// Operating mode Master/Slave
 	int 	Rate;				// Speed in Hz
@@ -115,7 +115,14 @@ typedef struct {
 extern "C" {
 #endif	// __cplusplus
 
-// Require impplementations
+/**
+ * @brief - I2CInit
+ * 		The main initialization of the i2c engine.  This must be implemented per architecture.
+ *
+ * @param	pDev 		: Pointer to be filed by this init function with implementation specific data
+ * 			pCfgData 	: Pointer to I2C configuration
+ *
+ */
 bool I2CInit(I2CDEV *pDev, I2CCFG *pCfgData);
 
 #ifdef __cplusplus
