@@ -247,11 +247,11 @@ typedef union _FATFS_DirEntry {
 
 typedef struct {
 	char 		VolName[12];	// Volume name
-//	FATFS_TYPE	FatType;
-	int 		SectSize;
-	uint32_t 	DataSize;
-	const FATFS_DIR *pRootDir;
-	const uint16_t *pFat1;
+	int 		SectSize;		// Sector size in bytes
+	//uint32_t 	DataSize;
+	uint32_t 	VolumeSize;		// Disk size in bytes
+	const FATFS_DIR *pRootDir;	// Pointer to Root direct
+	const uint16_t *pFat1;		// Pointer to File Allocation Table
 } FATFS_VDISKCFG;
 
 typedef struct {

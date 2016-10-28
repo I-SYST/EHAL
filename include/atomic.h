@@ -194,6 +194,8 @@ static inline void AtomicAssign(sig_atomic_t *pVar, sig_atomic_t NewVal) {
 }
 #endif // __TSOK__
 
+#if defined(_WIN32) || defined(WIN32)
+#else
 static inline uint32_t EnterCriticalSection(void) {
 #ifdef __arm__
 	uint32_t __state = __get_PRIMASK();
@@ -209,6 +211,7 @@ static inline void ExitCriticalSection(uint32_t State) {
 	__set_PRIMASK(State);
 #endif
 }
+#endif
 
 #ifdef __arm__
 static inline uint32_t DisableInterrupt() {

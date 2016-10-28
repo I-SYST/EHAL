@@ -34,7 +34,7 @@ Modified by          Date              Description
 #ifndef __UTF8_H__
 #define __UTF8_H__
 
-#include <stddef.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C"{

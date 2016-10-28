@@ -79,7 +79,7 @@ bool FatFS::Init(DiskIO *pDiskIO)
 	if (!res)
 		return false;
 
-	if (*(uint32_t*)sect == 0)
+	if (*((uint32_t*)sect) == 0)
 	{
 		MBR *pmbr = (MBR*)sect;
 
