@@ -42,6 +42,13 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
+#ifdef _MSC_VER
+// Microsoft does not support C99 inline
+#ifndef inline
+#define inline __forceinline
+#endif
+#endif
+
 #ifndef Bool
 typedef bool	Bool;
 #endif
