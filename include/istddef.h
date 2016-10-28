@@ -64,11 +64,12 @@ typedef bool	Bool;
 typedef struct {
 	char Name[16];			// Application signature
 	union {					// Verison number
-		uint32_t	Vers;
+		uint16_t	Vers;
 		struct {
-			uint32_t	Minor:16;
-			uint32_t	Major:16;
+			uint32_t	Minor:8;
+			uint32_t	Major:8;
 		};
+		uint16_t	SubVers;	// User specific subversion
 	};
 	uint32_t Build;			// Build number
 	uint8_t Private[16];	// 16 bytes private data
