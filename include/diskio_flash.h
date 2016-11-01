@@ -48,7 +48,7 @@ public:
 	 *
 	 * @return
 	 */
-	virtual uint32_t GetMinEraseSize() { return 0;}
+	virtual uint32_t GetMinEraseSize() = 0;
 
 	/**
 	 * Device specific minimum write size in bytes
@@ -56,7 +56,15 @@ public:
 	 * @return
 	 */
 	virtual uint32_t GetMinWriteSize() { return 0;}
-	virtual bool EraseUptoAddress(uint64_t addr) {return true;}
+
+	/**
+	 * Erase Flash block.
+	 *
+	 * @param	BlkNo	: Starting block number to erase.
+	 * 			NbBlk	: Number of consecutive blocks to erase
+	 */
+	virtual void EraseBlock(uint32_t BlkNo, int NbBlk) = 0;
+	virtual bool EraseUptoAddress(uint64_t addr) { return false; }
 };
 
 #ifdef __cplusplus

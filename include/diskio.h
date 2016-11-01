@@ -73,20 +73,32 @@ class DiskIO {
 public:
 	DiskIO();
 
-	virtual int GetSectSize(void) = 0;
+	virtual int GetSectSize(void) { return DISKIO_SECT_SIZE; }
 	virtual uint32_t GetNbSect(void) = 0;
 	/**
 	 *
 	 * @return total disk size in KB
 	 */
 	virtual uint32_t GetSize(void) = 0;
+
+	/**
+	 * Read one sector from physical device
+	 */
 	virtual bool SectRead(uint32_t SectNo, uint8_t *pData) = 0;
+
+	/**
+	 * Write one sector to physical device
+	 */
 	virtual bool SectWrite(uint32_t SectNo, uint8_t *pData) = 0;
 	virtual void Reset();
 	virtual int Read(uint32_t SetNo, uint32_t SectOffset, uint8_t *pBuff, uint32_t Len);
 	virtual int Read(uint64_t Offset, uint8_t *pBuff, uint32_t Len);
 	virtual int Write(uint32_t SetNo, uint32_t SectOffset, uint8_t *pBuff, uint32_t Len);
 	virtual int Write(uint64_t Offset, uint8_t *pBuff, uint32_t Len);
+
+	/**
+	 * Erase whole disk
+	 */
 	virtual void Erase() {}
 	int	GetCacheSect(uint32_t SectNo, bool bLock = false);
 	void SetCache(uint8_t *pCacheBlk, size_t CacheSize);
