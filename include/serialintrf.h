@@ -41,6 +41,7 @@ Modified by          Date              Description
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "atomic.h"
 
 /*
  * Serial interface event types
@@ -95,6 +96,7 @@ struct _serialintrf_dev {
 	void *pDevData;			// Private device interface implementation data
 	int	IntPrio;			// Interrupt priority.  Value is implementation specific
 	SERINTRFEVCB EvtCB;		// Interrupt based event callback function pointer. Must be set to NULL if not used
+	volatile bool Busy;			// Busy flag to be set check and set at start and reset at end of transmission
 
 	// Bellow are all mandatory functions to implement
 	// On init, all implementation must fill these function, no NULL allowed
@@ -157,13 +159,14 @@ struct _serialintrf_dev {
 	 * 		Prepare start condition to receive data with subsequence RxData.
 	 * This can be in case such as start condition for I2C or Chip Select for
 	 * SPI or precondition for DMA transfer or whatever requires it or not
+	 * This function must check & set the busy state for re-entrancy
 	 *
 	 * @param
 	 * 		pSerDev : Pointer to an instance of the Serial Interface
 	 * 		DevAddr : The device selection id scheme
 	 *
 	 * @return 	true - Success
-	 * 			false - failed
+	 * 			false - failed.
 	 */
 	bool (*StartRx)(SERINTRFDEV *pSerDev, int DevAddr);
 
@@ -185,6 +188,7 @@ struct _serialintrf_dev {
 	 * @brief - StopRx
 	 * 		Completion of read data phase. Do require post processing
 	 * after data has been received via RxData
+	 * This function must clear the busy state for re-entrancy
 	 *
 	 * @param
 	 * 		pSerDev : Pointer to an instance of the Serial Interface
@@ -198,6 +202,7 @@ struct _serialintrf_dev {
 	 * 		Prepare start condition to transfer data with subsequence TxData.
 	 * This can be in case such as start condition for I2C or Chip Select for
 	 * SPI or precondition for DMA transfer or whatever requires it or not
+	 * This function must check & set the busy state for re-entrancy
 	 *
 	 * @param
 	 * 		pSerDev : Pointer to an instance of the Serial Interface
@@ -226,6 +231,7 @@ struct _serialintrf_dev {
 	 * @brief - StopTx
 	 * 		Completion of sending data via TxData.  Do require post processing
 	 * after all data was transmitted via TxData.
+	 * This function must clear the busy state for re-entrancy
 	 *
 	 * @param
 	 * 		pSerDev : Pointer to an instance of the Serial Interface
@@ -257,7 +263,7 @@ static inline int SerialIntrfSetRate(SERINTRFDEV *pDev, int Rate) {
 static inline int SerialIntrfRx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen) {
 	int retval = 0;
 
-	if (pDev->StartRx(pDev, DevAddr)) {
+	if (pBuff && pDev->StartRx(pDev, DevAddr)) {
 		retval = pDev->RxData(pDev, pBuff, BuffLen);
 		pDev->StopRx(pDev);
 	}
@@ -268,7 +274,7 @@ static inline int SerialIntrfRx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, 
 static inline int SerialIntrfTx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen) {
 	int retval = 0;
 
-	if (pDev->StartTx(pDev, DevAddr)) {
+	if (pBuff && pDev->StartTx(pDev, DevAddr)) {
 		retval = pDev->TxData(pDev, pBuff, BuffLen);
 		pDev->StopTx(pDev);
 	}
@@ -276,6 +282,9 @@ static inline int SerialIntrfTx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, 
 }
 
 static inline bool SerialIntrfStartRx(SERINTRFDEV *pDev, int DevAddr) {
+	if (pDev->Busy)
+		return false;
+	AtomicAssign((sig_atomic_t *)&pDev->Busy, true);
 	return pDev->StartRx(pDev, DevAddr);
 }
 
@@ -284,10 +293,14 @@ static inline int SerialIntrfRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffL
 }
 
 static inline void SerialIntrfStopRx(SERINTRFDEV *pDev) {
+	AtomicAssign((sig_atomic_t *)&pDev->Busy, false);
 	pDev->StopRx(pDev);
 }
 
 static inline bool SerialIntrfStartTx(SERINTRFDEV *pDev, int DevAddr) {
+	if (pDev->Busy)
+		return false;
+	AtomicAssign((sig_atomic_t *)&pDev->Busy, true);
 	return pDev->StartTx(pDev, DevAddr);
 }
 
@@ -296,6 +309,7 @@ static inline int SerialIntrfTxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffL
 }
 
 static inline void SerialIntrfStopTx(SERINTRFDEV *pDev) {
+	AtomicAssign((sig_atomic_t *)&pDev->Busy, false);
 	pDev->StopTx(pDev);
 }
 
