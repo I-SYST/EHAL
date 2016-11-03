@@ -89,6 +89,7 @@ bool nRF52I2CWaitTxComplete(NRF52_I2CDEV *pDev, int Timeout)
 		if (pDev->pReg->EVENTS_ERROR)
 		{
 			// Abort in case error
+			pDev->pReg->ERRORSRC = pDev->pReg->ERRORSRC;
 			pDev->pReg->EVENTS_ERROR = 0;
 			pDev->pReg->TASKS_RESUME = 1;
 			pDev->pReg->TASKS_STOP = 1;
@@ -256,6 +257,7 @@ bool I2CInit(I2CDEV *pDev, I2CCFG *pCfgData)
 	pDev->SerIntrf.StopTx = nRF52I2CStopTx;
 	pDev->SerIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->SerIntrf.EvtCB = pCfgData->EvtCB;
+	pDev->SerIntrf.Busy = false;
 
 	reg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 }

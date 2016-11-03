@@ -71,6 +71,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/diskio.h</locationURI>
 		</link>
 		<link>
+			<name>include/diskio_flash.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/diskio_flash.h</locationURI>
+		</link>
+		<link>
 			<name>include/fatfs.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/fatfs.h</locationURI>
