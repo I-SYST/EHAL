@@ -65,7 +65,6 @@ public:
 	 */
 	virtual void EraseBlock(uint32_t BlkNo, int NbBlk) = 0;
 	virtual bool EraseUptoAddress(uint64_t addr) { return false; }
-    virtual void EraseSector(uint32_t SectNo, int NbSect) {}
 };
 
 #ifdef __cplusplus
