@@ -453,6 +453,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->SerIntrf.StartTx = nRFUARTStartTx;
 	pDev->SerIntrf.TxData = nRFUARTTxData;
 	pDev->SerIntrf.StopTx = nRFUARTStopTx;
+	pDev->SerIntrf.Busy = false;
 
     NRF_UART0->TASKS_STARTTX = 1;
     NRF_UART0->TASKS_STARTRX = 1;

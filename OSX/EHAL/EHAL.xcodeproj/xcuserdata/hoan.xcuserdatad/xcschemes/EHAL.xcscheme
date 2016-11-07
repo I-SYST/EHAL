@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0730"
+   LastUpgradeVersion = "0800"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "40F6A9111D7798D60029F1AB"
+               BlueprintIdentifier = "401FBF7F1D9CAC42004A39FF"
                BuildableName = "libEHAL.a"
                BlueprintName = "EHAL"
                ReferencedContainer = "container:EHAL.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "40F6A9111D7798D60029F1AB"
+            BlueprintIdentifier = "401FBF7F1D9CAC42004A39FF"
             BuildableName = "libEHAL.a"
             BlueprintName = "EHAL"
             ReferencedContainer = "container:EHAL.xcodeproj">
@@ -63,7 +63,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "40F6A9111D7798D60029F1AB"
+            BlueprintIdentifier = "401FBF7F1D9CAC42004A39FF"
             BuildableName = "libEHAL.a"
             BlueprintName = "EHAL"
             ReferencedContainer = "container:EHAL.xcodeproj">

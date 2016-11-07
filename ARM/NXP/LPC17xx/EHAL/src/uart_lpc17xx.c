@@ -69,8 +69,8 @@ Modified by          Date              Description
 #define UART_RX_CFIFO_SIZE			16
 #define UART_TX_CFIFO_SIZE			16
 
-#define UART_RX_CFIFO_MEM_SIZE			(UART_RX_CFIFO_SIZE + sizeof(CFIFOHDL))
-#define UART_TX_CFIFO_MEM_SIZE			(UART_TX_CFIFO_SIZE + sizeof(CFIFOHDL))
+#define UART_RX_CFIFO_MEM_SIZE			CFIFO_MEMSIZE(UART_RX_CFIFO_SIZE)
+#define UART_TX_CFIFO_MEM_SIZE			CFIFO_MEMSIZE(UART_TX_CFIFO_SIZE)
 
 uint32_t s_ErrCnt = 0;
 
@@ -236,6 +236,7 @@ bool LpcUARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->SerIntrf.TxData = LpcUARTTxData;
 	pDev->SerIntrf.StopTx = LpcUARTStopTx;
 	pDev->EvtCallback = pCfg->EvtCallback;
+	pDev->SerIntrf.Busy = false;
 
 	g_LpcUartDev[pCfg->DevNo].bTxReady = true;
 

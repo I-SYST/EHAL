@@ -283,6 +283,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfgData)
     pDev->SerIntrf.StartTx = OsxUARTStartTx;
     pDev->SerIntrf.TxData = OsxUARTTxData;
     pDev->SerIntrf.StopTx = OsxUARTStopTx;
-
+    pDev->SerIntrf.Busy = false;
+    
     return true;
 }

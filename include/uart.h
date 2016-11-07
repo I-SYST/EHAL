@@ -213,16 +213,16 @@ public:
 	virtual void SetCtrlLineState(int LineState) { UARTSetCtrlLineState(&vDevData, LineState); }
 	virtual int Rx(uint8_t *pBuff, uint32_t Len) { return ((SerialIntrf *)this)->Rx(0, pBuff, Len); }
 	// Initiate receive
-	virtual bool StartRx(int DevAddr) { return true; }
+	virtual bool StartRx(int DevAddr) { return SerialIntrfStartRx(&vDevData.SerIntrf, DevAddr); }
 	// Receive Data only, no Start/Stop condition
 	virtual int RxData(uint8_t *pBuff, int BuffLen) {
 		return SerialIntrfRxData(&vDevData.SerIntrf, pBuff, BuffLen);
 	}
 	// Stop receive
-	virtual void StopRx(void) {}
+	virtual void StopRx(void) { SerialIntrfStopRx(&vDevData.SerIntrf); }
 	virtual int Tx(uint8_t *pData, uint32_t Len) { return ((SerialIntrf*)this)->Tx(0, pData, Len); }
 	// Initiate transmit
-	virtual bool StartTx(int DevAddr) { return SerialIntrfStartTx(&vDevData.SerIntrf, 0); }
+	virtual bool StartTx(int DevAddr) { return SerialIntrfStartTx(&vDevData.SerIntrf, DevAddr); }
 	// Transmit Data only, no Start/Stop condition
 	virtual int TxData(uint8_t *pData, int DataLen) {
 		return SerialIntrfTxData(&vDevData.SerIntrf, pData, DataLen);

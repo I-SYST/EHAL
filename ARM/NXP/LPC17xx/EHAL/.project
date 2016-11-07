@@ -346,9 +346,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sha256.c</locationURI>
 		</link>
 		<link>
-			<name>src/ssp_lpcxx.c</name>
+			<name>src/spi_lpcxx.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/ssp_lpcxx.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/spi_lpcxx.c</locationURI>
 		</link>
 		<link>
 			<name>src/stddev.c</name>

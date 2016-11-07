@@ -68,7 +68,7 @@
 		<link>
 			<name>include/i2c.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/i2c.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/i2c.h</locationURI>
 		</link>
 		<link>
 			<name>include/i2c_lpcxx.h</name>
@@ -309,6 +309,11 @@
 			<name>src/ledmxfont.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/ledmxfont.c</locationURI>
+		</link>
+		<link>
+			<name>src/prbs.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/prbs.c</locationURI>
 		</link>
 		<link>
 			<name>src/sbuffer.c</name>

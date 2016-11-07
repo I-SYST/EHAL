@@ -96,7 +96,7 @@ struct _serialintrf_dev {
 	void *pDevData;			// Private device interface implementation data
 	int	IntPrio;			// Interrupt priority.  Value is implementation specific
 	SERINTRFEVCB EvtCB;		// Interrupt based event callback function pointer. Must be set to NULL if not used
-	volatile bool Busy;			// Busy flag to be set check and set at start and reset at end of transmission
+	volatile bool Busy;		// Busy flag to be set check and set at start and reset at end of transmission
 
 	// Bellow are all mandatory functions to implement
 	// On init, all implementation must fill these function, no NULL allowed

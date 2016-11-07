@@ -7,80 +7,70 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		40DEF0391D7B981E00CEB34A /* uart_osx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40DEF0371D7B981E00CEB34A /* uart_osx.cpp */; };
-		40DEF03C1D7B985900CEB34A /* uart_osx.h in Headers */ = {isa = PBXBuildFile; fileRef = 40DEF03B1D7B985900CEB34A /* uart_osx.h */; };
-		40DEF03E1D7B988900CEB34A /* uart.h in Headers */ = {isa = PBXBuildFile; fileRef = 40DEF03D1D7B988900CEB34A /* uart.h */; };
-		40DEF0441D7C718800CEB34A /* prbs.c in Sources */ = {isa = PBXBuildFile; fileRef = 40DEF0411D7C718800CEB34A /* prbs.c */; };
-		40DEF0451D7C718800CEB34A /* serialintrf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40DEF0421D7C718800CEB34A /* serialintrf.cpp */; };
-		40DEF0461D7C718800CEB34A /* uart.c in Sources */ = {isa = PBXBuildFile; fileRef = 40DEF0431D7C718800CEB34A /* uart.c */; };
-		40DEF0481D7C915400CEB34A /* sbuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 40DEF0471D7C915400CEB34A /* sbuffer.c */; };
-		40F6A91A1D77990A0029F1AB /* usbhiddev_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40F6A9191D77990A0029F1AB /* usbhiddev_impl.cpp */; };
-		40F6A91C1D7799150029F1AB /* usbhiddev_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A91B1D7799150029F1AB /* usbhiddev_impl.h */; };
-		40F6A9231D7799530029F1AB /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = 40F6A91D1D7799530029F1AB /* base64.c */; };
-		40F6A9241D7799530029F1AB /* cfifo.c in Sources */ = {isa = PBXBuildFile; fileRef = 40F6A91E1D7799530029F1AB /* cfifo.c */; };
-		40F6A9251D7799530029F1AB /* crc.c in Sources */ = {isa = PBXBuildFile; fileRef = 40F6A91F1D7799530029F1AB /* crc.c */; };
-		40F6A9261D7799530029F1AB /* intelhex.c in Sources */ = {isa = PBXBuildFile; fileRef = 40F6A9201D7799530029F1AB /* intelhex.c */; };
-		40F6A9271D7799530029F1AB /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = 40F6A9211D7799530029F1AB /* utf8.c */; };
-		40F6A9281D7799530029F1AB /* utf8cvt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40F6A9221D7799530029F1AB /* utf8cvt.cpp */; };
-		40F6A92D1D7799800029F1AB /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = 40F6A9291D7799800029F1AB /* sha1.c */; };
-		40F6A92E1D7799800029F1AB /* sha256.c in Sources */ = {isa = PBXBuildFile; fileRef = 40F6A92A1D7799800029F1AB /* sha256.c */; };
-		40F6A9301D7799800029F1AB /* sysstatus.c in Sources */ = {isa = PBXBuildFile; fileRef = 40F6A92C1D7799800029F1AB /* sysstatus.c */; };
-		40F6A9401D7799B30029F1AB /* atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A9311D7799B30029F1AB /* atomic.h */; };
-		40F6A9411D7799B30029F1AB /* base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A9321D7799B30029F1AB /* base64.h */; };
-		40F6A9421D7799B30029F1AB /* cfifo.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A9331D7799B30029F1AB /* cfifo.h */; };
-		40F6A9431D7799B30029F1AB /* convutil.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A9341D7799B30029F1AB /* convutil.h */; };
-		40F6A9441D7799B30029F1AB /* crc.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A9351D7799B30029F1AB /* crc.h */; };
-		40F6A9451D7799B30029F1AB /* intelhex.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A9361D7799B30029F1AB /* intelhex.h */; };
-		40F6A9461D7799B30029F1AB /* istddef.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A9371D7799B30029F1AB /* istddef.h */; };
-		40F6A9471D7799B30029F1AB /* serialintrf.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A9381D7799B30029F1AB /* serialintrf.h */; };
-		40F6A9481D7799B30029F1AB /* sha1.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A9391D7799B30029F1AB /* sha1.h */; };
-		40F6A9491D7799B30029F1AB /* sha256.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A93A1D7799B30029F1AB /* sha256.h */; };
-		40F6A94A1D7799B30029F1AB /* sysstatus.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A93B1D7799B30029F1AB /* sysstatus.h */; };
-		40F6A94B1D7799B30029F1AB /* sysstatusdef.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A93C1D7799B30029F1AB /* sysstatusdef.h */; };
-		40F6A94C1D7799B30029F1AB /* usbhiddev.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A93D1D7799B30029F1AB /* usbhiddev.h */; };
-		40F6A94D1D7799B30029F1AB /* utf8.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A93E1D7799B30029F1AB /* utf8.h */; };
-		40F6A94E1D7799B30029F1AB /* utf8cvt.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F6A93F1D7799B30029F1AB /* utf8cvt.h */; };
+		401FBF931D9CAC96004A39FF /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF871D9CAC96004A39FF /* base64.c */; };
+		401FBF941D9CAC96004A39FF /* cfifo.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF881D9CAC96004A39FF /* cfifo.c */; };
+		401FBF951D9CAC96004A39FF /* crc.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF891D9CAC96004A39FF /* crc.c */; };
+		401FBF961D9CAC96004A39FF /* intelhex.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF8A1D9CAC96004A39FF /* intelhex.c */; };
+		401FBF971D9CAC96004A39FF /* prbs.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF8B1D9CAC96004A39FF /* prbs.c */; };
+		401FBF981D9CAC96004A39FF /* sbuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF8C1D9CAC96004A39FF /* sbuffer.c */; };
+		401FBF991D9CAC96004A39FF /* serialintrf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF8D1D9CAC96004A39FF /* serialintrf.cpp */; };
+		401FBF9A1D9CAC96004A39FF /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF8E1D9CAC96004A39FF /* sha1.c */; };
+		401FBF9B1D9CAC96004A39FF /* sha256.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF8F1D9CAC96004A39FF /* sha256.c */; };
+		401FBF9C1D9CAC96004A39FF /* uart.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF901D9CAC96004A39FF /* uart.c */; };
+		401FBF9D1D9CAC96004A39FF /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF911D9CAC96004A39FF /* utf8.c */; };
+		401FBF9E1D9CAC96004A39FF /* utf8cvt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF921D9CAC96004A39FF /* utf8cvt.cpp */; };
+		401FBFA11D9CAD53004A39FF /* uart_osx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF9F1D9CAD53004A39FF /* uart_osx.cpp */; };
+		401FBFA21D9CAD53004A39FF /* usbhiddev_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 401FBFA01D9CAD53004A39FF /* usbhiddev_impl.cpp */; };
+		401FBFEC1DA01F47004A39FF /* base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFDE1DA01F47004A39FF /* base64.h */; };
+		401FBFED1DA01F47004A39FF /* cfifo.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFDF1DA01F47004A39FF /* cfifo.h */; };
+		401FBFEE1DA01F47004A39FF /* convutil.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE01DA01F47004A39FF /* convutil.h */; };
+		401FBFEF1DA01F47004A39FF /* crc.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE11DA01F47004A39FF /* crc.h */; };
+		401FBFF01DA01F47004A39FF /* intelhex.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE21DA01F47004A39FF /* intelhex.h */; };
+		401FBFF11DA01F47004A39FF /* istddef.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE31DA01F47004A39FF /* istddef.h */; };
+		401FBFF21DA01F47004A39FF /* prbs.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE41DA01F47004A39FF /* prbs.h */; };
+		401FBFF31DA01F47004A39FF /* serialintrf.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE51DA01F47004A39FF /* serialintrf.h */; };
+		401FBFF41DA01F47004A39FF /* sha1.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE61DA01F47004A39FF /* sha1.h */; };
+		401FBFF51DA01F47004A39FF /* sha256.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE71DA01F47004A39FF /* sha256.h */; };
+		401FBFF61DA01F47004A39FF /* uart.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE81DA01F47004A39FF /* uart.h */; };
+		401FBFF71DA01F47004A39FF /* usbhiddev.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE91DA01F47004A39FF /* usbhiddev.h */; };
+		401FBFF81DA01F47004A39FF /* utf8.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFEA1DA01F47004A39FF /* utf8.h */; };
+		401FBFF91DA01F47004A39FF /* utf8cvt.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFEB1DA01F47004A39FF /* utf8cvt.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		40DEF0371D7B981E00CEB34A /* uart_osx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uart_osx.cpp; path = ../src/uart_osx.cpp; sourceTree = "<group>"; };
-		40DEF03B1D7B985900CEB34A /* uart_osx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uart_osx.h; path = ../include/uart_osx.h; sourceTree = "<group>"; };
-		40DEF03D1D7B988900CEB34A /* uart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uart.h; path = ../../include/uart.h; sourceTree = "<group>"; };
-		40DEF0411D7C718800CEB34A /* prbs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = prbs.c; path = ../../src/prbs.c; sourceTree = "<group>"; };
-		40DEF0421D7C718800CEB34A /* serialintrf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = serialintrf.cpp; path = ../../src/serialintrf.cpp; sourceTree = "<group>"; };
-		40DEF0431D7C718800CEB34A /* uart.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = uart.c; path = ../../src/uart.c; sourceTree = "<group>"; };
-		40DEF0471D7C915400CEB34A /* sbuffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sbuffer.c; path = ../../src/sbuffer.c; sourceTree = "<group>"; };
-		40F6A9121D7798D60029F1AB /* libEHAL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libEHAL.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		40F6A9191D77990A0029F1AB /* usbhiddev_impl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = usbhiddev_impl.cpp; path = ../src/usbhiddev_impl.cpp; sourceTree = "<group>"; };
-		40F6A91B1D7799150029F1AB /* usbhiddev_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = usbhiddev_impl.h; path = ../include/usbhiddev_impl.h; sourceTree = "<group>"; };
-		40F6A91D1D7799530029F1AB /* base64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = base64.c; path = ../../src/base64.c; sourceTree = "<group>"; };
-		40F6A91E1D7799530029F1AB /* cfifo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cfifo.c; path = ../../src/cfifo.c; sourceTree = "<group>"; };
-		40F6A91F1D7799530029F1AB /* crc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = crc.c; path = ../../src/crc.c; sourceTree = "<group>"; };
-		40F6A9201D7799530029F1AB /* intelhex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = intelhex.c; path = ../../src/intelhex.c; sourceTree = "<group>"; };
-		40F6A9211D7799530029F1AB /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf8.c; path = ../../src/utf8.c; sourceTree = "<group>"; };
-		40F6A9221D7799530029F1AB /* utf8cvt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utf8cvt.cpp; path = ../../src/utf8cvt.cpp; sourceTree = "<group>"; };
-		40F6A9291D7799800029F1AB /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha1.c; path = ../../src/sha1.c; sourceTree = "<group>"; };
-		40F6A92A1D7799800029F1AB /* sha256.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha256.c; path = ../../src/sha256.c; sourceTree = "<group>"; };
-		40F6A92C1D7799800029F1AB /* sysstatus.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sysstatus.c; path = ../../src/sysstatus.c; sourceTree = "<group>"; };
-		40F6A9311D7799B30029F1AB /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = ../../include/atomic.h; sourceTree = "<group>"; };
-		40F6A9321D7799B30029F1AB /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = base64.h; path = ../../include/base64.h; sourceTree = "<group>"; };
-		40F6A9331D7799B30029F1AB /* cfifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cfifo.h; path = ../../include/cfifo.h; sourceTree = "<group>"; };
-		40F6A9341D7799B30029F1AB /* convutil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = convutil.h; path = ../../include/convutil.h; sourceTree = "<group>"; };
-		40F6A9351D7799B30029F1AB /* crc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crc.h; path = ../../include/crc.h; sourceTree = "<group>"; };
-		40F6A9361D7799B30029F1AB /* intelhex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = intelhex.h; path = ../../include/intelhex.h; sourceTree = "<group>"; };
-		40F6A9371D7799B30029F1AB /* istddef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = istddef.h; path = ../../include/istddef.h; sourceTree = "<group>"; };
-		40F6A9381D7799B30029F1AB /* serialintrf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = serialintrf.h; path = ../../include/serialintrf.h; sourceTree = "<group>"; };
-		40F6A9391D7799B30029F1AB /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha1.h; path = ../../include/sha1.h; sourceTree = "<group>"; };
-		40F6A93A1D7799B30029F1AB /* sha256.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha256.h; path = ../../include/sha256.h; sourceTree = "<group>"; };
-		40F6A93B1D7799B30029F1AB /* sysstatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sysstatus.h; path = ../../include/sysstatus.h; sourceTree = "<group>"; };
-		40F6A93C1D7799B30029F1AB /* sysstatusdef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sysstatusdef.h; path = ../../include/sysstatusdef.h; sourceTree = "<group>"; };
-		40F6A93D1D7799B30029F1AB /* usbhiddev.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = usbhiddev.h; path = ../../include/usbhiddev.h; sourceTree = "<group>"; };
-		40F6A93E1D7799B30029F1AB /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utf8.h; path = ../../include/utf8.h; sourceTree = "<group>"; };
-		40F6A93F1D7799B30029F1AB /* utf8cvt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utf8cvt.h; path = ../../include/utf8cvt.h; sourceTree = "<group>"; };
+		401FBF801D9CAC42004A39FF /* libEHAL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libEHAL.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		401FBF871D9CAC96004A39FF /* base64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = base64.c; path = ../../src/base64.c; sourceTree = "<group>"; };
+		401FBF881D9CAC96004A39FF /* cfifo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cfifo.c; path = ../../src/cfifo.c; sourceTree = "<group>"; };
+		401FBF891D9CAC96004A39FF /* crc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = crc.c; path = ../../src/crc.c; sourceTree = "<group>"; };
+		401FBF8A1D9CAC96004A39FF /* intelhex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = intelhex.c; path = ../../src/intelhex.c; sourceTree = "<group>"; };
+		401FBF8B1D9CAC96004A39FF /* prbs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = prbs.c; path = ../../src/prbs.c; sourceTree = "<group>"; };
+		401FBF8C1D9CAC96004A39FF /* sbuffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sbuffer.c; path = ../../src/sbuffer.c; sourceTree = "<group>"; };
+		401FBF8D1D9CAC96004A39FF /* serialintrf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = serialintrf.cpp; path = ../../src/serialintrf.cpp; sourceTree = "<group>"; };
+		401FBF8E1D9CAC96004A39FF /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha1.c; path = ../../src/sha1.c; sourceTree = "<group>"; };
+		401FBF8F1D9CAC96004A39FF /* sha256.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha256.c; path = ../../src/sha256.c; sourceTree = "<group>"; };
+		401FBF901D9CAC96004A39FF /* uart.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = uart.c; path = ../../src/uart.c; sourceTree = "<group>"; };
+		401FBF911D9CAC96004A39FF /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf8.c; path = ../../src/utf8.c; sourceTree = "<group>"; };
+		401FBF921D9CAC96004A39FF /* utf8cvt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utf8cvt.cpp; path = ../../src/utf8cvt.cpp; sourceTree = "<group>"; };
+		401FBF9F1D9CAD53004A39FF /* uart_osx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uart_osx.cpp; path = src/uart_osx.cpp; sourceTree = "<group>"; };
+		401FBFA01D9CAD53004A39FF /* usbhiddev_impl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = usbhiddev_impl.cpp; path = src/usbhiddev_impl.cpp; sourceTree = "<group>"; };
+		401FBFDE1DA01F47004A39FF /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = base64.h; path = ../../include/base64.h; sourceTree = "<group>"; };
+		401FBFDF1DA01F47004A39FF /* cfifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cfifo.h; path = ../../include/cfifo.h; sourceTree = "<group>"; };
+		401FBFE01DA01F47004A39FF /* convutil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = convutil.h; path = ../../include/convutil.h; sourceTree = "<group>"; };
+		401FBFE11DA01F47004A39FF /* crc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crc.h; path = ../../include/crc.h; sourceTree = "<group>"; };
+		401FBFE21DA01F47004A39FF /* intelhex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = intelhex.h; path = ../../include/intelhex.h; sourceTree = "<group>"; };
+		401FBFE31DA01F47004A39FF /* istddef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = istddef.h; path = ../../include/istddef.h; sourceTree = "<group>"; };
+		401FBFE41DA01F47004A39FF /* prbs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = prbs.h; path = ../../include/prbs.h; sourceTree = "<group>"; };
+		401FBFE51DA01F47004A39FF /* serialintrf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = serialintrf.h; path = ../../include/serialintrf.h; sourceTree = "<group>"; };
+		401FBFE61DA01F47004A39FF /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha1.h; path = ../../include/sha1.h; sourceTree = "<group>"; };
+		401FBFE71DA01F47004A39FF /* sha256.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha256.h; path = ../../include/sha256.h; sourceTree = "<group>"; };
+		401FBFE81DA01F47004A39FF /* uart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uart.h; path = ../../include/uart.h; sourceTree = "<group>"; };
+		401FBFE91DA01F47004A39FF /* usbhiddev.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = usbhiddev.h; path = ../../include/usbhiddev.h; sourceTree = "<group>"; };
+		401FBFEA1DA01F47004A39FF /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utf8.h; path = ../../include/utf8.h; sourceTree = "<group>"; };
+		401FBFEB1DA01F47004A39FF /* utf8cvt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utf8cvt.h; path = ../../include/utf8cvt.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		40F6A90F1D7798D60029F1AB /* Frameworks */ = {
+		401FBF7D1D9CAC42004A39FF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -90,50 +80,45 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		40F6A9091D7798D60029F1AB = {
+		401FBF771D9CAC42004A39FF = {
 			isa = PBXGroup;
 			children = (
-				40DEF0471D7C915400CEB34A /* sbuffer.c */,
-				40DEF0411D7C718800CEB34A /* prbs.c */,
-				40DEF0421D7C718800CEB34A /* serialintrf.cpp */,
-				40DEF0431D7C718800CEB34A /* uart.c */,
-				40DEF03D1D7B988900CEB34A /* uart.h */,
-				40DEF03B1D7B985900CEB34A /* uart_osx.h */,
-				40DEF0371D7B981E00CEB34A /* uart_osx.cpp */,
-				40F6A9311D7799B30029F1AB /* atomic.h */,
-				40F6A9321D7799B30029F1AB /* base64.h */,
-				40F6A9331D7799B30029F1AB /* cfifo.h */,
-				40F6A9341D7799B30029F1AB /* convutil.h */,
-				40F6A9351D7799B30029F1AB /* crc.h */,
-				40F6A9361D7799B30029F1AB /* intelhex.h */,
-				40F6A9371D7799B30029F1AB /* istddef.h */,
-				40F6A9381D7799B30029F1AB /* serialintrf.h */,
-				40F6A9391D7799B30029F1AB /* sha1.h */,
-				40F6A93A1D7799B30029F1AB /* sha256.h */,
-				40F6A93B1D7799B30029F1AB /* sysstatus.h */,
-				40F6A93C1D7799B30029F1AB /* sysstatusdef.h */,
-				40F6A93D1D7799B30029F1AB /* usbhiddev.h */,
-				40F6A93E1D7799B30029F1AB /* utf8.h */,
-				40F6A93F1D7799B30029F1AB /* utf8cvt.h */,
-				40F6A9291D7799800029F1AB /* sha1.c */,
-				40F6A92A1D7799800029F1AB /* sha256.c */,
-				40F6A92C1D7799800029F1AB /* sysstatus.c */,
-				40F6A91D1D7799530029F1AB /* base64.c */,
-				40F6A91E1D7799530029F1AB /* cfifo.c */,
-				40F6A91F1D7799530029F1AB /* crc.c */,
-				40F6A9201D7799530029F1AB /* intelhex.c */,
-				40F6A9211D7799530029F1AB /* utf8.c */,
-				40F6A9221D7799530029F1AB /* utf8cvt.cpp */,
-				40F6A91B1D7799150029F1AB /* usbhiddev_impl.h */,
-				40F6A9191D77990A0029F1AB /* usbhiddev_impl.cpp */,
-				40F6A9131D7798D60029F1AB /* Products */,
+				401FBFDE1DA01F47004A39FF /* base64.h */,
+				401FBFDF1DA01F47004A39FF /* cfifo.h */,
+				401FBFE01DA01F47004A39FF /* convutil.h */,
+				401FBFE11DA01F47004A39FF /* crc.h */,
+				401FBFE21DA01F47004A39FF /* intelhex.h */,
+				401FBFE31DA01F47004A39FF /* istddef.h */,
+				401FBFE41DA01F47004A39FF /* prbs.h */,
+				401FBFE51DA01F47004A39FF /* serialintrf.h */,
+				401FBFE61DA01F47004A39FF /* sha1.h */,
+				401FBFE71DA01F47004A39FF /* sha256.h */,
+				401FBFE81DA01F47004A39FF /* uart.h */,
+				401FBFE91DA01F47004A39FF /* usbhiddev.h */,
+				401FBFEA1DA01F47004A39FF /* utf8.h */,
+				401FBFEB1DA01F47004A39FF /* utf8cvt.h */,
+				401FBF9F1D9CAD53004A39FF /* uart_osx.cpp */,
+				401FBFA01D9CAD53004A39FF /* usbhiddev_impl.cpp */,
+				401FBF871D9CAC96004A39FF /* base64.c */,
+				401FBF881D9CAC96004A39FF /* cfifo.c */,
+				401FBF891D9CAC96004A39FF /* crc.c */,
+				401FBF8A1D9CAC96004A39FF /* intelhex.c */,
+				401FBF8B1D9CAC96004A39FF /* prbs.c */,
+				401FBF8C1D9CAC96004A39FF /* sbuffer.c */,
+				401FBF8D1D9CAC96004A39FF /* serialintrf.cpp */,
+				401FBF8E1D9CAC96004A39FF /* sha1.c */,
+				401FBF8F1D9CAC96004A39FF /* sha256.c */,
+				401FBF901D9CAC96004A39FF /* uart.c */,
+				401FBF911D9CAC96004A39FF /* utf8.c */,
+				401FBF921D9CAC96004A39FF /* utf8cvt.cpp */,
+				401FBF811D9CAC42004A39FF /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		40F6A9131D7798D60029F1AB /* Products */ = {
+		401FBF811D9CAC42004A39FF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				40F6A9121D7798D60029F1AB /* libEHAL.a */,
+				401FBF801D9CAC42004A39FF /* libEHAL.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -141,41 +126,37 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		40F6A9101D7798D60029F1AB /* Headers */ = {
+		401FBF7E1D9CAC42004A39FF /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40F6A9421D7799B30029F1AB /* cfifo.h in Headers */,
-				40F6A9451D7799B30029F1AB /* intelhex.h in Headers */,
-				40F6A9461D7799B30029F1AB /* istddef.h in Headers */,
-				40DEF03C1D7B985900CEB34A /* uart_osx.h in Headers */,
-				40F6A94E1D7799B30029F1AB /* utf8cvt.h in Headers */,
-				40F6A94B1D7799B30029F1AB /* sysstatusdef.h in Headers */,
-				40F6A91C1D7799150029F1AB /* usbhiddev_impl.h in Headers */,
-				40F6A94C1D7799B30029F1AB /* usbhiddev.h in Headers */,
-				40F6A9471D7799B30029F1AB /* serialintrf.h in Headers */,
-				40F6A9481D7799B30029F1AB /* sha1.h in Headers */,
-				40F6A9401D7799B30029F1AB /* atomic.h in Headers */,
-				40F6A9491D7799B30029F1AB /* sha256.h in Headers */,
-				40F6A94D1D7799B30029F1AB /* utf8.h in Headers */,
-				40F6A94A1D7799B30029F1AB /* sysstatus.h in Headers */,
-				40DEF03E1D7B988900CEB34A /* uart.h in Headers */,
-				40F6A9441D7799B30029F1AB /* crc.h in Headers */,
-				40F6A9411D7799B30029F1AB /* base64.h in Headers */,
-				40F6A9431D7799B30029F1AB /* convutil.h in Headers */,
+				401FBFF81DA01F47004A39FF /* utf8.h in Headers */,
+				401FBFED1DA01F47004A39FF /* cfifo.h in Headers */,
+				401FBFEC1DA01F47004A39FF /* base64.h in Headers */,
+				401FBFF91DA01F47004A39FF /* utf8cvt.h in Headers */,
+				401FBFF21DA01F47004A39FF /* prbs.h in Headers */,
+				401FBFF11DA01F47004A39FF /* istddef.h in Headers */,
+				401FBFF41DA01F47004A39FF /* sha1.h in Headers */,
+				401FBFF61DA01F47004A39FF /* uart.h in Headers */,
+				401FBFF51DA01F47004A39FF /* sha256.h in Headers */,
+				401FBFEE1DA01F47004A39FF /* convutil.h in Headers */,
+				401FBFEF1DA01F47004A39FF /* crc.h in Headers */,
+				401FBFF31DA01F47004A39FF /* serialintrf.h in Headers */,
+				401FBFF01DA01F47004A39FF /* intelhex.h in Headers */,
+				401FBFF71DA01F47004A39FF /* usbhiddev.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		40F6A9111D7798D60029F1AB /* EHAL */ = {
+		401FBF7F1D9CAC42004A39FF /* EHAL */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 40F6A9161D7798D60029F1AB /* Build configuration list for PBXNativeTarget "EHAL" */;
+			buildConfigurationList = 401FBF841D9CAC42004A39FF /* Build configuration list for PBXNativeTarget "EHAL" */;
 			buildPhases = (
-				40F6A90E1D7798D60029F1AB /* Sources */,
-				40F6A90F1D7798D60029F1AB /* Frameworks */,
-				40F6A9101D7798D60029F1AB /* Headers */,
+				401FBF7C1D9CAC42004A39FF /* Sources */,
+				401FBF7D1D9CAC42004A39FF /* Frameworks */,
+				401FBF7E1D9CAC42004A39FF /* Headers */,
 			);
 			buildRules = (
 			);
@@ -183,67 +164,67 @@
 			);
 			name = EHAL;
 			productName = EHAL;
-			productReference = 40F6A9121D7798D60029F1AB /* libEHAL.a */;
+			productReference = 401FBF801D9CAC42004A39FF /* libEHAL.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		40F6A90A1D7798D60029F1AB /* Project object */ = {
+		401FBF781D9CAC42004A39FF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "I-SYST inc.";
 				TargetAttributes = {
-					40F6A9111D7798D60029F1AB = {
-						CreatedOnToolsVersion = 7.3.1;
+					401FBF7F1D9CAC42004A39FF = {
+						CreatedOnToolsVersion = 8.0;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = 40F6A90D1D7798D60029F1AB /* Build configuration list for PBXProject "EHAL" */;
+			buildConfigurationList = 401FBF7B1D9CAC42004A39FF /* Build configuration list for PBXProject "EHAL" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 40F6A9091D7798D60029F1AB;
-			productRefGroup = 40F6A9131D7798D60029F1AB /* Products */;
+			mainGroup = 401FBF771D9CAC42004A39FF;
+			productRefGroup = 401FBF811D9CAC42004A39FF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				40F6A9111D7798D60029F1AB /* EHAL */,
+				401FBF7F1D9CAC42004A39FF /* EHAL */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		40F6A90E1D7798D60029F1AB /* Sources */ = {
+		401FBF7C1D9CAC42004A39FF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40F6A9271D7799530029F1AB /* utf8.c in Sources */,
-				40F6A9241D7799530029F1AB /* cfifo.c in Sources */,
-				40F6A9231D7799530029F1AB /* base64.c in Sources */,
-				40F6A9251D7799530029F1AB /* crc.c in Sources */,
-				40F6A92D1D7799800029F1AB /* sha1.c in Sources */,
-				40DEF0391D7B981E00CEB34A /* uart_osx.cpp in Sources */,
-				40DEF0441D7C718800CEB34A /* prbs.c in Sources */,
-				40DEF0461D7C718800CEB34A /* uart.c in Sources */,
-				40F6A9301D7799800029F1AB /* sysstatus.c in Sources */,
-				40F6A9281D7799530029F1AB /* utf8cvt.cpp in Sources */,
-				40DEF0451D7C718800CEB34A /* serialintrf.cpp in Sources */,
-				40F6A91A1D77990A0029F1AB /* usbhiddev_impl.cpp in Sources */,
-				40F6A92E1D7799800029F1AB /* sha256.c in Sources */,
-				40DEF0481D7C915400CEB34A /* sbuffer.c in Sources */,
-				40F6A9261D7799530029F1AB /* intelhex.c in Sources */,
+				401FBFA21D9CAD53004A39FF /* usbhiddev_impl.cpp in Sources */,
+				401FBF9E1D9CAC96004A39FF /* utf8cvt.cpp in Sources */,
+				401FBF971D9CAC96004A39FF /* prbs.c in Sources */,
+				401FBF981D9CAC96004A39FF /* sbuffer.c in Sources */,
+				401FBFA11D9CAD53004A39FF /* uart_osx.cpp in Sources */,
+				401FBF991D9CAC96004A39FF /* serialintrf.cpp in Sources */,
+				401FBF961D9CAC96004A39FF /* intelhex.c in Sources */,
+				401FBF9A1D9CAC96004A39FF /* sha1.c in Sources */,
+				401FBF9C1D9CAC96004A39FF /* uart.c in Sources */,
+				401FBF951D9CAC96004A39FF /* crc.c in Sources */,
+				401FBF931D9CAC96004A39FF /* base64.c in Sources */,
+				401FBF9B1D9CAC96004A39FF /* sha256.c in Sources */,
+				401FBF9D1D9CAC96004A39FF /* utf8.c in Sources */,
+				401FBF941D9CAC96004A39FF /* cfifo.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		40F6A9141D7798D60029F1AB /* Debug */ = {
+		401FBF821D9CAC42004A39FF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -255,10 +236,13 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -266,7 +250,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -280,18 +264,15 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					../../../include,
-					../../include,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "../../include ../include include";
 			};
 			name = Debug;
 		};
-		40F6A9151D7798D60029F1AB /* Release */ = {
+		401FBF831D9CAC42004A39FF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -303,10 +284,13 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -314,7 +298,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -322,17 +306,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					../../../include,
-					../../include,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "../../include ../include include";
 			};
 			name = Release;
 		};
-		40F6A9171D7798D60029F1AB /* Debug */ = {
+		401FBF851D9CAC42004A39FF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
@@ -340,7 +321,7 @@
 			};
 			name = Debug;
 		};
-		40F6A9181D7798D60029F1AB /* Release */ = {
+		401FBF861D9CAC42004A39FF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
@@ -351,25 +332,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		40F6A90D1D7798D60029F1AB /* Build configuration list for PBXProject "EHAL" */ = {
+		401FBF7B1D9CAC42004A39FF /* Build configuration list for PBXProject "EHAL" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				40F6A9141D7798D60029F1AB /* Debug */,
-				40F6A9151D7798D60029F1AB /* Release */,
+				401FBF821D9CAC42004A39FF /* Debug */,
+				401FBF831D9CAC42004A39FF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		40F6A9161D7798D60029F1AB /* Build configuration list for PBXNativeTarget "EHAL" */ = {
+		401FBF841D9CAC42004A39FF /* Build configuration list for PBXNativeTarget "EHAL" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				40F6A9171D7798D60029F1AB /* Debug */,
-				40F6A9181D7798D60029F1AB /* Release */,
+				401FBF851D9CAC42004A39FF /* Debug */,
+				401FBF861D9CAC42004A39FF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 40F6A90A1D7798D60029F1AB /* Project object */;
+	rootObject = 401FBF781D9CAC42004A39FF /* Project object */;
 }

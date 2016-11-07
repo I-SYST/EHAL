@@ -16,7 +16,7 @@
             startingLineNumber = "96"
             endingLineNumber = "96"
             landmarkName = "main()"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -32,7 +32,7 @@
             startingLineNumber = "98"
             endingLineNumber = "98"
             landmarkName = "main()"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -64,7 +64,7 @@
             startingLineNumber = "132"
             endingLineNumber = "132"
             landmarkName = "main()"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -112,7 +112,7 @@
             startingLineNumber = "153"
             endingLineNumber = "153"
             landmarkName = "main()"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -128,7 +128,7 @@
             startingLineNumber = "122"
             endingLineNumber = "122"
             landmarkName = "main()"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -144,7 +144,7 @@
             startingLineNumber = "121"
             endingLineNumber = "121"
             landmarkName = "main()"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
