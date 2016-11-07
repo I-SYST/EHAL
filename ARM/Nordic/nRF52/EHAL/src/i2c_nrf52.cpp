@@ -44,6 +44,7 @@ typedef struct {
 } NRF52_I2CDEV;
 
 #define NRF52_I2C_MAXDEV		2
+#define NRF52_I2C_DMA_MAXCNT	255
 
 static NRF52_I2CDEV s_nRF52I2CDev[NRF52_I2C_MAXDEV] = {
 	{
@@ -170,15 +171,21 @@ int nRF52I2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 	uint32_t d;
 
-	dev->pReg->EVENTS_ERROR = 0;
-	dev->pReg->EVENTS_STOPPED = 0;
-	dev->pReg->RXD.PTR = (uint32_t)pBuff;
-	dev->pReg->RXD.MAXCNT = BuffLen;
-	dev->pReg->RXD.LIST = 0;
-	dev->pReg->TASKS_STARTRX = 1;
+	while (BuffLen > 0)
+	{
+		int l = min(BuffLen, NRF52_I2C_DMA_MAXCNT);
+		dev->pReg->EVENTS_ERROR = 0;
+		dev->pReg->EVENTS_STOPPED = 0;
+		dev->pReg->RXD.PTR = (uint32_t)pBuff;
+		dev->pReg->RXD.MAXCNT = l;
+		dev->pReg->RXD.LIST = 0;
+		dev->pReg->TASKS_STARTRX = 1;
 
-	nRF52I2CWaitRxComplete(dev, 100000);
+		nRF52I2CWaitRxComplete(dev, 100000);
 
+		BuffLen -= l;
+		pBuff += l;
+	}
 	return dev->pReg->RXD.AMOUNT;
 }
 
@@ -204,15 +211,22 @@ int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 	uint32_t d;
 
-	dev->pReg->EVENTS_ERROR = 0;
-	dev->pReg->EVENTS_STOPPED = 0;
-	dev->pReg->TXD.PTR = (uint32_t)pData;
-	dev->pReg->TXD.MAXCNT = DataLen;
-	dev->pReg->TXD.LIST = 0;
-	dev->pReg->TASKS_STARTTX = 1;
+	while (DataLen > 0)
+	{
+		int l = min(DataLen, NRF52_I2C_DMA_MAXCNT);
 
-	nRF52I2CWaitTxComplete(dev, 100000);
+		dev->pReg->EVENTS_ERROR = 0;
+		dev->pReg->EVENTS_STOPPED = 0;
+		dev->pReg->TXD.PTR = (uint32_t)pData;
+		dev->pReg->TXD.MAXCNT = l;
+		dev->pReg->TXD.LIST = 0;
+		dev->pReg->TASKS_STARTTX = 1;
 
+		nRF52I2CWaitTxComplete(dev, 100000);
+
+		DataLen -= l;
+		pData += l;
+	}
 	return dev->pReg->TXD.AMOUNT;
 }
 

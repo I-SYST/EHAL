@@ -44,6 +44,7 @@ typedef struct {
 } NRF52_SPIDEV;
 
 #define NRF52_SPI_MAXDEV		3
+#define NRF52_SPI_DMA_MAXCNT	255
 
 static NRF52_SPIDEV s_nRF52SPIDev[NRF52_SPI_MAXDEV] = {
 	{
@@ -165,7 +166,7 @@ int nRF52SPIRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 
 	while (BuffLen > 0)
 	{
-		int l = min(BuffLen, 255);
+		int l = min(BuffLen, NRF52_SPI_DMA_MAXCNT);
 
 		dev->pReg->RXD.PTR = (uint32_t)pBuff;
 		dev->pReg->RXD.MAXCNT = l;
@@ -215,7 +216,7 @@ int nRF52SPITxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 
 	while (DataLen > 0)
 	{
-		int l = min(DataLen, 255);
+		int l = min(DataLen, NRF52_SPI_DMA_MAXCNT);
 		dev->pReg->RXD.PTR = 0;
 		dev->pReg->RXD.MAXCNT = 0;
 		dev->pReg->RXD.LIST = 0; // Scatter/Gather not supported
