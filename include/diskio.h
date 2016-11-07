@@ -101,7 +101,7 @@ public:
 	 */
 	virtual void Erase() {}
 	int	GetCacheSect(uint32_t SectNo, bool bLock = false);
-	void SetCache(uint8_t *pCacheBlk, size_t CacheSize);
+	void SetCache(uint8_t *pCacheBlk, uint32_t CacheSize);
 
 protected:
 

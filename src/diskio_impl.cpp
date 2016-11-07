@@ -54,7 +54,7 @@ DiskIO::DiskIO() : vLastIdx(1), vNbCache(1), vExtCache(false)
 	}
 }
 
-void DiskIO::SetCache(uint8_t *pCacheBlk, size_t CacheSize)
+void DiskIO::SetCache(uint8_t *pCacheBlk, uint32_t CacheSize)
 {
 	if (pCacheBlk == NULL || CacheSize < DISKIO_SECT_SIZE)
 		return;
