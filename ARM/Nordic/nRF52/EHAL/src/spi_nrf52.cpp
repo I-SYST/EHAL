@@ -163,16 +163,23 @@ int nRF52SPIRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
-	dev->pReg->RXD.PTR = (uint32_t)pBuff;
-	dev->pReg->RXD.MAXCNT = BuffLen;
-	dev->pReg->RXD.LIST = 0; // Scatter/Gather not supported
-	dev->pReg->TXD.PTR = 0;
-	dev->pReg->TXD.MAXCNT = 0;
-	dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
-	dev->pReg->EVENTS_END = 0;
-	dev->pReg->TASKS_START = 1;
+	while (BuffLen > 0)
+	{
+		int l = min(BuffLen, 255);
 
-	nRF52SPIWaitDMA(dev, 100000);
+		dev->pReg->RXD.PTR = (uint32_t)pBuff;
+		dev->pReg->RXD.MAXCNT = l;
+		dev->pReg->RXD.LIST = 0; // Scatter/Gather not supported
+		dev->pReg->TXD.PTR = 0;
+		dev->pReg->TXD.MAXCNT = 0;
+		dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
+		dev->pReg->EVENTS_END = 0;
+		dev->pReg->TASKS_START = 1;
+
+		nRF52SPIWaitDMA(dev, 100000);
+		BuffLen -= l;
+		pBuff += l;
+	}
 
 	return dev->pReg->RXD.AMOUNT;
 }
@@ -206,16 +213,23 @@ int nRF52SPITxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
-	dev->pReg->RXD.PTR = 0;
-	dev->pReg->RXD.MAXCNT = 0;
-	dev->pReg->RXD.LIST = 0; // Scatter/Gather not supported
-	dev->pReg->TXD.PTR = (uint32_t)pData;
-	dev->pReg->TXD.MAXCNT = DataLen;
-	dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
-	dev->pReg->EVENTS_END = 0;
-	dev->pReg->TASKS_START = 1;
+	while (DataLen > 0)
+	{
+		int l = min(DataLen, 255);
+		dev->pReg->RXD.PTR = 0;
+		dev->pReg->RXD.MAXCNT = 0;
+		dev->pReg->RXD.LIST = 0; // Scatter/Gather not supported
+		dev->pReg->TXD.PTR = (uint32_t)pData;
+		dev->pReg->TXD.MAXCNT = DataLen;
+		dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
+		dev->pReg->EVENTS_END = 0;
+		dev->pReg->TASKS_START = 1;
 
-	nRF52SPIWaitDMA(dev, 100000);
+		nRF52SPIWaitDMA(dev, 100000);
+
+		DataLen -= l;
+		pData += l;
+	}
 
 	return dev->pReg->TXD.AMOUNT;
 }
