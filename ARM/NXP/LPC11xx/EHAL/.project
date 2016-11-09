@@ -26,6 +26,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>include/.DS_Store</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/.DS_Store</locationURI>
+		</link>
+		<link>
 			<name>include/atomic.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/atomic.h</locationURI>
@@ -33,7 +38,7 @@
 		<link>
 			<name>include/base64.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/base64.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/base64.h</locationURI>
 		</link>
 		<link>
 			<name>include/cfifo.h</name>
@@ -48,17 +53,17 @@
 		<link>
 			<name>include/crc.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/crc.h</locationURI>
-		</link>
-		<link>
-			<name>include/dirent.h</name>
-			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/dirent.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/crc.h</locationURI>
 		</link>
 		<link>
 			<name>include/diskio.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/diskio.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/diskio.h</locationURI>
+		</link>
+		<link>
+			<name>include/diskio_flash.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/diskio_flash.h</locationURI>
 		</link>
 		<link>
 			<name>include/fatfs.h</name>
@@ -78,7 +83,7 @@
 		<link>
 			<name>include/idelay.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-WORKSPACE_LOC/include/idelay.h</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC/include/idelay.h</locationURI>
 		</link>
 		<link>
 			<name>include/intelhex.h</name>
@@ -88,22 +93,22 @@
 		<link>
 			<name>include/iopincfg.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/iopincfg.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/iopincfg.h</locationURI>
 		</link>
 		<link>
 			<name>include/istddef.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/istddef.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/istddef.h</locationURI>
 		</link>
 		<link>
 			<name>include/ledmx.h</name>
 			<type>1</type>
-			<location>/Users/hoan/I-SYST/swdev/fwdev/include/ledmx.h</location>
+			<locationURI>PARENT-4-PROJECT_LOC/include/ledmx.h</locationURI>
 		</link>
 		<link>
 			<name>include/ledmxfont.h</name>
 			<type>1</type>
-			<location>/Users/hoan/I-SYST/swdev/fwdev/include/ledmxfont.h</location>
+			<locationURI>PARENT-4-PROJECT_LOC/include/ledmxfont.h</locationURI>
 		</link>
 		<link>
 			<name>include/lpcerror.h</name>
@@ -111,9 +116,14 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/lpcerror.h</locationURI>
 		</link>
 		<link>
-			<name>include/lpcusbd_msc.h</name>
+			<name>include/md5.h</name>
 			<type>1</type>
-			<location>/Users/hoan/I-SYST/swdev/fwdev/ARM/NXP/include/lpcusbd_msc.h</location>
+			<locationURI>PARENT-4-PROJECT_LOC/include/md5.h</locationURI>
+		</link>
+		<link>
+			<name>include/prbs.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/prbs.h</locationURI>
 		</link>
 		<link>
 			<name>include/sdcard.h</name>
@@ -153,7 +163,12 @@
 		<link>
 			<name>include/stddev.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/stddev.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/stddev.h</locationURI>
+		</link>
+		<link>
+			<name>include/sys</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>include/sysstatus.h</name>
@@ -234,6 +249,11 @@
 			<name>include/usbd_msc_lpcxx.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_msc_lpcxx.h</locationURI>
+		</link>
+		<link>
+			<name>include/usbhiddev.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usbhiddev.h</locationURI>
 		</link>
 		<link>
 			<name>include/utf8.h</name>
@@ -394,6 +414,11 @@
 			<name>src/utf8cvt.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/utf8cvt.cpp</locationURI>
+		</link>
+		<link>
+			<name>include/sys/dirent.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sys/dirent.h</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
