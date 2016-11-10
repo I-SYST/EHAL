@@ -61,10 +61,13 @@ typedef struct _MasterBootRecord {
 
 #pragma pack(push, 4)
 
+#define DISKIO_CACHE_DIRTY_BIT      (1<<31) // This bit is set in the UseCnt if there was
+                                            // write to the cache
+
 typedef struct _Sect_Desc {
 	volatile int UseCnt;		// semaphore
 	uint32_t SectNo;			// sector number of this cache
-	uint8_t *pSect;				// sector data
+	uint8_t *pSectData;				// sector data
 } SECTDESC;
 
 #pragma pack(pop)
@@ -91,6 +94,13 @@ public:
 	 */
 	virtual bool SectWrite(uint32_t SectNo, uint8_t *pData) = 0;
 	virtual void Reset();
+
+	/**
+	 * Optional implementations.  The following Read/Write functions are
+	 * implemented in with sector caching. Physical SectRead/SectWrite are
+	 * called internally to flush cache as needed.
+	 *
+	 */
 	virtual int Read(uint32_t SetNo, uint32_t SectOffset, uint8_t *pBuff, uint32_t Len);
 	virtual int Read(uint64_t Offset, uint8_t *pBuff, uint32_t Len);
 	virtual int Write(uint32_t SetNo, uint32_t SectOffset, uint8_t *pBuff, uint32_t Len);
@@ -102,11 +112,12 @@ public:
 	virtual void Erase() {}
 	int	GetCacheSect(uint32_t SectNo, bool bLock = false);
 	void SetCache(uint8_t *pCacheBlk, uint32_t CacheSize);
+	void Flush();
 
 protected:
 
 private:
-	int vLastIdx;	// Last cach sector used
+	int vLastIdx;	// Last cache sector used
 	int vNbCache;
 	bool vExtCache;
 	SECTDESC *vpCacheSect;//[DISKIO_CACHE_SECT_MAX];
