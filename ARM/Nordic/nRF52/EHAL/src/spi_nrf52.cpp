@@ -163,6 +163,7 @@ bool nRF52SPIStartRx(SERINTRFDEV *pDev, int DevCs)
 int nRF52SPIRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
+	int cnt = 0;
 
 	while (BuffLen > 0)
 	{
@@ -178,11 +179,14 @@ int nRF52SPIRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 		dev->pReg->TASKS_START = 1;
 
 		nRF52SPIWaitDMA(dev, 100000);
+
+        l = dev->pReg->RXD.AMOUNT;
 		BuffLen -= l;
 		pBuff += l;
+		cnt += l;
 	}
 
-	return dev->pReg->RXD.AMOUNT;
+	return cnt;
 }
 
 // Stop receive
@@ -213,6 +217,7 @@ bool nRF52SPIStartTx(SERINTRFDEV *pDev, int DevCs)
 int nRF52SPITxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
+	int cnt = 0;
 
 	while (DataLen > 0)
 	{
@@ -221,18 +226,24 @@ int nRF52SPITxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 		dev->pReg->RXD.MAXCNT = 0;
 		dev->pReg->RXD.LIST = 0; // Scatter/Gather not supported
 		dev->pReg->TXD.PTR = (uint32_t)pData;
-		dev->pReg->TXD.MAXCNT = DataLen;
+		dev->pReg->TXD.MAXCNT = l;
 		dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
 		dev->pReg->EVENTS_END = 0;
 		dev->pReg->TASKS_START = 1;
 
-		nRF52SPIWaitDMA(dev, 100000);
+		if (nRF52SPIWaitDMA(dev, 100000) == false)
+		{
+		    printf("failed\r\n");
+		    break;
+		}
 
+		l = dev->pReg->TXD.AMOUNT;
 		DataLen -= l;
 		pData += l;
+		cnt += l;
 	}
 
-	return dev->pReg->TXD.AMOUNT;
+	return cnt;
 }
 
 // Stop transmit

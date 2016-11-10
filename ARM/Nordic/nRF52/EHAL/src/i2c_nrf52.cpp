@@ -170,6 +170,7 @@ int nRF52I2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 	uint32_t d;
+	int cnt = 0;
 
 	while (BuffLen > 0)
 	{
@@ -183,10 +184,12 @@ int nRF52I2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 
 		nRF52I2CWaitRxComplete(dev, 100000);
 
+		l = dev->pReg->RXD.AMOUNT;
 		BuffLen -= l;
 		pBuff += l;
+		cnt += l;
 	}
-	return dev->pReg->RXD.AMOUNT;
+	return cnt;
 }
 
 void nRF52I2CStopRx(SERINTRFDEV *pDev)
@@ -210,6 +213,7 @@ int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 	uint32_t d;
+	int cnt = 0;
 
 	while (DataLen > 0)
 	{
@@ -224,10 +228,12 @@ int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 
 		nRF52I2CWaitTxComplete(dev, 100000);
 
+        l = dev->pReg->TXD.AMOUNT;
 		DataLen -= l;
 		pData += l;
+		cnt += l;
 	}
-	return dev->pReg->TXD.AMOUNT;
+	return cnt;
 }
 
 void nRF52I2CStopTx(SERINTRFDEV *pDev)
