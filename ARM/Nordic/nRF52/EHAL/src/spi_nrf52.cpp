@@ -233,7 +233,6 @@ int nRF52SPITxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 
 		if (nRF52SPIWaitDMA(dev, 100000) == false)
 		{
-		    printf("failed\r\n");
 		    break;
 		}
 
