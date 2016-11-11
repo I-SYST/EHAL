@@ -145,12 +145,20 @@ int DiskIO::Read(uint32_t SectNo, uint32_t SectOffset, uint8_t *pBuff, uint32_t 
 
 	int idx = GetCacheSect(SectNo);
 	if (idx < 0)
-		return -1;
+	{
+	    // No cache, do physical read
+	    uint8_t d[DISKIO_SECT_SIZE];
+	    SectRead(SectNo, d);
+	    memcpy(pBuff, d + SectOffset, l);
+	}
+	else
+	{
+	    // Get it from cache
+	    memcpy(pBuff, vpCacheSect[idx].pSectData + SectOffset, l);
 
-	memcpy(pBuff, vpCacheSect[idx].pSectData + SectOffset, l);
-
-	// Done with cache sector, release it
-	vpCacheSect[idx].UseCnt--;
+	    // Done with cache sector, release it
+	    vpCacheSect[idx].UseCnt--;
+	}
 
 	return l;
 }
@@ -186,16 +194,22 @@ int DiskIO::Write(uint32_t SectNo, uint32_t SectOffset, uint8_t *pData, uint32_t
 
 	int idx = GetCacheSect(SectNo, true);
 	if (idx < 0)
-		return -1;
+	{
+	    // No cache, do physical write
+	    uint8_t d[DISKIO_SECT_SIZE];
+	    SectRead(SectNo, d);
+	    memcpy(d + SectOffset, pData, l);
+	    SectWrite(SectNo, d);
+	}
+	else
+	{
+	    // Write to cache
+        memcpy(vpCacheSect[idx].pSectData + SectOffset, pData, l);
 
-	memcpy(vpCacheSect[idx].pSectData + SectOffset, pData, l);
-
-	// Write sector to disk
-//	SectWrite(SectNo, vpCacheSect[idx].pSect);
-
-	// Done with cache sector, release it
-    vpCacheSect[idx].UseCnt |= DISKIO_CACHE_DIRTY_BIT;
-	vpCacheSect[idx].UseCnt--;
+        // Done with cache sector, release it
+        vpCacheSect[idx].UseCnt |= DISKIO_CACHE_DIRTY_BIT;
+        vpCacheSect[idx].UseCnt--;
+	}
 
 	return l;
 }
