@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
- File   : usbhiddev_impl.h
+ File   : usb_hidhost_impl.h
  
  Author : Hoang Nguyen Hoan          July 9, 2009
  
@@ -9,7 +9,7 @@
  ----------------------------------------------------------------------------
  Modified by          Date              Description
  ----------------------------------------------------------------------------*/
-#include "usbhiddev_impl.h"
+#include "usb_hidhost_impl.h"
 
 void UsbHidDevice_Impl::IOHIDDeviceReportCallback(void *inContext, // context from IOHIDDeviceRegisterInputReportCallback
 												  IOReturn inResult, // completion result for the input report operation
@@ -126,8 +126,8 @@ bool UsbHidDevice_Impl::WriteOutputReport(int RepNo, uint8_t *pBuf, uint32_t Buf
 	IOReturn  res = IOHIDDeviceSetReport(vHidDev, kIOHIDReportTypeOutput, RepNo,
 											(const uint8_t *)pBuf, BufSize);
 
-    if (res != kIOReturnSuccess)
-        printf("WriteReport Error %x\n", res);
+    //if (res != kIOReturnSuccess)
+    //    printf("WriteReport Error %x\n", res);
 	return res == kIOReturnSuccess;
 
 }
