@@ -1,8 +1,34 @@
-//
-// Copyright (c) 2009, Ekomini Inc., All rights reserved
-// Copyright (c) 2008, I-SYST, All rights reserved
-//---------------------------------------------------------------------------
-//#include <stdafx.h>
+/*---------------------------------------------------------------------------
+File : usb_hidhost_implt.cpp
+
+Author : Hoang Nguyen Hoan          Oct 9, 2008
+
+Desc :	Generic class of Host side USB HID device access
+		Implementation class for USB device on Windows
+
+Copyright (c) 2008-16, I-SYST, all rights reserved
+
+Permission to use, copy, modify, and distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright
+notice and this permission notice appear in all copies, and none of the
+names : I-SYST, TidalStream or its contributors may be used to endorse or
+promote products derived from this software without specific prior written
+permission.
+
+THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+----------------------------------------------------------------------------
+Modified by          		Date              Description
+----------------------------------------------------------------------------*/
 
 #include <windows.h>
 #include <algorithm>
@@ -16,7 +42,7 @@
 #pragma comment (lib, "Setupapi.lib")
 #pragma comment (lib, "hid.lib")
 
-#include "usbhiddev_impl.h"
+#include "usb_hidhost_impl.h"
 
 using namespace std;
 //---------------------------------------------------------------------------

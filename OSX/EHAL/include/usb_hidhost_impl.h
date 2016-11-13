@@ -1,16 +1,37 @@
-/*--------------------------------------------------------------------------
- File   : usbhiddev_impl.h
+/*---------------------------------------------------------------------------
+ File : usb_hidhost_implt.h
  
  Author : Hoang Nguyen Hoan          July 9, 2009
  
- Desc   : Implementation class for USB device on MAC OS X
+ Desc : Generic class of Host side USB HID device access
+        Implementation class for USB device on MAC OS X
  
+ Copyright (c) 2009-16, I-SYST, all rights reserved
  Copyright (c) 2009, Ekomini Inc, all rights reserved
+ 
+ Permission to use, copy, modify, and distribute this software for any purpose
+ with or without fee is hereby granted, provided that the above copyright
+ notice and this permission notice appear in all copies, and none of the
+ names : I-SYST, TidalStream or its contributors may be used to endorse or
+ promote products derived from this software without specific prior written
+ permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
+ EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
  ----------------------------------------------------------------------------
- Modified by          Date              Description
+ Modified by          		Date              Description
  ----------------------------------------------------------------------------*/
-#ifndef __USBHIDDEV_IMPL_H__
-#define __USBHIDDEV_IMPL_H__
+#ifndef __USB_HIDHOST_IMPL_H__
+#define __USB_HIDHOST_IMPL_H__
 
 #include <IOKit/hid/IOHIDLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -61,4 +82,4 @@ private:
 	uint8_t *vpInRepData;
 };
 
-#endif   // __USBHIDDEV_IMPL_H__
+#endif   // __USB_HIDHOST_IMPL_H__

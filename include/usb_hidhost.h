@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
-File : usbhiddev.h
+File : usb_hidhost.h
 
 Author : Hoang Nguyen Hoan          Jan. 16, 2009
 
