@@ -79,4 +79,9 @@ private:
 	int   vTempBufSize;
 	char *vpTempBuf;
 };
+
+typedef bool(*USBHIDFOUNDCB)(HANDLE HidDev);
+
+int UsbHidFindDevice(int VendId, int ProdId, USBHIDFOUNDCB Callback);
+
 #endif // __USB_HIDHOST_IMPL_H

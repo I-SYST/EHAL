@@ -387,4 +387,112 @@ bool UsbHidDevice_Impl::GetProductString(std::wstring &pd)
 }
 
 
+int UsbHidFindDevice(int VendId, int ProdId, USBHIDFOUNDCB Callback)
+{
+	bool retval = false;
+	HIDD_ATTRIBUTES   hidatt;
+	DWORD DeviceUsage;
+	SP_DEVICE_INTERFACE_DATA devdata;
+	PSP_DEVICE_INTERFACE_DETAIL_DATA devdetaildata = NULL;
+	LONG	res;
+	std::string	UsageDescription;
+	GUID	hidguid;
+	DWORD length = 0;
+	HANDLE hiddev = NULL;
+	int idx = 0;
+	int devcnt = 0;
+
+	HidD_GetHidGuid(&hidguid);
+
+	HDEVINFO hdevinfo = SetupDiGetClassDevs(&hidguid, NULL, NULL,
+		DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
+
+	devdata.cbSize = sizeof(devdata);
+
+	do
+	{
+		res = SetupDiEnumDeviceInterfaces(hdevinfo, 0, &hidguid, idx, &devdata);
+
+		if (res != 0)
+		{
+			// A device has been detected, so get more information about it.
+
+			// Get the Length value.
+			// The call will return with a "buffer too small" error which can be ignored.
+
+			res = SetupDiGetDeviceInterfaceDetail(hdevinfo, &devdata,
+				NULL, 0, &length, NULL);
+
+			// Allocate memory for the hDevInfo structure, using the returned Length.
+
+			devdetaildata = (SP_DEVICE_INTERFACE_DETAIL_DATA*) new char[length];
+
+			// Set cbSize in the detailData structure.
+
+			devdetaildata->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+			// Call the function again, this time passing it the returned buffer size.
+			ULONG	Required;
+
+			res = SetupDiGetDeviceInterfaceDetail(hdevinfo, &devdata,
+				devdetaildata, length,
+				&Required, NULL);
+			if (devdetaildata->DevicePath)
+				// Open a handle to the device.
+				// To enable retrieving information about a system mouse or keyboard,
+				// don't request Read or Write access for this handle.
+
+				hiddev = CreateFile(devdetaildata->DevicePath, GENERIC_READ | GENERIC_WRITE,
+				FILE_SHARE_READ | FILE_SHARE_WRITE,
+				(LPSECURITY_ATTRIBUTES)NULL, OPEN_EXISTING,
+				FILE_FLAG_OVERLAPPED, NULL);
+
+			hidatt.Size = sizeof(hidatt);
+
+			HidD_GetAttributes(hiddev, &hidatt);
+
+			if (hidatt.VendorID == VendId && hidatt.ProductID == ProdId)
+			{
+				// Found our device
+				PHIDP_PREPARSED_DATA	PreparsedData;
+				if (HidD_GetPreparsedData(hiddev, &PreparsedData))
+				{
+					//HIDP_CAPS caps;
+					//NTSTATUS res = HidP_GetCaps(PreparsedData, &caps);
+					//if (res == HIDP_STATUS_SUCCESS)
+					{
+					}
+					bool res = Callback(hiddev);
+					if (res == false)
+					{
+						// Rejected
+						CloseHandle(hiddev);
+						hiddev = NULL;
+					}
+					else
+						devcnt++;
+				}
+				else
+				{
+					// Not our device.
+					CloseHandle(hiddev);
+					hiddev = NULL;
+				}
+			}
+			else
+			{
+				// Not our device.
+				CloseHandle(hiddev);
+				hiddev = NULL;
+			}
+			delete devdetaildata;
+		}
+
+		idx++;
+	} while (res != 0);
+
+	SetupDiDestroyDeviceInfoList(hdevinfo);
+
+	return devcnt;
+}
 
