@@ -40,7 +40,10 @@ bool FlashDiskIO::Init(FLASHDISKIO_CFG &Cfg, SerialIntrf *pInterf,
         return false;
 
     if (Cfg.FlashInit)
-        Cfg.FlashInit(vpInterf);
+    {
+        if (Cfg.FlashInit(Cfg.DevNo, pInterf) == false)
+            return false;
+    }
 
     vDevNo          = Cfg.DevNo;
     vEraseSize      = Cfg.EraseSize;
@@ -51,6 +54,7 @@ bool FlashDiskIO::Init(FLASHDISKIO_CFG &Cfg, SerialIntrf *pInterf,
     vTotalSize      = Cfg.TotalSize;
     vAddrSize       = Cfg.AddrSize;
     vpInterf        = pInterf;
+
 
     if (pCacheBlk && NbCacheBlk > 0)
     {
@@ -147,21 +151,28 @@ bool FlashDiskIO::SectRead(uint32_t SectNo, uint8_t *pBuff)
     uint8_t d[4];
     uint32_t addr = SectNo * DISKIO_SECT_SIZE;
     uint8_t *p = (uint8_t*)&addr;
-    int cnt = 0;
+    int cnt = DISKIO_SECT_SIZE;
 
     WaitReady(10000);
 
     d[0] = FLASH_CMD_READ;
 
-    d[1] = p[2];
-    d[2] = p[1];
-    d[3] = p[0];
+    while (cnt > 0)
+    {
+        d[1] = p[2];
+        d[2] = p[1];
+        d[3] = p[0];
 
-    vpInterf->StartRx(vDevNo);
-    vpInterf->TxData((uint8_t*)d, 4);
-    int l = vpInterf->RxData(pBuff, DISKIO_SECT_SIZE);
-    vpInterf->StopRx();
-
+        vpInterf->StartRx(vDevNo);
+        vpInterf->TxData((uint8_t*)d, 4);
+        int l = vpInterf->RxData(pBuff, DISKIO_SECT_SIZE);
+        vpInterf->StopRx();
+        if (l <= 0)
+            return false;
+        cnt -= l;
+        addr += l;
+        pBuff += l;
+    }
     return true;
 }
 
@@ -180,19 +191,20 @@ bool FlashDiskIO::SectWrite(uint32_t SectNo, uint8_t *pData)
     WriteEnable();
 
     d[0] = FLASH_CMD_WRITE;
-    d[1] = p[2];
-    d[2] = p[1];
-    d[3] = p[0];
 
     cnt = DISKIO_SECT_SIZE;
     while (cnt > 0)
     {
+        d[1] = p[2];
+        d[2] = p[1];
+        d[3] = p[0];
         int l = min(cnt, vWriteSize);
         vpInterf->StartTx(vDevNo);
         vpInterf->TxData((uint8_t*)d, 4);
         l = vpInterf->TxData(pData, l);
         vpInterf->StopTx();
-
+        if (l <= 0)
+            false;
         cnt -= l;
         pData += l;
         addr += l;

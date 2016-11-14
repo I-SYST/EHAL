@@ -4,6 +4,10 @@ File   : diskio_flash.h
 Author : Hoang Nguyen Hoan          Aug. 30, 2016
 
 Desc   : Generic flash disk I/O driver class
+         NOTE : Most Flash devices work in MSB bit order
+                This implementation only support MSB.
+                Make sure that the Flash is configure
+                for MSB mode
 
 Copyright (c) 2016, Motsai, all rights reserved
 
@@ -48,17 +52,35 @@ Modified by          Date              Description
 
 #define FLASH_STATUS_WIP            (1<<0)  // Write In Progress
 
-typedef void (*FLASHDISKIO_INIT)(SerialIntrf *pInterf);
+/**
+ * @brief FlashDiskIO_Init callback function
+ *        This function is called at initialization to allow special
+ *        initialization as require for example setting MSB mode which
+ *        is required by this implementation
+ *
+ * @param   DevNo : Device number or address used by the interface
+ * @param   pInterf : Interface used to access the flash (SPI, I2C or whatever
+ * @return  true - Success
+ *          false - Failed.
+ */
+typedef bool (*FLASHDISKIO_INIT)(int DevNo, SerialIntrf *pInterf);
 
 typedef struct {
-    int         DevNo;
+    int         DevNo;          // Device number or address for interface use
     uint64_t    TotalSize;      // Total Flash size in bytes
     uint32_t    EraseSize;      // Min erasable block size in byte
     uint32_t    WriteSize;      // Writable page size in bytes
     int         AddrSize;       // Address size in bytes
-    FLASHDISKIO_INIT FlashInit; // Flash initialization function pointer
+    FLASHDISKIO_INIT FlashInit; // Flash initialization function pointer.
+                                // Set to NULL if not used
 } FLASHDISKIO_CFG;
 
+/*
+ * NOTE : Most Flash devices work in MSB bit order. This implementation
+ *        only supports MSB mode. Make sure that the Flash is configured
+ *        for MSB mode.
+ *
+ */
 class FlashDiskIO : public DiskIO {
 public:
 	FlashDiskIO() : DiskIO() {}
