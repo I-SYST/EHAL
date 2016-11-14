@@ -159,9 +159,8 @@ bool FlashDiskIO::SectRead(uint32_t SectNo, uint8_t *pBuff)
 
     while (cnt > 0)
     {
-        d[1] = p[2];
-        d[2] = p[1];
-        d[3] = p[0];
+        for (int i = 1; i <= vAddrSize; i++)
+            d[i+1] = p[vAddrSize - i - 1];
 
         vpInterf->StartRx(vDevNo);
         vpInterf->TxData((uint8_t*)d, 4);
@@ -195,9 +194,9 @@ bool FlashDiskIO::SectWrite(uint32_t SectNo, uint8_t *pData)
     cnt = DISKIO_SECT_SIZE;
     while (cnt > 0)
     {
-        d[1] = p[2];
-        d[2] = p[1];
-        d[3] = p[0];
+        for (int i = 1; i <= vAddrSize; i++)
+            d[i+1] = p[vAddrSize - i - 1];
+
         int l = min(cnt, vWriteSize);
         vpInterf->StartTx(vDevNo);
         vpInterf->TxData((uint8_t*)d, 4);
