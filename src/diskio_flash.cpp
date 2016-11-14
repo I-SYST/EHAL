@@ -148,7 +148,7 @@ void FlashDiskIO::EraseBlock(uint32_t BlkNo, int NbBlk)
  */
 bool FlashDiskIO::SectRead(uint32_t SectNo, uint8_t *pBuff)
 {
-    uint8_t d[4];
+    uint8_t d[9];
     uint32_t addr = SectNo * DISKIO_SECT_SIZE;
     uint8_t *p = (uint8_t*)&addr;
     int cnt = DISKIO_SECT_SIZE;
@@ -180,7 +180,7 @@ bool FlashDiskIO::SectRead(uint32_t SectNo, uint8_t *pBuff)
  */
 bool FlashDiskIO::SectWrite(uint32_t SectNo, uint8_t *pData)
 {
-    uint8_t d[4];
+    uint8_t d[9];
     uint32_t addr = SectNo * DISKIO_SECT_SIZE;
     uint8_t *p = (uint8_t*)&addr;
 
