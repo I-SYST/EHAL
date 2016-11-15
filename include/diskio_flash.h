@@ -42,6 +42,7 @@ Modified by          Date              Description
 #include "diskio.h"
 #include "serialintrf.h"
 
+#define FLASH_CMD_READID			0x9F
 #define FLASH_CMD_WRITE             0x2
 #define FLASH_CMD_READ              0x3
 #define FLASH_CMD_WRDISABLE         0x4
@@ -132,10 +133,13 @@ public:
      */
     virtual bool SectWrite(uint32_t SectNo, uint8_t *pData);
 
+    uint32_t ReadId();
+    uint8_t ReadStatus();
+
 protected:
     void WriteDisable();
-    bool WriteEnable(uint32_t Timeout = 10000);
-    bool WaitReady(uint32_t Timeout = 10000);
+    bool WriteEnable(uint32_t Timeout = 100000);
+    bool WaitReady(uint32_t Timeout = 100000);
 
 private:
     uint32_t    vEraseSize;    // Min erasable block size in byte

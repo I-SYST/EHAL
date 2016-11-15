@@ -64,13 +64,43 @@ bool FlashDiskIO::Init(FLASHDISKIO_CFG &Cfg, SerialIntrf *pInterf,
     return true;
 }
 
+uint32_t FlashDiskIO::ReadId()
+{
+	uint32_t id = -1;
+	uint8_t cmd;
+
+	WaitReady();
+
+	cmd = FLASH_CMD_READID;
+
+	vpInterf->StartRx(vDevNo);
+    vpInterf->TxData(&cmd, 1);
+    vpInterf->RxData((uint8_t*)&id, 4);
+    vpInterf->StopRx();
+
+    return id;
+}
+
+uint8_t FlashDiskIO::ReadStatus()
+{
+    uint8_t d;
+
+    d = FLASH_CMD_READSTATUS;
+    vpInterf->StartRx(vDevNo);
+    vpInterf->TxData(&d, 1);
+    vpInterf->RxData(&d, 1);
+    vpInterf->StopRx();
+
+    return d;
+}
+
 bool FlashDiskIO::WaitReady(uint32_t Timeout)
 {
     uint8_t d;
 
     do {
         d = FLASH_CMD_READSTATUS;
-        vpInterf->StartRx(0);
+        vpInterf->StartRx(vDevNo);
         vpInterf->TxData(&d, 1);
         vpInterf->RxData(&d, 1);
         vpInterf->StopRx();
