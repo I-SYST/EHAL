@@ -231,6 +231,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/crc.c</locationURI>
 		</link>
 		<link>
+			<name>src/diskio_flash.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_flash.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/diskio_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_impl.cpp</locationURI>
