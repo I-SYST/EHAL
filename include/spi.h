@@ -96,6 +96,7 @@ typedef struct _SPI_Config {
 	SPIDATABIT BitOrder;	// Data bit ordering
 	SPIDATAPHASE DataPhase;	// Data Out Phase.
 	SPICLKPOL ClkPol;		// Clock Out Polarity.
+	bool bManSel;			// Manual chip select
 	int IntPrio;			// Interrupt priority
 	SERINTRFEVCB EvtCB;		// Event callback
 } SPICFG;
