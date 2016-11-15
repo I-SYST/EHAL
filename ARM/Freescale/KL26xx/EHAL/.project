@@ -46,6 +46,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/crc.c</locationURI>
 		</link>
 		<link>
+			<name>src/diskio_flash.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_flash.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/diskio_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_impl.cpp</locationURI>
@@ -69,6 +74,11 @@
 			<name>src/ledmxfont.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/ledmxfont.c</locationURI>
+		</link>
+		<link>
+			<name>src/prbs.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/prbs.c</locationURI>
 		</link>
 		<link>
 			<name>src/sdcard_impl.cpp</name>
