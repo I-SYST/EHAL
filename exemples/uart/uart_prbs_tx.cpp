@@ -37,7 +37,6 @@ Modified by          Date              Description
 
 #include "iopincfg.h"
 #include "uart.h"
-#include "blueio_board.h"
 #include "prbs.h"
 
 // This include contain i/o definition the board in use
