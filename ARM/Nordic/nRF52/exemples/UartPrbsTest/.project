@@ -24,4 +24,11 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src/uart_prbs_tx.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/exemples/uart/uart_prbs_tx.cpp</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
