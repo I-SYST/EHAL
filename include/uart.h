@@ -185,7 +185,7 @@ int UARTTx(UARTDEV *pDev, uint8_t *pData, int Datalen);
 void UARTprintf(UARTDEV *pDev, const char *pFormat, ...);
 void UARTvprintf(UARTDEV *pDev, const char *pFormat, va_list vl);
 void UARTRetargetEnable(UARTDEV *pDev, int FileNo);
-void UartRetargetDisable(UARTDEV *pDev, int FileNo);
+void UARTRetargetDisable(UARTDEV *pDev, int FileNo);
 
 #ifdef __cplusplus
 }
