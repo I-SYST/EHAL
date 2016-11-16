@@ -146,6 +146,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/sha256.h</locationURI>
 		</link>
 		<link>
+			<name>include/spi.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/spi.h</locationURI>
+		</link>
+		<link>
 			<name>include/stddev.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/stddev.h</locationURI>

@@ -86,7 +86,7 @@ typedef enum _SPI_Data_Bit_Order {
 
 // Configuration data used to initialize device
 typedef struct _SPI_Config {
-	int DevNo;				// SPI interface number
+	int DevNo;				// SPI interface number identify by chip select (CS0, CS1,..,CSn)
 	SPIMODE Mode;			// Master/Slave mode
 	const IOPINCFG *pIOPinMap;	// Define I/O pins used by SPI
 	int NbIOPins;			// Total number of I/O pins
@@ -96,7 +96,7 @@ typedef struct _SPI_Config {
 	SPIDATABIT BitOrder;	// Data bit ordering
 	SPIDATAPHASE DataPhase;	// Data Out Phase.
 	SPICLKPOL ClkPol;		// Clock Out Polarity.
-	bool bManSel;			// Manual chip select
+	bool bManSel;			// Manual chip select overwrite CS0 automatic control
 	int IntPrio;			// Interrupt priority
 	SERINTRFEVCB EvtCB;		// Event callback
 } SPICFG;

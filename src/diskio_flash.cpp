@@ -32,6 +32,13 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #include "diskio_flash.h"
+#include "idelay.h"
+
+FlashDiskIO::FlashDiskIO() : DiskIO()
+{
+	vpDelayWait = NULL;
+	vpInterf = NULL;
+}
 
 bool FlashDiskIO::Init(FLASHDISKIO_CFG &Cfg, SerialIntrf *pInterf,
                        DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk)
@@ -44,6 +51,9 @@ bool FlashDiskIO::Init(FLASHDISKIO_CFG &Cfg, SerialIntrf *pInterf,
         if (Cfg.FlashInit(Cfg.DevNo, pInterf) == false)
             return false;
     }
+
+    if (Cfg.DelayWait)
+    	vpDelayWait = Cfg.DelayWait;
 
     vDevNo          = Cfg.DevNo;
     vEraseSize      = Cfg.EraseSize;
@@ -94,7 +104,7 @@ uint8_t FlashDiskIO::ReadStatus()
     return d;
 }
 
-bool FlashDiskIO::WaitReady(uint32_t Timeout)
+bool FlashDiskIO::WaitReady(uint32_t Timeout, uint32_t usRtyDelay)
 {
     uint8_t d;
 
@@ -106,6 +116,15 @@ bool FlashDiskIO::WaitReady(uint32_t Timeout)
         vpInterf->StopRx();
         if (!(d & FLASH_STATUS_WIP))
             return true;
+
+        if (usRtyDelay > 0)
+        {
+            if (vpDelayWait)
+            	vpDelayWait(vDevNo, vpInterf);
+            else
+            	usDelay(usRtyDelay);
+        }
+
     } while (Timeout-- > 0);
 
     return false;
@@ -140,7 +159,8 @@ void FlashDiskIO::Erase()
 
     int cnt = vpInterf->Tx(vDevNo, &d, 1);
 
-    WaitReady(-1);
+    // This is a long wait polling at every second only
+    WaitReady(-1, 1000000);
     WriteDisable();
 }
 
@@ -157,19 +177,19 @@ void FlashDiskIO::EraseBlock(uint32_t BlkNo, int NbBlk)
     BlkNo *= vEraseSize;
     uint8_t *p = (uint8_t*)BlkNo;
 
-    WriteEnable();
-    WaitReady();
 
     d[0] = FLASH_CMD_BLOCK_ERASE;
+
+    WriteEnable();
 
     for (int i = 0; i < NbBlk; i++)
     {
         for (int i = 1; i <= vAddrSize; i++)
             d[i] = p[vAddrSize - i];
+        WaitReady(-1, 10);
         vpInterf->Tx(vDevNo, d, 4);
         BlkNo += vEraseSize;
     }
-    WaitReady(-1);
     WriteDisable();
 }
 
@@ -183,6 +203,7 @@ bool FlashDiskIO::SectRead(uint32_t SectNo, uint8_t *pBuff)
     uint8_t *p = (uint8_t*)&addr;
     int cnt = DISKIO_SECT_SIZE;
 
+    // Makesure there is no write access pending
     WaitReady(100000);
 
     d[0] = FLASH_CMD_READ;
@@ -216,9 +237,6 @@ bool FlashDiskIO::SectWrite(uint32_t SectNo, uint8_t *pData)
 
     int cnt = 0;
 
-    WaitReady();
-    WriteEnable();
-
     d[0] = FLASH_CMD_WRITE;
 
     cnt = DISKIO_SECT_SIZE;
@@ -228,6 +246,14 @@ bool FlashDiskIO::SectWrite(uint32_t SectNo, uint8_t *pData)
             d[i] = p[vAddrSize - i];
 
         int l = min(cnt, vWriteSize);
+
+        WaitReady();
+
+        // Some Flash will reset write enable bit at completion
+        // when page size is less than 512 bytes.
+        // We need to set it again
+        WriteEnable();
+
         vpInterf->StartTx(vDevNo);
         vpInterf->TxData((uint8_t*)d, 4);
         l = vpInterf->TxData(pData, l);

@@ -54,17 +54,16 @@ Modified by          Date              Description
 #define FLASH_STATUS_WIP            (1<<0)  // Write In Progress
 
 /**
- * @brief FlashDiskIO_Init callback function
- *        This function is called at initialization to allow special
- *        initialization as require for example setting MSB mode which
- *        is required by this implementation
+ * @brief FlashDiskIO callback function
+ *        This a general callback function hook for special purpose
+ *        defined in the FLASHDISKIO_CFG
  *
  * @param   DevNo : Device number or address used by the interface
  * @param   pInterf : Interface used to access the flash (SPI, I2C or whatever
  * @return  true - Success
  *          false - Failed.
  */
-typedef bool (*FLASHDISKIO_INIT)(int DevNo, SerialIntrf *pInterf);
+typedef bool (*FLASHDISKIOCB)(int DevNo, SerialIntrf *pInterf);
 
 typedef struct {
     int         DevNo;          // Device number or address for interface use
@@ -72,8 +71,12 @@ typedef struct {
     uint32_t    EraseSize;      // Min erasable block size in byte
     uint32_t    WriteSize;      // Writable page size in bytes
     int         AddrSize;       // Address size in bytes
-    FLASHDISKIO_INIT FlashInit; // Flash initialization function pointer.
+    FLASHDISKIOCB FlashInit; 	// Flash initialization function pointer.
                                 // Set to NULL if not used
+
+    FLASHDISKIOCB DelayWait;	// If provided, this is called when there are
+    							// long delays such as mass erase to allow application
+    							// to perform other tasks while waiting
 } FLASHDISKIO_CFG;
 
 /*
@@ -84,7 +87,7 @@ typedef struct {
  */
 class FlashDiskIO : public DiskIO {
 public:
-	FlashDiskIO() : DiskIO() {}
+	FlashDiskIO();
 	virtual ~FlashDiskIO() {}
 
 	bool Init(FLASHDISKIO_CFG &Cfg, SerialIntrf *pInterf,
@@ -139,7 +142,7 @@ public:
 protected:
     void WriteDisable();
     bool WriteEnable(uint32_t Timeout = 100000);
-    bool WaitReady(uint32_t Timeout = 100000);
+    bool WaitReady(uint32_t Timeout = 100000, uint32_t usRtyDelay = 0);
 
 private:
     uint32_t    vEraseSize;    // Min erasable block size in byte
@@ -148,6 +151,7 @@ private:
     int         vAddrSize;     // Address size in bytes
     int         vDevNo;
    SerialIntrf *vpInterf;
+   FLASHDISKIOCB vpDelayWait;
 };
 
 #ifdef __cplusplus
