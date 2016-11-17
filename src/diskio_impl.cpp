@@ -154,7 +154,7 @@ int DiskIO::Read(uint64_t Offset, uint8_t *pBuff, uint32_t Len)
 	while (Len > 0)
 	{
 		int l = Read(sectno, sectoff, pBuff, Len);
-		if (l < 0)
+		if (l <= 0)
 			break;
 		pBuff += l;
 		Len -= l;
