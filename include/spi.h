@@ -74,6 +74,12 @@ typedef enum _SPI_Data_Bit_Order {
 	SPIDATABIT_LSB				// Least significant bit first
 } SPIDATABIT;
 
+typedef enum _SPI_Chip_Select {
+	SPICSEL_AUTO,	// Select control by hardware
+	SPICSEL_MAN,		// Select control by software
+	SPICSEL_EXT,		// Select control externally by application
+} SPICSEL;
+
 #define SPI_MAX_RETRY			5
 #define SPI_MAX_NB_IOPIN		4
 #define SPI_SCK_IOPIN_IDX		0
@@ -96,7 +102,7 @@ typedef struct _SPI_Config {
 	SPIDATABIT BitOrder;	// Data bit ordering
 	SPIDATAPHASE DataPhase;	// Data Out Phase.
 	SPICLKPOL ClkPol;		// Clock Out Polarity.
-	bool bManSel;			// Manual chip select overwrite CS0 automatic control
+	SPICSEL ChipSel;		// Chip select mode
 	int IntPrio;			// Interrupt priority
 	SERINTRFEVCB EvtCB;		// Event callback
 } SPICFG;
