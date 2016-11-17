@@ -76,17 +76,11 @@ void UARTRetargetEnable(UARTDEV *pDev, int FileNo)
 	{
 		case STDIN_FILENO:
 			// Enable input
-			if (pDev->hStdIn >= 0)
-				RemoveBlkDev(pDev->hStdIn);
-
 			pDev->hStdIn = InstallBlkDev(&g_UartStdDev, STDIN_FILENO);
 			break;
 		case STDOUT_FILENO:
 		case STDERR_FILENO:
 			// Enable output
-			if (pDev->hStdIn >= 0)
-				RemoveBlkDev(pDev->hStdOut);
-
 			pDev->hStdOut = InstallBlkDev(&g_UartStdDev, STDOUT_FILENO);
 			break;
 	}
