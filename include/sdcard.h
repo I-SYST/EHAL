@@ -86,7 +86,7 @@ public:
 	int GetSectSize(void);
 	uint32_t GetNbSect(void);
 	// @return size in KB
-	uint32_t GetSize(void);
+	uint64_t GetSize(void);
 	int ReadSingleBlock(uint32_t Addr, uint8_t *pData, int Len);
 	int WriteSingleBlock(uint32_t Addr, uint8_t *pData, int Len);
 	bool SectRead(uint32_t SectNo, uint8_t *pData) {

@@ -76,12 +76,12 @@ public:
 	DiskIO();
 
 	virtual int GetSectSize(void) { return DISKIO_SECT_SIZE; }
-	virtual uint32_t GetNbSect(void) { return GetSize() * 1024 / GetSectSize(); }
+	virtual uint32_t GetNbSect(void) { return GetSize() / GetSectSize(); }
 	/**
 	 *
-	 * @return total disk size in KB
+	 * @return total disk size in BYTE
 	 */
-	virtual uint32_t GetSize(void) = 0;
+	virtual uint64_t GetSize(void) = 0;
 
 	/**
 	 * Read one sector from physical device

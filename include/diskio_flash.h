@@ -95,9 +95,9 @@ public:
 
     /**
      *
-     * @return total disk size in KB
+     * @return total disk size in BYTE
      */
-    virtual uint32_t GetSize(void) { return vTotalSize / 1024; }
+    virtual uint64_t GetSize(void) { return vTotalSize; }
 
     /**
 	 * Device specific minimum erase size in bytes

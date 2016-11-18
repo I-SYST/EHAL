@@ -270,8 +270,8 @@ uint32_t SDCard::GetNbSect(void)
 	return vDev.TotalSect;
 }
 
-// @return	size in KB
-uint32_t SDCard::GetSize(void)
+// @return	size in BYTE
+uint64_t SDCard::GetSize(void)
 {
 	uint8_t data[20];
 	uint32_t c_size, c_size_mult, read_bl_len;
