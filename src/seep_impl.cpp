@@ -46,13 +46,16 @@ Seep::~Seep()
 {
 }
 
-bool Seep::Init(int DevAddr, int PageSize, int AddrLen, SerialIntrf *pInterf)
+bool Seep::Init(SEEP_CFG &CfgData, SerialIntrf *pInterf)
+//bool Seep::Init(int DevAddr, int PageSize, int AddrLen, SerialIntrf *pInterf)
 {
-	//vpInterf = shared_ptr<SerialIntrf>(pInterf);
 	vpInterf = pInterf;
-	vDevAddr = DevAddr;
-	vPageSize = PageSize;
-	vAddrLen = AddrLen;
+	vDevAddr = CfgData.DevAddr;
+	vPageSize = CfgData.PageSize;
+	vAddrLen = CfgData.AddrLen;
+	vpWaitCB = CfgData.pWaitCB;
+	if (CfgData.pInitCB)
+		return CfgData.pInitCB(vDevAddr, *pInterf);
 
 	return true;
 }
@@ -98,6 +101,8 @@ int Seep::Write(int Addr, uint8_t *pData, int Len)
 			vpInterf->TxData((uint8_t*)ad, vAddrLen);
 			count += vpInterf->TxData(pData, size);
 			vpInterf->StopTx();
+			if (vpWaitCB)
+				vpWaitCB(vDevAddr, *vpInterf);
 		}
 		Addr += size;
 		Len -= size;

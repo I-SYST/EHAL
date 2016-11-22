@@ -42,11 +42,36 @@ Modified by          Date              Description
 
 #pragma pack(push,4)
 
+/**
+ * @brief SEEP callback function
+ * 		  This is a general callback function hook for special purpose
+ * 		  defined in SEEP_CFG
+ *
+ * @param DevAddr : Device address
+ * 		  pInterf : Pointer to physical interface connected to the device
+ */
+typedef bool (*SEEPCB)(int DevAddr, SERINTRFDEV *pInterf);
+
+typedef struct _Seep_Config {
+	int DevAddr;	// Device address
+	int AddrLen;	// Serial EEPROM memory address length in bytes
+	int PageSize;	// Wrap around page size in bytes
+	SEEPCB pInitCB;	// For custom initialization. Set to NULL if not used
+	SEEPCB pWaitCB;	// If provided, this is called when there are long delays
+					// for a device to complete its write cycle
+   					// This is to allow application to perform other tasks
+   					// while waiting. Set to NULL is not used
+} SEEP_CFG;
+
 typedef struct {
-	int DevAddr;
-	int AddrLen;
-	int PageSize;
-	SERINTRFDEV	*pSerIntrf;
+	int DevAddr;	// Device address
+	int AddrLen;	// Serial EEPROM memory address length in bytes
+	int PageSize;	// Wrap around page size
+	SERINTRFDEV	*pInterf;
+	SEEPCB pWaitCB;	// If provided, this is called when there are long delays
+					// for a device to complete its write cycle
+   					// This is to allow application to perform other tasks
+   					// while waiting. Set to NULL is not used
 } SEEPDEV;
 
 #pragma pack(pop)
@@ -61,7 +86,8 @@ public:
 	virtual ~Seep();
 	Seep(Seep&); 	// copy ctor not allowed
 
-	virtual bool Init(int DevAddr, int PageSize, int AddrLen, SerialIntrf *pInterf);
+	virtual bool Init(SEEP_CFG &Cfg, SerialIntrf *pInterf);
+	//virtual bool Init(int DevAddr, int PageSize, int AddrLen, SerialIntrf *pInterf);
 	virtual void Set(int DevAddr, int PageSize, int AddrLen) {
 		vDevAddr = DevAddr;
 		vPageSize = PageSize;
@@ -72,16 +98,21 @@ public:
 
 protected:
 	//std::shared_ptr<SerialIntrf> vpInterf;
-	int vDevAddr;		// SEEP I2C address
-	int vPageSize;
-	int vAddrLen;
+	int vDevAddr;		// Device address
+	int vPageSize;		// Wrap around page size in bytes
+	int vAddrLen;		// Memory access address length in bytes
 	SerialIntrf *vpInterf;
+	SEEPCB vpWaitCB;	// If provided, this is called when there are long delays
+						// for a device to complete its write cycle
+						// This is to allow application to perform other tasks
+						// while waiting. Set to NULL is not used
 };
 
 extern "C" {
 #endif
 // C prototypes
-bool SeepInit(SEEPDEV *pDev, int DevAddr, int PageSize, int AddrLen, SERINTRFDEV *pIntrf);
+//bool SeepInit(SEEPDEV *pDev, int DevAddr, int PageSize, int AddrLen, SERINTRFDEV *pIntrf);
+bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pIntrf);
 int SeepRead(SEEPDEV *pDev, int Addr, uint8_t *pData, int len);
 int SeepWrite(SEEPDEV *pDev, int Addr, uint8_t *pData, int len);
 

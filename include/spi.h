@@ -154,6 +154,7 @@ public:
 
 	bool Init(const SPICFG &CfgData) { return SPIInit(&vDevData, &CfgData); }
 
+	operator SERINTRFDEV* () { return &vDevData.SerIntrf; }
 	operator SPIDEV& () { return vDevData; };	// Get config data
 	int Rate(int RateHz) { return vDevData.SerIntrf.SetRate(&vDevData.SerIntrf, RateHz); }
 	int Rate(void) { return vDevData.SerIntrf.GetRate(&vDevData.SerIntrf); }	// Get rate in Hz

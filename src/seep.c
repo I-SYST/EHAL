@@ -38,13 +38,16 @@ Modified by          Date              Description
 #include "istddef.h"
 #include "seep.h"
 
-bool SeepInit(SEEPDEV *pDev, int DevAddr, int PageSize, int AddrLen, SERINTRFDEV *pIntrf)
+//bool SeepInit(SEEPDEV *pDev, int DevAddr, int PageSize, int AddrLen, SERINTRFDEV *pIntrf)
+bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf)
 {
-	pDev->pSerIntrf = pIntrf;
-	//vpInterf = pInterf;
-	pDev->DevAddr = DevAddr;
-	pDev->PageSize = PageSize;
-	pDev->AddrLen = AddrLen;
+	pDev->pInterf = pInterf;
+	pDev->DevAddr = pCfgData->DevAddr;
+	pDev->PageSize = pCfgData->PageSize;
+	pDev->AddrLen = pCfgData->AddrLen;
+	pDev->pWaitCB = pCfgData->pWaitCB;
+	if (pCfgData->pInitCB)
+		pCfgData->pInitCB(pCfgData->DevAddr, pInterf);
 
 	return true;
 }
@@ -59,9 +62,9 @@ int SeepRead(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
 		ad[i] = p[pDev->AddrLen - i - 1];
 	}
 
-	if (SerialIntrfTx(pDev->pSerIntrf, pDev->DevAddr, (uint8_t*)ad, pDev->AddrLen))
+	if (SerialIntrfTx(pDev->pInterf, pDev->DevAddr, (uint8_t*)ad, pDev->AddrLen))
 	{
-		return SerialIntrfRx(pDev->pSerIntrf, pDev->DevAddr, pData, Len);
+		return SerialIntrfRx(pDev->pInterf, pDev->DevAddr, pData, Len);
 	}
 
 	return 0;
@@ -82,11 +85,13 @@ int SeepWrite(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
 			ad[i] = p[pDev->AddrLen - i - 1];
 		}
 
-		if (pDev->pSerIntrf->StartTx(pDev->pSerIntrf, pDev->DevAddr))
+		if (SerialIntrfStartTx(pDev->pInterf, pDev->DevAddr))
 		{
-			pDev->pSerIntrf->TxData(pDev->pSerIntrf, ad, pDev->AddrLen);
-			count += pDev->pSerIntrf->TxData(pDev->pSerIntrf, pData, size);
-			pDev->pSerIntrf->StopTx(pDev->pSerIntrf);
+			pDev->pInterf->TxData(pDev->pInterf, ad, pDev->AddrLen);
+			count += pDev->pInterf->TxData(pDev->pInterf, pData, size);
+			SerialIntrfStopTx(pDev->pInterf);
+			if (pDev->pWaitCB)
+				pDev->pWaitCB(pDev->DevAddr, pDev->pInterf);
 		}
 		Addr += size;
 		Len -= size;

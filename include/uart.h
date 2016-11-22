@@ -205,6 +205,9 @@ public:
 	virtual bool Init(const UARTCFG &CfgData) {
 		return UARTInit(&vDevData, &CfgData);
 	}
+
+	operator SERINTRFDEV* () { return &vDevData.SerIntrf; }
+
 	// ++ ** Require implementation
 	// Set data baudrate
 	virtual int Rate(int DataRate) { return UARTSetRate(&vDevData, DataRate); }

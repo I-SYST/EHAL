@@ -77,7 +77,7 @@ typedef struct _serialintrf_dev SERINTRFDEV;
  * 					  on SERINTRF_EVT_TX_READY, pBuffer contains data to be transmit with max length
  * 					  BufferLen. If driver implements CFIFO, this parameter is NULL and BufferLen
  * 					  indicates amount of data stored in fifo
- * 					  on UART_EVT_STATECHG, pBuffer contains state data. This is implementation specific
+ * 					  on SERINTRF_EVT_STATECHG, pBuffer contains state data. This is implementation specific
  * 					  for example UART implementation would contains line state info.
  *
  * 			BufferLen : Max buffer length.  See above description
@@ -321,6 +321,7 @@ static inline void SerialIntrfStopTx(SERINTRFDEV *pDev) {
 class SerialIntrf {
 public:
 	virtual ~SerialIntrf() {}
+	virtual operator SERINTRFDEV* () = 0;	// Get serial interface data
 	// Set data rate in bits/sec (Hz)
 	virtual int Rate(int DataRate) = 0;
 	// Get current data rate in bits/sec (Hz)

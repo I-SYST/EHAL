@@ -31,12 +31,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
+#include <stdio.h>
+
 #include "diskio_flash.h"
 #include "idelay.h"
 
 FlashDiskIO::FlashDiskIO() : DiskIO()
 {
-	vpDelayWait = NULL;
+	vpWaitCB = NULL;
 	vpInterf = NULL;
 }
 
@@ -46,14 +48,14 @@ bool FlashDiskIO::Init(FLASHDISKIO_CFG &Cfg, SerialIntrf *pInterf,
     if (pInterf == NULL)
         return false;
 
-    if (Cfg.FlashInit)
+    if (Cfg.pInitCB)
     {
-        if (Cfg.FlashInit(Cfg.DevNo, pInterf) == false)
+        if (Cfg.pInitCB(Cfg.DevNo, pInterf) == false)
             return false;
     }
 
-    if (Cfg.DelayWait)
-    	vpDelayWait = Cfg.DelayWait;
+    if (Cfg.pWaitCB)
+    	vpWaitCB = Cfg.pWaitCB;
 
     vDevNo          = Cfg.DevNo;
     vEraseSize      = Cfg.EraseSize;
@@ -65,6 +67,7 @@ bool FlashDiskIO::Init(FLASHDISKIO_CFG &Cfg, SerialIntrf *pInterf,
     vAddrSize       = Cfg.AddrSize;
     vpInterf        = pInterf;
 
+    uint32_t d = ReadId();
 
     if (pCacheBlk && NbCacheBlk > 0)
     {
@@ -119,8 +122,8 @@ bool FlashDiskIO::WaitReady(uint32_t Timeout, uint32_t usRtyDelay)
 
         if (usRtyDelay > 0)
         {
-            if (vpDelayWait)
-            	vpDelayWait(vDevNo, vpInterf);
+            if (vpWaitCB)
+            	vpWaitCB(vDevNo, vpInterf);
             else
             	usDelay(usRtyDelay);
         }
@@ -223,6 +226,7 @@ bool FlashDiskIO::SectRead(uint32_t SectNo, uint8_t *pBuff)
         addr += l;
         pBuff += l;
     }
+    //printf("RSect : %d 0x%02x 0x%02x 0x%02x 0x%02x\r\n", SectNo, pBuff[0], pBuff[1], pBuff[2], pBuff[3]);
     return true;
 }
 
@@ -237,6 +241,7 @@ bool FlashDiskIO::SectWrite(uint32_t SectNo, uint8_t *pData)
 
     int cnt = 0;
 
+   // printf("Sect : %d 0x%02x 0x%02x 0x%02x 0x%02x\r\n", SectNo, pData[0], pData[1], pData[2], pData[3]);
     d[0] = FLASH_CMD_WRITE;
 
     cnt = DISKIO_SECT_SIZE;

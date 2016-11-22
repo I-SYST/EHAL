@@ -71,11 +71,9 @@ typedef struct {
     uint32_t    EraseSize;      // Min erasable block size in byte
     uint32_t    WriteSize;      // Writable page size in bytes
     int         AddrSize;       // Address size in bytes
-    FLASHDISKIOCB FlashInit; 	// Flash initialization function pointer.
-                                // Set to NULL if not used
-
-    FLASHDISKIOCB DelayWait;	// If provided, this is called when there are
-    							// long delays such as mass erase to allow application
+    FLASHDISKIOCB pInitCB; 		// For custom initialization. Set to NULL if not used
+    FLASHDISKIOCB pWaitCB;		// If provided, this is called when there are
+    							// long delays, such as mass erase, to allow application
     							// to perform other tasks while waiting
 } FLASHDISKIO_CFG;
 
@@ -151,7 +149,7 @@ private:
     int         vAddrSize;     // Address size in bytes
     int         vDevNo;
    SerialIntrf *vpInterf;
-   FLASHDISKIOCB vpDelayWait;
+   FLASHDISKIOCB vpWaitCB;
 };
 
 #ifdef __cplusplus
