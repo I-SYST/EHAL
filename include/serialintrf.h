@@ -47,12 +47,16 @@ Modified by          Date              Description
  * Serial interface event types
  */
 typedef enum {
-	SERINTRF_EVT_RX_TIMEOUT,	// Rx timeout
-	SERINTRF_EVT_RXDATA,		// Data received
-	SERINTRF_EVT_TX_TIMEOUT,	// Tx timeout
-	SERINTRF_EVT_TX_READY,		// Ready to transmit
-	SERINTRF_EVT_STATECHG,		// State changed. State data is device dependent.
-								// To be interpreted by implementation
+	SERINTRF_EVT_RX_TIMEOUT,    // Rx timeout
+	SERINTRF_EVT_RX_DATA,       // Data received
+	SERINTRF_EVT_RX_FIFO_FULL,  // Receive fifo full, fifo will be pushed out
+                                // if handler does not process fifo (returns 0)
+	SERINTRF_EVT_TX_TIMEOUT,    // Tx timeout
+	SERINTRF_EVT_TX_READY,      // Ready to transmit
+	SERINTRF_EVT_TX_FIFO_FULL,  // Transmit fifo full, fifo will be pushed out
+                                // if handler does not process fifo (returns 0)
+	SERINTRF_EVT_STATECHG,      // State changed. State data is device dependent.
+                                // To be interpreted by implementation
 } SERINTRF_EVT;
 
 /*
@@ -83,6 +87,7 @@ typedef struct _serialintrf_dev SERINTRFDEV;
  * 			BufferLen : Max buffer length.  See above description
  *
  * @return number of bytes processed.  Implementation specific
+ *         in case of FIFO_FULL events,  fifo will be pushed out if return value is zero
  */
 typedef int (*SERINTRFEVCB)(SERINTRFDEV *pDev, SERINTRF_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 
