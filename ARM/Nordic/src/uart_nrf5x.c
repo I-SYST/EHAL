@@ -311,12 +311,6 @@ int nRFUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 
     uint32_t state = DisableInterrupt();
 
-    int lAvailable = CFifoAvail(dev->pUartDev->hTxFifo);
-    if ( lAvailable < Datalen )
-    {
-        CFifoGetMultiple(dev->pUartDev->hTxFifo, Datalen - lAvailable);
-    }
-
     while (Datalen > 0)
     {
         int l = Datalen;
@@ -359,20 +353,20 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
 	if (pCfg->pRxMem && pCfg->RxMemSize > 0)
 	{
-		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1);
+		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1, pCfg->bAutoDrop);
 	}
 	else
 	{
-		pDev->hRxFifo = CFifoInit(s_nRFUARTRxFifoMem, NRFUART_CFIFO_SIZE, 1);
+		pDev->hRxFifo = CFifoInit(s_nRFUARTRxFifoMem, NRFUART_CFIFO_SIZE, 1, pCfg->bAutoDrop);
 	}
 
 	if (pCfg->pTxMem && pCfg->TxMemSize > 0)
 	{
-		pDev->hTxFifo = CFifoInit(pCfg->pTxMem, pCfg->TxMemSize, 1);
+		pDev->hTxFifo = CFifoInit(pCfg->pTxMem, pCfg->TxMemSize, 1, pCfg->bAutoDrop);
 	}
 	else
 	{
-		pDev->hTxFifo = CFifoInit(s_nRFUARTTxFifoMem, NRFUART_CFIFO_SIZE, 1);
+		pDev->hTxFifo = CFifoInit(s_nRFUARTTxFifoMem, NRFUART_CFIFO_SIZE, 1, pCfg->bAutoDrop);
 	}
 
 	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIoMap;
@@ -515,7 +509,7 @@ void nRFUARTEnable(SERINTRFDEV *pDev)
 
 void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState)
 {
-	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->SerIntrf.pDevData;
+//	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->SerIntrf.pDevData;
 
 }
 

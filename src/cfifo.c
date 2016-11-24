@@ -37,13 +37,13 @@ Modified by          Date              Description
 #include "atomic.h"
 #include "cfifo.h"
 
-HCFIFO CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize, bool bDrop)
+HCFIFO CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize, bool bAutoDrop)
 {
 	if (pMemBlk == NULL)
 		return NULL;
 
 	CFIFOHDR *hdr = (CFIFOHDR *)pMemBlk;
-	hdr->bDrop = bDrop;
+	hdr->bAutoDrop = bAutoDrop;
 	hdr->PutIdx = 0;
 	hdr->GetIdx = -1;
 	hdr->BlkSize = BlkSize;
@@ -122,7 +122,7 @@ uint8_t *CFifoPut(HCFIFO pFifo)
 
     if (pFifo->PutIdx == pFifo->GetIdx)
     {
-        if (pFifo->bDrop == false)
+        if (pFifo->bAutoDrop == false)
             return NULL;
         // drop data
         int32_t gidx = pFifo->GetIdx + 1;
@@ -156,7 +156,7 @@ uint8_t *CFifoPutMultiple(HCFIFO pFifo, int *pCnt)
 
 	if (pFifo->PutIdx == pFifo->GetIdx)
     {
-	    if (pFifo->bDrop == false)
+	    if (pFifo->bAutoDrop == false)
 	        return NULL;
 	    // Drop
 	    int l = *pCnt;
@@ -287,7 +287,7 @@ int CFifoWrite(HCFIFO pFifo, uint8_t *pData, int DataLen)
 
     if (pFifo->PutIdx == pFifo->GetIdx)
     {
-        if (pFifo->bDrop == false)
+        if (pFifo->bAutoDrop == false)
             return 0;
         int l = DataLen;
         CFifoGetMultiple(pFifo, &l);

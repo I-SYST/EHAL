@@ -126,7 +126,6 @@ typedef struct {
 	int DevNo;					// UART device number
 	const void *pIoMap;			// Pointer to IO mapping.  This can be either IOPINCFG array or device path string
 	int IoMapLen;				// Nb of elements in IOPINCFG array or string length of device path
-	//IOPINCFG PinCfg[UART_NB_PINS];	// I/O pin to configure for UART
 	int Rate;					// Baudrate, set to 0 for auto baudrate
 	int DataBits;				// Number of data bits
 	UART_PARITY Parity;			// Data parity
@@ -135,9 +134,10 @@ typedef struct {
 	bool bIntMode;				// Interrupt mode support
 	int IntPrio;				// Interrupt priority
 	UARTEVTCB EvtCallback;		// UART event callback
-	int RxMemSize;
-	uint8_t *pRxMem;			// Pointer to memory allocated for RX FIFO
-	int TxMemSize;
+	bool bAutoDrop;				// CFIFO operating mode, true : auto drop when full
+	int RxMemSize;				// Memory size in bytes for Rx CFIFO
+	uint8_t *pRxMem;			// Pointer to memory allocated for RX CFIFO
+	int TxMemSize;				// Memory size in bytes for Tx CFIFO
 	uint8_t *pTxMem;			// Pointer to memory allocated for TX FIFO
 	bool bDMAMode;				// DMA transfer support
 	bool bIrDAMode;				// Enable IrDA

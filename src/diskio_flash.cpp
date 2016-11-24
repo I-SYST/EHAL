@@ -146,7 +146,7 @@ bool FlashDiskIO::WriteEnable(uint32_t Timeout)
     WaitReady(Timeout);
 
     d = FLASH_CMD_WRENABLE;
-    int cnt = vpInterf->Tx(vDevNo, &d, 1);
+    vpInterf->Tx(vDevNo, &d, 1);
 
     return false;
 }
@@ -160,7 +160,7 @@ void FlashDiskIO::Erase()
 
     d = FLASH_CMD_BULK_ERASE;
 
-    int cnt = vpInterf->Tx(vDevNo, &d, 1);
+    vpInterf->Tx(vDevNo, &d, 1);
 
     // This is a long wait polling at every second only
     WaitReady(-1, 1000000);
@@ -264,7 +264,7 @@ bool FlashDiskIO::SectWrite(uint32_t SectNo, uint8_t *pData)
         l = vpInterf->TxData(pData, l);
         vpInterf->StopTx();
         if (l <= 0)
-            false;
+            return false;
         cnt -= l;
         pData += l;
         addr += l;
