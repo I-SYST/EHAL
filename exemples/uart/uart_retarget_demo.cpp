@@ -70,6 +70,7 @@ const UARTCFG g_UartCfg = {
 	true,
 	1, 					//  use APP_IRQ_PRIORITY_LOW with Softdevice
 	nRFUartEvthandler,
+	false,				// No auto drop
 	0,
 	NULL,
 	FIFOSIZE,
@@ -119,14 +120,13 @@ int main()
 	UARTRetargetEnable(g_Uart, STDOUT_FILENO);
 #endif
 
-	static char buff[512];
+	char buff[512];
 
 	printf("Hello, welcome to UART retarget demo\r\n");
 	while(1)
 	{
 		printf("Please type something then press enter\r\n");
 		scanf("%s", &buff);
-		//*buff = getchar();
 		printf("You typed : '%s'\r\n", buff);
 	}
 	return 0;

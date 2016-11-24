@@ -68,6 +68,7 @@ const UARTCFG g_UartCfg = {
 	true,
 	1, 					//  use APP_IRQ_PRIORITY_LOW with Softdevice
 	nRFUartEvthandler,
+	false,				// No auto drop
 	0,
 	NULL,
 	FIFOSIZE,
