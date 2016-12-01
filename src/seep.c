@@ -47,11 +47,13 @@ bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf)
 	pDev->PageSize = pCfgData->PageSize;
 	pDev->AddrLen = pCfgData->AddrLen;
 	pDev->pWaitCB = pCfgData->pWaitCB;
+	pDev->WrProtPin = pCfgData->WrProtPin;
 
 	if (pCfgData->WrProtPin.PortNo >= 0 && pCfgData->WrProtPin.PinNo >= 0)
 	{
 	    // Configure write protect pin
 	    IOPinCfg(&pCfgData->WrProtPin, 1);
+        IOPinClear(pDev->WrProtPin.PortNo, pDev->WrProtPin.PinNo);
 	}
 
 	if (pCfgData->pInitCB)
