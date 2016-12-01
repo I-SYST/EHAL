@@ -76,6 +76,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/iopincfg.h</locationURI>
 		</link>
 		<link>
+			<name>include/iopinctrl.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/iopinctrl.h</locationURI>
+		</link>
+		<link>
 			<name>include/istddef.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/istddef.h</locationURI>
@@ -219,6 +224,11 @@
 			<name>src/intelhex.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/intelhex.c</locationURI>
+		</link>
+		<link>
+			<name>src/iopincfg.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/iopincfg.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/ledmx.c</name>

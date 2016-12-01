@@ -40,6 +40,7 @@ using namespace std;
 
 Seep::Seep()
 {
+    memset(&vDevData, 0, sizeof(SEEPDEV));
 }
 
 Seep::~Seep()
@@ -47,19 +48,18 @@ Seep::~Seep()
 }
 
 bool Seep::Init(SEEP_CFG &CfgData, SerialIntrf *pInterf)
-//bool Seep::Init(int DevAddr, int PageSize, int AddrLen, SerialIntrf *pInterf)
 {
-	vpInterf = pInterf;
-	vDevAddr = CfgData.DevAddr;
-	vPageSize = CfgData.PageSize;
-	vAddrLen = CfgData.AddrLen;
-	vpWaitCB = CfgData.pWaitCB;
+    vDevData.pInterf = *pInterf;
+	vDevData.DevAddr = CfgData.DevAddr;
+	vDevData.PageSize = CfgData.PageSize;
+	vDevData.AddrLen = CfgData.AddrLen;
+	vDevData.pWaitCB = CfgData.pWaitCB;
 	if (CfgData.pInitCB)
-		return CfgData.pInitCB(vDevAddr, *pInterf);
+		return CfgData.pInitCB(vDevData.DevAddr, *pInterf);
 
 	return true;
 }
-
+/*
 int Seep::Read(int Addr, uint8_t *pData, int Len)
 {
 	uint8_t ad[4];
@@ -110,4 +110,4 @@ int Seep::Write(int Addr, uint8_t *pData, int Len)
 	}
 	return count;
 }
-
+*/

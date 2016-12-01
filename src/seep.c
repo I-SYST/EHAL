@@ -37,6 +37,7 @@ Modified by          Date              Description
 
 #include "istddef.h"
 #include "seep.h"
+#include "iopinctrl.h"
 
 //bool SeepInit(SEEPDEV *pDev, int DevAddr, int PageSize, int AddrLen, SERINTRFDEV *pIntrf)
 bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf)
@@ -46,6 +47,13 @@ bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf)
 	pDev->PageSize = pCfgData->PageSize;
 	pDev->AddrLen = pCfgData->AddrLen;
 	pDev->pWaitCB = pCfgData->pWaitCB;
+
+	if (pCfgData->WrProtPin.PortNo >= 0 && pCfgData->WrProtPin.PinNo >= 0)
+	{
+	    // Configure write protect pin
+	    IOPinCfg(&pCfgData->WrProtPin, 1);
+	}
+
 	if (pCfgData->pInitCB)
 		pCfgData->pInitCB(pCfgData->DevAddr, pInterf);
 
@@ -98,5 +106,16 @@ int SeepWrite(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
 		pData += size;
 	}
 	return count;
+}
+
+void SeepSetWriteProt(SEEPDEV *pDev, bool bVal)
+{
+    if (pDev->WrProtPin.PortNo < 0 || pDev->WrProtPin.PinNo < 0)
+        return;
+
+    if (bVal)
+        IOPinSet(pDev->WrProtPin.PortNo, pDev->WrProtPin.PinNo);
+    else
+        IOPinClear(pDev->WrProtPin.PortNo, pDev->WrProtPin.PinNo);
 }
 
