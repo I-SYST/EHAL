@@ -55,14 +55,14 @@ typedef struct _Seep_Config {
 	int DevAddr;	// Device address
 	int AddrLen;	// Serial EEPROM memory address length in bytes
 	int PageSize;	// Wrap around page size in bytes
+    IOPINCFG WrProtPin; // if Write protect pin is not used, set {-1, -1, }
+                        // This pin is assumed active high,
+                        // ie. Set to 1 to enable Write Protect
 	SEEPCB pInitCB;	// For custom initialization. Set to NULL if not used
 	SEEPCB pWaitCB;	// If provided, this is called when there are long delays
 					// for a device to complete its write cycle
    					// This is to allow application to perform other tasks
    					// while waiting. Set to NULL is not used
-	IOPINCFG WrProtPin; // if Write protect pin is not used, set {-1, -1, }
-	                    // This pin is assumed active high,
-	                    // ie. Set to 1 to enable Write Protect
 } SEEP_CFG;
 
 typedef struct {
