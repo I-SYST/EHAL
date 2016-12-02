@@ -52,29 +52,31 @@ Modified by          Date              Description
 typedef bool (*SEEPCB)(int DevAddr, SERINTRFDEV *pInterf);
 
 typedef struct _Seep_Config {
-	int DevAddr;	// Device address
-	int AddrLen;	// Serial EEPROM memory address length in bytes
-	int PageSize;	// Wrap around page size in bytes
+    uint8_t DevAddr;	// Device address
+    uint8_t AddrLen;	// Serial EEPROM memory address length in bytes
+    uint16_t PageSize;	// Wrap around page size in bytes
+    uint32_t Size;      // Total EEPROM size in bytes
     IOPINCFG WrProtPin; // if Write protect pin is not used, set {-1, -1, }
                         // This pin is assumed active high,
                         // ie. Set to 1 to enable Write Protect
-	SEEPCB pInitCB;	// For custom initialization. Set to NULL if not used
-	SEEPCB pWaitCB;	// If provided, this is called when there are long delays
-					// for a device to complete its write cycle
-   					// This is to allow application to perform other tasks
-   					// while waiting. Set to NULL is not used
+	SEEPCB pInitCB;	    // For custom initialization. Set to NULL if not used
+	SEEPCB pWaitCB;	    // If provided, this is called when there are long delays
+					    // for a device to complete its write cycle
+   					    // This is to allow application to perform other tasks
+   					    // while waiting. Set to NULL is not used
 } SEEP_CFG;
 
 typedef struct {
-	int DevAddr;	// Device address
-	int AddrLen;	// Serial EEPROM memory address length in bytes
-	int PageSize;	// Wrap around page size
+	uint8_t DevAddr;    // Device address
+	uint8_t AddrLen;    // Serial EEPROM memory address length in bytes
+	uint16_t PageSize;	// Wrap around page size
+	uint32_t Size;      // Total EEPROM size in bytes
 	IOPINCFG WrProtPin; // Write protect I/O pin
 	SERINTRFDEV	*pInterf;
-	SEEPCB pWaitCB;	// If provided, this is called when there are long delays
-					// for a device to complete its write cycle
-   					// This is to allow application to perform other tasks
-   					// while waiting. Set to NULL is not used
+	SEEPCB pWaitCB;	    // If provided, this is called when there are long delays
+					    // for a device to complete its write cycle
+   					    // This is to allow application to perform other tasks
+   					    // while waiting. Set to NULL is not used
 } SEEPDEV;
 
 #pragma pack(pop)
@@ -94,6 +96,28 @@ extern "C" {
  * @return  true - initialization successful
  */
 bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf);
+
+/**
+ * @brief Get EEPROM size
+ *
+ * @param   pDev     : Pointer to driver data
+ *
+ * @return  Total size in bytes
+ */
+static inline uint32_t SeepGetSize(SEEPDEV *pDev) {
+    return pDev ? pDev->Size : 0;
+}
+
+/**
+ * @brief Get EEPROM page size
+ *
+ * @param   pDev     : Pointer to driver data
+ *
+ * @return  Page size in bytes
+ */
+static inline uint16_t SeepGetPageSize(SEEPDEV *pDev) {
+    return pDev? pDev->PageSize : 0;
+}
 
 /**
  * @brief Read Serial EEPROM data
@@ -138,14 +162,17 @@ public:
     Seep(Seep&);    // copy ctor not allowed
 
     virtual bool Init(SEEP_CFG &Cfg, SerialIntrf *pInterf);
-    virtual void Set(int DevAddr, int PageSize, int AddrLen) {
+
+/*    virtual void Set(int DevAddr, int PageSize, int AddrLen) {
         vDevData.DevAddr = DevAddr;
         vDevData.PageSize = PageSize;
         vDevData.AddrLen = AddrLen;
-    }
+    }*/
     virtual int Read(int Addr, uint8_t *pBuff, int Len) { return SeepRead(&vDevData, Addr, pBuff, Len); }
     virtual int Write(int Addr, uint8_t *pData, int Len) { return SeepWrite(&vDevData, Addr, pData, Len); }
 
+    uint32_t GetSize() { return vDevData.Size; }
+    uint16_t GetPageSize() { return vDevData.PageSize; }
     operator SEEPDEV* () { return &vDevData; }
 
 protected:
