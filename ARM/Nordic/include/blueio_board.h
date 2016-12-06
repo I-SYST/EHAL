@@ -40,6 +40,7 @@ Modified by          Date              Description
 #define BLUEIO_BOARD						1
 #endif
 
+// LEDs
 #define BLUEIO_LED1_PORT					0
 #define BLUEIO_LED1_PIN						30
 #define BLUEIO_LED1_PINOP					0
@@ -65,19 +66,28 @@ Modified by          Date              Description
 // Most IMM-NRF5x base boards use P0.30 for Bluetooth connection state LED
 #define BLUEIO_CONNECT_LED			BLUEIO_LED1
 
+// Buttons
+#define BLUEIO_BUT1_PORT					0
+#define BLUEIO_BUT1_PIN						2
+#define BLUEIO_BUT1_PINOP					0
+#define BLUEIO_BUT2_PORT					0
+#define BLUEIO_BUT2_PIN						13
+#define BLUEIO_BUT2_PINOP					0
+
+
 // UART pins
-#define BLUEIO_UART_RX_PORT			0
-#define BLUEIO_UART_RX_PIN			8
-#define BLUEIO_UART_RX_PINOP		0
-#define BLUEIO_UART_TX_PORT			0
-#define BLUEIO_UART_TX_PIN			7
-#define BLUEIO_UART_TX_PINOP		0
-#define BLUEIO_UART_CTS_PORT		0
-#define BLUEIO_UART_CTS_PIN			12
-#define BLUEIO_UART_CTS_PINOP		0
-#define BLUEIO_UART_RTS_PORT		0
-#define BLUEIO_UART_RTS_PIN			11
-#define BLUEIO_UART_RTS_PINOP		0
+#define BLUEIO_UART_RX_PORT					0
+#define BLUEIO_UART_RX_PIN					8
+#define BLUEIO_UART_RX_PINOP				0
+#define BLUEIO_UART_TX_PORT					0
+#define BLUEIO_UART_TX_PIN					7
+#define BLUEIO_UART_TX_PINOP				0
+#define BLUEIO_UART_CTS_PORT				0
+#define BLUEIO_UART_CTS_PIN					12
+#define BLUEIO_UART_CTS_PINOP				0
+#define BLUEIO_UART_RTS_PORT				0
+#define BLUEIO_UART_RTS_PIN					11
+#define BLUEIO_UART_RTS_PINOP				0
 
 
 #endif // __BLUEIO_BOARD_H__
