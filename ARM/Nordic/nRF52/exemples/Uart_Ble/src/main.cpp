@@ -35,6 +35,7 @@
 #include "ble_nus.h"
 #include "app_uart.h"
 #include "app_util_platform.h"
+#include "nrf_peripherals.h"
 #include "custom_board.h"
 //#include "bsp.h"
 //#include "bsp_btn_ble.h"

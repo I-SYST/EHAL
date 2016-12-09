@@ -47,19 +47,15 @@ Modified by          Date              Description
 #define LED_3          BLUEIO_LED3_PIN
 #define LED_STOP       BLUEIO_LED1_PIN
 
+#define LEDS_ACTIVE_STATE 0
+
+#define LEDS_INV_MASK  LEDS_MASK
+
 #define LEDS_LIST { LED_1, LED_2, LED_3 }
 
 #define BSP_LED_0      LED_1
 #define BSP_LED_1      LED_2
 #define BSP_LED_2      LED_3
-
-#define BSP_LED_0_MASK (1<<BSP_LED_0)
-#define BSP_LED_1_MASK (1<<BSP_LED_1)
-#define BSP_LED_2_MASK (1<<BSP_LED_2)
-
-#define LEDS_MASK      (BSP_LED_0_MASK | BSP_LED_1_MASK | BSP_LED_2_MASK)
-/* all LEDs are lit when GPIO is low */
-#define LEDS_INV_MASK  LEDS_MASK
 
 #define BUTTONS_NUMBER 2
 
@@ -69,16 +65,13 @@ Modified by          Date              Description
 #define BUTTON_STOP    BLUEIO_BUT2_PIN
 #define BUTTON_PULL    NRF_GPIO_PIN_PULLUP
 
+#define BUTTONS_ACTIVE_STATE 0
+
 #define BUTTONS_LIST { BUTTON_1, BUTTON_2 }
 
 #define BSP_BUTTON_0   BUTTON_1
 #define BSP_BUTTON_1   BUTTON_2
 #define BSP_BUTTON_3   BUTTON_1		// Remap for Nordic DFU
-
-#define BSP_BUTTON_0_MASK (1<<BSP_BUTTON_0)
-#define BSP_BUTTON_1_MASK (1<<BSP_BUTTON_1)
-
-#define BUTTONS_MASK   (BSP_BUTTON_0_MASK | BSP_BUTTON_1_MASK)
 
 // Low frequency clock source to be used by the SoftDevice
 // I don't like this kind of define to set the default data
