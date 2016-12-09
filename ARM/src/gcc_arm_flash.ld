@@ -57,7 +57,7 @@ SECTIONS {
 	.ivector : ALIGN(4)
 	{
 		__text_start__ = .;
-		
+		__isr_vector = .;
 		/* At addr zero is the stack pointer */
 		/*LONG(__StackTop);*/
 
