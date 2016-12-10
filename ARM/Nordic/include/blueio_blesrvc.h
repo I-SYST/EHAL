@@ -74,6 +74,7 @@ struct __BlueIOService {
 };
 
 typedef struct {
+	bool			Secur;					// Secure or Open service/char
 	ble_uuid128_t	UuidBase;				// Base UUID
 	uint16_t		UuidSvc;				// Service UUID
 	uint16_t		UuidCtrlChar;			// Control char UUID

@@ -34,9 +34,8 @@ Modified by          Date              Description
 #include <stdint.h>
 #include <string.h>
 #include "nordic_common.h"
-#include "nrf_gpio.h"
 
-#include "blueio_svc.h"
+#include "blueio_blesrvc.h"
 
 
 //uint8_t g_GatWriteBuff[512];
@@ -99,7 +98,7 @@ void ble_blueios_on_ble_evt(ble_blueios_t * p_blueios, ble_evt_t * p_ble_evt)
  */
 static uint32_t BlueIOSvcCharAdd(BLUEIOSVC *pSvc, uint16_t CharUuid,
 								 int MaxDataLen, ble_gatts_char_md_t *pCharMd,
-								 ble_gatts_char_handles_t *pCharHdl)
+								 ble_gatts_char_handles_t *pCharHdl, bool bSecur)
 {
     ble_gatts_char_md_t char_md;
     ble_gatts_attr_md_t cccd_md;
@@ -108,10 +107,22 @@ static uint32_t BlueIOSvcCharAdd(BLUEIOSVC *pSvc, uint16_t CharUuid,
     ble_gatts_attr_md_t attr_md;
 
     memset(&cccd_md, 0, sizeof(cccd_md));
+    memset(&attr_md, 0, sizeof(attr_md));
 
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
-
+    if (bSecur)
+    {
+        BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(&cccd_md.read_perm);
+        BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(&cccd_md.write_perm);
+        BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(&attr_md.read_perm);
+        BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(&attr_md.write_perm);
+    }
+    else
+    {
+		BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
+		BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
+	    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
+	    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
+    }
     cccd_md.vloc = BLE_GATTS_VLOC_STACK;
 
     memcpy(&char_md, pCharMd, sizeof(char_md));
@@ -135,10 +146,7 @@ static uint32_t BlueIOSvcCharAdd(BLUEIOSVC *pSvc, uint16_t CharUuid,
     ble_uuid.type = pSvc->UuidType;
     ble_uuid.uuid = CharUuid;
 
-    memset(&attr_md, 0, sizeof(attr_md));
 
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
 
     attr_md.vloc       = BLE_GATTS_VLOC_STACK;
     attr_md.rd_auth    = 0;
@@ -238,13 +246,25 @@ uint32_t BlueIOSvcInit(BLUEIOSVC *pSvc, const BLUEIOSVC_CFG *pCfg)
         return err;
     }
 
-    err = BlueIOSvcCharAdd(pSvc, pCfg->UuidCtrlChar, pCfg->CtrlCharMaxLen, (ble_gatts_char_md_t*)&pCfg->CtrlChar, &pSvc->CtrlCharHdl);
+    err = BlueIOSvcCharAdd(pSvc, pCfg->UuidCtrlChar, pCfg->CtrlCharMaxLen,
+    					   (ble_gatts_char_md_t*)&pCfg->CtrlChar,
+						   &pSvc->CtrlCharHdl, false);
     if (err != NRF_SUCCESS)
     {
         return err;
     }
 
-    err = BlueIOSvcCharAdd(pSvc, pCfg->UuidRxDataChar, pCfg->RxDataCharMaxLen, (ble_gatts_char_md_t*)&pCfg->RxDataChar, &pSvc->RxDataCharHdl);
+    err = BlueIOSvcCharAdd(pSvc, pCfg->UuidRxDataChar, pCfg->RxDataCharMaxLen,
+    			 	 	   (ble_gatts_char_md_t*)&pCfg->RxDataChar,
+						   &pSvc->RxDataCharHdl, false);
+    if (err != NRF_SUCCESS)
+    {
+        return err;
+    }
+
+    err = BlueIOSvcCharAdd(pSvc, pCfg->UuidTxDataChar, pCfg->TxDataCharMaxLen,
+    			 	 	   (ble_gatts_char_md_t*)&pCfg->TxDataChar,
+						   &pSvc->TxDataCharHdl, false);
     if (err != NRF_SUCCESS)
     {
         return err;

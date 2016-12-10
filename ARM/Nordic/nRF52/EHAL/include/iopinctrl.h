@@ -6,7 +6,7 @@ Author : Hoang Nguyen Hoan          June. 2, 2014
 Desc   : General I/O pin control implementation specific 
 		 This file must be named iopinctrl.h no matter which target
 
-		 This is nRF5x implementation
+		 This is nRF52 implementation
 
 Copyright (c) 2014, I-SYST inc., all rights reserved
 
@@ -38,60 +38,45 @@ Modified by          Date              Description
 #define __IOPINCTRL_H__
 
 #include <stdint.h>
-#include "nrf_gpio.h"
-
+#include "nrf52.h"
 #include "iopincfg.h"
 
 static inline void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
 {
 	if (Dir == IOPINDIR_OUTPUT)
-		nrf_gpio_pin_dir_set(PinNo, NRF_GPIO_PIN_DIR_OUTPUT);
+		NRF_P0->DIRSET = (1 << PinNo);
 	else if (Dir == IOPINDIR_INPUT)
-		nrf_gpio_pin_dir_set(PinNo, NRF_GPIO_PIN_DIR_INPUT);
+		NRF_P0->DIRCLR = (1 << PinNo);
 }
 
 static inline int IOPinRead(int PortNo, int PinNo)
 {
-	return nrf_gpio_pin_read(PinNo);
+	return (NRF_P0->IN >> PinNo) & 1;
 }
 
 static inline void IOPinSet(int PortNo, int PinNo)
 {
-	nrf_gpio_pin_set(PinNo);
+	NRF_P0->OUTSET = (1 << PinNo);
 }
 
 static inline void IOPinClear(int PortNo, int PinNo)
 {
-	nrf_gpio_pin_clear(PinNo);
+	NRF_P0->OUTCLR = (1 << PinNo);
 }
 
 static inline void IOPinToggle(int PortNo, int PinNo)
 {
-	nrf_gpio_pin_toggle(PinNo);
+	NRF_P0->OUT = NRF_P0->OUT ^ (1 << PinNo);
 }
 
 static inline uint32_t IOPinReadPort(int PortNo)
 {
-	return nrf_gpio_pins_read();
+	return NRF_P0->IN;
 }
 
-static inline void IOPinWrite8Port(int PortNo, uint8_t Data)
+static inline void IOPinWritePort(int PortNo, uint32_t Data)
 {
-	nrf_gpio_port_write((nrf_gpio_port_select_t)(NRF_GPIO_PORT_SELECT_PORT0 + PortNo), Data);
-}
-
-static inline void IOPinWrite16Port(int PortNo, uint16_t Data)
-{
-	nrf_gpio_port_write((nrf_gpio_port_select_t)(NRF_GPIO_PORT_SELECT_PORT0 + PortNo), Data & 0xFF);
-	nrf_gpio_port_write((nrf_gpio_port_select_t)(NRF_GPIO_PORT_SELECT_PORT0 + PortNo + 1), Data >> 8);
-}
-
-static inline void IOPinWrite32Port(int PortNo, uint32_t Data)
-{
-	nrf_gpio_port_write((nrf_gpio_port_select_t)(NRF_GPIO_PORT_SELECT_PORT0 + PortNo), Data & 0xFF);
-	nrf_gpio_port_write((nrf_gpio_port_select_t)(NRF_GPIO_PORT_SELECT_PORT0 + PortNo + 1), (Data >> 8) & 0xFF);
-	nrf_gpio_port_write((nrf_gpio_port_select_t)(NRF_GPIO_PORT_SELECT_PORT0 + PortNo + 2), (Data >> 16) & 0xFF);
-	nrf_gpio_port_write((nrf_gpio_port_select_t)(NRF_GPIO_PORT_SELECT_PORT0 + PortNo + 3), (Data >> 24) & 0xFF);
+	NRF_P0->OUT = Data;
 }
 
 #endif	// __IOPINCTRL_H__
