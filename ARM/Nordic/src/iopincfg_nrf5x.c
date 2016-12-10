@@ -33,7 +33,14 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 
 #include <stdio.h>
-#include "nrf_gpio.h"
+#ifdef NRF51
+#include "nrf51.h"
+#include "nrf51_bitfields.h"
+#else
+#include "nrf52.h"
+#include "nrf52_bitfields.h"
+#define NRF_GPIO		NRF_P0
+#endif
 #include "iopincfg.h"
 
 /*
@@ -68,13 +75,13 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 	{
 		case IOPINRES_FOLLOW:	// nRF51 does not have follow mode, use pullup
 		case IOPINRES_PULLUP:
-			cnf |= (NRF_GPIO_PIN_PULLUP << GPIO_PIN_CNF_PULL_Pos);
+			cnf |= (GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos);
 			break;
 		case IOPINRES_PULLDOWN:
-			cnf |= (NRF_GPIO_PIN_PULLDOWN << GPIO_PIN_CNF_PULL_Pos);
+			cnf |= (GPIO_PIN_CNF_PULL_Pulldown << GPIO_PIN_CNF_PULL_Pos);
 			break;
 		case IOPINRES_NONE:
-			cnf |= (NRF_GPIO_PIN_NOPULL << GPIO_PIN_CNF_PULL_Pos);
+			cnf |= (GPIO_PIN_CNF_PULL_Disabled << GPIO_PIN_CNF_PULL_Pos);
 			break;
 	}
 

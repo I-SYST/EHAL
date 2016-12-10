@@ -33,7 +33,7 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
-#include "nrf_gpio.h"
+#include "iopinctrl.h"
 #include "ledmxio.h"
 
 typedef struct {
@@ -56,27 +56,27 @@ void LedMxIOInit(LEDMXDEV *pLedMxDev, LEDMXCFG *pCfg)
     pLedMxDev->pIODev = (void *)&g_LmxIODev;
 
     pdev->WrPin = pcfg->WrPin;
-    nrf_gpio_cfg_output(pcfg->WrPin);
-	nrf_gpio_pin_set(pcfg->WrPin);
+    IOPinConfig(0, pdev->WrPin, 0, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL);
+	IOPinSet(0, pdev->WrPin);
 
     pdev->RdPin = pcfg->RdPin;
-	nrf_gpio_cfg_output(pcfg->RdPin);
-	nrf_gpio_pin_set(pcfg->RdPin);
+    IOPinConfig(0, pdev->RdPin, 0, IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL);
+	IOPinSet(0, pdev->RdPin);
 
     pdev->DataPin = pcfg->DataPin;
-	nrf_gpio_cfg_output(pcfg->DataPin);
+    IOPinConfig(0, pdev->DataPin, 0, IOPINDIR_OUTPUT, IOPINRES_FOLLOW, IOPINTYPE_NORMAL);
 
     pdev->EnPin = pcfg->EnPin;
-	nrf_gpio_cfg_output(pcfg->EnPin);
-	nrf_gpio_pin_set(pcfg->EnPin);
+    IOPinConfig(0, pdev->EnPin, 0, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL);
+	IOPinSet(0, pdev->EnPin);
 
 	for (int i = 0; i < LEDMX_MAX_ADDRPIN; i++)
 	{
         pdev->CsPins[i] = pcfg->CsPins[i];
 		if (pdev->CsPins[i] >= 0)
 		{
-			nrf_gpio_cfg_output(pdev->CsPins[i]);
-			nrf_gpio_pin_clear(pdev->CsPins[i]);
+		    IOPinConfig(0, pdev->CsPins[i], 0, IOPINDIR_OUTPUT, IOPINRES_PULLDOWN, IOPINTYPE_NORMAL);
+			IOPinClear(0, pdev->CsPins[i]);
 		}
 	}
 	pdev->NbCsPins = pcfg->NbCsPins;
@@ -87,28 +87,28 @@ void LedMxStartTx(LEDMXDEV *pLedMxDev, int PanelAddr)
 {
 	IODEV *pdev = (IODEV *)pLedMxDev->pIODev;
 
-	nrf_gpio_pin_set(pdev->RdPin);
-	nrf_gpio_pin_set(pdev->WrPin);
+	IOPinSet(0, pdev->RdPin);
+	IOPinSet(0, pdev->WrPin);
 
 	if (pdev->CsType == LEDMX_CSTYPE_BIN)
 	{
-	      nrf_gpio_pin_set(pdev->EnPin);
+		IOPinSet(0, pdev->EnPin);
 	      for (int i = 0; i < pdev->NbCsPins; i++)
 	      {
 	          if (pdev->CsPins[i] >= 0)
 	          {
 	              if (PanelAddr & 1)
-	                  nrf_gpio_pin_set(pdev->CsPins[i]);
+	            	  IOPinSet(0, pdev->CsPins[i]);
 	              else
-	                  nrf_gpio_pin_clear(pdev->CsPins[i]);
+	            	  IOPinClear(0, pdev->CsPins[i]);
 	          }
 	          PanelAddr >>= 1;
 	      }
-	      nrf_gpio_pin_clear(pdev->EnPin);
+	      IOPinClear(0, pdev->EnPin);
 	}
 	else
 	{
-	      nrf_gpio_pin_clear(pdev->CsPins[PanelAddr]);
+		IOPinClear(0, pdev->CsPins[PanelAddr]);
 	}
 }
 
@@ -119,14 +119,14 @@ void LedMxTxData(LEDMXDEV *pLedMxDev, uint32_t Data, int NbBits)
 
 	while (mask)
 	{
-	    nrf_gpio_pin_clear(pdev->WrPin);
+		IOPinClear(0, pdev->WrPin);
 	    if (Data & mask)
-	    	nrf_gpio_pin_set(pdev->DataPin);
+	    	IOPinSet(0, pdev->DataPin);
 	    else
-	    	nrf_gpio_pin_clear(pdev->DataPin);
+	    	IOPinClear(0, pdev->DataPin);
 
 	    __NOP();
-	    nrf_gpio_pin_set(pdev->WrPin);
+	    IOPinSet(0, pdev->WrPin);
 
 	    mask >>= 1;
 	}
@@ -137,17 +137,17 @@ void LedMxStopTx(LEDMXDEV *pLedMxDev, int PanelAddr)
 {
 	IODEV *pdev = (IODEV *)pLedMxDev->pIODev;
 
-	nrf_gpio_pin_set(pdev->WrPin);
+	IOPinSet(0, pdev->WrPin);
 
 	if (pdev->CsType == LEDMX_CSTYPE_BIN)
 	{
 		for (int i = 0; i < pdev->NbCsPins; i++)
 		{
 			if (pdev->CsPins[i] >= 0)
-				nrf_gpio_pin_set(pdev->CsPins[i]);
+				IOPinSet(0, pdev->CsPins[i]);
 		}
-		nrf_gpio_pin_set(pdev->EnPin);
+		IOPinSet(0, pdev->EnPin);
 	}
 	else
-		nrf_gpio_pin_set(pdev->CsPins[PanelAddr]);
+		IOPinSet(0, pdev->CsPins[PanelAddr]);
 }
