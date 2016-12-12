@@ -42,8 +42,9 @@ Modified by          Date              Description
 #else
 #include "nrf52.h"
 #include "nrf52_bitfields.h"
-#define NRF_GPIO		NRF_P0
-#define UART0_IRQn		UARTE0_UART0_IRQn
+#define NRF_GPIO			NRF_P0
+#define UART0_IRQn			UARTE0_UART0_IRQn
+#define UART0_IRQHandler	UARTE0_UART0_IRQHandler
 #endif
 
 #include "istddef.h"
