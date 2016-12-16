@@ -30,40 +30,5 @@
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/Vectors_nRF51.c</locationURI>
 		</link>
-		<link>
-			<name>src/drivers_nrf</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/drivers_nrf/common</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/drivers_nrf/gpiote</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/drivers_nrf/uart</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/drivers_nrf/common/nrf_drv_common.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/nrf51_sdk/components/drivers_nrf/common/nrf_drv_common.c</locationURI>
-		</link>
-		<link>
-			<name>src/drivers_nrf/gpiote/nrf_drv_gpiote.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/nrf51_sdk/components/drivers_nrf/gpiote/nrf_drv_gpiote.c</locationURI>
-		</link>
-		<link>
-			<name>src/drivers_nrf/uart/app_uart.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/nrf51_sdk/components/drivers_nrf/uart/app_uart.c</locationURI>
-		</link>
 	</linkedResources>
 </projectDescription>

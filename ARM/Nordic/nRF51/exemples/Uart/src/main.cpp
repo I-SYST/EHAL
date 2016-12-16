@@ -35,11 +35,6 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #include <stdio.h>
 
-extern "C" {
-#include "app_util_platform.h"
-#include "nrf_drv_gpiote.h"
-//#include "app_uart.h"
-}
 
 #include "iopincfg.h"
 #include "nrf5x_uart.h"
