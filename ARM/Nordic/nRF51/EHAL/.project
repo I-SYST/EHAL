@@ -246,6 +246,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/ledmxfont.c</locationURI>
 		</link>
 		<link>
+			<name>src/ledmxio_nrf5x.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ledmxio_nrf5x.c</locationURI>
+		</link>
+		<link>
 			<name>src/nrf_uart_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_uart_impl.cpp</locationURI>

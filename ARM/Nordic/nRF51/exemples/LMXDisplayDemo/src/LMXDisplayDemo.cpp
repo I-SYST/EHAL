@@ -9,8 +9,6 @@
 #include "idelay.h"
 #include "ledmxio.h"
 
-using namespace std;
-
 // I/O pins connection
 LEDMXIOCFG g_IOCfg = {
 	LMXBLUE_WR_PIN,  // WR pin
@@ -60,7 +58,7 @@ main()
 	g_LmxDev.Init(g_Cfg);
 
 	g_LmxDev.PrintLeft("Hello!");
-	//nrf_delay(5000);
+	usDelay(5000);
 	g_LmxDev.PrintRight("Ola!");
 
 	return 0;
