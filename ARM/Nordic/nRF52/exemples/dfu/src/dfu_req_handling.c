@@ -43,7 +43,7 @@ STATIC_ASSERT(DFU_SIGNED_COMMAND_SIZE <= INIT_COMMAND_MAX_SIZE);
  */
 #if defined ( NRF51 ) && !defined(NRF_DFU_HW_VERSION)
     #define NRF_DFU_HW_VERSION (51)
-#elif defined ( NRF52 ) && !defined(NRF_DFU_HW_VERSION)
+#elif defined( NRF52_SERIES )
     #define NRF_DFU_HW_VERSION (52)
 #else
         #error No target set for HW version.
@@ -71,27 +71,42 @@ static uint32_t             m_firmware_size_req;        /**< The size of the ent
 
 static bool m_valid_init_packet_present;                /**< Global variable holding the current flags indicating the state of the DFU process. */
 
-
-
-
-static const nrf_crypto_key_t crypto_key_pk =
-{
-    .p_le_data = (uint8_t *) pk,
-    .len = sizeof(pk)
-};
-
-static nrf_crypto_key_t crypto_sig;
-__ALIGN(4) static uint8_t hash[32];
-static nrf_crypto_key_t hash_data;
-
-__ALIGN(4) static uint8_t sig[64];
-
-dfu_hash_type_t m_image_hash_type;
-
 static dfu_packet_t packet = DFU_PACKET_INIT_DEFAULT;
 
 static pb_istream_t stream;
+            
+/** @brief Value length structure holding the public key.
+ *
+ * @details The pk value pointed to is the public key present in dfu_public_key.c
+ */
+NRF_CRYPTO_ECC_PUBLIC_KEY_RAW_CREATE_FROM_ARRAY(crypto_key_pk, SECP256R1, pk);
 
+/** @brief Value length structure to hold a signature
+ */
+NRF_CRYPTO_ECDSA_SIGNATURE_CREATE(crypto_sig, SECP256R1);
+
+/** @brief Value length structure to hold the hash for the init packet
+ */
+NRF_CRYPTO_HASH_CREATE(init_packet_hash, SHA256);
+
+/** @brief Value length structure to hold the hash for the firmware image
+ */
+NRF_CRYPTO_HASH_CREATE(fw_hash, SHA256);
+
+static nrf_value_length_t init_packet_data = {0};
+
+const nrf_crypto_hash_info_t hash_info_sha256 =
+{
+    .hash_type = NRF_CRYPTO_HASH_TYPE_SHA256,
+    .endian_type = NRF_CRYPTO_ENDIAN_LE
+};
+
+const nrf_crypto_signature_info_t sig_info_p256 = 
+{
+    .curve_type     = NRF_CRYPTO_CURVE_SECP256R1,
+    .hash_type      = NRF_CRYPTO_HASH_TYPE_SHA256,
+    .endian_type    = NRF_CRYPTO_ENDIAN_LE
+};
 
 static void on_dfu_complete(fs_evt_t const * const evt, fs_ret_t result)
 {
@@ -115,6 +130,7 @@ static void pb_decoding_callback(pb_istream_t *str, uint32_t tag, pb_wire_type_t
     // match the beginning of the init command
     if(p_iter->pos->ptr == &dfu_init_command_fields[0])
     {
+        
         uint8_t *ptr = (uint8_t *) str->state;
         uint32_t size = str->bytes_left;
 
@@ -122,11 +138,11 @@ static void pb_decoding_callback(pb_istream_t *str, uint32_t tag, pb_wire_type_t
         ptr++;
         size--;
 
-        // store the info in hash_data
-        hash_data.p_le_data = ptr;
-        hash_data.len = size;
+        // store the info in init_packet_data
+        init_packet_data.p_value = ptr;
+        init_packet_data.length = size;
 
-        NRF_LOG_INFO("PB: Init data len: %d\r\n", hash_data.len);
+        NRF_LOG_INFO("PB: Init packet data len: %d\r\n", size);
     }
 }
 
@@ -157,12 +173,14 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
 #endif
         if (p_init->has_hw_version == false)
         {
+            NRF_LOG_ERROR("No HW version\r\n");
             return NRF_DFU_RES_CODE_OPERATION_FAILED;
         }
 
         // Check of init command HW version
         if(p_init->hw_version != hw_version)
         {
+            NRF_LOG_ERROR("Faulty HW version\r\n");
             return NRF_DFU_RES_CODE_OPERATION_FAILED;
         }
 
@@ -178,6 +196,7 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
         }
         if (!found_sd_ver)
         {
+            NRF_LOG_ERROR("SD req not met\r\n");
             return NRF_DFU_RES_CODE_OPERATION_FAILED;
         }
 
@@ -207,11 +226,10 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
                 break;
 
             default:
-                NRF_LOG_INFO("Unknown FW update type\r\n");
                 return NRF_DFU_RES_CODE_OPERATION_FAILED;
         }
 
-        NRF_LOG_INFO("Req version: %d, Present: %d\r\n", p_init->fw_version, fw_version);
+        NRF_LOG_INFO("Req version: %d, Expected: %d\r\n", p_init->fw_version, fw_version);
 
         // Check of init command FW version
         switch (p_init->type)
@@ -219,6 +237,7 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
             case DFU_FW_TYPE_APPLICATION:
                 if (p_init->fw_version < fw_version)
                 {
+                    NRF_LOG_ERROR("FW version too low\r\n");
                     return NRF_DFU_RES_CODE_OPERATION_FAILED;
                 }
                 break;
@@ -228,6 +247,7 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
                 // updating the bootloader is stricter. There must be an increase in version number
                 if (p_init->fw_version <= fw_version)
                 {
+                    NRF_LOG_ERROR("BL FW version too low\r\n");
                     return NRF_DFU_RES_CODE_OPERATION_FAILED;
                 }
                 break;
@@ -246,40 +266,46 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
     {
         case DFU_SIGNATURE_TYPE_ECDSA_P256_SHA256:
             {
-                // prepare the actual hash destination.
-                hash_data.p_le_data = &hash[0];
-                hash_data.len = sizeof(hash);
-
+                #if 0
                 NRF_LOG_INFO("Init command:\r\n");
                 NRF_LOG_HEXDUMP_INFO(&s_dfu_settings.init_command[0], s_dfu_settings.progress.command_size);
                 NRF_LOG_INFO("\r\n");
 
-                NRF_LOG_INFO("p_Init command:\r\n");
+                NRF_LOG_INFO("Init command (raw data to be hashed):\r\n");
                 NRF_LOG_HEXDUMP_INFO(&p_init_cmd[0], init_cmd_len);
                 NRF_LOG_INFO("\r\n");
+                #endif
 
-                err_code = nrf_crypto_hash_compute(NRF_CRYPTO_HASH_ALG_SHA256, p_init_cmd, init_cmd_len, &hash_data);
+                
+                NRF_LOG_INFO("Calculating init packet hash\r\n");
+                err_code = nrf_crypto_hash_compute(hash_info_sha256, p_init_cmd, init_cmd_len, &init_packet_hash);
                 if (err_code != NRF_SUCCESS)
                 {
                     return NRF_DFU_RES_CODE_OPERATION_FAILED;
                 }
 
-                // prepare the signature received over the air.
-                memcpy(&sig[0], p_command->signature.bytes, p_command->signature.size);
+                if (crypto_sig.length != p_command->signature.size)
+                {
+                    return NRF_DFU_RES_CODE_OPERATION_FAILED;
+                }
+                
+                // Prepare the signature received over the air.
+                memcpy(crypto_sig.p_value, p_command->signature.bytes, p_command->signature.size);
 
+                #if 0
                 NRF_LOG_INFO("Signature\r\n");
                 NRF_LOG_HEXDUMP_INFO(&p_command->signature.bytes[0], p_command->signature.size);
                 NRF_LOG_INFO("\r\n");
+                #endif
 
-                crypto_sig.p_le_data = sig;
-                crypto_sig.len = p_command->signature.size;
-
-                NRF_LOG_INFO("signature len: %d\r\n", p_command->signature.size);
+                //NRF_LOG_INFO("signature len: %d\r\n", p_command->signature.size);
 
                 // calculate the signature
-                err_code = nrf_crypto_verify(NRF_CRYPTO_CURVE_SECP256R1, &crypto_key_pk, &hash_data, &crypto_sig);
+                NRF_LOG_INFO("Verify signature\r\n");
+                err_code = nrf_crypto_ecdsa_verify_hash(sig_info_p256, &crypto_key_pk, &init_packet_hash, &crypto_sig);
                 if (err_code != NRF_SUCCESS)
                 {
+                    NRF_LOG_ERROR("Signature failed\r\n");
                     return NRF_DFU_RES_CODE_INVALID_OBJECT;
                 }
 
@@ -288,6 +314,7 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
             break;
 
         default:
+            NRF_LOG_INFO("Invalid signature type\r\n");
             return NRF_DFU_RES_CODE_OPERATION_FAILED;
     }
 
@@ -299,6 +326,7 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
         case DFU_FW_TYPE_APPLICATION:
             if (p_init->has_app_size == false)
             {
+                NRF_LOG_ERROR("No app image size\r\n");
                 return NRF_DFU_RES_CODE_OPERATION_FAILED;
             }
             m_firmware_size_req += p_init->app_size;
@@ -307,16 +335,18 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
         case DFU_FW_TYPE_BOOTLOADER:
             if (p_init->has_bl_size == false)
             {
+                NRF_LOG_ERROR("No bl image size\r\n");
                 return NRF_DFU_RES_CODE_OPERATION_FAILED;
             }
             m_firmware_size_req += p_init->bl_size;
             // check that the size of the bootloader is not larger than the present one.
 #if defined ( NRF51 )
             if (p_init->bl_size > BOOTLOADER_SETTINGS_ADDRESS - BOOTLOADER_START_ADDR)
-#elif defined ( NRF52 )
+#elif defined( NRF52_SERIES )
             if (p_init->bl_size > NRF_MBR_PARAMS_PAGE_ADDRESS - BOOTLOADER_START_ADDR)
 #endif
             {
+                NRF_LOG_ERROR("BL too large\r\n");
                 return NRF_DFU_RES_CODE_INSUFFICIENT_RESOURCES;
             }
             break;
@@ -324,6 +354,7 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
         case DFU_FW_TYPE_SOFTDEVICE:
             if (p_init->has_sd_size == false)
             {
+                NRF_LOG_ERROR("No SD image size\r\n");
                 return NRF_DFU_RES_CODE_OPERATION_FAILED;
             }
             m_firmware_size_req += p_init->sd_size;
@@ -332,37 +363,42 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
         case DFU_FW_TYPE_SOFTDEVICE_BOOTLOADER:
             if (p_init->has_bl_size == false || p_init->has_sd_size == false)
             {
+                NRF_LOG_ERROR("NO BL/SD size\r\n");
                 return NRF_DFU_RES_CODE_OPERATION_FAILED;
             }
             m_firmware_size_req += p_init->sd_size + p_init->bl_size;
             if (p_init->sd_size == 0 || p_init->bl_size == 0)
             {
+                NRF_LOG_ERROR("BL+SD size 0\r\n");
                 return NRF_DFU_RES_CODE_INVALID_PARAMETER;
             }
 
             // check that the size of the bootloader is not larger than the present one.
 #if defined ( NRF51 )
             if (p_init->bl_size > BOOTLOADER_SETTINGS_ADDRESS - BOOTLOADER_START_ADDR)
-#elif defined ( NRF52 )
+#elif defined ( NRF52_SERIES )
             if (p_init->bl_size > NRF_MBR_PARAMS_PAGE_ADDRESS - BOOTLOADER_START_ADDR)
 #endif
             {
+                NRF_LOG_ERROR("BL too large (SD+BL)\r\n");
                 return NRF_DFU_RES_CODE_INSUFFICIENT_RESOURCES;
             }
             break;
 
         default:
-            NRF_LOG_INFO("Unknown FW update type\r\n");
+            NRF_LOG_ERROR("Unknown FW update type\r\n");
             return NRF_DFU_RES_CODE_OPERATION_FAILED;
     }
 
+    NRF_LOG_INFO("Running hash check\r\n");
     // SHA256 is the only supported hash
-    memcpy(&hash[0], &p_init->hash.hash.bytes[0], 32);
+    memcpy(fw_hash.p_value, &p_init->hash.hash.bytes[0], NRF_CRYPTO_HASH_SIZE_SHA256);
 
     // Instead of checking each type with has-check, check the result of the size_req to
     // Validate its content.
     if (m_firmware_size_req == 0)
     {
+        NRF_LOG_ERROR("No FW size\r\n");
         return NRF_DFU_RES_CODE_INVALID_PARAMETER;
     }
 
@@ -370,6 +406,7 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
     err_code = nrf_dfu_find_cache(m_firmware_size_req, false, &m_firmware_start_addr);
     if (err_code != NRF_SUCCESS)
     {
+        NRF_LOG_ERROR("Can't find room for update\r\n");
         return NRF_DFU_RES_CODE_INSUFFICIENT_RESOURCES;
     }
 
@@ -393,17 +430,15 @@ static nrf_dfu_res_code_t nrf_dfu_postvalidate(dfu_init_command_t * p_init)
     switch (p_init->hash.hash_type)
     {
         case DFU_HASH_TYPE_SHA256:
-            hash_data.p_le_data = &hash[0];
-            hash_data.len = sizeof(hash);
-            err_code = nrf_crypto_hash_compute(NRF_CRYPTO_HASH_ALG_SHA256, (uint8_t*)m_firmware_start_addr, m_firmware_size_req, &hash_data);
+            err_code = nrf_crypto_hash_compute(hash_info_sha256, (uint8_t*)m_firmware_start_addr, m_firmware_size_req, &fw_hash);
             if (err_code != NRF_SUCCESS)
             {
                 res_code = NRF_DFU_RES_CODE_OPERATION_FAILED;
             }
 
-            if (memcmp(&hash_data.p_le_data[0], &p_init->hash.hash.bytes[0], 32) != 0)
+            if (memcmp(fw_hash.p_value, p_init->hash.hash.bytes, NRF_CRYPTO_HASH_SIZE_SHA256) != 0)
             {
-                NRF_LOG_INFO("Hash failure\r\n");
+                NRF_LOG_ERROR("Hash failure\r\n");
 
                 res_code = NRF_DFU_RES_CODE_INVALID_OBJECT;
             }
@@ -426,7 +461,7 @@ static nrf_dfu_res_code_t nrf_dfu_postvalidate(dfu_init_command_t * p_init)
     }
     else
     {
-        NRF_LOG_INFO("Internal error, invalid current bank\r\n");
+        NRF_LOG_ERROR("Internal error, invalid current bank\r\n");
         return NRF_DFU_RES_CODE_OPERATION_FAILED;
     }
 
@@ -519,7 +554,7 @@ static nrf_dfu_res_code_t dfu_handle_signed_command(dfu_signed_command_t const *
         return NRF_DFU_RES_CODE_INVALID_OBJECT;
     }
 
-    ret_val = dfu_handle_prevalidate(p_command, p_stream, hash_data.p_le_data, hash_data.len);
+    ret_val = dfu_handle_prevalidate(p_command, p_stream, init_packet_data.p_value, init_packet_data.length);
     if(ret_val == NRF_DFU_RES_CODE_SUCCESS)
     {
         NRF_LOG_INFO("Prevalidate OK.\r\n");
@@ -533,7 +568,7 @@ static nrf_dfu_res_code_t dfu_handle_signed_command(dfu_signed_command_t const *
     }
     else
     {
-        NRF_LOG_INFO("Prevalidate FAILED!\r\n");
+        NRF_LOG_ERROR("Prevalidate FAILED!\r\n");
     }
     return ret_val;
 }
@@ -552,12 +587,12 @@ static uint32_t dfu_decode_commmand(void)
     // Attach our callback to follow the field decoding
     stream.decoding_callback = pb_decoding_callback;
     // reset the variable where the init pointer and length will be stored.
-    hash_data.p_le_data = NULL;
-    hash_data.len = 0;
+    init_packet_data.p_value = NULL;
+    init_packet_data.length = 0;
 
     if (!pb_decode(&stream, dfu_packet_fields, &packet))
     {
-        NRF_LOG_INFO("Handler: Invalid protocol buffer stream\r\n");
+        NRF_LOG_ERROR("Handler: Invalid protocol buffer stream\r\n");
         return 0;
     }
 
@@ -622,7 +657,7 @@ static nrf_dfu_res_code_t nrf_dfu_command_req(void * p_context, nrf_dfu_req_t * 
                 // Too large for the command that was requested
                 p_res->offset = s_dfu_settings.progress.command_offset;
                 p_res->crc = s_dfu_settings.progress.command_crc;
-                NRF_LOG_INFO("Error. Init command larger than expected. \r\n");
+                NRF_LOG_ERROR("Error. Init command larger than expected. \r\n");
                 return NRF_DFU_RES_CODE_INVALID_PARAMETER;
             }
 
@@ -642,7 +677,7 @@ static nrf_dfu_res_code_t nrf_dfu_command_req(void * p_context, nrf_dfu_req_t * 
             if (s_dfu_settings.progress.command_offset != s_dfu_settings.progress.command_size)
             {
                 // The object wasn't the right (requested) size
-                NRF_LOG_INFO("Execute with faulty offset\r\n");
+                NRF_LOG_ERROR("Execute with faulty offset\r\n");
                 return NRF_DFU_RES_CODE_OPERATION_NOT_PERMITTED;
             }
 
@@ -654,7 +689,9 @@ static nrf_dfu_res_code_t nrf_dfu_command_req(void * p_context, nrf_dfu_req_t * 
                 return NRF_DFU_RES_CODE_SUCCESS;
             }
 
+            #if 0
             NRF_LOG_HEXDUMP_INFO(&s_dfu_settings.init_command[0], s_dfu_settings.progress.command_size);
+            #endif
 
             NRF_LOG_INFO("\r\n");
 
@@ -677,7 +714,7 @@ static nrf_dfu_res_code_t nrf_dfu_command_req(void * p_context, nrf_dfu_req_t * 
             else
             {
                 // We had no regular or signed command.
-                NRF_LOG_INFO("Decoded command but it has no content!!\r\n");
+                NRF_LOG_ERROR("Decoded command but it has no content!!\r\n");
                 return NRF_DFU_RES_CODE_INVALID_OBJECT;
             }
 
@@ -697,7 +734,7 @@ static nrf_dfu_res_code_t nrf_dfu_command_req(void * p_context, nrf_dfu_req_t * 
             break;
 
         default:
-            NRF_LOG_INFO("Invalid Command Operation\r\n");
+            NRF_LOG_ERROR("Invalid Command Operation\r\n");
             ret_val = NRF_DFU_RES_CODE_OP_CODE_NOT_SUPPORTED;
             break;
     }
@@ -740,20 +777,20 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
             if (p_req->object_size > DATA_OBJECT_MAX_SIZE)
             {
                 // It is impossible to handle the command because the size is too large
-                NRF_LOG_INFO("Invalid size for object (too large)\r\n");
+                NRF_LOG_ERROR("Invalid size for object (too large)\r\n");
                 return NRF_DFU_RES_CODE_INSUFFICIENT_RESOURCES;
             }
 
             if (m_valid_init_packet_present == false)
             {
                 // Can't accept data because DFU isn't initialized by init command.
-                NRF_LOG_INFO("Trying to create data object without valid init command\r\n");
+                NRF_LOG_ERROR("Trying to create data object without valid init command\r\n");
                 return NRF_DFU_RES_CODE_OPERATION_NOT_PERMITTED;
             }
 
             if ((s_dfu_settings.progress.firmware_image_offset_last + p_req->object_size) > m_firmware_size_req)
             {
-                NRF_LOG_INFO("Trying to create an object of size %d, when offset is 0x%08x and firmware size is 0x%08x\r\n", p_req->object_size, s_dfu_settings.progress.firmware_image_offset_last, m_firmware_size_req);
+                NRF_LOG_ERROR("Trying to create an object of size %d, when offset is 0x%08x and firmware size is 0x%08x\r\n", p_req->object_size, s_dfu_settings.progress.firmware_image_offset_last, m_firmware_size_req);
                 return NRF_DFU_RES_CODE_OPERATION_NOT_PERMITTED;
             }
 
@@ -771,7 +808,7 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
             if (nrf_dfu_flash_erase((uint32_t*)(m_firmware_start_addr + s_dfu_settings.progress.firmware_image_offset), CEIL_DIV(p_req->object_size, CODE_PAGE_SIZE), dfu_data_write_handler) != FS_SUCCESS)
             {
                 m_flash_operations_pending--;
-                NRF_LOG_INFO("Erase operation failed\r\n");
+                NRF_LOG_ERROR("Erase operation failed\r\n");
                 return NRF_DFU_RES_CODE_INVALID_OBJECT;
             }
 
@@ -798,7 +835,7 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
             if ((p_req->req_len + s_dfu_settings.progress.firmware_image_offset - s_dfu_settings.progress.firmware_image_offset_last) > s_dfu_settings.progress.data_object_size)
             {
                 // Can't accept data because too much data has been received.
-                NRF_LOG_INFO("Write request too long\r\n");
+                NRF_LOG_ERROR("Write request too long\r\n");
                 return NRF_DFU_RES_CODE_INVALID_PARAMETER;
             }
 
@@ -845,7 +882,7 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
                 else
                 {
                     --m_flash_operations_pending;
-                    NRF_LOG_INFO("!!! Failed storing %d B at address: 0x%08x\r\n", m_data_buf_pos, (uint32_t)p_write_addr);
+                    NRF_LOG_ERROR("!!! Failed storing %d B at address: 0x%08x\r\n", m_data_buf_pos, (uint32_t)p_write_addr);
                     // Previous flash operation failed. Revert CRC and offset.
                     s_dfu_settings.progress.firmware_image_crc = s_dfu_settings.progress.firmware_image_crc_last;
                     s_dfu_settings.progress.firmware_image_offset = s_dfu_settings.progress.firmware_image_offset_last;
@@ -884,7 +921,7 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
                 else
                 {
                     --m_flash_operations_pending;
-                    NRF_LOG_INFO("!!! Failed storing %d B at address: 0x%08x\r\n", m_data_buf_pos, (uint32_t)p_write_addr);
+                    NRF_LOG_ERROR("!!! Failed storing %d B at address: 0x%08x\r\n", m_data_buf_pos, (uint32_t)p_write_addr);
                     // Previous flash operation failed. Revert CRC and offset.
                     s_dfu_settings.progress.firmware_image_crc = s_dfu_settings.progress.firmware_image_crc_last;
                     s_dfu_settings.progress.firmware_image_offset = s_dfu_settings.progress.firmware_image_offset_last;
@@ -913,7 +950,7 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
                 s_dfu_settings.progress.firmware_image_offset_last)
             {
                 // The size of the written object was not as expected.
-                NRF_LOG_INFO("Invalid data here: exp: %d, got: %d\r\n", s_dfu_settings.progress.data_object_size, s_dfu_settings.progress.firmware_image_offset - s_dfu_settings.progress.firmware_image_offset_last);
+                NRF_LOG_ERROR("Invalid data here: exp: %d, got: %d\r\n", s_dfu_settings.progress.data_object_size, s_dfu_settings.progress.firmware_image_offset - s_dfu_settings.progress.firmware_image_offset_last);
                 return NRF_DFU_RES_CODE_OPERATION_NOT_PERMITTED;
             }
 
@@ -949,7 +986,7 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
             break;
 
         default:
-            NRF_LOG_INFO("Invalid Data Operation\r\n");
+            NRF_LOG_ERROR("Invalid Data Operation\r\n");
             ret_val = NRF_DFU_RES_CODE_OP_CODE_NOT_SUPPORTED;
             break;
     }
@@ -1036,7 +1073,7 @@ nrf_dfu_res_code_t nrf_dfu_req_handler_on_req(void * p_context, nrf_dfu_req_t * 
             break;
 
         default:
-            NRF_LOG_INFO("Invalid request type\r\n");
+            NRF_LOG_ERROR("Invalid request type\r\n");
             ret_val = NRF_DFU_RES_CODE_INVALID_OBJECT;
             break;
     }

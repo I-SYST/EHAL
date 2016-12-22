@@ -321,13 +321,6 @@
 #define CRC32_ENABLED 1
 #endif
 
-// <q> ECC_ENABLED  - ecc - Elliptic Curve Cryptography Library
- 
-
-#ifndef ECC_ENABLED
-#define ECC_ENABLED 0
-#endif
-
 // <e> FSTORAGE_ENABLED - fstorage - Flash storage module
 //==========================================================
 #ifndef FSTORAGE_ENABLED
@@ -389,6 +382,71 @@
 #endif //HCI_MEM_POOL_ENABLED
 // </e>
 
+// <e> MEM_MANAGER_ENABLED - mem_manager - Dynamic memory allocator
+//==========================================================
+#ifndef MEM_MANAGER_ENABLED
+#define MEM_MANAGER_ENABLED 1
+#endif
+#if  MEM_MANAGER_ENABLED
+// <o> MEMORY_MANAGER_SMALL_BLOCK_COUNT - Size of each memory blocks identified as 'small' block.  <0-255> 
+
+
+#ifndef MEMORY_MANAGER_SMALL_BLOCK_COUNT
+#define MEMORY_MANAGER_SMALL_BLOCK_COUNT 1
+#endif
+
+// <o> MEMORY_MANAGER_SMALL_BLOCK_SIZE -  Size of each memory blocks identified as 'small' block. 
+// <i>  Size of each memory blocks identified as 'small' block. Memory block are recommended to be word-sized.
+
+#ifndef MEMORY_MANAGER_SMALL_BLOCK_SIZE
+#define MEMORY_MANAGER_SMALL_BLOCK_SIZE 32
+#endif
+
+// <o> MEMORY_MANAGER_MEDIUM_BLOCK_COUNT - Size of each memory blocks identified as 'medium' block.  <0-255> 
+
+
+#ifndef MEMORY_MANAGER_MEDIUM_BLOCK_COUNT
+#define MEMORY_MANAGER_MEDIUM_BLOCK_COUNT 0
+#endif
+
+// <o> MEMORY_MANAGER_MEDIUM_BLOCK_SIZE -  Size of each memory blocks identified as 'medium' block. 
+// <i>  Size of each memory blocks identified as 'medium' block. Memory block are recommended to be word-sized.
+
+#ifndef MEMORY_MANAGER_MEDIUM_BLOCK_SIZE
+#define MEMORY_MANAGER_MEDIUM_BLOCK_SIZE 256
+#endif
+
+// <o> MEMORY_MANAGER_LARGE_BLOCK_COUNT - Size of each memory blocks identified as 'large' block.  <0-255> 
+
+
+#ifndef MEMORY_MANAGER_LARGE_BLOCK_COUNT
+#define MEMORY_MANAGER_LARGE_BLOCK_COUNT 0
+#endif
+
+// <o> MEMORY_MANAGER_LARGE_BLOCK_SIZE -  Size of each memory blocks identified as 'large' block. 
+// <i>  Size of each memory blocks identified as 'large' block. Memory block are recommended to be word-sized.
+
+#ifndef MEMORY_MANAGER_LARGE_BLOCK_SIZE
+#define MEMORY_MANAGER_LARGE_BLOCK_SIZE 256
+#endif
+
+// <q> MEM_MANAGER_ENABLE_LOGS  - Enable debug trace in the module.
+ 
+
+#ifndef MEM_MANAGER_ENABLE_LOGS
+#define MEM_MANAGER_ENABLE_LOGS 0
+#endif
+
+// <q> MEM_MANAGER_DISABLE_API_PARAM_CHECK  - Disable API parameter checks in the module.
+ 
+
+#ifndef MEM_MANAGER_DISABLE_API_PARAM_CHECK
+#define MEM_MANAGER_DISABLE_API_PARAM_CHECK 0
+#endif
+
+#endif //MEM_MANAGER_ENABLED
+// </e>
+
 // <q> NRF_QUEUE_ENABLED  - nrf_queue - Queue module
  
 
@@ -405,7 +463,7 @@
 // <e> NRF_LOG_ENABLED - nrf_log - Logging
 //==========================================================
 #ifndef NRF_LOG_ENABLED
-#define NRF_LOG_ENABLED 1
+#define NRF_LOG_ENABLED 0
 #endif
 #if  NRF_LOG_ENABLED
 // <e> NRF_LOG_USES_COLORS - If enabled then ANSI escape code for colors is prefixed to every string
@@ -474,7 +532,7 @@
 // <4=> Debug 
 
 #ifndef NRF_LOG_DEFAULT_LEVEL
-#define NRF_LOG_DEFAULT_LEVEL 0
+#define NRF_LOG_DEFAULT_LEVEL 3
 #endif
 
 // <e> NRF_LOG_DEFERRED - Enable deffered logger.
@@ -482,7 +540,7 @@
 // <i> Log data is buffered and can be processed in idle.
 //==========================================================
 #ifndef NRF_LOG_DEFERRED
-#define NRF_LOG_DEFERRED 0
+#define NRF_LOG_DEFERRED 1
 #endif
 #if  NRF_LOG_DEFERRED
 // <o> NRF_LOG_DEFERRED_BUFSIZE - Size of the buffer for logs in words. 
@@ -507,144 +565,58 @@
 #endif //NRF_LOG_ENABLED
 // </e>
 
-// <h> nrf_log_backend - Logging sink
+// </h> 
+//==========================================================
+
+// <h> nRF_crypto 
 
 //==========================================================
-// <o> NRF_LOG_BACKEND_MAX_STRING_LENGTH - Buffer for storing single output string 
-// <i> Logger backend RAM usage is determined by this value.
-
-#ifndef NRF_LOG_BACKEND_MAX_STRING_LENGTH
-#define NRF_LOG_BACKEND_MAX_STRING_LENGTH 256
-#endif
-
-// <o> NRF_LOG_TIMESTAMP_DIGITS - Number of digits for timestamp 
-// <i> If higher resolution timestamp source is used it might be needed to increase that
-
-#ifndef NRF_LOG_TIMESTAMP_DIGITS
-#define NRF_LOG_TIMESTAMP_DIGITS 8
-#endif
-
-// <e> NRF_LOG_BACKEND_SERIAL_USES_UART - If enabled data is printed over UART
+// <e> NRF_CRYPTO_ENABLED - nrf_crypto - Cryptography library
 //==========================================================
-#ifndef NRF_LOG_BACKEND_SERIAL_USES_UART
-#define NRF_LOG_BACKEND_SERIAL_USES_UART 0
+#ifndef NRF_CRYPTO_ENABLED
+#define NRF_CRYPTO_ENABLED 1
 #endif
-#if  NRF_LOG_BACKEND_SERIAL_USES_UART
-// <o> NRF_LOG_BACKEND_SERIAL_UART_BAUDRATE  - Default Baudrate
+#if  NRF_CRYPTO_ENABLED
+// <q> NRF_CRYPTO_BACKEND_CC310_LIB  - Enables the ARM Cryptocell CC310 backend
  
-// <323584=> 1200 baud 
-// <643072=> 2400 baud 
-// <1290240=> 4800 baud 
-// <2576384=> 9600 baud 
-// <3862528=> 14400 baud 
-// <5152768=> 19200 baud 
-// <7716864=> 28800 baud 
-// <10289152=> 38400 baud 
-// <15400960=> 57600 baud 
-// <20615168=> 76800 baud 
-// <30801920=> 115200 baud 
-// <61865984=> 230400 baud 
-// <67108864=> 250000 baud 
-// <121634816=> 460800 baud 
-// <251658240=> 921600 baud 
-// <268435456=> 57600 baud 
 
-#ifndef NRF_LOG_BACKEND_SERIAL_UART_BAUDRATE
-#define NRF_LOG_BACKEND_SERIAL_UART_BAUDRATE 30801920
+// <i> The hardware-accelerated cryptography backend is available only on nRF52840.
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_LIB
+#define NRF_CRYPTO_BACKEND_CC310_LIB 0
 #endif
 
-// <o> NRF_LOG_BACKEND_SERIAL_UART_TX_PIN - UART TX pin 
-#ifndef NRF_LOG_BACKEND_SERIAL_UART_TX_PIN
-#define NRF_LOG_BACKEND_SERIAL_UART_TX_PIN 6
-#endif
+// <e> NRF_CRYPTO_BACKEND_MICRO_ECC - Enables the micro-ecc software backend
 
-// <o> NRF_LOG_BACKEND_SERIAL_UART_RX_PIN - UART RX pin 
-#ifndef NRF_LOG_BACKEND_SERIAL_UART_RX_PIN
-#define NRF_LOG_BACKEND_SERIAL_UART_RX_PIN 8
+// <i> The micro-ecc library provides a software implementation of ECC cryptography for nRF5 Series devices.
+//==========================================================
+#ifndef NRF_CRYPTO_BACKEND_MICRO_ECC
+#define NRF_CRYPTO_BACKEND_MICRO_ECC 1
 #endif
-
-// <o> NRF_LOG_BACKEND_SERIAL_UART_RTS_PIN - UART RTS pin 
-#ifndef NRF_LOG_BACKEND_SERIAL_UART_RTS_PIN
-#define NRF_LOG_BACKEND_SERIAL_UART_RTS_PIN 5
-#endif
-
-// <o> NRF_LOG_BACKEND_SERIAL_UART_CTS_PIN - UART CTS pin 
-#ifndef NRF_LOG_BACKEND_SERIAL_UART_CTS_PIN
-#define NRF_LOG_BACKEND_SERIAL_UART_CTS_PIN 7
-#endif
-
-// <o> NRF_LOG_BACKEND_SERIAL_UART_FLOW_CONTROL  - Hardware Flow Control
+#if  NRF_CRYPTO_BACKEND_MICRO_ECC
+// <q> NRF_CRYPTO_BACKEND_SW  - Enables hashing
  
-// <0=> Disabled 
-// <1=> Enabled 
 
-#ifndef NRF_LOG_BACKEND_SERIAL_UART_FLOW_CONTROL
-#define NRF_LOG_BACKEND_SERIAL_UART_FLOW_CONTROL 0
+// <i> If enabled, the cryptography library supports hashing (needed for signing).
+
+#ifndef NRF_CRYPTO_BACKEND_SW
+#define NRF_CRYPTO_BACKEND_SW 1
 #endif
 
-// <o> NRF_LOG_BACKEND_UART_INSTANCE  - UART instance used
+// <q> NRF_CRYPTO_SUPPORTS_RNG  - Enables RNG
  
-// <0=> 0 
 
-#ifndef NRF_LOG_BACKEND_UART_INSTANCE
-#define NRF_LOG_BACKEND_UART_INSTANCE 0
+// <i> If enabled, the cryptography library supports random number generation (needed for key generation).
+
+#ifndef NRF_CRYPTO_SUPPORTS_RNG
+#define NRF_CRYPTO_SUPPORTS_RNG 0
 #endif
 
-#endif //NRF_LOG_BACKEND_SERIAL_USES_UART
+#endif //NRF_CRYPTO_BACKEND_MICRO_ECC
 // </e>
 
-// <e> NRF_LOG_BACKEND_SERIAL_USES_RTT - If enabled data is printed using RTT
-//==========================================================
-#ifndef NRF_LOG_BACKEND_SERIAL_USES_RTT
-#define NRF_LOG_BACKEND_SERIAL_USES_RTT 0
-#endif
-#if  NRF_LOG_BACKEND_SERIAL_USES_RTT
-// <o> NRF_LOG_BACKEND_RTT_OUTPUT_BUFFER_SIZE - RTT output buffer size. 
-// <i> Should be equal or bigger than \ref NRF_LOG_BACKEND_MAX_STRING_LENGTH.
-// <i> This value is used in Segger RTT configuration to set the buffer size
-// <i> if it is bigger than default RTT buffer size.
-
-#ifndef NRF_LOG_BACKEND_RTT_OUTPUT_BUFFER_SIZE
-#define NRF_LOG_BACKEND_RTT_OUTPUT_BUFFER_SIZE 512
-#endif
-
-#endif //NRF_LOG_BACKEND_SERIAL_USES_RTT
+#endif //NRF_CRYPTO_ENABLED
 // </e>
-
-// </h> 
-//==========================================================
-
-// </h> 
-//==========================================================
-
-// <h> nRF_Segger_RTT 
-
-//==========================================================
-// <h> segger_rtt - SEGGER RTT
-
-//==========================================================
-// <o> SEGGER_RTT_CONFIG_BUFFER_SIZE_UP - Size of upstream buffer. 
-#ifndef SEGGER_RTT_CONFIG_BUFFER_SIZE_UP
-#define SEGGER_RTT_CONFIG_BUFFER_SIZE_UP 64
-#endif
-
-// <o> SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS - Size of upstream buffer. 
-#ifndef SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS
-#define SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS 2
-#endif
-
-// <o> SEGGER_RTT_CONFIG_BUFFER_SIZE_DOWN - Size of upstream buffer. 
-#ifndef SEGGER_RTT_CONFIG_BUFFER_SIZE_DOWN
-#define SEGGER_RTT_CONFIG_BUFFER_SIZE_DOWN 16
-#endif
-
-// <o> SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS - Size of upstream buffer. 
-#ifndef SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS
-#define SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS 2
-#endif
-
-// </h> 
-//==========================================================
 
 // </h> 
 //==========================================================

@@ -33,14 +33,14 @@
 
 void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
 {
-    NRF_LOG_ERROR("received a fault! id: 0x%08x, pc: 0x&08x\r\n", id, pc);
+    NRF_LOG_ERROR("Received a fault! id: 0x%08x, pc: 0x&08x\r\n", id, pc);
     NVIC_SystemReset();
 }
 
 void app_error_handler_bare(uint32_t error_code)
 {
     (void)error_code;
-    NRF_LOG_ERROR("received an error: 0x%08x!\r\n", error_code);
+    NRF_LOG_ERROR("Received an error: 0x%08x!\r\n", error_code);
     NVIC_SystemReset();
 }
 
@@ -70,7 +70,7 @@ int main(void)
 {
     uint32_t ret_val;
 
-//    (void) NRF_LOG_INIT(NULL);
+    (void) NRF_LOG_INIT(NULL);
 
     NRF_LOG_INFO("Inside main\r\n");
 
