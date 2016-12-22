@@ -54,7 +54,7 @@
 									<listOptionValue builtIn="false" value="NRF_DFU_DEBUG_VERSION"/>
 									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>
-									<listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=3"/>
+									<listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=5"/>
 									<listOptionValue builtIn="false" value="NRF_DFU_SETTINGS_VERSION=1"/>
 									<listOptionValue builtIn="false" value="BOARD_CUSTOM"/>
 									<listOptionValue builtIn="false" value="SVC_INTERFACE_CALL_AS_NORMAL_FUNCTION"/>
@@ -211,7 +211,7 @@
 									<listOptionValue builtIn="false" value="NRF_DFU_DEBUG_VERSION"/>
 									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>
-									<listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=3"/>
+									<listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=5"/>
 									<listOptionValue builtIn="false" value="NRF_DFU_SETTINGS_VERSION=1"/>
 									<listOptionValue builtIn="false" value="BOARD_CUSTOM"/>
 									<listOptionValue builtIn="false" value="SVC_INTERFACE_CALL_AS_NORMAL_FUNCTION"/>

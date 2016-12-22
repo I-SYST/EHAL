@@ -217,85 +217,6 @@
 // <h> nRF_Drivers 
 
 //==========================================================
-// <e> ADC_ENABLED - nrf_drv_adc - Driver for ADC peripheral (nRF51)
-//==========================================================
-#ifndef ADC_ENABLED
-#define ADC_ENABLED 0
-#endif
-#if  ADC_ENABLED
-// <o> ADC_CONFIG_IRQ_PRIORITY  - Interrupt priority
- 
-
-// <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
-// <0=> 0 (highest) 
-// <1=> 1 
-// <2=> 2 
-// <3=> 3 
-// <4=> 4 
-// <5=> 5 
-// <6=> 6 
-// <7=> 7 
-
-#ifndef ADC_CONFIG_IRQ_PRIORITY
-#define ADC_CONFIG_IRQ_PRIORITY 7
-#endif
-
-// <e> ADC_CONFIG_LOG_ENABLED - Enables logging in the module.
-//==========================================================
-#ifndef ADC_CONFIG_LOG_ENABLED
-#define ADC_CONFIG_LOG_ENABLED 0
-#endif
-#if  ADC_CONFIG_LOG_ENABLED
-// <o> ADC_CONFIG_LOG_LEVEL  - Default Severity level
- 
-// <0=> Off 
-// <1=> Error 
-// <2=> Warning 
-// <3=> Info 
-// <4=> Debug 
-
-#ifndef ADC_CONFIG_LOG_LEVEL
-#define ADC_CONFIG_LOG_LEVEL 3
-#endif
-
-// <o> ADC_CONFIG_INFO_COLOR  - ANSI escape code prefix.
- 
-// <0=> Default 
-// <1=> Black 
-// <2=> Red 
-// <3=> Green 
-// <4=> Yellow 
-// <5=> Blue 
-// <6=> Magenta 
-// <7=> Cyan 
-// <8=> White 
-
-#ifndef ADC_CONFIG_INFO_COLOR
-#define ADC_CONFIG_INFO_COLOR 0
-#endif
-
-// <o> ADC_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
- 
-// <0=> Default 
-// <1=> Black 
-// <2=> Red 
-// <3=> Green 
-// <4=> Yellow 
-// <5=> Blue 
-// <6=> Magenta 
-// <7=> Cyan 
-// <8=> White 
-
-#ifndef ADC_CONFIG_DEBUG_COLOR
-#define ADC_CONFIG_DEBUG_COLOR 0
-#endif
-
-#endif //ADC_CONFIG_LOG_ENABLED
-// </e>
-
-#endif //ADC_ENABLED
-// </e>
-
 // <e> APP_USBD_ENABLED - app_usbd - USB Device library
 //==========================================================
 #ifndef APP_USBD_ENABLED
@@ -2877,6 +2798,23 @@
 #define USBD_ENABLED 0
 #endif
 #if  USBD_ENABLED
+// <o> USBD_CONFIG_IRQ_PRIORITY  - Interrupt priority
+ 
+
+// <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
+// <0=> 0 (highest) 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+// <4=> 4 
+// <5=> 5 
+// <6=> 6 
+// <7=> 7 
+
+#ifndef USBD_CONFIG_IRQ_PRIORITY
+#define USBD_CONFIG_IRQ_PRIORITY 7
+#endif
+
 // <o> NRF_DRV_USBD_DMASCHEDULER_MODE  - USBD SMA scheduler working scheme
  
 // <0=> Prioritized access 
@@ -3781,6 +3719,9 @@
 
 //==========================================================
 // <o> SEGGER_RTT_CONFIG_BUFFER_SIZE_UP - Size of upstream buffer. 
+// <i> Note that either @ref NRF_LOG_BACKEND_RTT_OUTPUT_BUFFER_SIZE
+// <i> or this value is actually used. It depends on which one is bigger.
+
 #ifndef SEGGER_RTT_CONFIG_BUFFER_SIZE_UP
 #define SEGGER_RTT_CONFIG_BUFFER_SIZE_UP 64
 #endif
@@ -3798,6 +3739,21 @@
 // <o> SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS - Size of upstream buffer. 
 #ifndef SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS
 #define SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS 2
+#endif
+
+// <o> SEGGER_RTT_CONFIG_DEFAULT_MODE  - RTT behavior if the buffer is full.
+ 
+
+// <i> The following modes are supported:
+// <i> - SKIP  - Do not block, output nothing.
+// <i> - TRIM  - Do not block, output as much as fits.
+// <i> - BLOCK - Wait until there is space in the buffer.
+// <0=> SKIP 
+// <1=> TRIM 
+// <2=> BLOCK_IF_FIFO_FULL 
+
+#ifndef SEGGER_RTT_CONFIG_DEFAULT_MODE
+#define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
 #endif
 
 // </h> 
