@@ -42,9 +42,9 @@ Modified by          Date              Description
 #define LEDS_NUMBER    3
 
 #define LED_START      BLUEIO_LED3_PIN
-#define LED_1          BLUEIO_LED1_PIN
+#define LED_1          BLUEIO_LED3_PIN
 #define LED_2          BLUEIO_LED2_PIN
-#define LED_3          BLUEIO_LED3_PIN
+#define LED_3          BLUEIO_LED1_PIN
 #define LED_STOP       BLUEIO_LED1_PIN
 
 #define LEDS_ACTIVE_STATE 0
