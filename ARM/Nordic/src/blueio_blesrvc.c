@@ -1,9 +1,12 @@
 /*--------------------------------------------------------------------------
-File   : BlueIOBLEService.c
+File   : blueio_blesrvc.c
 
 Author : Hoang Nguyen Hoan          Mar. 25, 2014
 
-Desc   : Bluetooth Low Energy BlueIO Services implementation
+Desc   : Implementation allow the creation of generic custom Bluetooth Smart
+		 service with 2 characteristics.
+		 	 Read characteristics
+		 	 Write characteristics
 
 Copyright (c) 2014, I-SYST inc., all rights reserved
 
@@ -37,48 +40,61 @@ Modified by          Date              Description
 
 #include "blueio_blesrvc.h"
 
-
-//uint8_t g_GatWriteBuff[512];
-
-/**@brief Connect event handler.
- *
- * @param[in]   p_blueios    EkoCC Service structure.
- * @param[in]   p_ble_evt   Event received from the BLE stack.
- */
-/*static void on_connect(ble_blueios_t * p_blueios, ble_evt_t * p_ble_evt)
+uint16_t BlueIOBleSrvcCharSend(BLUEIOSRVC *pSrvc, uint8_t *pData, uint16_t DataLen)
 {
-	p_blueios->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
-}*/
+    ble_gatts_hvx_params_t params;
 
+    memset(&params, 0, sizeof(params));
+    params.type = BLE_GATT_HVX_NOTIFICATION;
+    params.handle = pSrvc->RdCharHdl.value_handle;
+    params.p_data = pData;
+    params.p_len = &DataLen;
 
-/**@brief Disconnect event handler.
- *
- * @param[in]   p_blueios       LEDButton Service structure.
- * @param[in]   p_ble_evt   Event received from the BLE stack.
- */
-/*static void on_disconnect(ble_blueios_t * p_blueios, ble_evt_t * p_ble_evt)
-{
-    UNUSED_PARAMETER(p_ble_evt);
-    p_blueios->conn_handle = BLE_CONN_HANDLE_INVALID;
+    if (sd_ble_gatts_hvx(pSrvc->ConnHdl, &params) == NRF_SUCCESS)
+    	return DataLen;
+
+    return 0;
 }
-*/
 
 
-/*
-void ble_blueios_on_ble_evt(ble_blueios_t * p_blueios, ble_evt_t * p_ble_evt)
+void BlueIOBleSvcEvtHandler(BLUEIOSRVC *pSrvc, ble_evt_t *pBleEvt)
 {
-    switch (p_ble_evt->header.evt_id)
+    switch (pBleEvt->header.evt_id)
     {
         case BLE_GAP_EVT_CONNECTED:
-            on_connect(p_blueios, p_ble_evt);
+        	pSrvc->ConnHdl = pBleEvt->evt.gap_evt.conn_handle;
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
-            on_disconnect(p_blueios, p_ble_evt);
+        	pSrvc->ConnHdl = BLE_CONN_HANDLE_INVALID;
             break;
 
         case BLE_GATTS_EVT_WRITE:
-            on_write(p_blueios, p_ble_evt);
+			{
+				ble_gatts_evt_write_t * p_evt_write = &pBleEvt->evt.gatts_evt.params.write;
+
+				if ((p_evt_write->handle == pSrvc->RdCharHdl.cccd_handle) &&
+					(p_evt_write->len == 2))
+				{
+					if (ble_srv_is_notification_enabled(p_evt_write->data))
+					{
+						pSrvc->bNotify = true;
+					}
+					else
+					{
+						pSrvc->bNotify = false;
+					}
+				}
+				else if ((p_evt_write->handle == pSrvc->WrCharHdl.value_handle) &&
+						 (pSrvc->WrCB != NULL))
+				{
+					pSrvc->WrCB(pSrvc, p_evt_write->data, 0, p_evt_write->len);
+				}
+				else
+				{
+					// Do Nothing. This event is not relevant for this service.
+				}
+			}
             break;
 
         default:
@@ -86,8 +102,31 @@ void ble_blueios_on_ble_evt(ble_blueios_t * p_blueios, ble_evt_t * p_ble_evt)
     }
 }
 
-*/
-
+static void BlueIOBleSrvcEncSec(ble_gap_conn_sec_mode_t *pSecMode, BLUEIOSRVC_SECTYPE SecType)
+{
+	switch (SecType)
+    {
+		case BLUEIOSRVC_SECTYPE_STATICKEY_NO_MITM:
+			BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(pSecMode);
+			break;
+		case BLUEIOSRVC_SECTYPE_STATICKEY_MITM:
+	    	BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(pSecMode);
+	    	break;
+		case BLUEIOSRVC_SECTYPE_LESC_MITM:
+			BLE_GAP_CONN_SEC_MODE_SET_LESC_ENC_WITH_MITM(pSecMode);
+			break;
+		case BLUEIOSRVC_SECTYPE_SIGNED_NO_MITM:
+			BLE_GAP_CONN_SEC_MODE_SET_SIGNED_NO_MITM(pSecMode);
+			break;
+		case BLUEIOSRVC_SECTYPE_SIGNED_MITM:
+			BLE_GAP_CONN_SEC_MODE_SET_SIGNED_WITH_MITM(pSecMode);
+			break;
+    	case BLUEIOSRVC_SECTYPE_NONE:
+    	default:
+    		BLE_GAP_CONN_SEC_MODE_SET_OPEN(pSecMode);
+    		break;
+    }
+}
 
 /**@brief Add control characteristic.
  *
@@ -96,9 +135,9 @@ void ble_blueios_on_ble_evt(ble_blueios_t * p_blueios, ble_evt_t * p_ble_evt)
  *
  * @return      NRF_SUCCESS on success, otherwise an error code.
  */
-static uint32_t BlueIOSvcCharAdd(BLUEIOSVC *pSvc, uint16_t CharUuid,
-								 int MaxDataLen, ble_gatts_char_md_t *pCharMd,
-								 ble_gatts_char_handles_t *pCharHdl, bool bSecur)
+static uint32_t BlueIOBleSrvcCharAdd(BLUEIOSRVC *pSvc, uint16_t CharUuid,
+								 	int MaxDataLen, uint32_t CharProp, const char *pDesc,
+									ble_gatts_char_handles_t *pCharHdl, BLUEIOSRVC_SECTYPE SecType)
 {
     ble_gatts_char_md_t char_md;
     ble_gatts_attr_md_t cccd_md;
@@ -108,40 +147,47 @@ static uint32_t BlueIOSvcCharAdd(BLUEIOSVC *pSvc, uint16_t CharUuid,
 
     memset(&cccd_md, 0, sizeof(cccd_md));
     memset(&attr_md, 0, sizeof(attr_md));
+    memset(&char_md, 0, sizeof(char_md));
 
-    if (bSecur)
-    {
-        BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(&cccd_md.read_perm);
-        BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(&cccd_md.write_perm);
-        BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(&attr_md.read_perm);
-        BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(&attr_md.write_perm);
-    }
-    else
-    {
-		BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
-		BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
-	    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
-	    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
-    }
     cccd_md.vloc = BLE_GATTS_VLOC_STACK;
 
-    memcpy(&char_md, pCharMd, sizeof(char_md));
-/*
-    if (CharProp & BLUEIOSVC_CHAR_PROP_READ)
-    	char_md.char_props.read   = 1;
-    if (CharProp & BLUEIOSVC_CHAR_PROP_WRITE)
-    	char_md.char_props.write  = 1;
-    if (CharProp & BLUEIOSVC_CHAR_PROP_NOTIFY)
-    	char_md.char_props.notify = 1;
-    if (CharProp & BLUEIOSVC_CHAR_PROP_WRITEWORESP)
-    	char_md.char_props.write_wo_resp = 1;
+    char_md.p_char_user_desc  = (uint8_t*)pDesc;
+    if (pDesc != NULL)
+    	char_md.char_user_desc_max_size = strlen(pDesc) + 1;
+    char_md.p_char_pf = NULL;
+    char_md.p_user_desc_md = NULL;
+    char_md.p_cccd_md = NULL;
+    char_md.p_sccd_md = NULL;
 
-    char_md.p_char_user_desc  = NULL;//"input report";
-    char_md.p_char_pf         = NULL;//"xxxx";
-    char_md.p_user_desc_md    = NULL;//&cccd_md;
-*/
-    char_md.p_cccd_md         = &cccd_md;
-    char_md.p_sccd_md         = NULL;
+    if (CharProp & BLUEIOSVC_CHAR_PROP_NOTIFY)
+    {
+    	char_md.char_props.notify = 1;
+    	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
+    	BlueIOBleSrvcEncSec(&cccd_md.write_perm, SecType);
+    	BlueIOBleSrvcEncSec(&attr_md.read_perm, SecType);
+        char_md.p_cccd_md         = &cccd_md;
+    }
+
+    if (CharProp & BLUEIOSVC_CHAR_PROP_READ)
+    {
+    	char_md.char_props.read   = 1;
+    	BlueIOBleSrvcEncSec(&attr_md.read_perm, SecType);
+        BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.write_perm);
+    }
+
+    if (CharProp & BLUEIOSVC_CHAR_PROP_WRITE)
+    {
+    	char_md.char_props.write  = 1;
+    	BlueIOBleSrvcEncSec(&attr_md.write_perm, SecType);
+        BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.read_perm);
+    }
+
+    if (CharProp & BLUEIOSVC_CHAR_PROP_WRITEWORESP)
+	{
+		char_md.char_props.write_wo_resp = 1;
+    	BlueIOBleSrvcEncSec(&attr_md.write_perm, SecType);
+		BlueIOBleSrvcEncSec(&attr_md.read_perm, SecType);
+	}
 
     ble_uuid.type = pSvc->UuidType;
     ble_uuid.uuid = CharUuid;
@@ -151,7 +197,7 @@ static uint32_t BlueIOSvcCharAdd(BLUEIOSVC *pSvc, uint16_t CharUuid,
     attr_md.vloc       = BLE_GATTS_VLOC_STACK;
     attr_md.rd_auth    = 0;
     attr_md.wr_auth    = 0;
-    attr_md.vlen       = 0;
+    attr_md.vlen       = 1;	// Variable length
 
     memset(&attr_char_value, 0, sizeof(attr_char_value));
 
@@ -164,71 +210,15 @@ static uint32_t BlueIOSvcCharAdd(BLUEIOSVC *pSvc, uint16_t CharUuid,
 
     return sd_ble_gatts_characteristic_add(pSvc->SvcHdl, &char_md, &attr_char_value, pCharHdl);
 }
-/*
-static uint32_t DataCharAdd(BLUEIOSVC *pSvc, const BLUEIOSVC_CFG *pCfg)
-{
-    ble_gatts_char_md_t char_md;
-    ble_gatts_attr_md_t cccd_md;
-    ble_gatts_attr_t    attr_char_value;
-    ble_uuid_t          ble_uuid;
-    ble_gatts_attr_md_t attr_md;
 
-
-    memset(&cccd_md, 0, sizeof(cccd_md));
-
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
-
-    cccd_md.vloc = BLE_GATTS_VLOC_STACK;
-
-    memset(&char_md, 0, sizeof(char_md));
-
-    char_md.char_props.read   = 1;
-    char_md.char_props.write  = 0;
-    char_md.char_props.notify = 1;
-    char_md.char_props.write_wo_resp = 1;
-    char_md.p_char_user_desc  = NULL;//"input report";
-    char_md.p_char_pf         = NULL;//"xxxx";
-    char_md.p_user_desc_md    = NULL;//&cccd_md;
-    char_md.p_cccd_md         = &cccd_md;
-    char_md.p_sccd_md         = NULL;
-
-    ble_uuid.type = pSvc->UuidType;
-    ble_uuid.uuid = pCfg->UuidDataChar;
-
-    memset(&attr_md, 0, sizeof(attr_md));
-
-    BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&attr_md.read_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&attr_md.write_perm);
-
-    attr_md.vloc       = BLE_GATTS_VLOC_STACK;
-    attr_md.rd_auth    = 0;
-    attr_md.wr_auth    = 0;
-    attr_md.vlen       = 0;
-
-    memset(&attr_char_value, 0, sizeof(attr_char_value));
-
-    attr_char_value.p_uuid       = &ble_uuid;
-    attr_char_value.p_attr_md    = &attr_md;
-    attr_char_value.init_len     = 0;
-    attr_char_value.init_offs    = 0;
-    attr_char_value.max_len      = 512;//sizeof(BLUEIO_IOPIN) * BLUEIO_IOPIN_MAX;
-    attr_char_value.p_value      = NULL;
-
-    return sd_ble_gatts_characteristic_add(pSvc->SvcHdl, &char_md,
-                                           &attr_char_value,
-                                           &pSvc->DataCharHdl);
-}
-*/
-uint32_t BlueIOSvcInit(BLUEIOSVC *pSvc, const BLUEIOSVC_CFG *pCfg)
+uint32_t BlueIOBleSrvcInit(BLUEIOSRVC *pSvc, const BLUEIOSRVC_CFG *pCfg)
 {
     uint32_t   err;
     ble_uuid_t ble_uuid;
 
     // Initialize service structure
     pSvc->ConnHdl  = BLE_CONN_HANDLE_INVALID;
-    pSvc->CtrlWrCB = pCfg->CtrlWrCB;
-    pSvc->TxDataWrCB = pCfg->TxDataWrCB;
+    pSvc->WrCB = pCfg->WrCB;
 
     // Add base UUID to softdevice's internal list.
     err = sd_ble_uuid_vs_add(&pCfg->UuidBase, &pSvc->UuidType);
@@ -246,25 +236,17 @@ uint32_t BlueIOSvcInit(BLUEIOSVC *pSvc, const BLUEIOSVC_CFG *pCfg)
         return err;
     }
 
-    err = BlueIOSvcCharAdd(pSvc, pCfg->UuidCtrlChar, pCfg->CtrlCharMaxLen,
-    					   (ble_gatts_char_md_t*)&pCfg->CtrlChar,
-						   &pSvc->CtrlCharHdl, false);
+    err = BlueIOBleSrvcCharAdd(pSvc, pCfg->UuidWrChar, pCfg->WrCharMaxLen,
+    					   	   pCfg->WrCharProp, pCfg->pWrCharDesc,
+							   &pSvc->WrCharHdl, pCfg->SecType);
     if (err != NRF_SUCCESS)
     {
         return err;
     }
 
-    err = BlueIOSvcCharAdd(pSvc, pCfg->UuidRxDataChar, pCfg->RxDataCharMaxLen,
-    			 	 	   (ble_gatts_char_md_t*)&pCfg->RxDataChar,
-						   &pSvc->RxDataCharHdl, false);
-    if (err != NRF_SUCCESS)
-    {
-        return err;
-    }
-
-    err = BlueIOSvcCharAdd(pSvc, pCfg->UuidTxDataChar, pCfg->TxDataCharMaxLen,
-    			 	 	   (ble_gatts_char_md_t*)&pCfg->TxDataChar,
-						   &pSvc->TxDataCharHdl, false);
+    err = BlueIOBleSrvcCharAdd(pSvc, pCfg->UuidRdChar, pCfg->RdCharMaxLen,
+    			 	 	   	   pCfg->RdCharProp, pCfg->pRdCharDesc,
+							   &pSvc->RdCharHdl, pCfg->SecType);
     if (err != NRF_SUCCESS)
     {
         return err;
@@ -272,68 +254,5 @@ uint32_t BlueIOSvcInit(BLUEIOSVC *pSvc, const BLUEIOSVC_CFG *pCfg)
 
     return NRF_SUCCESS;
 }
-/*
-uint32_t ble_blueios_on_data_change(ble_blueios_t * p_blueios)
-{
-    ble_gatts_hvx_params_t params;
-    uint8_t data;
-    uint16_t len = sizeof(data);
 
-    memset(&params, 0, sizeof(params));
-    params.type = BLE_GATT_HVX_NOTIFICATION;
-    params.handle = p_blueios->data_char_handles.value_handle;
-    params.p_data = &data;
-    params.p_len = &len;
-
-    return sd_ble_gatts_hvx(p_blueios->conn_handle, &params);
-}
-*/
-
-
-/**@brief Function for handling a Bond Manager error.
- *
- * @param[in]   nrf_error   Error code containing information about what went wrong.
- */
-//static void bond_manager_error_handler(uint32_t nrf_error)
-//{
-//    APP_ERROR_HANDLER(nrf_error);
-//}
-
-
-/**@brief Function for handling the Bond Manager events.
- *
- * @param[in]   p_evt   Data associated to the bond manager event.
- */
-/*static void bond_evt_handler(ble_bondmngr_evt_t * p_evt)
-{
-	g_LastConnectedCentral = p_evt->central_handle;
-}
-*/
-/**@brief Function for the Bond Manager initialization.
- */
-/*static void bond_manager_init(void)
-{
-    uint32_t            err_code;
-    ble_bondmngr_init_t bondmngrcfg;
-    //bool                bonds_delete;
-
-    // Initialize persistent storage module.
-    err_code = pstorage_init();
-    APP_ERROR_CHECK(err_code);
-
-    // Clear all bonded centrals if the Bonds Delete button is pushed
-    //err_code = app_button_is_pushed(BONDMNGR_DELETE_BUTTON_PIN_NO, &bonds_delete);
-    //APP_ERROR_CHECK(err_code);
-
-    // Initialize the Bond Manager
-    bondmngrcfg.flash_page_num_bond     = FLASH_PAGE_BOND;
-    bondmngrcfg.flash_page_num_sys_attr = FLASH_PAGE_SYS_ATTR;
-    bondmngrcfg.evt_handler             = bond_evt_handler;
-    bondmngrcfg.error_handler           = bond_manager_error_handler;
-    bondmngrcfg.bonds_delete            = false;//bonds_delete;
-
-    err_code = ble_bondmngr_init(&bondmngrcfg);
-    APP_ERROR_CHECK(err_code);
-}
-*/
 
