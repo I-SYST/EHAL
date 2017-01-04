@@ -44,7 +44,8 @@ typedef struct {
 	volatile int32_t PutIdx;	// Idx to start of empty data block
 	volatile int32_t GetIdx;	// Idx to start of used data block
 	int32_t MaxIdxCnt;			// Max block count
-	bool    bAutoDrop;          // True to push out when fifo is full (drop)
+	bool    bBlocking;          // False to push out when fifo is full (drop)
+	uint32_t DropCnt;           // Count dropped block
 	uint32_t BlkSize;			// Block size in bytes
 	uint32_t MemSize;			// Total fifo memory size allocated
 	uint8_t *pMemStart;			// Start of fifo data memory
@@ -66,10 +67,10 @@ extern "C" {
  * @params	pMemBlk :		Pointer to memory block to be used for fifo
  * 			TotalMemSize : 	Total memory size in byte
  * 			BlkSize : 		Block size in bytes
- *          bDrop   : Behavior when fifo is full.
- *                    true - Old data will be pushed out to make place
- *                           for new data
- *                    false - New data will not be pushed in
+ *          bBlocking  : Behavior when fifo is full.
+ *                    false - Old data will be pushed out to make place
+ *                            for new data
+ *                    true  - New data will not be pushed in
  * 	@return CFifo Handle
  */
 HCFIFO CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize, bool bDrop);
