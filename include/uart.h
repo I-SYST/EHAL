@@ -134,7 +134,7 @@ typedef struct {
 	bool bIntMode;				// Interrupt mode support
 	int IntPrio;				// Interrupt priority
 	UARTEVTCB EvtCallback;		// UART event callback
-	bool bAutoDrop;				// CFIFO operating mode, true : auto drop when full
+	bool bFifoBlocking;			// CFIFO operating mode, false : drop when full
 	int RxMemSize;				// Memory size in bytes for Rx CFIFO
 	uint8_t *pRxMem;			// Pointer to memory allocated for RX CFIFO
 	int TxMemSize;				// Memory size in bytes for Tx CFIFO
