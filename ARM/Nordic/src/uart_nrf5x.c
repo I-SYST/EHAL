@@ -362,20 +362,20 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
 	if (pCfg->pRxMem && pCfg->RxMemSize > 0)
 	{
-		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1, pCfg->bAutoDrop);
+		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1, pCfg->bFifoBlocking);
 	}
 	else
 	{
-		pDev->hRxFifo = CFifoInit(s_nRFUARTRxFifoMem, NRFUART_CFIFO_SIZE, 1, pCfg->bAutoDrop);
+		pDev->hRxFifo = CFifoInit(s_nRFUARTRxFifoMem, NRFUART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	if (pCfg->pTxMem && pCfg->TxMemSize > 0)
 	{
-		pDev->hTxFifo = CFifoInit(pCfg->pTxMem, pCfg->TxMemSize, 1, pCfg->bAutoDrop);
+		pDev->hTxFifo = CFifoInit(pCfg->pTxMem, pCfg->TxMemSize, 1, pCfg->bFifoBlocking);
 	}
 	else
 	{
-		pDev->hTxFifo = CFifoInit(s_nRFUARTTxFifoMem, NRFUART_CFIFO_SIZE, 1, pCfg->bAutoDrop);
+		pDev->hTxFifo = CFifoInit(s_nRFUARTTxFifoMem, NRFUART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIoMap;
