@@ -66,9 +66,9 @@ const UARTCFG g_UartCfg = {
 	1,					// Stop bit
 	UART_FLWCTRL_NONE,
 	true,
-	1, 					//  use APP_IRQ_PRIORITY_LOW with Softdevice
+	1, 					// use APP_IRQ_PRIORITY_LOW with Softdevice
 	nRFUartEvthandler,
-	false,				// No auto drop
+	true,				// fifo blocking mode
 	0,
 	NULL,
 	FIFOSIZE,
