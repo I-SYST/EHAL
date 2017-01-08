@@ -36,6 +36,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/base64.h</locationURI>
 		</link>
 		<link>
+			<name>include/ble_periph_app.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ble_periph_app.h</locationURI>
+		</link>
+		<link>
 			<name>include/blueio_blesrvc.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_blesrvc.h</locationURI>
@@ -199,6 +204,11 @@
 			<name>src/base64.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/base64.c</locationURI>
+		</link>
+		<link>
+			<name>src/ble_periph_app.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_periph_app.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/blueio_blesrvc.c</name>

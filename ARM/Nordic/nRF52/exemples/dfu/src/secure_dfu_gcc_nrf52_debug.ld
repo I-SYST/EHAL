@@ -13,7 +13,7 @@ MEMORY
    *  those values do not match. The check is performed in main.c, see
    *  APP_ERROR_CHECK_BOOL(*((uint32_t *)NRF_UICR_BOOT_START_ADDRESS) == BOOTLOADER_REGION_START);
    */
-  FLASH (rx) : ORIGIN = 0x75000, LENGTH = 0x9000
+  FLASH (rx) : ORIGIN = 0x77000, LENGTH = 0x7000
 
   /** RAM Region for bootloader. This setting is suitable when used with s132. */
   RAM (rwx) :  ORIGIN = 0x20002C00, LENGTH = 0x5380
