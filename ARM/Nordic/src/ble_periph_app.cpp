@@ -59,6 +59,7 @@ Modified by          Date              Description
 #include "istddef.h"
 #include "uart.h"
 #include "custom_board.h"
+#include "iopincfg.h"
 #include "iopinctrl.h"
 #include "ble_periph_app.h"
 
@@ -102,12 +103,26 @@ Modified by          Date              Description
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
 BLEAPP_DATA g_BleAppData = {
-	false, BLE_CONN_HANDLE_INVALID,
+	false, BLE_CONN_HANDLE_INVALID, -1, -1
 };
 
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
 
 std::atomic<bool> g_bFdsInitialized(false);
+
+static inline void BleConnLedOff() {
+	if (g_BleAppData.ConnLedPort < 0 || g_BleAppData.ConnLedPin < 0)
+		return;
+
+	IOPinSet(g_BleAppData.ConnLedPort, g_BleAppData.ConnLedPin);
+}
+
+static inline void BleConnLedOn() {
+	if (g_BleAppData.ConnLedPort < 0 || g_BleAppData.ConnLedPin < 0)
+		return;
+
+	IOPinClear(g_BleAppData.ConnLedPort, g_BleAppData.ConnLedPin);
+}
 
 // Simple event handler to handle errors during initialization.
 static void fds_evt_handler(fds_evt_t const * const p_fds_evt)
@@ -711,6 +726,13 @@ void BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 {
     uint32_t err_code;
     nrf_clock_lf_cfg_t clock_lf_cfg = NRF_CLOCK_LFCLKSRC;
+
+
+    if (pBleAppCfg->ConnLedPort != -1 && pBleAppCfg->ConnLedPin != -1)
+    {
+    	IOPinConfig(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin, 0,
+    				IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
+    }
 
     switch (pBleAppCfg->AppMode)
     {

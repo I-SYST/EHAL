@@ -57,22 +57,6 @@ typedef struct __BlueIOBLEService BLUEIOSRVC;
 
 typedef void (*BLUEIOSRVC_WRCB) (BLUEIOSRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
 
-/*
- * Blue IO Service private data to be passed when calling service related functions.
- * The data is filled by BlueIOBleSrvcInit function.
- * Pointer to this structure is often referred as Service Handle
- *
- */
-struct __BlueIOBLEService {
-    uint16_t                    SvcHdl;					// Service handle
-    ble_gatts_char_handles_t    WrCharHdl;				// Write char handle
-    ble_gatts_char_handles_t    RdCharHdl;    			// Read char handle
-    uint16_t                    ConnHdl;				// Connection handle
-    bool                        bNotify;				// Notify flag
-    BLUEIOSRVC_WRCB				WrCB;					// char write callback
-    uint8_t                     UuidType;
-};
-
 // Service connection security types
 typedef enum {
 	BLUEIOSRVC_SECTYPE_NONE,				// open, no security
@@ -83,6 +67,7 @@ typedef enum {
 	BLUEIOSRVC_SECTYPE_SIGNED_MITM,			// AES signed encryption with MITM
 } BLUEIOSRVC_SECTYPE;
 
+#pragma pack(push,4)
 /*
  * User configuration for the service to be created
  */
@@ -100,6 +85,23 @@ typedef struct {
 	const char *	pWrCharDesc;			// Wr char UTF-8 description string
 	BLUEIOSRVC_WRCB	WrCB;					// Wr char callback
 } BLUEIOSRVC_CFG;
+
+/*
+ * Blue IO Service private data to be passed when calling service related functions.
+ * The data is filled by BlueIOBleSrvcInit function.
+ * Pointer to this structure is often referred as Service Handle
+ *
+ */
+struct __BlueIOBLEService {
+    uint16_t                    SvcHdl;					// Service handle
+    ble_gatts_char_handles_t    WrCharHdl;				// Write char handle
+    ble_gatts_char_handles_t    RdCharHdl;    			// Read char handle
+    uint16_t                    ConnHdl;				// Connection handle
+    bool                        bNotify;				// Notify flag
+    BLUEIOSRVC_WRCB				WrCB;					// char write callback
+    uint8_t                     UuidType;
+};
+#pragma pack(pop)
 
 #ifdef __cplusplus
 extern "C" {

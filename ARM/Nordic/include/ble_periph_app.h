@@ -58,9 +58,11 @@ typedef enum {
 #define BLEAPP_SECEXCHG_OOB			(1<<2)
 
 #define BLEAPP_DEVNAME_MAX_SIZE			8
-#define BLEAPP_NAME_MAX_SIZE			16
+#define BLEAPP_NAME_MAX_SIZE			20
 
 typedef void (*PRIVINITCB)();
+
+#pragma pack(push, 4)
 
 typedef struct _BleAppConfig {
 	BLEAPP_MODE AppMode;
@@ -76,24 +78,22 @@ typedef struct _BleAppConfig {
 	int NbAdvUuid;				// Total number of uuids
 	uint32_t AdvInterval;		// In msec
 	uint32_t AdvTimeout;		// In sec
+	int ConnLedPort;
+	int ConnLedPin;
 } BLEAPP_CFG;
 
 typedef struct _BleAppData {
 	bool bAppSched;
 	uint16_t ConnHdl;	// BLE connection handle
+	int ConnLedPort;
+	int ConnLedPin;
 } BLEAPP_DATA;
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-static inline void BleConnLedOff() {
-	IOPinSet(BLUEIO_CONNECT_LED_PORT, BLUEIO_CONNECT_LED_PIN);
-}
-
-static inline void BleConnLedOn() {
-	IOPinClear(BLUEIO_CONNECT_LED_PORT, BLUEIO_CONNECT_LED_PIN);
-}
 
 // ***
 // Require user implementations
