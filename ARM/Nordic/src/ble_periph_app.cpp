@@ -139,6 +139,7 @@ static void fds_evt_handler(fds_evt_t const * const p_fds_evt)
 		case FDS_EVT_WRITE:
 			if (p_fds_evt->result == FDS_SUCCESS)
 			{
+				//printf("\r\nWrite\r\n");
 			}
 			break;
         default:
@@ -146,7 +147,7 @@ static void fds_evt_handler(fds_evt_t const * const p_fds_evt)
     }
 }
 
-void flash_callback(fs_evt_t const * const evt, fs_ret_t result)
+void BlePeriphAppDfuCallback(fs_evt_t const * const evt, fs_ret_t result)
 {
     if (result == FS_SUCCESS)
     {
@@ -158,11 +159,15 @@ void flash_callback(fs_evt_t const * const evt, fs_ret_t result)
 
 void BlePeriphAppEnterDfu()
 {
+    uint32_t err_code = nrf_dfu_flash_init(true);
+
+    nrf_dfu_settings_init();
+
     s_dfu_settings.enter_buttonless_dfu = true;
 
-    uint32_t res = nrf_dfu_settings_write(flash_callback);
+    err_code = nrf_dfu_settings_write(BlePeriphAppDfuCallback);
 
-    if (res != NRF_SUCCESS)
+    if (err_code != NRF_SUCCESS)
     {
     }
 }
@@ -797,7 +802,8 @@ void BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
 	BlePeriphAppInitUserStorage();
 
-	BlePeriphAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
+
+    BlePeriphAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
 
 	gap_params_init(pBleAppCfg);
 
@@ -826,9 +832,7 @@ void BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     conn_params_init();
 
-    err_code = nrf_dfu_flash_init(true);
 
-    nrf_dfu_settings_init();
 
 }
 
