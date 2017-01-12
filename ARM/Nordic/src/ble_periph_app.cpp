@@ -108,8 +108,6 @@ BLEAPP_DATA g_BleAppData = {
 
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
 
-std::atomic<bool> g_bFdsInitialized(false);
-
 static inline void BleConnLedOff() {
 	if (g_BleAppData.ConnLedPort < 0 || g_BleAppData.ConnLedPin < 0)
 		return;
@@ -124,35 +122,10 @@ static inline void BleConnLedOn() {
 	IOPinClear(g_BleAppData.ConnLedPort, g_BleAppData.ConnLedPin);
 }
 
-// Simple event handler to handle errors during initialization.
-static void fds_evt_handler(fds_evt_t const * const p_fds_evt)
-{
-    switch (p_fds_evt->id)
-    {
-        case FDS_EVT_INIT:
-            if (p_fds_evt->result == FDS_SUCCESS)
-            {
-                // Initialization failed.
-            	g_bFdsInitialized = true;
-            }
-            break;
-		case FDS_EVT_WRITE:
-			if (p_fds_evt->result == FDS_SUCCESS)
-			{
-				//printf("\r\nWrite\r\n");
-			}
-			break;
-        default:
-            break;
-    }
-}
-
 void BlePeriphAppDfuCallback(fs_evt_t const * const evt, fs_ret_t result)
 {
     if (result == FS_SUCCESS)
     {
-       // (void)sd_ble_gap_disconnect(p_m_dfu->conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-
         NVIC_SystemReset();
     }
 }
@@ -782,26 +755,6 @@ void BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
     APP_ERROR_CHECK(err_code);
-
-	ret_code_t ret = fds_register(fds_evt_handler);
-	if (ret != FDS_SUCCESS)
-	{
-		// Registering of the event handler has failed.
-	}
-	ret = fds_init();
-	if (ret != FDS_SUCCESS)
-	{
-		// Handle error.
-	}
-
-	// Wait until FDS is initialized
-	while (g_bFdsInitialized == false)
-	{
-		app_sched_execute();
-	}
-
-	BlePeriphAppInitUserStorage();
-
 
     BlePeriphAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
 

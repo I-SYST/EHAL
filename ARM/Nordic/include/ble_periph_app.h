@@ -98,7 +98,6 @@ extern "C" {
 // ***
 // Require user implementations
 //
-void BlePeriphAppInitUserStorage();
 void BlePeriphAppInitServices();
 void BlePeriphAppEvtDispatch(ble_evt_t * p_ble_evt);
 
