@@ -37,56 +37,148 @@ Modified by          Date              Description
 #include <stdbool.h>
 
 #include "serialintrf.h"
-
-#define SEEP_NB_IOPIN	2
+#include "iopincfg.h"
 
 #pragma pack(push,4)
 
+/**
+ * @brief SEEP callback function
+ * 		  This is a general callback function hook for special purpose
+ * 		  defined in SEEP_CFG
+ *
+ * @param DevAddr : Device address
+ * 		  pInterf : Pointer to physical interface connected to the device
+ */
+typedef bool (*SEEPCB)(int DevAddr, SERINTRFDEV *pInterf);
+
+typedef struct _Seep_Config {
+    uint8_t DevAddr;	// Device address
+    uint8_t AddrLen;	// Serial EEPROM memory address length in bytes
+    uint16_t PageSize;	// Wrap around page size in bytes
+    uint32_t Size;      // Total EEPROM size in bytes
+    IOPINCFG WrProtPin; // if Write protect pin is not used, set {-1, -1, }
+                        // This pin is assumed active high,
+                        // ie. Set to 1 to enable Write Protect
+	SEEPCB pInitCB;	    // For custom initialization. Set to NULL if not used
+	SEEPCB pWaitCB;	    // If provided, this is called when there are long delays
+					    // for a device to complete its write cycle
+   					    // This is to allow application to perform other tasks
+   					    // while waiting. Set to NULL is not used
+} SEEP_CFG;
+
 typedef struct {
-	int DevAddr;
-	int AddrLen;
-	int PageSize;
-	SERINTRFDEV	*pSerIntrf;
+	uint8_t DevAddr;    // Device address
+	uint8_t AddrLen;    // Serial EEPROM memory address length in bytes
+	uint16_t PageSize;	// Wrap around page size
+	uint32_t Size;      // Total EEPROM size in bytes
+	IOPINCFG WrProtPin; // Write protect I/O pin
+	SERINTRFDEV	*pInterf;
+	SEEPCB pWaitCB;	    // If provided, this is called when there are long delays
+					    // for a device to complete its write cycle
+   					    // This is to allow application to perform other tasks
+   					    // while waiting. Set to NULL is not used
 } SEEPDEV;
 
 #pragma pack(pop)
 
 #ifdef __cplusplus
-
-#include <memory>
-
-class Seep {
-public:
-	Seep();
-	virtual ~Seep();
-	Seep(Seep&); 	// copy ctor not allowed
-
-	virtual bool Init(int DevAddr, int PageSize, int AddrLen, SerialIntrf *pInterf);
-	virtual void Set(int DevAddr, int PageSize, int AddrLen) {
-		vDevAddr = DevAddr;
-		vPageSize = PageSize;
-		vAddrLen = AddrLen;
-	}
-	virtual int Read(int Addr, uint8_t *pData, int Len);
-	virtual int Write(int Addr, uint8_t *pData, int Len);
-
-protected:
-	//std::shared_ptr<SerialIntrf> vpInterf;
-	int vDevAddr;		// SEEP I2C address
-	int vPageSize;
-	int vAddrLen;
-	SerialIntrf *vpInterf;
-};
-
 extern "C" {
 #endif
-// C prototypes
-bool SeepInit(SEEPDEV *pDev, int DevAddr, int PageSize, int AddrLen, SERINTRFDEV *pIntrf);
-int SeepRead(SEEPDEV *pDev, int Addr, uint8_t *pData, int len);
-int SeepWrite(SEEPDEV *pDev, int Addr, uint8_t *pData, int len);
+
+/**
+ * @brief Initialize Serial EEPROM driver
+ *
+ * @param   pDev     : Pointer to driver data to be initialized
+ *          pCfgData : Pointer to serial EEPROM configuration data
+ *          pInterf  : Pointer to the interface device on which the SEEPROM
+ *                     is connected to
+ *
+ * @return  true - initialization successful
+ */
+bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf);
+
+/**
+ * @brief Get EEPROM size
+ *
+ * @param   pDev     : Pointer to driver data
+ *
+ * @return  Total size in bytes
+ */
+static inline uint32_t SeepGetSize(SEEPDEV *pDev) {
+    return pDev ? pDev->Size : 0;
+}
+
+/**
+ * @brief Get EEPROM page size
+ *
+ * @param   pDev     : Pointer to driver data
+ *
+ * @return  Page size in bytes
+ */
+static inline uint16_t SeepGetPageSize(SEEPDEV *pDev) {
+    return pDev? pDev->PageSize : 0;
+}
+
+/**
+ * @brief Read Serial EEPROM data
+ *
+ * @param   pDev     : Pointer to driver data
+ *          Address  : Memory address to read
+ *          pBuff    : Pointer to buffer to receive data
+ *          Len      : Size of the buffer in bytes
+ *
+ * @return  Number of bytes read
+ */
+int SeepRead(SEEPDEV *pDev, int Addr, uint8_t *pBuff, int Len);
+
+/**
+ * @brief Write to data to Serial EEPROM
+ *
+ * @param   pDev     : Pointer to driver data
+ *          Address  : Memory address to write
+ *          pData    : Pointer to data to write
+ *          Len      : Number of bytes to write
+ *
+ * @return  Number of bytes written
+ */
+int SeepWrite(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len);
+
+/**
+ * @brief Set the write protect pin
+ *
+ * @param   pDev     : Pointer to driver data
+ *          bVal     : true - Enable write protect
+ *                     false - Disable write protect
+ */
+void SeepSetWriteProt(SEEPDEV *pDev, bool bVal);
 
 #ifdef __cplusplus
 }
+
+class Seep {
+public:
+    Seep();
+    virtual ~Seep();
+    Seep(Seep&);    // copy ctor not allowed
+
+    virtual bool Init(SEEP_CFG &Cfg, SerialIntrf *pInterf);
+
+/*    virtual void Set(int DevAddr, int PageSize, int AddrLen) {
+        vDevData.DevAddr = DevAddr;
+        vDevData.PageSize = PageSize;
+        vDevData.AddrLen = AddrLen;
+    }*/
+    virtual int Read(int Addr, uint8_t *pBuff, int Len) { return SeepRead(&vDevData, Addr, pBuff, Len); }
+    virtual int Write(int Addr, uint8_t *pData, int Len) { return SeepWrite(&vDevData, Addr, pData, Len); }
+
+    uint32_t GetSize() { return vDevData.Size; }
+    uint16_t GetPageSize() { return vDevData.PageSize; }
+    operator SEEPDEV* () { return &vDevData; }
+
+protected:
+    SEEPDEV vDevData;
+};
+
 #endif
 
 #endif	// __SEEP_H__

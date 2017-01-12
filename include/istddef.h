@@ -61,19 +61,31 @@ typedef bool	Bool;
 #endif
 
 #pragma pack(push, 1)
+
+#define ISYST_BLUETOOTH_ID			0x0177	// I-SYST Bluetooth company identifier
+
 typedef struct {
-	char Name[16];			// Application signature
 	union {					// Verison number
 		uint16_t	Vers;
 		struct {
-			uint32_t	Minor:8;
-			uint32_t	Major:8;
+			unsigned Minor:8;
+			unsigned Major:8;
 		};
-		uint16_t	SubVers;	// User specific subversion
 	};
+	uint16_t SubVers;
 	uint32_t Build;			// Build number
-	uint8_t Private[16];	// 16 bytes private data
 } VERS;
+#pragma pack(pop)
+
+#define APPINFO_NAMESIZE_MAX		16
+#define APPINFO_PRIVATESIZE_MAX		16
+
+#pragma pack(push, 4)
+typedef struct {
+	char Name[APPINFO_NAMESIZE_MAX];			// Application signature
+	VERS Vers;
+	uint8_t Private[APPINFO_PRIVATESIZE_MAX];	// APPINFO_PRIVATESIZE_MAX bytes private data
+} APP_INFO;
 #pragma pack(pop)
 
 #ifdef __cplusplus
@@ -89,9 +101,6 @@ static inline int min(int x, int y) { return x > y ? y : x; }
 #ifndef max
 static inline int max(int x, int y) { return x > y ? x : y; }
 #endif
-
-//uint32_t DisableInterrupt();
-//void EnableInterrupt(uint32_t State);
 
 #ifdef __cplusplus
 }

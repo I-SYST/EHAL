@@ -4,6 +4,10 @@ File   : diskio_flash.h
 Author : Hoang Nguyen Hoan          Aug. 30, 2016
 
 Desc   : Generic flash disk I/O driver class
+         NOTE : Most Flash devices work in MSB bit order
+                This implementation only support MSB.
+                Make sure that the Flash is configure
+                for MSB mode
 
 Copyright (c) 2016, Motsai, all rights reserved
 
@@ -36,26 +40,81 @@ Modified by          Date              Description
 
 #include <stdint.h>
 #include "diskio.h"
+#include "serialintrf.h"
 
+#define FLASH_CMD_READID			0x9F
+#define FLASH_CMD_WRITE             0x2
+#define FLASH_CMD_READ              0x3
+#define FLASH_CMD_WRDISABLE         0x4
+#define FLASH_CMD_READSTATUS        0x5
+#define FLASH_CMD_WRENABLE          0x6
+#define FLASH_CMD_BLOCK_ERASE       0xD8
+#define FLASH_CMD_BULK_ERASE        0xC7
 
+#define FLASH_STATUS_WIP            (1<<0)  // Write In Progress
+
+/**
+ * @brief FlashDiskIO callback function
+ *        This a general callback function hook for special purpose
+ *        defined in the FLASHDISKIO_CFG
+ *
+ * @param   DevNo : Device number or address used by the interface
+ * @param   pInterf : Interface used to access the flash (SPI, I2C or whatever
+ * @return  true - Success
+ *          false - Failed.
+ */
+typedef bool (*FLASHDISKIOCB)(int DevNo, SerialIntrf *pInterf);
+
+typedef struct {
+    int         DevNo;          // Device number or address for interface use
+    uint64_t    TotalSize;      // Total Flash size in bytes
+    uint32_t    EraseSize;      // Min erasable block size in byte
+    uint32_t    WriteSize;      // Writable page size in bytes
+    int         AddrSize;       // Address size in bytes
+    FLASHDISKIOCB pInitCB; 		// For custom initialization. Set to NULL if not used
+    FLASHDISKIOCB pWaitCB;		// If provided, this is called when there are
+    							// long delays, such as mass erase, to allow application
+    							// to perform other tasks while waiting
+} FLASHDISKIO_CFG;
+
+/*
+ * NOTE : Most Flash devices work in MSB bit order. This implementation
+ *        only supports MSB mode. Make sure that the Flash is configured
+ *        for MSB mode.
+ *
+ */
 class FlashDiskIO : public DiskIO {
 public:
-	FlashDiskIO() : DiskIO() {}
+	FlashDiskIO();
 	virtual ~FlashDiskIO() {}
 
-	/**
+	bool Init(FLASHDISKIO_CFG &Cfg, SerialIntrf *pInterf,
+	          DISKIO_CACHE_DESC *pCacheBlk = NULL, int NbChaceBlk = 0);
+
+    /**
+     *
+     * @return total disk size in BYTE
+     */
+    virtual uint64_t GetSize(void) { return vTotalSize; }
+
+    /**
 	 * Device specific minimum erase size in bytes
 	 *
 	 * @return
 	 */
-	virtual uint32_t GetMinEraseSize() = 0;
+	virtual uint32_t GetMinEraseSize() { return vEraseSize; }
 
 	/**
 	 * Device specific minimum write size in bytes
 	 *
 	 * @return
 	 */
-	virtual uint32_t GetMinWriteSize() { return 0;}
+	virtual uint32_t GetMinWriteSize() { return vWriteSize; }
+
+	/**
+	 * Mass erase
+	 */
+	virtual void Erase();
 
 	/**
 	 * Erase Flash block.
@@ -63,8 +122,34 @@ public:
 	 * @param	BlkNo	: Starting block number to erase.
 	 * 			NbBlk	: Number of consecutive blocks to erase
 	 */
-	virtual void EraseBlock(uint32_t BlkNo, int NbBlk) = 0;
-	virtual bool EraseUptoAddress(uint64_t addr) { return false; }
+	virtual void EraseBlock(uint32_t BlkNo, int NbBlk);
+
+	/**
+     * Read one sector from physical device
+     */
+    virtual bool SectRead(uint32_t SectNo, uint8_t *pData);
+
+    /**
+     * Write one sector to physical device
+     */
+    virtual bool SectWrite(uint32_t SectNo, uint8_t *pData);
+
+    uint32_t ReadId();
+    uint8_t ReadStatus();
+
+protected:
+    void WriteDisable();
+    bool WriteEnable(uint32_t Timeout = 100000);
+    bool WaitReady(uint32_t Timeout = 100000, uint32_t usRtyDelay = 0);
+
+private:
+    uint32_t    vEraseSize;    // Min erasable block size in byte
+    uint32_t    vWriteSize;    // Min writable size in bytes
+    uint64_t    vTotalSize;    // Total Flash size in bytes
+    int         vAddrSize;     // Address size in bytes
+    int         vDevNo;
+   SerialIntrf *vpInterf;
+   FLASHDISKIOCB vpWaitCB;
 };
 
 #ifdef __cplusplus

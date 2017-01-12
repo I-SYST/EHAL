@@ -36,7 +36,16 @@ Modified by          Date              Description
 #include <stdint.h>
 #include <stdarg.h>
 
-#include "nrf_gpio.h"
+#ifdef NRF51
+#include "nrf51.h"
+#include "nrf51_bitfields.h"
+#else
+#include "nrf52.h"
+#include "nrf52_bitfields.h"
+#define NRF_GPIO			NRF_P0
+#define UART0_IRQn			UARTE0_UART0_IRQn
+#define UART0_IRQHandler	UARTE0_UART0_IRQHandler
+#endif
 
 #include "istddef.h"
 #include "uart_nrf5x.h"
@@ -306,38 +315,39 @@ int nRFUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 
 int nRFUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
 {
-	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
-	int cnt = 0;
+    NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
+    int cnt = 0;
 
-	uint32_t state = DisableInterrupt();
-	while (Datalen > 0)
-	{
-		int l = Datalen;
-		uint8_t *p = CFifoPutMultiple(dev->pUartDev->hTxFifo, &l);
-		if (p == NULL)
-			break;
-		memcpy(p, pData, l);
-		Datalen -= l;
-		pData += l;
-		cnt += l;
-	}
-	EnableInterrupt(state);
+    uint32_t state = DisableInterrupt();
 
-	if (dev->bTxReady)
-	{
-		//if (nRFUARTWaitForTxReady(dev, 1000))
-		{
-			dev->pReg->EVENTS_TXDRDY = 0;
-			dev->bTxReady = true;
-			uint8_t *p = CFifoGet(dev->pUartDev->hTxFifo);
-			if (p)
-			{
-				dev->bTxReady = false;
-				dev->pReg->TXD = *p;
-			}
-		}
-	}
-	return cnt;
+    while (Datalen > 0)
+    {
+        int l = Datalen;
+        uint8_t *p = CFifoPutMultiple(dev->pUartDev->hTxFifo, &l);
+        if (p == NULL)
+            break;
+        memcpy(p, pData, l);
+        Datalen -= l;
+        pData += l;
+        cnt += l;
+    }
+    EnableInterrupt(state);
+
+    if (dev->bTxReady)
+    {
+        //if (nRFUARTWaitForTxReady(dev, 1000))
+        {
+            dev->pReg->EVENTS_TXDRDY = 0;
+            dev->bTxReady = true;
+            uint8_t *p = CFifoGet(dev->pUartDev->hTxFifo);
+            if (p)
+            {
+                dev->bTxReady = false;
+                dev->pReg->TXD = *p;
+            }
+        }
+    }
+    return cnt;
 }
 
 bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
@@ -352,20 +362,20 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
 	if (pCfg->pRxMem && pCfg->RxMemSize > 0)
 	{
-		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1);
+		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1, pCfg->bFifoBlocking);
 	}
 	else
 	{
-		pDev->hRxFifo = CFifoInit(s_nRFUARTRxFifoMem, NRFUART_CFIFO_SIZE, 1);
+		pDev->hRxFifo = CFifoInit(s_nRFUARTRxFifoMem, NRFUART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	if (pCfg->pTxMem && pCfg->TxMemSize > 0)
 	{
-		pDev->hTxFifo = CFifoInit(pCfg->pTxMem, pCfg->TxMemSize, 1);
+		pDev->hTxFifo = CFifoInit(pCfg->pTxMem, pCfg->TxMemSize, 1, pCfg->bFifoBlocking);
 	}
 	else
 	{
-		pDev->hTxFifo = CFifoInit(s_nRFUARTTxFifoMem, NRFUART_CFIFO_SIZE, 1);
+		pDev->hTxFifo = CFifoInit(s_nRFUARTTxFifoMem, NRFUART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIoMap;
@@ -508,7 +518,7 @@ void nRFUARTEnable(SERINTRFDEV *pDev)
 
 void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState)
 {
-	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->SerIntrf.pDevData;
+//	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->SerIntrf.pDevData;
 
 }
 

@@ -37,12 +37,14 @@ Modified by          Date              Description
 #include "atomic.h"
 #include "cfifo.h"
 
-HCFIFO CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize)
+HCFIFO CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize, bool bBlocking)
 {
 	if (pMemBlk == NULL)
 		return NULL;
 
 	CFIFOHDR *hdr = (CFIFOHDR *)pMemBlk;
+	hdr->bBlocking = bBlocking;
+	hdr->DropCnt = 0;
 	hdr->PutIdx = 0;
 	hdr->GetIdx = -1;
 	hdr->BlkSize = BlkSize;
@@ -116,9 +118,20 @@ uint8_t *CFifoGetMultiple(HCFIFO pFifo, int *pCnt)
 
 uint8_t *CFifoPut(HCFIFO pFifo)
 {
-	if (pFifo == NULL || pFifo->PutIdx == pFifo->GetIdx)
+	if (pFifo == NULL)
 		return NULL;
 
+    if (pFifo->PutIdx == pFifo->GetIdx)
+    {
+        if (pFifo->bBlocking == true)
+            return NULL;
+        // drop data
+        int32_t gidx = pFifo->GetIdx + 1;
+        if (gidx >= pFifo->MaxIdxCnt)
+            gidx = 0;
+        AtomicAssign((sig_atomic_t *)&pFifo->GetIdx, gidx);
+        pFifo->DropCnt++;
+    }
 	int32_t idx = pFifo->PutIdx;
 	int32_t putidx = idx + 1;
 	if (putidx >= pFifo->MaxIdxCnt)
@@ -137,12 +150,21 @@ uint8_t *CFifoPutMultiple(HCFIFO pFifo, int *pCnt)
 	if (pCnt == NULL)
 		return CFifoPut(pFifo);
 
-	if (pFifo == NULL || pFifo->PutIdx == pFifo->GetIdx || *pCnt == 0)
+	if (pFifo == NULL || *pCnt == 0)
 	{
 		*pCnt = 0;
 		return NULL;
 	}
 
+	if (pFifo->PutIdx == pFifo->GetIdx)
+    {
+	    if (pFifo->bBlocking == true)
+	        return NULL;
+	    // Drop
+	    int l = *pCnt;
+	    CFifoGetMultiple(pFifo, &l);
+        pFifo->DropCnt += l;
+    }
 	int32_t cnt = *pCnt;
 	int32_t idx = pFifo->PutIdx;
 	int32_t getidx = pFifo->GetIdx;
@@ -263,8 +285,17 @@ int CFifoRead(HCFIFO pFifo, uint8_t *pBuff, int BuffLen)
 
 int CFifoWrite(HCFIFO pFifo, uint8_t *pData, int DataLen)
 {
-	if (pFifo == NULL || pFifo->PutIdx == pFifo->GetIdx || pData == NULL)
+	if (pFifo == NULL || pData == NULL)
 		return 0;
+
+    if (pFifo->PutIdx == pFifo->GetIdx)
+    {
+        if (pFifo->bBlocking == true)
+            return 0;
+        int l = DataLen;
+        CFifoGetMultiple(pFifo, &l);
+        pFifo->DropCnt += l;
+    }
 
 	int cnt = 0;
 

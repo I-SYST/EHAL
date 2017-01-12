@@ -68,6 +68,20 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.753429622" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="NRF52_PAN_12"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_15"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_58"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_55"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_54"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_31"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_30"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_51"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_36"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_53"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_20"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
 									<listOptionValue builtIn="false" value="NRF52832"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
@@ -171,6 +185,20 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1324450349" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="NRF52_PAN_12"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_15"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_58"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_55"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_54"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_31"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_30"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_51"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_36"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_53"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_20"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
 									<listOptionValue builtIn="false" value="NRF52832"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
@@ -276,6 +304,20 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1844761946" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="NRF52_PAN_12"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_15"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_58"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_55"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_54"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_31"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_30"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_51"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_36"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_53"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_20"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
 									<listOptionValue builtIn="false" value="NRF52832"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
@@ -381,6 +423,20 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.575847302" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="NRF52_PAN_12"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_15"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_58"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_55"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_54"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_31"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_30"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_51"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_36"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_53"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_20"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
 									<listOptionValue builtIn="false" value="NRF52832"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
@@ -432,4 +488,5 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

@@ -63,11 +63,10 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.1866775001" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/device&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1879341101" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="__CORTEX_M0"/>
 									<listOptionValue builtIn="false" value="NRF51"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.506453524" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
@@ -164,11 +163,10 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.117635181" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/device&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.2036164363" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="__CORTEX_M0"/>
 									<listOptionValue builtIn="false" value="NRF51"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.1754857891" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
@@ -272,9 +270,9 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/RTOS/RTX/SRC&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/RTOS/RTX/INC&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/external/rtx/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/external/rtx/include&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.581969815" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__CORTEX_M0"/>
@@ -381,9 +379,9 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/RTOS/RTX/SRC&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/RTOS/RTX/INC&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/external/rtx/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/external/rtx/include&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1395029626" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__CORTEX_M0"/>
@@ -438,4 +436,5 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

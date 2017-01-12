@@ -36,14 +36,19 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/base64.h</locationURI>
 		</link>
 		<link>
+			<name>include/ble_periph_app.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ble_periph_app.h</locationURI>
+		</link>
+		<link>
+			<name>include/blueio_blesrvc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_blesrvc.h</locationURI>
+		</link>
+		<link>
 			<name>include/blueio_board.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_board.h</locationURI>
-		</link>
-		<link>
-			<name>include/blueio_svc.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_svc.h</locationURI>
 		</link>
 		<link>
 			<name>include/cfifo.h</name>
@@ -61,6 +66,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/crc.h</locationURI>
 		</link>
 		<link>
+			<name>include/custom_board.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/custom_board.h</locationURI>
+		</link>
+		<link>
 			<name>include/dirent.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/dirent.h</locationURI>
@@ -69,6 +79,11 @@
 			<name>include/diskio.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/diskio.h</locationURI>
+		</link>
+		<link>
+			<name>include/diskio_flash.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/diskio_flash.h</locationURI>
 		</link>
 		<link>
 			<name>include/fatfs.h</name>
@@ -94,11 +109,6 @@
 			<name>include/iopincfg.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/iopincfg.h</locationURI>
-		</link>
-		<link>
-			<name>include/iopinctrl.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/iopinctrl.h</locationURI>
 		</link>
 		<link>
 			<name>include/istddef.h</name>
@@ -146,6 +156,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/sha256.h</locationURI>
 		</link>
 		<link>
+			<name>include/spi.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/spi.h</locationURI>
+		</link>
+		<link>
 			<name>include/stddev.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/stddev.h</locationURI>
@@ -191,9 +206,14 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/base64.c</locationURI>
 		</link>
 		<link>
-			<name>src/blueio_svc.c</name>
+			<name>src/ble_periph_app.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/blueio_svc.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_periph_app.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/blueio_blesrvc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/blueio_blesrvc.c</locationURI>
 		</link>
 		<link>
 			<name>src/cfifo.c</name>
@@ -204,6 +224,11 @@
 			<name>src/crc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/crc.c</locationURI>
+		</link>
+		<link>
+			<name>src/diskio_flash.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_flash.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/diskio_impl.cpp</name>
@@ -231,6 +256,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/ledmxfont.c</locationURI>
 		</link>
 		<link>
+			<name>src/ledmxio_nrf5x.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ledmxio_nrf5x.c</locationURI>
+		</link>
+		<link>
 			<name>src/nrf_uart_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_uart_impl.cpp</locationURI>
@@ -249,11 +279,6 @@
 			<name>src/sdcard_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sdcard_impl.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/seep.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/seep.c</locationURI>
 		</link>
 		<link>
 			<name>src/seep_impl.cpp</name>
@@ -294,6 +319,11 @@
 			<name>src/uart_nrf5x.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrf5x.c</locationURI>
+		</link>
+		<link>
+			<name>src/uart_retarget.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/uart_retarget.c</locationURI>
 		</link>
 		<link>
 			<name>src/utf8.c</name>

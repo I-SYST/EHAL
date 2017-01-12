@@ -74,6 +74,12 @@ typedef enum _SPI_Data_Bit_Order {
 	SPIDATABIT_LSB				// Least significant bit first
 } SPIDATABIT;
 
+typedef enum _SPI_Chip_Select {
+	SPICSEL_AUTO,	// Select control by hardware
+	SPICSEL_MAN,		// Select control by software
+	SPICSEL_EXT,		// Select control externally by application
+} SPICSEL;
+
 #define SPI_MAX_RETRY			5
 #define SPI_MAX_NB_IOPIN		4
 #define SPI_SCK_IOPIN_IDX		0
@@ -86,7 +92,7 @@ typedef enum _SPI_Data_Bit_Order {
 
 // Configuration data used to initialize device
 typedef struct _SPI_Config {
-	int DevNo;				// SPI interface number
+	int DevNo;				// SPI interface number identify by chip select (CS0, CS1,..,CSn)
 	SPIMODE Mode;			// Master/Slave mode
 	const IOPINCFG *pIOPinMap;	// Define I/O pins used by SPI
 	int NbIOPins;			// Total number of I/O pins
@@ -96,6 +102,7 @@ typedef struct _SPI_Config {
 	SPIDATABIT BitOrder;	// Data bit ordering
 	SPIDATAPHASE DataPhase;	// Data Out Phase.
 	SPICLKPOL ClkPol;		// Clock Out Polarity.
+	SPICSEL ChipSel;		// Chip select mode
 	int IntPrio;			// Interrupt priority
 	SERINTRFEVCB EvtCB;		// Event callback
 } SPICFG;
@@ -147,6 +154,7 @@ public:
 
 	bool Init(const SPICFG &CfgData) { return SPIInit(&vDevData, &CfgData); }
 
+	operator SERINTRFDEV* () { return &vDevData.SerIntrf; }
 	operator SPIDEV& () { return vDevData; };	// Get config data
 	int Rate(int RateHz) { return vDevData.SerIntrf.SetRate(&vDevData.SerIntrf, RateHz); }
 	int Rate(void) { return vDevData.SerIntrf.GetRate(&vDevData.SerIntrf); }	// Get rate in Hz

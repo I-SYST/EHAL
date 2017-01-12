@@ -123,7 +123,7 @@
 		<link>
 			<name>src/nrf51_sdk/ble/ble_advertising/ble_advertising.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_advertising/ble_advertising.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/ble_advertising/ble_advertising.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/ble_services/ble_bas</name>
@@ -138,132 +138,132 @@
 		<link>
 			<name>src/nrf51_sdk/ble/common/ble_advdata.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_advdata.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/common/ble_advdata.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/common/ble_conn_params.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_conn_params.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/common/ble_conn_params.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/common/ble_conn_state.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_conn_state.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/common/ble_conn_state.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/common/ble_srv_common.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_srv_common.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/common/ble_srv_common.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/peer_manager/gatt_cache_manager.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/gatt_cache_manager.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/peer_manager/gatt_cache_manager.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/peer_manager/gatts_cache_manager.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/gatts_cache_manager.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/peer_manager/gatts_cache_manager.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/peer_manager/id_manager.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/id_manager.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/peer_manager/id_manager.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/peer_manager/peer_data.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_data.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/peer_manager/peer_data.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/peer_manager/peer_data_storage.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_data_storage.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/peer_manager/peer_data_storage.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/peer_manager/peer_id.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_id.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/peer_manager/peer_id.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/peer_manager/peer_manager.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_manager.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/peer_manager/peer_manager.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/peer_manager/pm_buffer.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/pm_buffer.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/peer_manager/pm_buffer.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/peer_manager/security_dispatcher.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/security_dispatcher.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/peer_manager/security_dispatcher.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/peer_manager/security_manager.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/security_manager.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/peer_manager/security_manager.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/drivers_nrf/clock/nrf_drv_clock.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/clock/nrf_drv_clock.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/drivers_nrf/clock/nrf_drv_clock.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/drivers_nrf/common/nrf_drv_common.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/common/nrf_drv_common.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/drivers_nrf/common/nrf_drv_common.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/drivers_nrf/uart/nrf_drv_uart.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/uart/nrf_drv_uart.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/drivers_nrf/uart/nrf_drv_uart.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/libraries/fds/fds.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/fds/fds.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/libraries/fds/fds.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/libraries/fifo/app_fifo.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/fifo/app_fifo.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/libraries/fifo/app_fifo.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/libraries/fstorage/fstorage.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/fstorage/fstorage.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/libraries/fstorage/fstorage.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/libraries/timer/app_timer.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/timer/app_timer.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/libraries/timer/app_timer.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/libraries/uart/app_uart_fifo.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/uart/app_uart_fifo.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/libraries/uart/app_uart_fifo.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/libraries/util/app_error.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/util/app_error.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/libraries/util/app_error.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/libraries/util/app_error_weak.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/util/app_error_weak.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/libraries/util/app_error_weak.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/libraries/util/app_util_platform.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/util/app_util_platform.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/libraries/util/app_util_platform.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/libraries/util/sdk_mapped_flags.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/util/sdk_mapped_flags.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/libraries/util/sdk_mapped_flags.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/softdevice/common/softdevice_handler</name>
@@ -273,17 +273,17 @@
 		<link>
 			<name>src/nrf51_sdk/ble/ble_services/ble_bas/ble_bas.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_bas/ble_bas.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/ble_services/ble_bas/ble_bas.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/ble/ble_services/ble_nus/ble_nus.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_nus/ble_nus.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/ble/ble_services/ble_nus/ble_nus.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf51_sdk/softdevice/common/softdevice_handler/softdevice_handler.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/softdevice_handler/softdevice_handler.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK_12/components/softdevice/common/softdevice_handler/softdevice_handler.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

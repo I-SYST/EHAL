@@ -36,14 +36,19 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/base64.h</locationURI>
 		</link>
 		<link>
+			<name>include/ble_periph_app.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ble_periph_app.h</locationURI>
+		</link>
+		<link>
+			<name>include/blueio_blesrvc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_blesrvc.h</locationURI>
+		</link>
+		<link>
 			<name>include/blueio_board.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_board.h</locationURI>
-		</link>
-		<link>
-			<name>include/blueio_svc.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_svc.h</locationURI>
 		</link>
 		<link>
 			<name>include/cfifo.h</name>
@@ -59,6 +64,11 @@
 			<name>include/crc.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/crc.h</locationURI>
+		</link>
+		<link>
+			<name>include/custom_board.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/custom_board.h</locationURI>
 		</link>
 		<link>
 			<name>include/dirent.h</name>
@@ -99,11 +109,6 @@
 			<name>include/iopincfg.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/iopincfg.h</locationURI>
-		</link>
-		<link>
-			<name>include/iopinctrl.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/iopinctrl.h</locationURI>
 		</link>
 		<link>
 			<name>include/istddef.h</name>
@@ -206,19 +211,19 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/CppRuntimeOverload.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/atomic.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/atomic.c</locationURI>
-		</link>
-		<link>
 			<name>src/base64.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/base64.c</locationURI>
 		</link>
 		<link>
-			<name>src/blueio_svc.c</name>
+			<name>src/ble_periph_app.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/blueio_svc.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_periph_app.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/blueio_blesrvc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/blueio_blesrvc.c</locationURI>
 		</link>
 		<link>
 			<name>src/cfifo.c</name>
@@ -229,6 +234,11 @@
 			<name>src/crc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/crc.c</locationURI>
+		</link>
+		<link>
+			<name>src/diskio_flash.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_flash.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/diskio_impl.cpp</name>
@@ -256,9 +266,19 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/ledmx.c</locationURI>
 		</link>
 		<link>
+			<name>src/ledmxfont.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/ledmxfont.c</locationURI>
+		</link>
+		<link>
 			<name>src/ledmxio_nrf5x.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ledmxio_nrf5x.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/prbs.c</name>
@@ -274,11 +294,6 @@
 			<name>src/sdcard_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sdcard_impl.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/seep.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/seep.c</locationURI>
 		</link>
 		<link>
 			<name>src/seep_impl.cpp</name>
@@ -334,6 +349,26 @@
 			<name>src/utf8cvt.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/utf8cvt.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_services</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_services/ble_dis</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_services/ble_dis/ble_dis.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_dis/ble_dis.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

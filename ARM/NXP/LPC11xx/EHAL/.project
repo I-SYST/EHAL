@@ -296,6 +296,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/diskio.c</locationURI>
 		</link>
 		<link>
+			<name>src/diskio_flash.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_flash.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/diskio_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_impl.cpp</locationURI>
@@ -404,6 +409,11 @@
 			<name>src/uart_lpcxx.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/uart_lpcxx.c</locationURI>
+		</link>
+		<link>
+			<name>src/uart_retarget.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/uart_retarget.c</locationURI>
 		</link>
 		<link>
 			<name>src/utf8.c</name>

@@ -37,26 +37,112 @@ Modified by          Date              Description
 using namespace std;
 
 #include "seep.h"
+#include "iopinctrl.h"
 
 Seep::Seep()
 {
+    memset(&vDevData, 0, sizeof(SEEPDEV));
 }
 
 Seep::~Seep()
 {
 }
 
-bool Seep::Init(int DevAddr, int PageSize, int AddrLen, SerialIntrf *pInterf)
+bool Seep::Init(SEEP_CFG &CfgData, SerialIntrf *pInterf)
 {
-	//vpInterf = shared_ptr<SerialIntrf>(pInterf);
-	vpInterf = pInterf;
-	vDevAddr = DevAddr;
-	vPageSize = PageSize;
-	vAddrLen = AddrLen;
+    vDevData.pInterf = *pInterf;
+	vDevData.DevAddr = CfgData.DevAddr;
+	vDevData.PageSize = CfgData.PageSize;
+	vDevData.AddrLen = CfgData.AddrLen;
+	vDevData.pWaitCB = CfgData.pWaitCB;
+	if (CfgData.pInitCB)
+		return CfgData.pInitCB(vDevData.DevAddr, *pInterf);
 
 	return true;
 }
 
+bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf)
+{
+    pDev->pInterf = pInterf;
+    pDev->DevAddr = pCfgData->DevAddr;
+    pDev->PageSize = pCfgData->PageSize;
+    pDev->AddrLen = pCfgData->AddrLen;
+    pDev->pWaitCB = pCfgData->pWaitCB;
+    pDev->WrProtPin = pCfgData->WrProtPin;
+
+    if (pCfgData->WrProtPin.PortNo >= 0 && pCfgData->WrProtPin.PinNo >= 0)
+    {
+        // Configure write protect pin
+        IOPinCfg(&pCfgData->WrProtPin, 1);
+        IOPinClear(pDev->WrProtPin.PortNo, pDev->WrProtPin.PinNo);
+    }
+
+    if (pCfgData->pInitCB)
+        pCfgData->pInitCB(pCfgData->DevAddr, pInterf);
+
+    return true;
+}
+
+int SeepRead(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
+{
+    uint8_t ad[4];
+    uint8_t *p = (uint8_t*)&Addr;
+
+    for (int i = 0; i < pDev->AddrLen; i++)
+    {
+        ad[i] = p[pDev->AddrLen - i - 1];
+    }
+
+    if (SerialIntrfTx(pDev->pInterf, pDev->DevAddr, (uint8_t*)ad, pDev->AddrLen))
+    {
+        return SerialIntrfRx(pDev->pInterf, pDev->DevAddr, pData, Len);
+    }
+
+    return 0;
+}
+
+// Note: Sequential write is bound by page size boundary
+int SeepWrite(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
+{
+    int count = 0;
+    uint8_t ad[4];
+    uint8_t *p = (uint8_t*)&Addr;
+
+    while (Len > 0)
+    {
+        int size = min(Len, pDev->PageSize - (Addr % pDev->PageSize));
+        for (int i = 0; i < pDev->AddrLen; i++)
+        {
+            ad[i] = p[pDev->AddrLen - i - 1];
+        }
+
+        if (SerialIntrfStartTx(pDev->pInterf, pDev->DevAddr))
+        {
+            pDev->pInterf->TxData(pDev->pInterf, ad, pDev->AddrLen);
+            count += pDev->pInterf->TxData(pDev->pInterf, pData, size);
+            SerialIntrfStopTx(pDev->pInterf);
+            if (pDev->pWaitCB)
+                pDev->pWaitCB(pDev->DevAddr, pDev->pInterf);
+        }
+        Addr += size;
+        Len -= size;
+        pData += size;
+    }
+    return count;
+}
+
+void SeepSetWriteProt(SEEPDEV *pDev, bool bVal)
+{
+    if (pDev->WrProtPin.PortNo < 0 || pDev->WrProtPin.PinNo < 0)
+        return;
+
+    if (bVal)
+        IOPinSet(pDev->WrProtPin.PortNo, pDev->WrProtPin.PinNo);
+    else
+        IOPinClear(pDev->WrProtPin.PortNo, pDev->WrProtPin.PinNo);
+}
+
+/*
 int Seep::Read(int Addr, uint8_t *pData, int Len)
 {
 	uint8_t ad[4];
@@ -98,6 +184,8 @@ int Seep::Write(int Addr, uint8_t *pData, int Len)
 			vpInterf->TxData((uint8_t*)ad, vAddrLen);
 			count += vpInterf->TxData(pData, size);
 			vpInterf->StopTx();
+			if (vpWaitCB)
+				vpWaitCB(vDevAddr, *vpInterf);
 		}
 		Addr += size;
 		Len -= size;
@@ -105,4 +193,4 @@ int Seep::Write(int Addr, uint8_t *pData, int Len)
 	}
 	return count;
 }
-
+*/

@@ -39,10 +39,10 @@
 //#include "bsp.h"
 //#include "bsp_btn_ble.h"
 
-#define RX_PIN_NUMBER		BLUEIO_UART_RX
-#define TX_PIN_NUMBER		BLUEIO_UART_TX
-#define RTS_PIN_NUMBER		BLUEIO_UART_RTS
-#define CTS_PIN_NUMBER		BLUEIO_UART_CTS
+#define RX_PIN_NUMBER		BLUEIO_UART_RX_PIN
+#define TX_PIN_NUMBER		BLUEIO_UART_TX_PIN
+#define RTS_PIN_NUMBER		BLUEIO_UART_RTS_PIN
+#define CTS_PIN_NUMBER		BLUEIO_UART_CTS_PIN
 
 
 #define IS_SRVC_CHANGED_CHARACT_PRESENT 0                                           /**< Include the service_changed characteristic. If not enabled, the server's database cannot be changed for the lifetime of the device. */

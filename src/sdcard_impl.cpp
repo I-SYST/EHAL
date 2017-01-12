@@ -49,7 +49,7 @@ SDCard::~SDCard()
 
 }
 
-bool SDCard::Init(SerialIntrf *pSerInterf, uint8_t *pCacheBlk, size_t CacheSize)
+bool SDCard::Init(SerialIntrf *pSerInterf, DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk)
 {
 	uint8_t data[4];
 	uint16_t r = 0xffff;
@@ -121,9 +121,9 @@ bool SDCard::Init(SerialIntrf *pSerInterf, uint8_t *pCacheBlk, size_t CacheSize)
 	vDev.SectSize = 512;		// Default always
 	vDev.TotalSect = GetSize() * 1024LL / vDev.SectSize;
 
-	if (pCacheBlk && CacheSize > 0)
+	if (pCacheBlk && NbCacheBlk > 0)
 	{
-		SetCache(pCacheBlk, CacheSize);
+		SetCache(pCacheBlk, NbCacheBlk);
 	}
 	return true;
 }
@@ -270,8 +270,8 @@ uint32_t SDCard::GetNbSect(void)
 	return vDev.TotalSect;
 }
 
-// @return	size in KB
-uint32_t SDCard::GetSize(void)
+// @return	size in BYTE
+uint64_t SDCard::GetSize(void)
 {
 	uint8_t data[20];
 	uint32_t c_size, c_size_mult, read_bl_len;

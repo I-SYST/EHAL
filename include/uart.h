@@ -126,7 +126,6 @@ typedef struct {
 	int DevNo;					// UART device number
 	const void *pIoMap;			// Pointer to IO mapping.  This can be either IOPINCFG array or device path string
 	int IoMapLen;				// Nb of elements in IOPINCFG array or string length of device path
-	//IOPINCFG PinCfg[UART_NB_PINS];	// I/O pin to configure for UART
 	int Rate;					// Baudrate, set to 0 for auto baudrate
 	int DataBits;				// Number of data bits
 	UART_PARITY Parity;			// Data parity
@@ -135,9 +134,10 @@ typedef struct {
 	bool bIntMode;				// Interrupt mode support
 	int IntPrio;				// Interrupt priority
 	UARTEVTCB EvtCallback;		// UART event callback
-	int RxMemSize;
-	uint8_t *pRxMem;			// Pointer to memory allocated for RX FIFO
-	int TxMemSize;
+	bool bFifoBlocking;			// CFIFO operating mode, false : drop when full
+	int RxMemSize;				// Memory size in bytes for Rx CFIFO
+	uint8_t *pRxMem;			// Pointer to memory allocated for RX CFIFO
+	int TxMemSize;				// Memory size in bytes for Tx CFIFO
 	uint8_t *pTxMem;			// Pointer to memory allocated for TX FIFO
 	bool bDMAMode;				// DMA transfer support
 	bool bIrDAMode;				// Enable IrDA
@@ -185,7 +185,7 @@ int UARTTx(UARTDEV *pDev, uint8_t *pData, int Datalen);
 void UARTprintf(UARTDEV *pDev, const char *pFormat, ...);
 void UARTvprintf(UARTDEV *pDev, const char *pFormat, va_list vl);
 void UARTRetargetEnable(UARTDEV *pDev, int FileNo);
-void UartRetargetDisable(UARTDEV *pDev, int FileNo);
+void UARTRetargetDisable(UARTDEV *pDev, int FileNo);
 
 #ifdef __cplusplus
 }
@@ -205,6 +205,9 @@ public:
 	virtual bool Init(const UARTCFG &CfgData) {
 		return UARTInit(&vDevData, &CfgData);
 	}
+
+	operator SERINTRFDEV* () { return &vDevData.SerIntrf; }
+
 	// ++ ** Require implementation
 	// Set data baudrate
 	virtual int Rate(int DataRate) { return UARTSetRate(&vDevData, DataRate); }

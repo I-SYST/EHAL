@@ -54,24 +54,43 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1283160414" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.963274051" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/hal/inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/devices/MKL26Z4/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/devices&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/system/inc&quot;"/>
+								</option>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1512873202" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="CPU_MKL26Z256VMC4"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.104838485" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.912582654" name="Cross ARM C++ Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.137508200" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/hal/inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/devices/MKL26Z4/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/devices&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/system/inc&quot;"/>
+								</option>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.defs.1904237424" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="CPU_MKL26Z256VMC4"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.1289395977" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
@@ -97,7 +116,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="seep.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -156,24 +175,43 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1512244587" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.653815554" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/hal/inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/devices/MKL26Z4/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/devices&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/system/inc&quot;"/>
+								</option>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.685390563" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="CPU_MKL26Z256VMC4"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.66661296" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.26901225" name="Cross ARM C++ Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.1060214913" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/hal/inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/devices/MKL26Z4/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/devices&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/KSDK/platform/system/inc&quot;"/>
+								</option>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.defs.390302723" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="CPU_MKL26Z256VMC4"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.1776440433" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
@@ -199,7 +237,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="seep.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

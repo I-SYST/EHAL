@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D89EF789-E520-476E-A345-B12BE9310693}</ProjectGuid>
+    <ProjectGuid>{DE882088-60C9-4753-AC1C-AE9763E2D453}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>OHAL</RootNamespace>
   </PropertyGroup>
@@ -49,7 +49,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>include;../../include;C:\WinDDK\7600.16385.0\inc\api</AdditionalIncludeDirectories>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <SDLCheck>false</SDLCheck>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <CallingConvention>Cdecl</CallingConvention>
@@ -97,10 +97,10 @@
     <ClCompile Include="..\..\src\sha256.c" />
     <ClCompile Include="..\..\src\sysstatus.c" />
     <ClCompile Include="..\..\src\uart.c" />
-    <ClCompile Include="..\..\src\usbhiddev.cpp" />
+    <ClCompile Include="..\..\src\usb_hidhost.cpp" />
     <ClCompile Include="..\..\src\utf8.c" />
     <ClCompile Include="..\..\src\utf8cvt.cpp" />
-    <ClCompile Include="src\usbhiddev_impl.cpp" />
+    <ClCompile Include="src\usb_hidhost_impl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\cfifo.h" />
@@ -112,10 +112,10 @@
     <ClInclude Include="..\..\include\serialintrf.h" />
     <ClInclude Include="..\..\include\sysstatus.h" />
     <ClInclude Include="..\..\include\uart.h" />
-    <ClInclude Include="..\..\include\usbhiddev.h" />
+    <ClInclude Include="..\..\include\usb_hidhost.h" />
     <ClInclude Include="..\..\include\utf8.h" />
     <ClInclude Include="..\..\include\utf8cvt.h" />
-    <ClInclude Include="include\usbhiddev_impl.h" />
+    <ClInclude Include="include\usb_hidhost_impl.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

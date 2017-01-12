@@ -143,6 +143,7 @@ public:
 	I2C(I2C&);	// Copy ctor not allowed
 
 	bool Init(I2CCFG &CfgData) { return I2CInit(&vDevData, &CfgData); }
+	operator SERINTRFDEV*() { return &vDevData.SerIntrf; }
 	operator I2CDEV& () { return vDevData; };	// Get config data
 	int Rate(int RateHz) { return SerialIntrfSetRate(&vDevData.SerIntrf, RateHz); }
 	int Rate(void) { return vDevData.Rate; };	// Get rate in Hz

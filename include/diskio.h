@@ -35,10 +35,11 @@ Modified by          Date              Description
 #define __DISKIO_H__
 
 #include <stdint.h>
-#include <atomic>
 
-#define DISKIO_SECT_SIZE		512
-#define DISKIO_CACHE_SECT_MAX	1
+#define DISKIO_SECT_SIZE		    512     // Disk sector size in bytes
+#define DISKIO_CACHE_SECT_MAX	    1       // Max number of cache sector
+#define DISKIO_CACHE_DIRTY_BIT      (1<<31) // This bit is set in the UseCnt if there was
+                                            // write to the cache
 
 #pragma pack(push, 1)
 typedef struct _DiskPartition {
@@ -61,14 +62,12 @@ typedef struct _MasterBootRecord {
 
 #pragma pack(push, 4)
 
-#define DISKIO_CACHE_DIRTY_BIT      (1<<31) // This bit is set in the UseCnt if there was
-                                            // write to the cache
 
-typedef struct _Sect_Desc {
-	volatile int UseCnt;		// semaphore
-	uint32_t SectNo;			// sector number of this cache
-	uint8_t *pSectData;				// sector data
-} SECTDESC;
+typedef struct _Cache_Desc {
+	volatile int UseCnt;		                // semaphore
+	uint32_t    SectNo;			                // sector number of this cache
+	uint8_t     SectData[DISKIO_SECT_SIZE];		// sector data
+} DISKIO_CACHE_DESC;
 
 #pragma pack(pop)
 
@@ -77,12 +76,12 @@ public:
 	DiskIO();
 
 	virtual int GetSectSize(void) { return DISKIO_SECT_SIZE; }
-	virtual uint32_t GetNbSect(void) = 0;
+	virtual uint32_t GetNbSect(void) { return GetSize() / GetSectSize(); }
 	/**
 	 *
-	 * @return total disk size in KB
+	 * @return total disk size in BYTE
 	 */
-	virtual uint32_t GetSize(void) = 0;
+	virtual uint64_t GetSize(void) = 0;
 
 	/**
 	 * Read one sector from physical device
@@ -111,16 +110,15 @@ public:
 	 */
 	virtual void Erase() {}
 	int	GetCacheSect(uint32_t SectNo, bool bLock = false);
-	void SetCache(uint8_t *pCacheBlk, uint32_t CacheSize);
+	void SetCache(DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk);
 	void Flush();
 
 protected:
 
 private:
-	int vLastIdx;	// Last cache sector used
-	int vNbCache;
-	bool vExtCache;
-	SECTDESC *vpCacheSect;//[DISKIO_CACHE_SECT_MAX];
+	int vLastIdx;	    // Last cache sector accessed
+	int vNbCache;       // Number of cache sector
+	DISKIO_CACHE_DESC *vpCacheSect;
 };
 
 #ifdef __cplusplus

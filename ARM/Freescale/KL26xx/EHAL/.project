@@ -26,6 +26,166 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>include/atomic.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/atomic.h</locationURI>
+		</link>
+		<link>
+			<name>include/base64.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/base64.h</locationURI>
+		</link>
+		<link>
+			<name>include/cfifo.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/cfifo.h</locationURI>
+		</link>
+		<link>
+			<name>include/convutil.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/convutil.h</locationURI>
+		</link>
+		<link>
+			<name>include/crc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/crc.h</locationURI>
+		</link>
+		<link>
+			<name>include/diskio.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/diskio.h</locationURI>
+		</link>
+		<link>
+			<name>include/diskio_flash.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/diskio_flash.h</locationURI>
+		</link>
+		<link>
+			<name>include/i2c.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/i2c.h</locationURI>
+		</link>
+		<link>
+			<name>include/intelhex.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/intelhex.h</locationURI>
+		</link>
+		<link>
+			<name>include/iopincfg.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/iopincfg.h</locationURI>
+		</link>
+		<link>
+			<name>include/iopinctrl.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/iopinctrl.h</locationURI>
+		</link>
+		<link>
+			<name>include/istddef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/istddef.h</locationURI>
+		</link>
+		<link>
+			<name>include/ledmx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/ledmx.h</locationURI>
+		</link>
+		<link>
+			<name>include/ledmxfont.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/ledmxfont.h</locationURI>
+		</link>
+		<link>
+			<name>include/prbs.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/prbs.h</locationURI>
+		</link>
+		<link>
+			<name>include/sdcard.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sdcard.h</locationURI>
+		</link>
+		<link>
+			<name>include/seep.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/seep.h</locationURI>
+		</link>
+		<link>
+			<name>include/serialintrf.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/serialintrf.h</locationURI>
+		</link>
+		<link>
+			<name>include/sha1.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sha1.h</locationURI>
+		</link>
+		<link>
+			<name>include/sha256.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sha256.h</locationURI>
+		</link>
+		<link>
+			<name>include/spi.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/spi.h</locationURI>
+		</link>
+		<link>
+			<name>include/stddev.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/stddev.h</locationURI>
+		</link>
+		<link>
+			<name>include/sysstatus.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sysstatus.h</locationURI>
+		</link>
+		<link>
+			<name>include/sysstatusdef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sysstatusdef.h</locationURI>
+		</link>
+		<link>
+			<name>include/uart.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/uart.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb_cdcdef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb_cdcdef.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb_def.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb_def.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb_hiddef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb_hiddef.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb_hidhost.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb_hidhost.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb_mscdef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb_mscdef.h</locationURI>
+		</link>
+		<link>
+			<name>include/utf8.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/utf8.h</locationURI>
+		</link>
+		<link>
+			<name>include/utf8cvt.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/utf8cvt.h</locationURI>
+		</link>
+		<link>
 			<name>src/CppRuntimeOverload.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/CppRuntimeOverload.cpp</locationURI>
@@ -46,6 +206,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/crc.c</locationURI>
 		</link>
 		<link>
+			<name>src/diskio_flash.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_flash.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/diskio_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_impl.cpp</locationURI>
@@ -61,6 +226,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/intelhex.c</locationURI>
 		</link>
 		<link>
+			<name>src/iopincfg.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/iopincfg.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/ledmx.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/ledmx.c</locationURI>
@@ -69,6 +239,11 @@
 			<name>src/ledmxfont.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/ledmxfont.c</locationURI>
+		</link>
+		<link>
+			<name>src/prbs.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/prbs.c</locationURI>
 		</link>
 		<link>
 			<name>src/sdcard_impl.cpp</name>
