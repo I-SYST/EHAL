@@ -290,20 +290,20 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
 	if (pCfg->pRxMem && pCfg->RxMemSize > 0)
 	{
-		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1, pCfg->bAutoDrop);
+		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1, pCfg->bFifoBlocking);
 	}
 	else
 	{
-		pDev->hRxFifo = CFifoInit(s_UARTRxFifoMem, UART_RX_CFIFO_MEM_SIZE, 1, pCfg->bAutoDrop);
+		pDev->hRxFifo = CFifoInit(s_UARTRxFifoMem, UART_RX_CFIFO_MEM_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	if (pCfg->pTxMem && pCfg->TxMemSize > 0)
 	{
-		pDev->hTxFifo = CFifoInit(pCfg->pTxMem, pCfg->TxMemSize, 1, pCfg->bAutoDrop);
+		pDev->hTxFifo = CFifoInit(pCfg->pTxMem, pCfg->TxMemSize, 1, pCfg->bFifoBlocking);
 	}
 	else
 	{
-		pDev->hTxFifo = CFifoInit(s_UARTTxFifoMem, UART_TX_CFIFO_MEM_SIZE, 1, pCfg->bAutoDrop);
+		pDev->hTxFifo = CFifoInit(s_UARTTxFifoMem, UART_TX_CFIFO_MEM_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	// Start tx
