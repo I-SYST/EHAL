@@ -56,18 +56,22 @@ static const char s_WdCharDescString[] = {
 
 uint8_t g_ManData[8];
 
+BLUEIOSRVC_CHAR g_LmxChars[] = {
+	{
+		LMXBLUE_UUID_MSGCHAR,
+		256,
+		BLUEIOSVC_CHAR_PROP_WRITEWORESP,
+		s_WdCharDescString,
+		LmxBlueSrvcWrCallback
+	}
+};
 
 const BLUEIOSRVC_CFG s_LmxBlueSrvcCfg = {
 	BLUEIOSRVC_SECTYPE_NONE,
 	LMXBLUE_UUID_BASE,
 	LMXBLUE_UUID_SERVICE,
-	LMXBLUE_UUID_RDCHAR,
-	20, BLUEIOSVC_CHAR_PROP_READ | BLUEIOSVC_CHAR_PROP_NOTIFY,
-	s_RdCharDescString,
-	LMXBLUE_UUID_WRCHAR,
-	20, BLUEIOSVC_CHAR_PROP_WRITEWORESP,
-	s_WdCharDescString,
-	LmxBlueSrvcWrCallback
+	1,
+	g_LmxChars
 };
 
 BLUEIOSRVC g_LmxBleSrvc;

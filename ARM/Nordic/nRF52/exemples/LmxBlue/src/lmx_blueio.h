@@ -12,29 +12,25 @@
 #define LMXBLUE_UUID_BASE	{ 0x1b, 0xc5, 0xd5, 0xa5, 0x02, 0x00, 0xd0, 0x84, \
 							  0xe4, 0x11, 0x70, 0x40, 0x00, 0x00, 0x00, 0x00 }
 #define LMXBLUE_UUID_SERVICE 		0x1
-#define LMXBLUE_UUID_RDCHAR 		0x2
-#define LMXBLUE_UUID_WRCHAR 		0x3
+#define LMXBLUE_UUID_MSGCHAR 		0x2
+
+#define LMXBLUE_MAX_MSG_LENGTH		255
 
 typedef enum {
-
-} LMX;
+	LMXDISP_STYLE_LEFT,
+	LMXDISP_STYLE_CENTER,
+	LMXDISP_STYLE_RIGHT,
+	LMXDISP_STYLE_SCROLL_LEFT,
+	LMXDISP_STYLE_SCROLL_RIGHT
+} LMXDISP_STYLE;
 
 #pragma pack(push, 1)
 
 typedef struct {
-	uint32_t Value;
-	union {
-		uint32_t Code:8;
-		uint32_t Resv:8;
-		uint32_t Module:12;
-		uint32_t Type:4;
-	};
-} BLUEIO_PKTHDR;
-
-typedef struct {
-	BLUEIO_PKTHDR Hdr;
-	uint8_t Data[1];
-} BLUEIO_PKT;
+	int LineNo;				// Display line number
+	LMXDISP_STYLE Style;	// Display style
+	char Text[LMXBLUE_MAX_MSG_LENGTH + 1];
+} LMX_MSG;
 
 #pragma pop()
 
