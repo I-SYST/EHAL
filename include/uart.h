@@ -213,6 +213,8 @@ public:
 	virtual int Rate(int DataRate) { return UARTSetRate(&vDevData, DataRate); }
 	// Get current data baudrate
 	virtual int Rate(void) { return UARTGetRate(&vDevData); }
+    void Enable(void) { SerialIntrfEnable(&vDevData.SerIntrf); }
+    void Disable(void) { SerialIntrfDisable(&vDevData.SerIntrf); }
 	virtual void SetCtrlLineState(int LineState) { UARTSetCtrlLineState(&vDevData, LineState); }
 	virtual int Rx(uint8_t *pBuff, uint32_t Len) { return ((SerialIntrf *)this)->Rx(0, pBuff, Len); }
 	// Initiate receive
