@@ -123,7 +123,33 @@ extern "C" {
  * 			pCfgData 	: Pointer to I2C configuration
  *
  */
-bool I2CInit(I2CDEV *pDev, I2CCFG *pCfgData);
+bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData);
+static inline int I2CGetRate(I2CDEV *pDev) { return pDev->SerIntrf.GetRate(&pDev->SerIntrf); }
+static inline int I2CSetRate(I2CDEV *pDev, int Rate) {
+	return pDev->SerIntrf.SetRate(&pDev->SerIntrf, Rate);
+}
+static inline void I2CEnable(I2CDEV *pDev) { pDev->SerIntrf.Enable(&pDev->SerIntrf); }
+static inline void I2CDisable(I2CDEV *pDev) { pDev->SerIntrf.Disable(&pDev->SerIntrf); }
+static inline int I2CRx(I2CDEV *pDev, int DevAddr, uint8_t *pBuff, int Bufflen) {
+	return SerialIntrfRx(&pDev->SerIntrf, DevAddr, pBuff, Bufflen);
+}
+static inline int I2CTx(I2CDEV *pDev, int DevAddr, uint8_t *pData, int Datalen) {
+	return SerialIntrfTx(&pDev->SerIntrf, DevAddr, pData, Datalen);
+}
+static inline bool I2CStartRx(I2CDEV *pDev, int DevAddr) {
+	return SerialIntrfStartRx(&pDev->SerIntrf, DevAddr);
+}
+static inline int I2CRxData(I2CDEV *pDev, uint8_t *pBuff, int Bufflen) {
+	return SerialIntrfRxData(&pDev->SerIntrf, pBuff, Bufflen);
+}
+static inline void I2CStopRx(I2CDEV *pDev) { SerialIntrfStopRx(&pDev->SerIntrf); }
+static inline bool I2CStartTx(I2CDEV *pDev, int DevAddr) {
+	return SerialIntrfStartTx(&pDev->SerIntrf, DevAddr);
+}
+static inline int I2CTxData(I2CDEV *pDev, uint8_t *pData, int Datalen) {
+	return SerialIntrfTxData(&pDev->SerIntrf, pData, Datalen);
+}
+static inline void I2CStopTx(I2CDEV *pDev) { SerialIntrfStopTx(&pDev->SerIntrf); }
 
 #ifdef __cplusplus
 }
