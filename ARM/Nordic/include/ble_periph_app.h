@@ -57,7 +57,7 @@ typedef enum {
 #define BLEAPP_SECEXCHG_DISPLAY		(1<<1)
 #define BLEAPP_SECEXCHG_OOB			(1<<2)
 
-#define BLEAPP_DEVNAME_MAX_SIZE			8
+#define BLEAPP_DEVNAME_MAX_SIZE			10
 #define BLEAPP_NAME_MAX_SIZE			20
 
 typedef void (*PRIVINITCB)();
@@ -78,16 +78,12 @@ typedef struct _BleAppConfig {
 	int NbAdvUuid;				// Total number of uuids
 	uint32_t AdvInterval;		// In msec
 	uint32_t AdvTimeout;		// In sec
+	uint32_t AdvSlowInterval;	// Slow advertising interval, if > 0, fallback to
+								// slow interval on adv timeout and advertise until connected
 	int ConnLedPort;
 	int ConnLedPin;
+	softdevice_evt_schedule_func_t SDEvtHandler;	// Require for BLEAPP_MODE_RTOS
 } BLEAPP_CFG;
-
-typedef struct _BleAppData {
-	bool bAppSched;
-	uint16_t ConnHdl;	// BLE connection handle
-	int ConnLedPort;
-	int ConnLedPin;
-} BLEAPP_DATA;
 
 #pragma pack(pop)
 
@@ -96,17 +92,16 @@ extern "C" {
 #endif
 
 // ***
-// Require user implementations
+// Require implementations per app
 //
 void BlePeriphAppInitServices();
-void BlePeriphAppEvtDispatch(ble_evt_t * p_ble_evt);
+void BlePeriphAppSrvcEvtDispatch(ble_evt_t * p_ble_evt);
 
 /**
  * BLE App initialization
  */
-void BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond);
-void BlePeriphAppRun();
-void BlePeriphAppAdvStart(void);
+bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond);
+void BlePeriphAppProcessEvt();
 void BlePeriphAppEnterDfu();
 
 #ifdef __cplusplus

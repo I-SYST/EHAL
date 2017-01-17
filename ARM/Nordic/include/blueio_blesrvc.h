@@ -4,9 +4,7 @@ File   : blueio_blesrvc.h
 Author : Hoang Nguyen Hoan          Mar. 25, 2014
 
 Desc   : Implementation allow the creation of generic custom Bluetooth Smart
-		 service with 2 characteristics.
-		 	 Read characteristics
-		 	 Write characteristics
+		 service with multiple user defined characteristics.
 
 Copyright (c) 2014, I-SYST inc., all rights reserved
 

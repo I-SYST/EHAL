@@ -54,8 +54,7 @@ Modified by          Date              Description
 #include "fds.h"
 #include "fstorage.h"
 #include "nrf_dfu_settings.h"
-#include "custom_board.h"
-//#include "blueio_blesrvc.h"
+
 #include "istddef.h"
 #include "uart.h"
 #include "custom_board.h"
@@ -63,7 +62,7 @@ Modified by          Date              Description
 #include "iopinctrl.h"
 #include "ble_periph_app.h"
 
-#define IS_SRVC_CHANGED_CHARACT_PRESENT 0                                           /**< Include the service_changed characteristic. If not enabled, the server's database cannot be changed for the lifetime of the device. */
+//#define IS_SRVC_CHANGED_CHARACT_PRESENT 1                                           /**< Include the service_changed characteristic. If not enabled, the server's database cannot be changed for the lifetime of the device. */
 
 #if (NRF_SD_BLE_API_VERSION <= 3)
     #define NRF_BLE_MAX_MTU_SIZE        GATT_MTU_SIZE_DEFAULT                   /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
@@ -102,8 +101,15 @@ Modified by          Date              Description
 
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
+typedef struct _BleAppData {
+	BLEAPP_MODE AppMode;
+	uint16_t ConnHdl;	// BLE connection handle
+	int ConnLedPort;
+	int ConnLedPin;
+} BLEAPP_DATA;
+
 BLEAPP_DATA g_BleAppData = {
-	false, BLE_CONN_HANDLE_INVALID, -1, -1
+	BLEAPP_MODE_LOOP, BLE_CONN_HANDLE_INVALID, -1, -1
 };
 
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
@@ -323,7 +329,8 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
         case BLE_GAP_EVT_DISCONNECTED:
         	BleConnLedOff();
         	g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
-            break;
+        	ble_advertising_start(BLE_ADV_MODE_FAST);
+        	break;
 
         case BLE_GAP_EVT_PASSKEY_DISPLAY:
         {
@@ -342,6 +349,13 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             //err_code = sd_ble_gatts_sys_attr_set(g_ConnHdl, NULL, 0, 0);
             //APP_ERROR_CHECK(err_code);
             break; // BLE_GATTS_EVT_SYS_ATTR_MISSING
+
+        case BLE_GAP_EVT_TIMEOUT:
+            if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
+            {
+            	ble_advertising_start(BLE_ADV_MODE_SLOW);
+            }
+            break;
 
         case BLE_GATTC_EVT_TIMEOUT:
             // Disconnect on GATT Client timeout event.
@@ -530,7 +544,7 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
 {
     ble_conn_state_on_ble_evt(p_ble_evt);
     pm_on_ble_evt(p_ble_evt);
-    BlePeriphAppEvtDispatch(p_ble_evt);
+    BlePeriphAppSrvcEvtDispatch(p_ble_evt);
     ble_conn_params_on_ble_evt(p_ble_evt);
     on_ble_evt(p_ble_evt);
     ble_advertising_on_ble_evt(p_ble_evt);
@@ -684,6 +698,7 @@ void BlePeriphAppAdvInit(const BLEAPP_CFG *pCfg)
     advdata.p_manuf_specific_data = &mdata;
 
     memset(&scanrsp, 0, sizeof(scanrsp));
+
     scanrsp.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
     scanrsp.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
 
@@ -691,6 +706,13 @@ void BlePeriphAppAdvInit(const BLEAPP_CFG *pCfg)
     options.ble_adv_fast_enabled  = true;
     options.ble_adv_fast_interval = pCfg->AdvInterval;
     options.ble_adv_fast_timeout  = pCfg->AdvTimeout;
+
+    if (pCfg->AdvSlowInterval > 0)
+    {
+		options.ble_adv_slow_enabled  = true;
+		options.ble_adv_slow_interval = pCfg->AdvSlowInterval;
+		options.ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
+    }
 
     err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
     APP_ERROR_CHECK(err_code);
@@ -700,7 +722,7 @@ void BlePeriphAppAdvInit(const BLEAPP_CFG *pCfg)
  *
  * @details This function initializes the SoftDevice and the BLE event interrupt.
  */
-void BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
+bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 {
     uint32_t err_code;
     nrf_clock_lf_cfg_t clock_lf_cfg = NRF_CLOCK_LFCLKSRC;
@@ -712,26 +734,28 @@ void BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     				IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
     }
 
+    g_BleAppData.AppMode = pBleAppCfg->AppMode;
+
     switch (pBleAppCfg->AppMode)
     {
     	case BLEAPP_MODE_LOOP:
-    	    g_BleAppData.bAppSched = false;
-
+    		APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
+        	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+            SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, NULL);
     		break;
     	case BLEAPP_MODE_APPSCHED:
-    	    g_BleAppData.bAppSched = true;
-
+    		APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
         	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+            SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, true);
     		break;
     	case BLEAPP_MODE_RTOS:
-    	    g_BleAppData.bAppSched = false;
-
+    		if (pBleAppCfg->SDEvtHandler == NULL)
+    			return false;
+            SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, pBleAppCfg->SDEvtHandler);
     		break;
     }
 
-	APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, g_BleAppData.bAppSched);
     // Initialize SoftDevice.
-    SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, g_BleAppData.bAppSched);
 
     ble_enable_params_t ble_enable_params;
     err_code = softdevice_enable_get_default_config(CENTRAL_LINK_COUNT,
@@ -785,24 +809,26 @@ void BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     conn_params_init();
 
-
-
+    return true;
 }
 
-void BlePeriphAppRun()
+void BlePeriphAppProcessEvt()
 {
     uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
 
     APP_ERROR_CHECK(err_code);
 
-
-	while (1)
+    if (g_BleAppData.AppMode == BLEAPP_MODE_RTOS)
     {
-		if (g_BleAppData.bAppSched == true)
-        {
+        intern_softdevice_events_execute();
+    }
+    else
+    {
+		if (g_BleAppData.AppMode == BLEAPP_MODE_APPSCHED)
+		{
 			app_sched_execute();
-        }
-    	sd_app_evt_wait();
+		}
+		sd_app_evt_wait();
     }
 }
 
