@@ -56,18 +56,22 @@ static const char s_WdCharDescString[] = {
 
 uint8_t g_ManData[8];
 
+BLUEIOSRVC_CHAR g_LmxChars[] = {
+	{
+		LMXBLUE_UUID_MSGCHAR,
+		256,
+		BLUEIOSVC_CHAR_PROP_WRITEWORESP,
+		s_WdCharDescString,
+		LmxBlueSrvcWrCallback
+	}
+};
 
 const BLUEIOSRVC_CFG s_LmxBlueSrvcCfg = {
 	BLUEIOSRVC_SECTYPE_NONE,
 	LMXBLUE_UUID_BASE,
 	LMXBLUE_UUID_SERVICE,
-	LMXBLUE_UUID_RDCHAR,
-	20, BLUEIOSVC_CHAR_PROP_READ | BLUEIOSVC_CHAR_PROP_NOTIFY,
-	s_RdCharDescString,
-	LMXBLUE_UUID_WRCHAR,
-	20, BLUEIOSVC_CHAR_PROP_WRITEWORESP,
-	s_WdCharDescString,
-	LmxBlueSrvcWrCallback
+	1,
+	g_LmxChars
 };
 
 BLUEIOSRVC g_LmxBleSrvc;
@@ -82,12 +86,13 @@ const BLEAPP_CFG s_BleAppCfg = {
 	sizeof(g_ManData),
 	BLEAPP_SECTYPE_NONE,
 	BLEAPP_SECEXCHG_NONE,
-	s_AdvUuids,
-	sizeof(s_AdvUuids) / sizeof(ble_uuid_t),
+	NULL,//s_AdvUuids,
+	0,//sizeof(s_AdvUuids) / sizeof(ble_uuid_t),
 	APP_ADV_INTERVAL,
 	APP_ADV_TIMEOUT_IN_SECONDS,
 	BLUEIO_CONNECT_LED_PORT,
-	BLUEIO_CONNECT_LED_PIN
+	BLUEIO_CONNECT_LED_PIN,
+	NULL
 };
 
 // I/O pins connection
@@ -101,27 +106,44 @@ LEDMXIOCFG g_IOCfg = {
 	LMXBLUE_CSTYPE
 };
 
+#define LMXBLUE_LINE_MAX			16
+
 // Display board configuration
-LEDMXCFG g_LmxCfg = {
-  &g_IOCfg,
-  8,  // Number of display board in daisy chain, only one in this case
-  {0, 1, 2, 3, 4, 5, 6, 7}, // display board ordering
+LEDMXCFG g_LmxCfg[LMXBLUE_LINE_MAX] = {
+    {
+	    &g_IOCfg,
+		4,  // Number of display board in daisy chain, only one in this case
+		{0, 1, 2, 3,}, // display board ordering
+    },
+    {
+	    &g_IOCfg,
+		4,  // Number of display board in daisy chain, only one in this case
+		{4, 5, 6, 7,}, // display board ordering
+    },
+    {
+	    &g_IOCfg,
+		4,  // Number of display board in daisy chain, only one in this case
+		{8, 9, 10, 11,}, // display board ordering
+    },
+    {
+	    &g_IOCfg,
+		4,  // Number of display board in daisy chain, only one in this case
+		{12, 13, 14, 15,}, // display board ordering
+    },
 };
 
-LEDMXDEV g_LmxDev = {0,};
+LEDMXDEV g_LmxDev[LMXBLUE_LINE_MAX] = {{0,},};
 
 void LmxBlueSrvcWrCallback(BLUEIOSRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len)
 {
-
+	LMXMSG *msg = (LMXMSG*)pData;
+	msg->Text[msg->Length] = 0;
+	//LedMxPrintLeft(&g_LmxDev, msg->Text);
 }
 
-void BlePeriphAppEvtDispatch(ble_evt_t * p_ble_evt)
+void BlePeriphAppSrvcEvtDispatch(ble_evt_t * p_ble_evt)
 {
     BlueIOBleSvcEvtHandler(&g_LmxBleSrvc, p_ble_evt);
-}
-
-void BlePeriphAppInitUserStorage()
-{
 }
 
 void BlePeriphAppInitServices()
@@ -138,9 +160,9 @@ void HardwareInit()
     IOPinCfg(s_GpioPins, s_NbGpioPins);
 
 	// Initialize IDM-LMX3208 series displays
-	LedMxInit(&g_LmxDev, &g_LmxCfg);
+	//LedMxInit(&g_LmxDev, &g_LmxCfg);
 
-	LedMxPrintLeft(&g_LmxDev, "IBB-LMXBLUE Blutooth LED matrix demo");
+	//LedMxPrintLeft(&g_LmxDev, "IBB-LMXBLUE Blutooth LED matrix demo");
 }
 
 //
@@ -162,9 +184,10 @@ int main()
 
     BlePeriphAppInit(&s_BleAppCfg, true);
 
-    // This function will not return
-    BlePeriphAppRun();
-
+    while(1)
+    {
+    	BlePeriphAppProcessEvt();
+    }
 	return 0;
 }
 

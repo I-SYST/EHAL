@@ -331,6 +331,11 @@ public:
 	virtual int Rate(int DataRate) = 0;
 	// Get current data rate in bits/sec (Hz)
 	virtual int Rate(void) = 0;
+	// Disable device for power reduction, re-enable with Enable() without
+	// full init
+	virtual void Disable(void) = 0;
+	// Enable device
+	virtual void Enable(void) = 0;
 	// Transmit full frame
 	virtual int Tx(int DevAddr, uint8_t *pData, int DataLen);
 	// Receive full frame

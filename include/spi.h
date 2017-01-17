@@ -125,14 +125,32 @@ extern "C" {
 // Require implementations
 bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData);
 
-static inline int SpiGetRate(SPIDEV *pDev) { return pDev->SerIntrf.GetRate(&pDev->SerIntrf); }
-static inline int SpiSetRate(SPIDEV *pDev, int Rate) { return pDev->SerIntrf.SetRate(&pDev->SerIntrf, Rate); }
-static inline int SpiRx(SPIDEV *pDev, int DevCs, uint8_t *pBuff, int Bufflen) {
+static inline int SPIGetRate(SPIDEV *pDev) { return pDev->SerIntrf.GetRate(&pDev->SerIntrf); }
+static inline int SPISetRate(SPIDEV *pDev, int Rate) {
+	return pDev->SerIntrf.SetRate(&pDev->SerIntrf, Rate);
+}
+static inline void SPIEnable(SPIDEV *pDev) { pDev->SerIntrf.Enable(&pDev->SerIntrf); }
+static inline void SPIDisable(SPIDEV *pDev) { pDev->SerIntrf.Disable(&pDev->SerIntrf); }
+static inline int SPIRx(SPIDEV *pDev, int DevCs, uint8_t *pBuff, int Bufflen) {
 	return SerialIntrfRx(&pDev->SerIntrf, DevCs, pBuff, Bufflen);
 }
-static inline int SpiTx(SPIDEV *pDev, int DevCs, uint8_t *pData, int DataLen) {
+static inline int SPITx(SPIDEV *pDev, int DevCs, uint8_t *pData, int DataLen) {
 	return SerialIntrfTx(&pDev->SerIntrf, DevCs, pData, DataLen);
 }
+static inline bool SPIStartRx(SPIDEV *pDev, int DevAddr) {
+	return SerialIntrfStartRx(&pDev->SerIntrf, DevAddr);
+}
+static inline int SPIRxData(SPIDEV *pDev, uint8_t *pBuff, int Bufflen) {
+	return SerialIntrfRxData(&pDev->SerIntrf, pBuff, Bufflen);
+}
+static inline void SPIStopRx(SPIDEV *pDev) { SerialIntrfStopRx(&pDev->SerIntrf); }
+static inline bool SPIStartTx(SPIDEV *pDev, int DevAddr) {
+	return SerialIntrfStartTx(&pDev->SerIntrf, DevAddr);
+}
+static inline int SPITxData(SPIDEV *pDev, uint8_t *pData, int Datalen) {
+	return SerialIntrfTxData(&pDev->SerIntrf, pData, Datalen);
+}
+static inline void SPIStopTx(SPIDEV *pDev) { SerialIntrfStopTx(&pDev->SerIntrf); }
 
 
 #ifdef __cplusplus

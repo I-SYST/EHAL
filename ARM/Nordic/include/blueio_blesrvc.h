@@ -4,9 +4,7 @@ File   : blueio_blesrvc.h
 Author : Hoang Nguyen Hoan          Mar. 25, 2014
 
 Desc   : Implementation allow the creation of generic custom Bluetooth Smart
-		 service with 2 characteristics.
-		 	 Read characteristics
-		 	 Write characteristics
+		 service with multiple user defined characteristics.
 
 Copyright (c) 2014, I-SYST inc., all rights reserved
 
@@ -68,22 +66,26 @@ typedef enum {
 } BLUEIOSRVC_SECTYPE;
 
 #pragma pack(push,4)
+
+typedef struct {
+    uint16_t Uuid;                          // char UUID
+    int MaxDataLen;                         // char max data length
+    uint32_t Property;                      // char properties define by BLUEIOSVC_CHAR_PROP_...
+    const char *pDesc;                      // char UTF-8 description string
+    BLUEIOSRVC_WRCB WrCB;                   // Callback for write char, set to NULL for read char
+    bool bNotify;                           // Notify flag for read characteristic
+    ble_gatts_char_handles_t Hdl;           // char handle
+} BLUEIOSRVC_CHAR;
+
 /*
  * User configuration for the service to be created
  */
 typedef struct {
-	BLUEIOSRVC_SECTYPE SecType;					// Secure or Open service/char
+	BLUEIOSRVC_SECTYPE SecType;				// Secure or Open service/char
 	ble_uuid128_t	UuidBase;				// Base UUID
 	uint16_t		UuidSvc;				// Service UUID
-	uint16_t		UuidRdChar;				// Rd char UUID
-	int				RdCharMaxLen;			// Rd char max data length
-	uint32_t		RdCharProp;
-	const char *	pRdCharDesc;			// Rd char UTF-8 description string
-	uint16_t		UuidWrChar;				// Wr char UUID
-	int				WrCharMaxLen;			// Wr char max data length
-	uint32_t		WrCharProp;
-	const char *	pWrCharDesc;			// Wr char UTF-8 description string
-	BLUEIOSRVC_WRCB	WrCB;					// Wr char callback
+	int             NbChar;                 // Total number of characteristics for the service
+	BLUEIOSRVC_CHAR *pCharArray;            // Pointer a an array of characteristic
 } BLUEIOSRVC_CFG;
 
 /*
@@ -93,14 +95,14 @@ typedef struct {
  *
  */
 struct __BlueIOBLEService {
-    uint16_t                    SvcHdl;					// Service handle
-    ble_gatts_char_handles_t    WrCharHdl;				// Write char handle
-    ble_gatts_char_handles_t    RdCharHdl;    			// Read char handle
-    uint16_t                    ConnHdl;				// Connection handle
-    bool                        bNotify;				// Notify flag
-    BLUEIOSRVC_WRCB				WrCB;					// char write callback
-    uint8_t                     UuidType;
+    int             NbChar;                 // Number of characteristic defined for this service
+    BLUEIOSRVC_CHAR *pCharArray;            // Pointer to array of characteristics
+    uint16_t        SrvcHdl;                // Service handle
+    uint16_t        ConnHdl;				// Connection handle
+    uint16_t        UuidSvc;                // Service UUID
+    uint8_t         UuidType;
 };
+
 #pragma pack(pop)
 
 #ifdef __cplusplus
@@ -127,7 +129,7 @@ uint32_t BlueIOBleSrvcInit(BLUEIOSRVC *pSrvc, const BLUEIOSRVC_CFG *pCfg);
  *
  * @return	Number of bytes sent
  */
-uint16_t BlueIOBleSrvcCharSend(BLUEIOSRVC *pSrvc, uint8_t *pData, uint16_t DataLen);
+uint16_t BlueIOBleSrvcCharSend(BLUEIOSRVC *pSrvc, int CharIdx, uint8_t *pData, uint16_t DataLen);
 
 /**
  * BlueIO service event handler.  Call this within BLE dispatch event callback

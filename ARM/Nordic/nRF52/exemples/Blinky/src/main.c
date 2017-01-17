@@ -7,8 +7,13 @@
 #include "iopincfg.h"
 #include "iopinctrl.h"
 
+extern void initialise_monitor_handles(void);
+
 int main(void)
 {
+    initialise_monitor_handles();
+
+    printf("hello world!\n");
 
 	IOPinConfig(0, BLUEIO_LED_BLUE_PIN, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
 	IOPinSet(0, BLUEIO_LED_BLUE_PIN);
