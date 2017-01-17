@@ -27,10 +27,15 @@ typedef enum {
 #pragma pack(push, 1)
 
 typedef struct {
+	int Length;				// Length of text
 	int LineNo;				// Display line number
 	LMXDISP_STYLE Style;	// Display style
 	char Text[LMXBLUE_MAX_MSG_LENGTH + 1];
-} LMX_MSG;
+} LMXMSG;
+
+typedef struct {
+
+} LMXCONFIG;
 
 #pragma pop()
 
