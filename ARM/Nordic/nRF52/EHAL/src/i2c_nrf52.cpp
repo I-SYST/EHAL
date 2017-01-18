@@ -286,4 +286,6 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 	pDev->SerIntrf.Busy = false;
 
 	reg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
+
+	return true;
 }
