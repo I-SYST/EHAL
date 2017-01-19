@@ -65,6 +65,8 @@ bool nRF52I2CWaitRxComplete(NRF52_I2CDEV *pDev, int Timeout)
 			pDev->pReg->EVENTS_ERROR = 0;
 			pDev->pReg->TASKS_RESUME = 1;
 			pDev->pReg->TASKS_STOP;
+
+			return false;
 		}
 		if (pDev->pReg->EVENTS_LASTRX)
 		{
@@ -73,13 +75,6 @@ bool nRF52I2CWaitRxComplete(NRF52_I2CDEV *pDev, int Timeout)
 			//pDev->pReg->TASKS_STOP = 1;
 			return true;
 		}
-/*		if (pDev->pReg->EVENTS_STOPPED)
-		{
-			// Must wait for stop, other wise DMA count would
-			// not be updated with correct value
-			pDev->pReg->EVENTS_STOPPED = 0;
-			return true;
-		}*/
 	} while (Timeout-- >  0);
 
 	return false;
@@ -96,21 +91,15 @@ bool nRF52I2CWaitTxComplete(NRF52_I2CDEV *pDev, int Timeout)
 			pDev->pReg->EVENTS_ERROR = 0;
 			pDev->pReg->TASKS_RESUME = 1;
 			pDev->pReg->TASKS_STOP = 1;
+
+			return false;
 		}
 		if (pDev->pReg->EVENTS_LASTTX)
 		{
 			// Must wait for last DMA then issue a stop
 			pDev->pReg->EVENTS_LASTTX = 0;
-//			pDev->pReg->TASKS_STOP = 1;
 			return true;
 		}
-/*		if (pDev->pReg->EVENTS_STOPPED)
-		{
-			// Must wait for stop, other wise DMA count would
-			// not be updated with correct value
-			pDev->pReg->EVENTS_STOPPED = 0;
-			return true;
-		}*/
 	} while (Timeout-- >  0);
 
 	return false;
@@ -127,6 +116,8 @@ bool nRF52I2CWaitStop(NRF52_I2CDEV *pDev, int Timeout)
             pDev->pReg->EVENTS_ERROR = 0;
             pDev->pReg->TASKS_RESUME = 1;
             pDev->pReg->TASKS_STOP = 1;
+
+            return false;
         }
         if (pDev->pReg->EVENTS_STOPPED)
         {
@@ -212,10 +203,6 @@ int nRF52I2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 		if (nRF52I2CWaitRxComplete(dev, 100000) == false)
 		    break;
 
-/*		l = dev->pReg->RXD.AMOUNT;
-		if (l <= 0)
-		    break;*/
-
 		BuffLen -= l;
 		pBuff += l;
 		cnt += l;
@@ -261,12 +248,6 @@ int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 		if (nRF52I2CWaitTxComplete(dev, 100000) == false)
 		    break;
 
-		int rtry = 1000;
-
-		do {
-		    l = dev->pReg->TXD.AMOUNT;
-		} while (l <= 0 && rtry-- > 0);
-
 		DataLen -= l;
 		pData += l;
 		cnt += l;
@@ -278,6 +259,10 @@ void nRF52I2CStopTx(SERINTRFDEV *pDev)
 {
     NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
+    if (dev->pReg->EVENTS_LASTTX == 1)
+    {
+        dev->pReg->EVENTS_LASTTX = 0;
+    }
     dev->pReg->TASKS_STOP = 1;
     nRF52I2CWaitStop(dev, 1000);
 }
@@ -320,8 +305,14 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 	pDev->SerIntrf.Busy = false;
 	pDev->SerIntrf.MaxRetry = pCfgData->MaxRetry;
 
-	reg->EVENTS_ERROR = 0;
-	reg->ERRORSRC = reg->ERRORSRC;
+	// Clear all errors
+    if (reg->EVENTS_ERROR)
+    {
+        reg->ERRORSRC = reg->ERRORSRC;
+        reg->EVENTS_ERROR = 0;
+        reg->TASKS_RESUME = 1;
+        reg->TASKS_STOP = 1;
+    }
 	reg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 
 	return true;
