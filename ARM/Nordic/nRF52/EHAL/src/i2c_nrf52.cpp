@@ -261,6 +261,12 @@ int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 		if (nRF52I2CWaitTxComplete(dev, 100000) == false)
 		    break;
 
+		int rtry = 1000;
+
+		do {
+		    l = dev->pReg->TXD.AMOUNT;
+		} while (l <= 0 && rtry-- > 0);
+
 		DataLen -= l;
 		pData += l;
 		cnt += l;
