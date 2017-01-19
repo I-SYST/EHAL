@@ -102,6 +102,7 @@ struct _serialintrf_dev {
 	int	IntPrio;			// Interrupt priority.  Value is implementation specific
 	SERINTRFEVCB EvtCB;		// Interrupt based event callback function pointer. Must be set to NULL if not used
 	volatile bool Busy;		// Busy flag to be set check and set at start and reset at end of transmission
+	int MaxRetry;			// Max retry when data could not be transfered (Rx/Tx returns zero count)
 
 	// Bellow are all mandatory functions to implement
 	// On init, all implementation must fill these function, no NULL allowed
@@ -265,26 +266,11 @@ static inline int SerialIntrfSetRate(SERINTRFDEV *pDev, int Rate) {
 	return pDev->SetRate(pDev, Rate);
 }
 
-static inline int SerialIntrfRx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen) {
-	int retval = 0;
-
-	if (pBuff && pDev->StartRx(pDev, DevAddr)) {
-		retval = pDev->RxData(pDev, pBuff, BuffLen);
-		pDev->StopRx(pDev);
-	}
-
-	return retval;
-}
-
-static inline int SerialIntrfTx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen) {
-	int retval = 0;
-
-	if (pBuff && pDev->StartTx(pDev, DevAddr)) {
-		retval = pDev->TxData(pDev, pBuff, BuffLen);
-		pDev->StopTx(pDev);
-	}
-	return retval;
-}
+int SerialIntrfRx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
+int SerialIntrfTx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
+// Read transfer. Send setup data then read return data.
+int SerialIntrfRead(SERINTRFDEV *pDev, int DevAddr, uint8_t *pTxData, int TxLen,
+                    uint8_t *pRxBuff, int RxLen);
 
 static inline bool SerialIntrfStartRx(SERINTRFDEV *pDev, int DevAddr) {
 	if (pDev->Busy)
@@ -336,10 +322,18 @@ public:
 	virtual void Disable(void) = 0;
 	// Enable device
 	virtual void Enable(void) = 0;
-	// Transmit full frame
-	virtual int Tx(int DevAddr, uint8_t *pData, int DataLen);
 	// Receive full frame
-	virtual int Rx(int DevAddr, uint8_t *pBuff, int BuffLen);
+	virtual int Rx(int DevAddr, uint8_t *pBuff, int BuffLen) {
+		return SerialIntrfRx(*this,DevAddr, pBuff, BuffLen);
+	}
+	// Transmit full frame
+	virtual int Tx(int DevAddr, uint8_t *pData, int DataLen) {
+		return SerialIntrfTx(*this, DevAddr, pData, DataLen);
+	}
+	// Read transfer. Send setup data then read return data.
+    virtual int Read(int DevAddr, uint8_t *pTxData, int TxLen, uint8_t *pRxBuff, int RxLen) {
+        return SerialIntrfRead(*this, DevAddr, pTxData, TxLen, pRxBuff, RxLen);
+    }
 	// Initiate receive
 	virtual bool StartRx(int DevAddr) = 0;
 	// Receive Data only, no Start/Stop condition

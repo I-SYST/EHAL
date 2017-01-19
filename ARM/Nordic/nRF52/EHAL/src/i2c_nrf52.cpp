@@ -61,21 +61,18 @@ bool nRF52I2CWaitRxComplete(NRF52_I2CDEV *pDev, int Timeout)
 		if (pDev->pReg->EVENTS_ERROR)
 		{
 			// Abort in case error
+            pDev->pReg->ERRORSRC = pDev->pReg->ERRORSRC;
 			pDev->pReg->EVENTS_ERROR = 0;
 			pDev->pReg->TASKS_RESUME = 1;
 			pDev->pReg->TASKS_STOP;
+
+			return false;
 		}
 		if (pDev->pReg->EVENTS_LASTRX)
 		{
 			// Must wait for last DMA then issue a stop
 			pDev->pReg->EVENTS_LASTRX = 0;
-			pDev->pReg->TASKS_STOP = 1;
-		}
-		if (pDev->pReg->EVENTS_STOPPED)
-		{
-			// Must wait for stop, other wise DMA count would
-			// not be updated with correct value
-			pDev->pReg->EVENTS_STOPPED = 0;
+			//pDev->pReg->TASKS_STOP = 1;
 			return true;
 		}
 	} while (Timeout-- >  0);
@@ -94,23 +91,44 @@ bool nRF52I2CWaitTxComplete(NRF52_I2CDEV *pDev, int Timeout)
 			pDev->pReg->EVENTS_ERROR = 0;
 			pDev->pReg->TASKS_RESUME = 1;
 			pDev->pReg->TASKS_STOP = 1;
+
+			return false;
 		}
 		if (pDev->pReg->EVENTS_LASTTX)
 		{
 			// Must wait for last DMA then issue a stop
 			pDev->pReg->EVENTS_LASTTX = 0;
-			pDev->pReg->TASKS_STOP = 1;
-		}
-		if (pDev->pReg->EVENTS_STOPPED)
-		{
-			// Must wait for stop, other wise DMA count would
-			// not be updated with correct value
-			pDev->pReg->EVENTS_STOPPED = 0;
 			return true;
 		}
 	} while (Timeout-- >  0);
 
 	return false;
+}
+
+bool nRF52I2CWaitStop(NRF52_I2CDEV *pDev, int Timeout)
+{
+    uint32_t d;
+    do {
+        if (pDev->pReg->EVENTS_ERROR)
+        {
+            // Abort in case error
+            pDev->pReg->ERRORSRC = pDev->pReg->ERRORSRC;
+            pDev->pReg->EVENTS_ERROR = 0;
+            pDev->pReg->TASKS_RESUME = 1;
+            pDev->pReg->TASKS_STOP = 1;
+
+            return false;
+        }
+        if (pDev->pReg->EVENTS_STOPPED)
+        {
+            // Must wait for stop, other wise DMA count would
+            // not be updated with correct value
+            pDev->pReg->EVENTS_STOPPED = 0;
+            return true;
+        }
+    } while (Timeout-- >  0);
+
+    return false;
 }
 
 void nRF52I2CDisable(SERINTRFDEV *pDev)
@@ -182,10 +200,7 @@ int nRF52I2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 		dev->pReg->RXD.LIST = 0;
 		dev->pReg->TASKS_STARTRX = 1;
 
-		nRF52I2CWaitRxComplete(dev, 100000);
-
-		l = dev->pReg->RXD.AMOUNT;
-		if (l <= 0)
+		if (nRF52I2CWaitRxComplete(dev, 100000) == false)
 		    break;
 
 		BuffLen -= l;
@@ -197,8 +212,9 @@ int nRF52I2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 
 void nRF52I2CStopRx(SERINTRFDEV *pDev)
 {
-	// Nothing to do here since DMA has to be completed during
-	// RxData phase
+    NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
+    dev->pReg->TASKS_STOP = 1;
+    nRF52I2CWaitStop(dev, 1000);
 }
 
 bool nRF52I2CStartTx(SERINTRFDEV *pDev, int DevAddr)
@@ -229,11 +245,8 @@ int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 		dev->pReg->TXD.LIST = 0;
 		dev->pReg->TASKS_STARTTX = 1;
 
-		nRF52I2CWaitTxComplete(dev, 100000);
-
-        l = dev->pReg->TXD.AMOUNT;
-        if (l <= 0)
-            break;
+		if (nRF52I2CWaitTxComplete(dev, 100000) == false)
+		    break;
 
 		DataLen -= l;
 		pData += l;
@@ -244,8 +257,14 @@ int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 
 void nRF52I2CStopTx(SERINTRFDEV *pDev)
 {
-	// Nothing to do here since DMA has to be completed during
-	// TxData phase
+    NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
+
+    if (dev->pReg->EVENTS_LASTTX == 1)
+    {
+        dev->pReg->EVENTS_LASTTX = 0;
+    }
+    dev->pReg->TASKS_STOP = 1;
+    nRF52I2CWaitStop(dev, 1000);
 }
 
 bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
@@ -284,7 +303,16 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 	pDev->SerIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->SerIntrf.EvtCB = pCfgData->EvtCB;
 	pDev->SerIntrf.Busy = false;
+	pDev->SerIntrf.MaxRetry = pCfgData->MaxRetry;
 
+	// Clear all errors
+    if (reg->EVENTS_ERROR)
+    {
+        reg->ERRORSRC = reg->ERRORSRC;
+        reg->EVENTS_ERROR = 0;
+        reg->TASKS_RESUME = 1;
+        reg->TASKS_STOP = 1;
+    }
 	reg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 
 	return true;

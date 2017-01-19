@@ -330,6 +330,7 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	pDev->SerIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->SerIntrf.EvtCB = pCfgData->EvtCB;
 	pDev->SerIntrf.Busy = false;
+	pDev->SerIntrf.MaxRetry = 0;
 
 	reg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
 }
