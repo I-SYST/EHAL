@@ -99,7 +99,7 @@ bool nRF52I2CWaitTxComplete(NRF52_I2CDEV *pDev, int Timeout)
 		{
 			// Must wait for last DMA then issue a stop
 			pDev->pReg->EVENTS_LASTTX = 0;
-			pDev->pReg->TASKS_STOP = 1;
+//			pDev->pReg->TASKS_STOP = 1;
 		}
 		if (pDev->pReg->EVENTS_STOPPED)
 		{
@@ -199,6 +199,8 @@ void nRF52I2CStopRx(SERINTRFDEV *pDev)
 {
 	// Nothing to do here since DMA has to be completed during
 	// RxData phase
+//    pDev->pReg->TASKS_STOP = 1;
+//    nRF52I2CWaitRxComplete(pDev, 1000);
 }
 
 bool nRF52I2CStartTx(SERINTRFDEV *pDev, int DevAddr)
@@ -244,8 +246,12 @@ int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 
 void nRF52I2CStopTx(SERINTRFDEV *pDev)
 {
-	// Nothing to do here since DMA has to be completed during
+    NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
+
+    // Nothing to do here since DMA has to be completed during
 	// TxData phase
+    dev->pReg->TASKS_STOP = 1;
+    nRF52I2CWaitTxComplete(dev, 1000);
 }
 
 bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
