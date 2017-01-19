@@ -268,6 +268,9 @@ static inline int SerialIntrfSetRate(SERINTRFDEV *pDev, int Rate) {
 
 int SerialIntrfRx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
 int SerialIntrfTx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
+// Read transfer. Send setup data then read return data.
+int SerialIntrfRead(SERINTRFDEV *pDev, int DevAddr, uint8_t *pTxData, int TxLen,
+                    uint8_t *pRxBuff, int RxLen);
 
 static inline bool SerialIntrfStartRx(SERINTRFDEV *pDev, int DevAddr) {
 	if (pDev->Busy)
@@ -327,6 +330,10 @@ public:
 	virtual int Tx(int DevAddr, uint8_t *pData, int DataLen) {
 		return SerialIntrfTx(*this, DevAddr, pData, DataLen);
 	}
+	// Read transfer. Send setup data then read return data.
+    virtual int Read(int DevAddr, uint8_t *pTxData, int TxLen, uint8_t *pRxBuff, int RxLen) {
+        return SerialIntrfRead(*this, DevAddr, pTxData, TxLen, pRxBuff, RxLen);
+    }
 	// Initiate receive
 	virtual bool StartRx(int DevAddr) = 0;
 	// Receive Data only, no Start/Stop condition

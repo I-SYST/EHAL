@@ -65,6 +65,30 @@ int SerialIntrfTx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen)
 	return count;
 }
 
+int SerialIntrfRead(SERINTRFDEV *pDev, int DevAddr, uint8_t *pTxData, int TxLen,
+                    uint8_t *pRxBuff, int RxLen)
+{
+    int count = 0;
+    int nrtry = pDev->MaxRetry;
+
+    if (pRxBuff == NULL)
+        return 0;
+
+    do {
+        if (pDev->StartRx(pDev, DevAddr))
+        {
+            if (pTxData)
+            {
+                count = pDev->TxData(pDev, pTxData, TxLen);
+            }
+            count = pDev->RxData(pDev, pRxBuff, RxLen);
+            pDev->StopRx(pDev);
+        }
+    } while (count <= 0 && nrtry-- > 0);
+
+    return count;
+}
+
 /*
 // Receive full frame
 int SerialIntrf::Rx(int DevAddr, uint8_t *pBuff, int BuffLen)
