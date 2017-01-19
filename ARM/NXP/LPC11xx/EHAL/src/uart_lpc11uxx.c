@@ -328,8 +328,9 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->SerIntrf.StartTx = LpcUARTStartTx;
 	pDev->SerIntrf.TxData = LpcUARTTxData;
 	pDev->SerIntrf.StopTx = LpcUARTStopTx;
-	pDev->EvtCallback = pCfg->EvtCallback;
 	pDev->SerIntrf.Busy = false;
+	pDev->SerIntrf.MaxRetry = 0;
+	pDev->EvtCallback = pCfg->EvtCallback;
 
 	g_LpcUartDev[pCfg->DevNo].bTxReady = true;
 

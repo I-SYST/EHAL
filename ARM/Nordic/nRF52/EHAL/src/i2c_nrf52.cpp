@@ -284,6 +284,7 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 	pDev->SerIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->SerIntrf.EvtCB = pCfgData->EvtCB;
 	pDev->SerIntrf.Busy = false;
+	pDev->SerIntrf.MaxRetry = pCfgData->MaxRetry;
 
 	reg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 

@@ -35,6 +35,37 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #include "serialintrf.h"
 
+int SerialIntrfRx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen)
+{
+	int count = 0;
+	int nrtry = pDev->MaxRetry;
+
+	do {
+		if (pBuff && pDev->StartRx(pDev, DevAddr)) {
+			count = pDev->RxData(pDev, pBuff, BuffLen);
+			pDev->StopRx(pDev);
+		}
+	} while(count <= 0 && nrtry-- > 0);
+
+	return count;
+}
+
+int SerialIntrfTx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen)
+{
+	int count = 0;
+	int nrtry = pDev->MaxRetry;
+
+	do {
+		if (pBuff && pDev->StartTx(pDev, DevAddr)) {
+			count = pDev->TxData(pDev, pBuff, BuffLen);
+			pDev->StopTx(pDev);
+		}
+	} while (count <= 0 && nrtry-- > 0);
+
+	return count;
+}
+
+/*
 // Receive full frame
 int SerialIntrf::Rx(int DevAddr, uint8_t *pBuff, int BuffLen)
 {
@@ -62,3 +93,4 @@ int SerialIntrf::Tx(int DevAddr, uint8_t *pData, int DataLen)
 
 	return count;
 }
+*/
