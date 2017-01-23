@@ -201,8 +201,8 @@ static void gap_params_init(const BLEAPP_CFG *pBleAppCfg)
     }
 
     err_code = sd_ble_gap_device_name_set(&sec_mode,
-                                          (const uint8_t *) pBleAppCfg->DevName,
-                                          strlen(pBleAppCfg->DevName));
+                                          (const uint8_t *) pBleAppCfg->pDevName,
+                                          strlen(pBleAppCfg->pDevName));
     APP_ERROR_CHECK(err_code);
 
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
@@ -686,7 +686,7 @@ void BlePeriphAppAdvInit(const BLEAPP_CFG *pCfg)
     ble_adv_modes_config_t options;
     ble_advdata_manuf_data_t mdata;
 
-    mdata.company_identifier = pCfg->CompanyID;
+    mdata.company_identifier = pCfg->VendorID;
     mdata.data.p_data = (uint8_t*)pCfg->pManData;
     mdata.data.size = pCfg->ManDataLen;
 
@@ -707,7 +707,7 @@ void BlePeriphAppAdvInit(const BLEAPP_CFG *pCfg)
     options.ble_adv_fast_interval = pCfg->AdvInterval;
     options.ble_adv_fast_timeout  = pCfg->AdvTimeout;
 
-    if (pCfg->AdvSlowInterval > 0)
+   // if (pCfg->AdvSlowInterval > 0)
     {
 		options.ble_adv_slow_enabled  = true;
 		options.ble_adv_slow_interval = pCfg->AdvSlowInterval;
@@ -784,20 +784,43 @@ bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
 	gap_params_init(pBleAppCfg);
 
+    BlePeriphAppInitUserData();
+
     BlePeriphAppInitServices();
 
     ble_dis_init_t   dis_init;
-    ble_dis_sys_id_t sys_id;
+    ble_dis_pnp_id_t pnp_id;
 
     // Initialize Device Information Service.
     memset(&dis_init, 0, sizeof(dis_init));
 
-    ble_srv_ascii_to_utf8(&dis_init.manufact_name_str, (char*)pBleAppCfg->ManName);
-    ble_srv_ascii_to_utf8(&dis_init.model_num_str, (char*)pBleAppCfg->ModelName);
+    if (pBleAppCfg->pManufName)
+    {
+    	ble_srv_ascii_to_utf8(&dis_init.manufact_name_str, (char*)pBleAppCfg->pManufName);
+    }
 
-    sys_id.manufacturer_id            = pBleAppCfg->CompanyID;
-    sys_id.organizationally_unique_id = pBleAppCfg->CompanyID;
-    dis_init.p_sys_id                 = &sys_id;
+    if (pBleAppCfg->pModelName)
+    {
+    	ble_srv_ascii_to_utf8(&dis_init.model_num_str, (char*)pBleAppCfg->pModelName);
+    }
+
+    if (pBleAppCfg->pSerialNoStr)
+    {
+    	ble_srv_ascii_to_utf8(&dis_init.serial_num_str, (char*)pBleAppCfg->pSerialNoStr);
+    }
+
+    if (pBleAppCfg->pFwVerStr)
+    {
+    	ble_srv_ascii_to_utf8(&dis_init.fw_rev_str, (char*)pBleAppCfg->pFwVerStr);
+    }
+
+    if (pBleAppCfg->pHwVerStr)
+    {
+    	ble_srv_ascii_to_utf8(&dis_init.hw_rev_str, (char*)pBleAppCfg->pHwVerStr);
+    }
+
+    pnp_id.vendor_id  = pBleAppCfg->VendorID;
+    dis_init.p_pnp_id = &pnp_id;
 
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&dis_init.dis_attr_md.read_perm);
     BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&dis_init.dis_attr_md.write_perm);
@@ -812,12 +835,15 @@ bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     return true;
 }
 
+void BlePeriphAppStart()
+{
+
+    uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
+    APP_ERROR_CHECK(err_code);
+}
+
 void BlePeriphAppProcessEvt()
 {
-    uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
-
-    APP_ERROR_CHECK(err_code);
-
     if (g_BleAppData.AppMode == BLEAPP_MODE_RTOS)
     {
         intern_softdevice_events_execute();

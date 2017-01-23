@@ -245,6 +245,18 @@ struct _serialintrf_dev {
 	 * @return	None
 	 */
 	void (*StopTx)(SERINTRFDEV *pSerDev);
+
+	/**
+	 * @brief - Reset
+	 *      This function perform a reset of interface.  Must provide empty
+	 * function of not used.
+	 *
+     * @param
+     *      pSerDev : Pointer to an instance of the Serial Interface
+     *
+     * @return  None
+	 */
+	void (*Reset)(SERINTRFDEV *pSerDev);
 };
 
 #pragma pack(pop)
@@ -304,6 +316,10 @@ static inline void SerialIntrfStopTx(SERINTRFDEV *pDev) {
 	pDev->StopTx(pDev);
 }
 
+static inline void SerialIntrfReset(SERINTRFDEV *pDev) {
+    if (pDev->Reset)
+        pDev->Reset(pDev);
+}
 
 #ifdef __cplusplus
 /*
@@ -346,7 +362,10 @@ public:
 	virtual int TxData(uint8_t *pData, int DataLen) = 0;
 	// Stop transmit
 	virtual void StopTx(void) = 0;
+	//
+	virtual void Reset(void) { SerialIntrfReset(*this); }
 };
+
 #endif
 
 #endif	// __SERIALINTRF_H__
