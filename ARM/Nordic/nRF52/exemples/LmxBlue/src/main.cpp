@@ -81,7 +81,11 @@ const BLEAPP_CFG s_BleAppCfg = {
 	"LMXBLUE",
 	"IBB-LMXBLUE",
 	"I-SYST inc.",
+	"",
+	"0.0",
+	"0.0",
 	ISYST_BLUETOOTH_ID,
+	1,
 	g_ManData,
 	sizeof(g_ManData),
 	BLEAPP_SECTYPE_NONE,
@@ -90,6 +94,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	0,//sizeof(s_AdvUuids) / sizeof(ble_uuid_t),
 	APP_ADV_INTERVAL,
 	APP_ADV_TIMEOUT_IN_SECONDS,
+	0,
 	BLUEIO_CONNECT_LED_PORT,
 	BLUEIO_CONNECT_LED_PIN,
 	NULL
@@ -165,6 +170,11 @@ void HardwareInit()
 	//LedMxPrintLeft(&g_LmxDev, "IBB-LMXBLUE Blutooth LED matrix demo");
 }
 
+void BlePeriphAppInitUserData()
+{
+
+}
+
 //
 // Print a greeting message on standard output and exit.
 //
@@ -183,6 +193,8 @@ int main()
     HardwareInit();
 
     BlePeriphAppInit(&s_BleAppCfg, true);
+
+    BlePeriphAppStart();
 
     while(1)
     {

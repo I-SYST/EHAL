@@ -58,7 +58,7 @@ typedef enum {
 #define BLEAPP_SECEXCHG_OOB			(1<<2)
 
 #define BLEAPP_DEVNAME_MAX_SIZE			10
-#define BLEAPP_NAME_MAX_SIZE			20
+#define BLEAPP_INFOSTR_MAX_SIZE			20
 
 typedef void (*PRIVINITCB)();
 
@@ -66,10 +66,14 @@ typedef void (*PRIVINITCB)();
 
 typedef struct _BleAppConfig {
 	BLEAPP_MODE AppMode;
-	const char DevName[BLEAPP_DEVNAME_MAX_SIZE];
-	const char ModelName[BLEAPP_NAME_MAX_SIZE];
-	const char ManName[BLEAPP_NAME_MAX_SIZE];
-	uint16_t CompanyID;			// Bluetooth company id
+	const char *pDevName;		// Device name
+	const char *pModelName;		// Model name
+	const char *pManufName;		// Manufacturer name
+	const char *pSerialNoStr;	// Serial number string
+	const char *pFwVerStr;		// Firmware version string
+	const char *pHwVerStr;		// Hardware version string
+	uint16_t VendorID;			// PnP Bluetooth/USB vendor id
+	uint16_t ProductId;			// PnP Product ID
 	const uint8_t *pManData;	// Manufacture specific data to advertise
 	int ManDataLen;				// Length of manufacture specific data
 	BLEAPP_SECTYPE SecType;		// Secure connection type
@@ -94,6 +98,7 @@ extern "C" {
 // ***
 // Require implementations per app
 //
+void BlePeriphAppInitUserData();
 void BlePeriphAppInitServices();
 void BlePeriphAppSrvcEvtDispatch(ble_evt_t * p_ble_evt);
 
@@ -103,6 +108,7 @@ void BlePeriphAppSrvcEvtDispatch(ble_evt_t * p_ble_evt);
 bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond);
 void BlePeriphAppProcessEvt();
 void BlePeriphAppEnterDfu();
+void BlePeriphAppStart();
 
 #ifdef __cplusplus
 }
