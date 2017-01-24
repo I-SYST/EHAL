@@ -43,11 +43,15 @@ Modified by          Date              Description
 #include "serialintrf.h"
 
 #define FLASH_CMD_READID			0x9F
+#define FLASH_CMD_RDCR              0x15    // Read configuration register
+#define FLASH_CMD_WRSR              0x01    // Write Register (Status 1, Configuration 1)
 #define FLASH_CMD_WRITE             0x2
 #define FLASH_CMD_READ              0x3
 #define FLASH_CMD_WRDISABLE         0x4
 #define FLASH_CMD_READSTATUS        0x5
 #define FLASH_CMD_WRENABLE          0x6
+#define FLASH_CMD_EN4B              0xB7    // Enable 4 bytes address
+#define FLASH_CMD_EX4B              0xE9    // Disable 4 bytes address
 #define FLASH_CMD_BLOCK_ERASE       0xD8
 #define FLASH_CMD_BULK_ERASE        0xC7
 
@@ -148,8 +152,8 @@ private:
     uint64_t    vTotalSize;    // Total Flash size in bytes
     int         vAddrSize;     // Address size in bytes
     int         vDevNo;
-   SerialIntrf *vpInterf;
-   FLASHDISKIOCB vpWaitCB;
+    SerialIntrf *vpInterf;
+    FLASHDISKIOCB vpWaitCB;
 };
 
 #ifdef __cplusplus

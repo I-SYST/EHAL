@@ -190,7 +190,7 @@ void FlashDiskIO::EraseBlock(uint32_t BlkNo, int NbBlk)
         for (int i = 1; i <= vAddrSize; i++)
             d[i] = p[vAddrSize - i];
         WaitReady(-1, 10);
-        vpInterf->Tx(vDevNo, d, 4);
+        vpInterf->Tx(vDevNo, d, vAddrSize + 1);
         BlkNo += vEraseSize;
     }
     WriteDisable();
@@ -217,7 +217,7 @@ bool FlashDiskIO::SectRead(uint32_t SectNo, uint8_t *pBuff)
             d[i] = p[vAddrSize - i];
 
         vpInterf->StartRx(vDevNo);
-        vpInterf->TxData((uint8_t*)d, 4);
+        vpInterf->TxData((uint8_t*)d, vAddrSize + 1);
         int l = vpInterf->RxData(pBuff, DISKIO_SECT_SIZE);
         vpInterf->StopRx();
         if (l <= 0)
@@ -260,7 +260,7 @@ bool FlashDiskIO::SectWrite(uint32_t SectNo, uint8_t *pData)
         WriteEnable();
 
         vpInterf->StartTx(vDevNo);
-        vpInterf->TxData((uint8_t*)d, 4);
+        vpInterf->TxData((uint8_t*)d, vAddrSize + 1);
         l = vpInterf->TxData(pData, l);
         vpInterf->StopTx();
         if (l <= 0)
