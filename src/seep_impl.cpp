@@ -36,6 +36,7 @@ Modified by          Date              Description
 #include <algorithm>
 using namespace std;
 
+#include "idelay.h"
 #include "seep.h"
 #include "iopinctrl.h"
 
@@ -48,20 +49,6 @@ Seep::~Seep()
 {
 }
 
-bool Seep::Init(SEEP_CFG &CfgData, SerialIntrf *pInterf)
-{
-    vDevData.pInterf = *pInterf;
-	vDevData.DevAddr = CfgData.DevAddr;
-	vDevData.PageSize = CfgData.PageSize;
-	vDevData.AddrLen = CfgData.AddrLen;
-	vDevData.pWaitCB = CfgData.pWaitCB;
-	vDevData.Size = CfgData.Size;
-	if (CfgData.pInitCB)
-		return CfgData.pInitCB(vDevData.DevAddr, *pInterf);
-
-	return true;
-}
-
 bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf)
 {
     pDev->pInterf = pInterf;
@@ -70,6 +57,7 @@ bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf)
     pDev->AddrLen = pCfgData->AddrLen;
     pDev->pWaitCB = pCfgData->pWaitCB;
     pDev->WrProtPin = pCfgData->WrProtPin;
+    pDev->WrDelay = pCfgData->WrDelay * 1000; // convert to usec
 
     if (pCfgData->WrProtPin.PortNo >= 0 && pCfgData->WrProtPin.PinNo >= 0)
     {
@@ -126,7 +114,14 @@ int SeepWrite(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
         }*/
         size = SerialIntrfWrite(pDev->pInterf, pDev->DevAddr, ad, pDev->AddrLen, pData, size);
         if (pDev->pWaitCB)
+        {
             pDev->pWaitCB(pDev->DevAddr, pDev->pInterf);
+        }
+        else if (pDev->WrDelay > 0)
+        {
+            usDelay(pDev->WrDelay);
+        }
+
         Addr += size;
         Len -= size;
         pData += size;
