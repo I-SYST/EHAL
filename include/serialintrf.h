@@ -280,9 +280,12 @@ static inline int SerialIntrfSetRate(SERINTRFDEV *pDev, int Rate) {
 
 int SerialIntrfRx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
 int SerialIntrfTx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
-// Read transfer. Send setup data then read return data.
-int SerialIntrfRead(SERINTRFDEV *pDev, int DevAddr, uint8_t *pTxData, int TxLen,
+// Read transfer. Send setup data (pAdCmd) then read return data.
+int SerialIntrfRead(SERINTRFDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
                     uint8_t *pRxBuff, int RxLen);
+// Write transfer. Send setup data (pAdCmd) and write data in single transfer.
+int SerialIntrfWrite(SERINTRFDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
+                     uint8_t *pTxData, int TxLen);
 
 static inline bool SerialIntrfStartRx(SERINTRFDEV *pDev, int DevAddr) {
 	if (pDev->Busy)
@@ -347,8 +350,13 @@ public:
 		return SerialIntrfTx(*this, DevAddr, pData, DataLen);
 	}
 	// Read transfer. Send setup data then read return data.
-    virtual int Read(int DevAddr, uint8_t *pTxData, int TxLen, uint8_t *pRxBuff, int RxLen) {
-        return SerialIntrfRead(*this, DevAddr, pTxData, TxLen, pRxBuff, RxLen);
+    virtual int Read(int DevAddr, uint8_t *pAdCmd, int AdCmdLen, uint8_t *pRxBuff, int RxLen) {
+        return SerialIntrfRead(*this, DevAddr, pAdCmd, AdCmdLen, pRxBuff, RxLen);
+    }
+    // Write transfer. Send setup data and write data in single transfer.
+    // @return  number of bytes of write data send (not count setup data)
+    virtual int Write(int DevAddr, uint8_t *pAdCmd, int AdCmdLen, uint8_t *pTxData, int TxLen) {
+        return SerialIntrfWrite(*this, DevAddr, pAdCmd, AdCmdLen, pTxData, TxLen);
     }
 	// Initiate receive
 	virtual bool StartRx(int DevAddr) = 0;

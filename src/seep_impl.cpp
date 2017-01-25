@@ -55,6 +55,7 @@ bool Seep::Init(SEEP_CFG &CfgData, SerialIntrf *pInterf)
 	vDevData.PageSize = CfgData.PageSize;
 	vDevData.AddrLen = CfgData.AddrLen;
 	vDevData.pWaitCB = CfgData.pWaitCB;
+	vDevData.Size = CfgData.Size;
 	if (CfgData.pInitCB)
 		return CfgData.pInitCB(vDevData.DevAddr, *pInterf);
 
@@ -93,12 +94,11 @@ int SeepRead(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
         ad[i] = p[pDev->AddrLen - i - 1];
     }
 
-    if (SerialIntrfTx(pDev->pInterf, pDev->DevAddr, (uint8_t*)ad, pDev->AddrLen))
+/*    if (SerialIntrfTx(pDev->pInterf, pDev->DevAddr, (uint8_t*)ad, pDev->AddrLen))
     {
         return SerialIntrfRx(pDev->pInterf, pDev->DevAddr, pData, Len);
-    }
-
-    return 0;
+    }*/
+    return SerialIntrfRead(pDev->pInterf, pDev->DevAddr, ad, pDev->AddrLen, pData, Len);
 }
 
 // Note: Sequential write is bound by page size boundary
@@ -116,14 +116,17 @@ int SeepWrite(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
             ad[i] = p[pDev->AddrLen - i - 1];
         }
 
-        if (SerialIntrfStartTx(pDev->pInterf, pDev->DevAddr))
+ /*       if (SerialIntrfStartTx(pDev->pInterf, pDev->DevAddr))
         {
             pDev->pInterf->TxData(pDev->pInterf, ad, pDev->AddrLen);
             count += pDev->pInterf->TxData(pDev->pInterf, pData, size);
             SerialIntrfStopTx(pDev->pInterf);
             if (pDev->pWaitCB)
                 pDev->pWaitCB(pDev->DevAddr, pDev->pInterf);
-        }
+        }*/
+        size = SerialIntrfWrite(pDev->pInterf, pDev->DevAddr, ad, pDev->AddrLen, pData, size);
+        if (pDev->pWaitCB)
+            pDev->pWaitCB(pDev->DevAddr, pDev->pInterf);
         Addr += size;
         Len -= size;
         pData += size;
