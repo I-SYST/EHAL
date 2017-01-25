@@ -35,16 +35,19 @@ Modified by         Date            Description
 
 #include "i2c.h"
 #include "iopinctrl.h"
+#include "idelay.h"
 
+#define NRF52_I2C_MAXDEV        2
+#define NRF52_I2C_DMA_MAXCNT    255
+
+#pragma pack(push, 4)
 typedef struct {
 	int DevNo;
 	I2CDEV *pI2cDev;
 	uint32_t Clk;
 	NRF_TWIM_Type *pReg;	// Register map
 } NRF52_I2CDEV;
-
-#define NRF52_I2C_MAXDEV		2
-#define NRF52_I2C_DMA_MAXCNT	255
+#pragma pack(pop)
 
 static NRF52_I2CDEV s_nRF52I2CDev[NRF52_I2C_MAXDEV] = {
 	{
@@ -246,7 +249,7 @@ int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 		dev->pReg->TASKS_STARTTX = 1;
 
 		if (nRF52I2CWaitTxComplete(dev, 100000) == false)
-		    break;
+            break;
 
 		DataLen -= l;
 		pData += l;
@@ -265,6 +268,34 @@ void nRF52I2CStopTx(SERINTRFDEV *pDev)
     }
     dev->pReg->TASKS_STOP = 1;
     nRF52I2CWaitStop(dev, 1000);
+}
+
+void nRF52I2CReset(SERINTRFDEV *pDev)
+{
+    NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
+
+    nRF52I2CDisable(pDev);
+
+    IOPinConfig(0, dev->pReg->PSEL.SCL, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
+    IOPinConfig(0, dev->pReg->PSEL.SDA, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
+
+    IOPinSet(0, dev->pReg->PSEL.SDA);
+
+    for (int i = 0; i < 10; i++)
+    {
+        IOPinSet(0, dev->pReg->PSEL.SCL);
+        usDelay(5);
+        IOPinClear(0, dev->pReg->PSEL.SCL);
+        usDelay(5);
+    }
+    IOPinConfig(0, dev->pReg->PSEL.SDA, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
+    IOPinClear(0, dev->pReg->PSEL.SDA);
+    usDelay(5);
+    IOPinSet(0, dev->pReg->PSEL.SCL);
+    usDelay(2);
+    IOPinSet(0, dev->pReg->PSEL.SDA);
+
+    nRF52I2CEnable(pDev);
 }
 
 bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
@@ -300,6 +331,7 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 	pDev->SerIntrf.StartTx = nRF52I2CStartTx;
 	pDev->SerIntrf.TxData = nRF52I2CTxData;
 	pDev->SerIntrf.StopTx = nRF52I2CStopTx;
+	pDev->SerIntrf.Reset = nRF52I2CReset;
 	pDev->SerIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->SerIntrf.EvtCB = pCfgData->EvtCB;
 	pDev->SerIntrf.Busy = false;
@@ -313,6 +345,9 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
         reg->TASKS_RESUME = 1;
         reg->TASKS_STOP = 1;
     }
+
+    nRF52I2CReset(&pDev->SerIntrf);
+
 	reg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 
 	return true;
