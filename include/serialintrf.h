@@ -101,7 +101,7 @@ struct _serialintrf_dev {
 	void *pDevData;			// Private device interface implementation data
 	int	IntPrio;			// Interrupt priority.  Value is implementation specific
 	SERINTRFEVCB EvtCB;		// Interrupt based event callback function pointer. Must be set to NULL if not used
-	volatile bool Busy;		// Busy flag to be set check and set at start and reset at end of transmission
+	bool Busy;		        // Busy flag to be set check and set at start and reset at end of transmission
 	int MaxRetry;			// Max retry when data could not be transfered (Rx/Tx returns zero count)
 
 	// Bellow are all mandatory functions to implement
@@ -288,10 +288,9 @@ int SerialIntrfWrite(SERINTRFDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdL
                      uint8_t *pTxData, int TxLen);
 
 static inline bool SerialIntrfStartRx(SERINTRFDEV *pDev, int DevAddr) {
-	if (pDev->Busy)
-		return false;
-	AtomicAssign((sig_atomic_t *)&pDev->Busy, true);
-	return pDev->StartRx(pDev, DevAddr);
+    if (AtomicTestAndSet(&pDev->Busy))
+        return false;
+    return pDev->StartRx(pDev, DevAddr);
 }
 
 static inline int SerialIntrfRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen) {
@@ -299,15 +298,14 @@ static inline int SerialIntrfRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffL
 }
 
 static inline void SerialIntrfStopRx(SERINTRFDEV *pDev) {
-	AtomicAssign((sig_atomic_t *)&pDev->Busy, false);
-	pDev->StopRx(pDev);
+    pDev->StopRx(pDev);
+    AtomicClear(&pDev->Busy);
 }
 
 static inline bool SerialIntrfStartTx(SERINTRFDEV *pDev, int DevAddr) {
-	if (pDev->Busy)
-		return false;
-	AtomicAssign((sig_atomic_t *)&pDev->Busy, true);
-	return pDev->StartTx(pDev, DevAddr);
+    if (AtomicTestAndSet(&pDev->Busy))
+        return false;
+    return pDev->StartTx(pDev, DevAddr);
 }
 
 static inline int SerialIntrfTxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen) {
@@ -315,8 +313,8 @@ static inline int SerialIntrfTxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffL
 }
 
 static inline void SerialIntrfStopTx(SERINTRFDEV *pDev) {
-	AtomicAssign((sig_atomic_t *)&pDev->Busy, false);
-	pDev->StopTx(pDev);
+    pDev->StopTx(pDev);
+    AtomicClear(&pDev->Busy);
 }
 
 static inline void SerialIntrfReset(SERINTRFDEV *pDev) {
@@ -363,12 +361,16 @@ public:
 	// Receive Data only, no Start/Stop condition
 	virtual int RxData(uint8_t *pBuff, int BuffLen) = 0;
 	// Stop receive
+	// BEWARE !!!!!
+	// This functions MUST ONLY be called if StartRx returns true.
 	virtual void StopRx(void) = 0;
 	// Initiate transmit
 	virtual bool StartTx(int DevAddr) = 0;
 	// Transmit Data only, no Start/Stop condition
 	virtual int TxData(uint8_t *pData, int DataLen) = 0;
 	// Stop transmit
+	// BEWARE !!!!!
+	// This functions MUST ONLY be called if StartTx returns true.
 	virtual void StopTx(void) = 0;
 	//
 	virtual void Reset(void) { SerialIntrfReset(*this); }
