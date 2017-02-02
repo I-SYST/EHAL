@@ -37,15 +37,25 @@ Modified by          Date              Description
 
 #include "serialintrf.h"
 
+// NOTE : For thread safe use
+//
+// SerialIntrfStartRx
+// SerialIntrfStopRx
+// SerialIntrfStartTx
+// SerialIntrfStopTx
+//
 int SerialIntrfRx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen)
 {
+	if (pBuff == NULL || BuffLen <= 0)
+		return 0;
+
 	int count = 0;
 	int nrtry = pDev->MaxRetry;
 
 	do {
-		if (pBuff && pDev->StartRx(pDev, DevAddr)) {
+		if (SerialIntrfStartRx(pDev, DevAddr)) {
 			count = pDev->RxData(pDev, pBuff, BuffLen);
-			pDev->StopRx(pDev);
+			SerialIntrfStopRx(pDev);
 		}
 	} while(count <= 0 && nrtry-- > 0);
 
@@ -54,13 +64,16 @@ int SerialIntrfRx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen)
 
 int SerialIntrfTx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen)
 {
+	if (pBuff == NULL || BuffLen <= 0)
+		return 0;
+
 	int count = 0;
 	int nrtry = pDev->MaxRetry;
 
 	do {
-		if (pBuff && pDev->StartTx(pDev, DevAddr)) {
+		if (SerialIntrfStartTx(pDev, DevAddr)) {
 			count = pDev->TxData(pDev, pBuff, BuffLen);
-			pDev->StopTx(pDev);
+			SerialIntrfStopTx(pDev);
 		}
 	} while (count <= 0 && nrtry-- > 0);
 
@@ -73,18 +86,18 @@ int SerialIntrfRead(SERINTRFDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLe
     int count = 0;
     int nrtry = pDev->MaxRetry;
 
-    if (pRxBuff == NULL)
+    if (pRxBuff == NULL || RxLen <= 0)
         return 0;
 
     do {
-        if (pDev->StartRx(pDev, DevAddr))
+        if (SerialIntrfStartRx(pDev, DevAddr))
         {
             if (pAdCmd)
             {
                 count = pDev->TxData(pDev, pAdCmd, AdCmdLen);
             }
             count = pDev->RxData(pDev, pRxBuff, RxLen);
-            pDev->StopRx(pDev);
+            SerialIntrfStopRx(pDev);
         }
     } while (count <= 0 && nrtry-- > 0);
 
@@ -105,10 +118,10 @@ int SerialIntrfWrite(SERINTRFDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdL
     memcpy(&d[AdCmdLen], pTxData, TxLen);
 
     do {
-        if (pDev->StartTx(pDev, DevAddr))
+        if (SerialIntrfStartTx(pDev, DevAddr))
         {
             count = pDev->TxData(pDev, d, AdCmdLen + TxLen);
-            pDev->StopTx(pDev);
+            SerialIntrfStopTx(pDev);
         }
     } while (count <= 0 && nrtry-- > 0);
 
