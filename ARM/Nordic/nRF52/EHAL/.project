@@ -436,6 +436,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/queue</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/scheduler</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -629,6 +634,11 @@
 			<name>src/nRF5_SDK/libraries/fstorage/fstorage.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/fstorage/fstorage.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/queue/nrf_queue.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/queue/nrf_queue.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/scheduler/app_scheduler.c</name>

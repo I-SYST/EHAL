@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : main.cpp
+File   : UartBleDemo.cpp
 
 Author : Hoang Nguyen Hoan          Feb. 4, 2017
 

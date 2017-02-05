@@ -889,8 +889,9 @@ bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     BlePeriphAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
 
-#if NRF_SD_BLE_API_VERSION <= 3
     nrf_crypto_init();
+
+#if NRF_SD_BLE_API_VERSION <= 3
 
     err_code = nrf_crypto_public_key_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &m_crypto_key_pk);
     APP_ERROR_CHECK(err_code);
