@@ -54,6 +54,11 @@ Modified by          Date              Description
 #include "fds.h"
 #include "fstorage.h"
 #include "nrf_dfu_settings.h"
+#include "nrf_crypto.h"
+
+#if NRF_SD_BLE_API_VERSION > 3
+#include "nrf_crypto_keys.h"
+#endif
 
 #include "istddef.h"
 #include "uart.h"
@@ -101,6 +106,8 @@ Modified by          Date              Description
 
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
+#pragma pack(push, 4)
+
 typedef struct _BleAppData {
 	BLEAPP_MODE AppMode;
 	uint16_t ConnHdl;	// BLE connection handle
@@ -108,11 +115,90 @@ typedef struct _BleAppData {
 	int ConnLedPin;
 } BLEAPP_DATA;
 
+#pragma pack(pop)
+
 BLEAPP_DATA g_BleAppData = {
 	BLEAPP_MODE_LOOP, BLE_CONN_HANDLE_INVALID, -1, -1
 };
 
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
+
+#ifdef LESC_DEBUG_MODE
+
+/**@brief Bluetooth SIG debug mode Private Key */
+//#error Generated private key is not supported.
+__ALIGN(4) const uint8_t g_lesc_private_key[32] = {
+    0xbd,0x1a,0x3c,0xcd,0xa6,0xb8,0x99,0x58,0x99,0xb7,0x40,0xeb,0x7b,0x60,0xff,0x4a,
+    0x50,0x3f,0x10,0xd2,0xe3,0xb3,0xc9,0x74,0x38,0x5f,0xc5,0xa3,0xd4,0xf6,0x49,0x3f,
+};
+#else
+extern const uint8_t g_lesc_private_key[32];
+#endif
+
+__ALIGN(4) static ble_gap_lesc_p256_pk_t    s_lesc_public_key;      /**< LESC ECC Public Key */
+__ALIGN(4) static ble_gap_lesc_dhkey_t      s_lesc_dh_key;          /**< LESC ECC DH Key*/
+
+#if NRF_SD_BLE_API_VERSION <= 3
+static nrf_crypto_key_t m_crypto_key_sk =
+{
+    .p_le_data = (uint8_t *) g_lesc_private_key,
+    .len = sizeof(g_lesc_private_key)
+};
+
+static nrf_crypto_key_t m_crypto_key_pk =
+{
+    .p_le_data = (uint8_t *) s_lesc_public_key.pk,
+    .len = sizeof(s_lesc_public_key.pk)
+};
+static nrf_crypto_key_t m_crypto_key_dhkey =
+{
+    .p_le_data = (uint8_t *) s_lesc_dh_key.key,
+    .len = sizeof(s_lesc_dh_key.key)
+};
+#else
+/**@brief Allocated private key type to use for LESC DH generation
+ */
+NRF_CRYPTO_ECC_PRIVATE_KEY_CREATE(s_private_key, SECP256R1);
+
+/**@brief Allocated public key type to use for LESC DH generation
+ */
+NRF_CRYPTO_ECC_PUBLIC_KEY_CREATE(s_public_key, SECP256R1);
+
+/**@brief Allocated peer public key type to use for LESC DH generation
+ */
+NRF_CRYPTO_ECC_PUBLIC_KEY_CREATE(s_peer_public_key, SECP256R1);
+
+/**@brief Allocated raw public key to use for LESC DH.
+ */
+NRF_CRYPTO_ECC_PUBLIC_KEY_RAW_CREATE_FROM_ARRAY(s_public_key_raw, SECP256R1, s_lesc_public_key.pk);
+
+/**@brief Allocated shared instance to use for LESC DH.
+ */
+NRF_CRYPTO_ECDH_SHARED_SECRET_CREATE_FROM_ARRAY(s_dh_key, SECP256R1, s_lesc_dh_key.key);
+
+/**@brief Function to generate private key */
+uint32_t lesc_generate_key_pair(void)
+{
+    uint32_t ret_val;
+    //NRF_LOG_INFO("Generating key-pair\r\n");
+    //Generate a public/private key pair.
+    ret_val = nrf_crypto_ecc_key_pair_generate(NRF_CRYPTO_BLE_ECDH_CURVE_INFO, &s_private_key, &s_public_key);
+    APP_ERROR_CHECK(ret_val);
+    //NRF_LOG_INFO("After generating key-pair\r\n");
+
+    // Convert to a raw type
+    //NRF_LOG_INFO("Converting to raw type\r\n");
+    ret_val = nrf_crypto_ecc_public_key_to_raw(NRF_CRYPTO_BLE_ECDH_CURVE_INFO, &s_public_key, &s_public_key_raw);
+    APP_ERROR_CHECK(ret_val);
+    //NRF_LOG_INFO("After Converting to raw type\r\n");
+
+    // Set the public key in the PM.
+    ret_val = pm_lesc_public_key_set(&s_lesc_public_key);
+    APP_ERROR_CHECK(ret_val);
+    return ret_val;
+}
+
+#endif
 
 static inline void BleConnLedOff() {
 	if (g_BleAppData.ConnLedPort < 0 || g_BleAppData.ConnLedPin < 0)
@@ -271,22 +357,6 @@ static void conn_params_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
-
-/**@brief Function for putting the chip into sleep mode.
- *
- * @note This function will not return.
- */
-static void sleep_mode_enter(void)
-{
-    // Prepare wakeup buttons.
-//    err_code = bsp_btn_ble_sleep_mode_prepare();
-//    APP_ERROR_CHECK(err_code);
-
-    // Go to system-off mode (this function will not return; wakeup will cause a reset).
-    uint32_t err_code = sd_power_system_off();
-    APP_ERROR_CHECK(err_code);
-}
-
 /**@brief Function for handling advertising events.
  *
  * @details This function will be called for advertising events which are passed to the application.
@@ -295,8 +365,6 @@ static void sleep_mode_enter(void)
  */
 static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
 {
-    uint32_t err_code;
-
     switch (ble_adv_evt)
     {
         case BLE_ADV_EVT_FAST:
@@ -404,6 +472,45 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
                 }
             }
         } break; // BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST
+
+        case BLE_GAP_EVT_LESC_DHKEY_REQUEST:
+        //    NRF_LOG_INFO("%s: BLE_GAP_EVT_LESC_DHKEY_REQUEST\r\n", nrf_log_push(roles_str[role]));
+#if NRF_SD_BLE_API_VERSION <= 3
+            static nrf_crypto_key_t peer_pk;
+            peer_pk.p_le_data = &p_ble_evt->evt.gap_evt.params.lesc_dhkey_request.p_pk_peer->pk[0];
+            peer_pk.len = BLE_GAP_LESC_P256_PK_LEN;
+            err_code = nrf_crypto_shared_secret_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &peer_pk, &m_crypto_key_dhkey);
+            APP_ERROR_CHECK(err_code);
+#else
+            static nrf_value_length_t peer_public_key_raw = {0};
+
+            peer_public_key_raw.p_value = &p_ble_evt->evt.gap_evt.params.lesc_dhkey_request.p_pk_peer->pk[0];
+            peer_public_key_raw.length = BLE_GAP_LESC_P256_PK_LEN;
+
+            err_code = nrf_crypto_ecc_public_key_from_raw(NRF_CRYPTO_BLE_ECDH_CURVE_INFO,
+                                                          &peer_public_key_raw,
+                                                          &s_peer_public_key);
+            APP_ERROR_CHECK(err_code);
+
+            err_code = nrf_crypto_ecdh_shared_secret_compute(NRF_CRYPTO_BLE_ECDH_CURVE_INFO,
+                                                            &s_private_key,
+                                                            &s_peer_public_key,
+                                                            &s_dh_key);
+            APP_ERROR_CHECK(err_code);
+#endif
+            err_code = sd_ble_gap_lesc_dhkey_reply(g_BleAppData.ConnHdl, &s_lesc_dh_key);
+            APP_ERROR_CHECK(err_code);
+            break;
+
+         case BLE_GAP_EVT_AUTH_STATUS:
+        //     NRF_LOG_INFO("%s: BLE_GAP_EVT_AUTH_STATUS: status=0x%x bond=0x%x lv4: %d kdist_own:0x%x kdist_peer:0x%x\r\n",
+          //                nrf_log_push(roles_str[role]),
+            //              p_ble_evt->evt.gap_evt.params.auth_status.auth_status,
+              //            p_ble_evt->evt.gap_evt.params.auth_status.bonded,
+                //          p_ble_evt->evt.gap_evt.params.auth_status.sm1_levels.lv4,
+                  //        *((uint8_t *)&p_ble_evt->evt.gap_evt.params.auth_status.kdist_own),
+                    //      *((uint8_t *)&p_ble_evt->evt.gap_evt.params.auth_status.kdist_peer));
+            break;
 
 #if (NRF_SD_BLE_API_VERSION >= 3)
         case BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST:
@@ -651,6 +758,7 @@ static void BlePeriphAppPeerMngrInit(BLEAPP_SECTYPE SecType, uint8_t SecKeyExchg
 
     err_code = pm_register(pm_evt_handler);
     APP_ERROR_CHECK(err_code);
+
 }
 
 /**@brief Function for handling the Security Request timer timeout.
@@ -725,8 +833,6 @@ void BlePeriphAppAdvInit(const BLEAPP_CFG *pCfg)
 bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 {
     uint32_t err_code;
-    nrf_clock_lf_cfg_t clock_lf_cfg = NRF_CLOCK_LFCLKSRC;
-
 
     if (pBleAppCfg->ConnLedPort != -1 && pBleAppCfg->ConnLedPin != -1)
     {
@@ -735,23 +841,24 @@ bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     }
 
     g_BleAppData.AppMode = pBleAppCfg->AppMode;
+    g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
 
     switch (pBleAppCfg->AppMode)
     {
     	case BLEAPP_MODE_LOOP:
     		APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
         	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
-            SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, NULL);
+            SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, NULL);
     		break;
     	case BLEAPP_MODE_APPSCHED:
     		APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
         	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
-            SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, true);
+            SOFTDEVICE_HANDLER_APPSH_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, true);
     		break;
     	case BLEAPP_MODE_RTOS:
     		if (pBleAppCfg->SDEvtHandler == NULL)
     			return false;
-            SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, pBleAppCfg->SDEvtHandler);
+            SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, pBleAppCfg->SDEvtHandler);
     		break;
     }
 
@@ -782,7 +889,23 @@ bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     BlePeriphAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
 
-	gap_params_init(pBleAppCfg);
+#if NRF_SD_BLE_API_VERSION <= 3
+    nrf_crypto_init();
+
+    err_code = nrf_crypto_public_key_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &m_crypto_key_pk);
+    APP_ERROR_CHECK(err_code);
+
+    /* Set the public key */
+    err_code = pm_lesc_public_key_set(&s_lesc_public_key);
+    APP_ERROR_CHECK(err_code);
+#else
+    // Private public keypair must be generated at least once for each device. It can be stored
+    // beyond this point. Here it is generated at bootup.
+    err_code = lesc_generate_key_pair();
+    APP_ERROR_CHECK(err_code);
+#endif
+
+    gap_params_init(pBleAppCfg);
 
     BlePeriphAppInitUserData();
 

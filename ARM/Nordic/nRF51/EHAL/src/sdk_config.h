@@ -103,7 +103,7 @@
  
 
 #ifndef BLE_GLS_ENABLED
-#define BLE_GLS_ENABLED 1
+#define BLE_GLS_ENABLED 0
 #endif
 
 // <q> BLE_HIDS_ENABLED  - ble_hids - Human Interface Device Service
@@ -247,7 +247,7 @@
 // <0=> Default (64 MHz) 
 
 #ifndef CLOCK_CONFIG_XTAL_FREQ
-#define CLOCK_CONFIG_XTAL_FREQ 0
+#define CLOCK_CONFIG_XTAL_FREQ 255
 #endif
 
 // <o> CLOCK_CONFIG_LF_SRC  - LF Clock Source
@@ -274,7 +274,7 @@
 // <7=> 7 
 
 #ifndef CLOCK_CONFIG_IRQ_PRIORITY
-#define CLOCK_CONFIG_IRQ_PRIORITY 6
+#define CLOCK_CONFIG_IRQ_PRIORITY 3
 #endif
 
 #endif //CLOCK_ENABLED
@@ -933,7 +933,7 @@
 // <e> RNG_ENABLED - nrf_drv_rng - RNG peripheral driver
 //==========================================================
 #ifndef RNG_ENABLED
-#define RNG_ENABLED 0
+#define RNG_ENABLED 1
 #endif
 #if  RNG_ENABLED
 // <q> RNG_CONFIG_ERROR_CORRECTION  - Error correction
@@ -945,7 +945,7 @@
 
 // <o> RNG_CONFIG_POOL_SIZE - Pool size 
 #ifndef RNG_CONFIG_POOL_SIZE
-#define RNG_CONFIG_POOL_SIZE 8
+#define RNG_CONFIG_POOL_SIZE 32
 #endif
 
 // <o> RNG_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -962,7 +962,7 @@
 // <7=> 7 
 
 #ifndef RNG_CONFIG_IRQ_PRIORITY
-#define RNG_CONFIG_IRQ_PRIORITY 6
+#define RNG_CONFIG_IRQ_PRIORITY 3
 #endif
 
 #endif //RNG_ENABLED
@@ -1305,7 +1305,7 @@
 // <e> TIMER_ENABLED - nrf_drv_timer - TIMER periperal driver
 //==========================================================
 #ifndef TIMER_ENABLED
-#define TIMER_ENABLED 0
+#define TIMER_ENABLED 1
 #endif
 #if  TIMER_ENABLED
 // <o> TIMER_DEFAULT_CONFIG_FREQUENCY  - Timer frequency if in Timer mode
@@ -1573,7 +1573,7 @@
 // <e> UART_ENABLED - nrf_drv_uart - UART/UARTE peripheral driver
 //==========================================================
 #ifndef UART_ENABLED
-#define UART_ENABLED 1
+#define UART_ENABLED 0
 #endif
 #if  UART_ENABLED
 // <o> UART_DEFAULT_CONFIG_HWFC  - Hardware Flow Control
@@ -1788,7 +1788,7 @@
 // <e> APP_UART_ENABLED - app_uart - UART driver
 //==========================================================
 #ifndef APP_UART_ENABLED
-#define APP_UART_ENABLED 1
+#define APP_UART_ENABLED 0
 #endif
 #if  APP_UART_ENABLED
 // <o> APP_UART_DRIVER_INSTANCE  - UART instance used
@@ -2165,6 +2165,13 @@
 
 #endif //NRF_DRV_CSENSE_ENABLED
 // </e>
+
+// <q> NRF_QUEUE_ENABLED  - nrf_queue - Queue module
+
+
+#ifndef NRF_QUEUE_ENABLED
+#define NRF_QUEUE_ENABLED 1
+#endif
 
 // <q> SLIP_ENABLED  - slip - SLIP encoding decoding
  

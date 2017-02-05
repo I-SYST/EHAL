@@ -11,7 +11,7 @@ extern void initialise_monitor_handles(void);
 
 int main(void)
 {
-    initialise_monitor_handles();
+   // initialise_monitor_handles();
 
     printf("hello world!\n");
 

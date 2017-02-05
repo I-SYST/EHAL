@@ -19,6 +19,12 @@ SECTIONS
 		KEEP(*(.fs_data))
 		PROVIDE( __stop_fs_data = .);
 	} > RAM AT > FLASH
+	.pwr_mgmt_data :
+	{
+    	PROVIDE(__start_pwr_mgmt_data = .);
+    	KEEP(*(.pwr_mgmt_data))
+    	PROVIDE(__stop_pwr_mgmt_data = .);
+	} > RAM AT > FLASH
 } INSERT AFTER .data
 
 INCLUDE "gcc_arm_flash.ld"

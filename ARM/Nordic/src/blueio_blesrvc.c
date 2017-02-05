@@ -35,8 +35,22 @@ Modified by          Date              Description
 #include <stdint.h>
 #include <string.h>
 #include "nordic_common.h"
-
+#include "app_error.h"
 #include "blueio_blesrvc.h"
+
+#pragma pack(push, 1)
+typedef struct {
+	uint16_t Handle;
+	uint16_t Offset;
+	uint16_t Len;
+} GATLWRHDR;
+
+typedef struct {
+	GATLWRHDR Hdr;
+	uint8_t Data[1];
+} GETTLWRMEM;
+
+#pragma pack(pop)
 
 uint16_t BlueIOBleSrvcCharSend(BLUEIOSRVC *pSrvc, int CharIdx, uint8_t *pData, uint16_t DataLen)
 {
@@ -73,30 +87,60 @@ void BlueIOBleSvcEvtHandler(BLUEIOSRVC *pSrvc, ble_evt_t *pBleEvt)
 
 				for (int i = 0; i < pSrvc->NbChar; i++)
 				{
-                    if ((p_evt_write->handle == pSrvc->pCharArray[i].Hdl.cccd_handle) &&
-                        (p_evt_write->len == 2))
-                    {
-                        if (ble_srv_is_notification_enabled(p_evt_write->data))
-                        {
-                            pSrvc->pCharArray[i].bNotify = true;
-                        }
-                        else
-                        {
-                            pSrvc->pCharArray[i].bNotify = false;
-                        }
-                    }
-                    else if ((p_evt_write->handle == pSrvc->pCharArray[i].Hdl.value_handle) &&
-                             (pSrvc->pCharArray[i].WrCB != NULL))
-                    {
-                        pSrvc->pCharArray[i].WrCB(pSrvc, p_evt_write->data, 0, p_evt_write->len);
-                    }
-                    else
-                    {
-                        // Do Nothing. This event is not relevant for this service.
-                    }
+					if (p_evt_write->handle == 0)
+					{
+						GATLWRHDR *hdr = (GATLWRHDR *)pSrvc->pLongWrBuff;
+					    uint8_t *p = (uint8_t*)pSrvc->pLongWrBuff + sizeof(GATLWRHDR);
+						while (hdr->Handle == pSrvc->pCharArray[i].Hdl.value_handle)
+					    {
+							pSrvc->pCharArray[i].WrCB(pSrvc, p, hdr->Offset, hdr->Len);
+							p += hdr->Len;
+							hdr = (GATLWRHDR*)p;
+							p += sizeof(GATLWRHDR);
+					    }
+					}
+					else
+					{
+						if ((p_evt_write->handle == pSrvc->pCharArray[i].Hdl.cccd_handle) &&
+							(p_evt_write->len == 2))
+						{
+							if (ble_srv_is_notification_enabled(p_evt_write->data))
+							{
+								pSrvc->pCharArray[i].bNotify = true;
+							}
+							else
+							{
+								pSrvc->pCharArray[i].bNotify = false;
+							}
+						}
+						else if ((p_evt_write->handle == pSrvc->pCharArray[i].Hdl.value_handle) &&
+								 (pSrvc->pCharArray[i].WrCB != NULL))
+						{
+							pSrvc->pCharArray[i].WrCB(pSrvc, p_evt_write->data, 0, p_evt_write->len);
+						}
+						else
+						{
+							// Do Nothing. This event is not relevant for this service.
+						}
+					}
 				}
 			}
             break;
+
+        case BLE_EVT_USER_MEM_REQUEST:
+        	{
+        		if (pSrvc->pLongWrBuff != NULL && pSrvc->ConnHdl == pBleEvt->evt.gatts_evt.conn_handle)
+        		{
+					ble_user_mem_block_t mblk;
+					memset(&mblk, 0, sizeof(ble_user_mem_block_t));
+					mblk.p_mem = pSrvc->pLongWrBuff;
+					mblk.len = pSrvc->LongWrBuffSize;
+					memset(pSrvc->pLongWrBuff, 0, pSrvc->LongWrBuffSize);
+					uint32_t err_code = sd_ble_user_mem_reply(pSrvc->ConnHdl, &mblk);
+					APP_ERROR_CHECK(err_code);
+        		}
+        	}
+        	break;
 
         default:
             break;
@@ -253,6 +297,9 @@ uint32_t BlueIOBleSrvcInit(BLUEIOSRVC *pSrvc, const BLUEIOSRVC_CFG *pCfg)
             return err;
         }
     }
+
+    pSrvc->pLongWrBuff = pCfg->pLongWrBuff;
+    pSrvc->LongWrBuffSize = pCfg->LongWrBuffSize;
 
     return NRF_SUCCESS;
 }

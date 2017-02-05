@@ -36,6 +36,7 @@ Modified by          Date              Description
 #include <algorithm>
 using namespace std;
 
+#include "idelay.h"
 #include "seep.h"
 #include "iopinctrl.h"
 
@@ -48,19 +49,6 @@ Seep::~Seep()
 {
 }
 
-bool Seep::Init(SEEP_CFG &CfgData, SerialIntrf *pInterf)
-{
-    vDevData.pInterf = *pInterf;
-	vDevData.DevAddr = CfgData.DevAddr;
-	vDevData.PageSize = CfgData.PageSize;
-	vDevData.AddrLen = CfgData.AddrLen;
-	vDevData.pWaitCB = CfgData.pWaitCB;
-	if (CfgData.pInitCB)
-		return CfgData.pInitCB(vDevData.DevAddr, *pInterf);
-
-	return true;
-}
-
 bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf)
 {
     pDev->pInterf = pInterf;
@@ -69,6 +57,7 @@ bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf)
     pDev->AddrLen = pCfgData->AddrLen;
     pDev->pWaitCB = pCfgData->pWaitCB;
     pDev->WrProtPin = pCfgData->WrProtPin;
+    pDev->WrDelay = pCfgData->WrDelay * 1000; // convert to usec
 
     if (pCfgData->WrProtPin.PortNo >= 0 && pCfgData->WrProtPin.PinNo >= 0)
     {
@@ -93,12 +82,7 @@ int SeepRead(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
         ad[i] = p[pDev->AddrLen - i - 1];
     }
 
-    if (SerialIntrfTx(pDev->pInterf, pDev->DevAddr, (uint8_t*)ad, pDev->AddrLen))
-    {
-        return SerialIntrfRx(pDev->pInterf, pDev->DevAddr, pData, Len);
-    }
-
-    return 0;
+    return SerialIntrfRead(pDev->pInterf, pDev->DevAddr, ad, pDev->AddrLen, pData, Len);
 }
 
 // Note: Sequential write is bound by page size boundary
@@ -116,17 +100,20 @@ int SeepWrite(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
             ad[i] = p[pDev->AddrLen - i - 1];
         }
 
-        if (SerialIntrfStartTx(pDev->pInterf, pDev->DevAddr))
+        size = SerialIntrfWrite(pDev->pInterf, pDev->DevAddr, ad, pDev->AddrLen, pData, size);
+        if (pDev->pWaitCB)
         {
-            pDev->pInterf->TxData(pDev->pInterf, ad, pDev->AddrLen);
-            count += pDev->pInterf->TxData(pDev->pInterf, pData, size);
-            SerialIntrfStopTx(pDev->pInterf);
-            if (pDev->pWaitCB)
-                pDev->pWaitCB(pDev->DevAddr, pDev->pInterf);
+            pDev->pWaitCB(pDev->DevAddr, pDev->pInterf);
         }
+        else if (pDev->WrDelay > 0)
+        {
+            usDelay(pDev->WrDelay);
+        }
+
         Addr += size;
         Len -= size;
         pData += size;
+        count += size;
     }
     return count;
 }

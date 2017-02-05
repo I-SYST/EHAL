@@ -1830,6 +1830,54 @@
 #define ECC_ENABLED 0
 #endif
 
+//==========================================================
+// <e> NRF_CRYPTO_ENABLED - nrf_crypto - Cryptography library
+//==========================================================
+#ifndef NRF_CRYPTO_ENABLED
+#define NRF_CRYPTO_ENABLED 1
+#endif
+#if  NRF_CRYPTO_ENABLED
+// <q> NRF_CRYPTO_BACKEND_CC310_LIB  - Enables the ARM Cryptocell CC310 backend
+
+
+// <i> The hardware-accelerated cryptography backend is available only on nRF52840.
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_LIB
+#define NRF_CRYPTO_BACKEND_CC310_LIB 0
+#endif
+
+// <e> NRF_CRYPTO_BACKEND_MICRO_ECC - Enables the micro-ecc software backend
+
+// <i> The micro-ecc library provides a software implementation of ECC cryptography for nRF5 Series devices.
+//==========================================================
+#ifndef NRF_CRYPTO_BACKEND_MICRO_ECC
+#define NRF_CRYPTO_BACKEND_MICRO_ECC 1
+#endif
+#if  NRF_CRYPTO_BACKEND_MICRO_ECC
+// <q> NRF_CRYPTO_BACKEND_SW  - Enables hashing
+
+
+// <i> If enabled, the cryptography library supports hashing (needed for signing).
+
+#ifndef NRF_CRYPTO_BACKEND_SW
+#define NRF_CRYPTO_BACKEND_SW 1
+#endif
+
+// <q> NRF_CRYPTO_SUPPORTS_RNG  - Enables RNG
+
+
+// <i> If enabled, the cryptography library supports random number generation (needed for key generation).
+
+#ifndef NRF_CRYPTO_SUPPORTS_RNG
+#define NRF_CRYPTO_SUPPORTS_RNG 1
+#endif
+
+#endif //NRF_CRYPTO_BACKEND_MICRO_ECC
+// </e>
+
+#endif //NRF_CRYPTO_ENABLED
+// </e>
+
 // <e> FDS_ENABLED - fds - Flash data storage module
 //==========================================================
 #ifndef FDS_ENABLED

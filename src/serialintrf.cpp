@@ -33,17 +33,29 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
+#include <string.h>
+
 #include "serialintrf.h"
 
+// NOTE : For thread safe use
+//
+// SerialIntrfStartRx
+// SerialIntrfStopRx
+// SerialIntrfStartTx
+// SerialIntrfStopTx
+//
 int SerialIntrfRx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen)
 {
+	if (pBuff == NULL || BuffLen <= 0)
+		return 0;
+
 	int count = 0;
 	int nrtry = pDev->MaxRetry;
 
 	do {
-		if (pBuff && pDev->StartRx(pDev, DevAddr)) {
+		if (SerialIntrfStartRx(pDev, DevAddr)) {
 			count = pDev->RxData(pDev, pBuff, BuffLen);
-			pDev->StopRx(pDev);
+			SerialIntrfStopRx(pDev);
 		}
 	} while(count <= 0 && nrtry-- > 0);
 
@@ -52,69 +64,72 @@ int SerialIntrfRx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen)
 
 int SerialIntrfTx(SERINTRFDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen)
 {
+	if (pBuff == NULL || BuffLen <= 0)
+		return 0;
+
 	int count = 0;
 	int nrtry = pDev->MaxRetry;
 
 	do {
-		if (pBuff && pDev->StartTx(pDev, DevAddr)) {
+		if (SerialIntrfStartTx(pDev, DevAddr)) {
 			count = pDev->TxData(pDev, pBuff, BuffLen);
-			pDev->StopTx(pDev);
+			SerialIntrfStopTx(pDev);
 		}
 	} while (count <= 0 && nrtry-- > 0);
 
 	return count;
 }
 
-int SerialIntrfRead(SERINTRFDEV *pDev, int DevAddr, uint8_t *pTxData, int TxLen,
+int SerialIntrfRead(SERINTRFDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
                     uint8_t *pRxBuff, int RxLen)
 {
     int count = 0;
     int nrtry = pDev->MaxRetry;
 
-    if (pRxBuff == NULL)
+    if (pRxBuff == NULL || RxLen <= 0)
         return 0;
 
     do {
-        if (pDev->StartRx(pDev, DevAddr))
+        if (SerialIntrfStartRx(pDev, DevAddr))
         {
-            if (pTxData)
+            if (pAdCmd)
             {
-                count = pDev->TxData(pDev, pTxData, TxLen);
+                count = pDev->TxData(pDev, pAdCmd, AdCmdLen);
             }
             count = pDev->RxData(pDev, pRxBuff, RxLen);
-            pDev->StopRx(pDev);
+            SerialIntrfStopRx(pDev);
         }
     } while (count <= 0 && nrtry-- > 0);
 
     return count;
 }
 
-/*
-// Receive full frame
-int SerialIntrf::Rx(int DevAddr, uint8_t *pBuff, int BuffLen)
+int SerialIntrfWrite(SERINTRFDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
+                     uint8_t *pTxData, int TxLen)
 {
-	int count = 0;
+    int count = 0;
+    int nrtry = pDev->MaxRetry;
+    uint8_t d[AdCmdLen + TxLen];
 
-	if (pBuff && StartRx(DevAddr))
-	{
-		count = RxData(pBuff, BuffLen);
-		StopRx();
-	}
+    if (pTxData == NULL || pAdCmd == NULL)
+        return 0;
 
-	return count;
+    memcpy(d, pAdCmd, AdCmdLen);
+    memcpy(&d[AdCmdLen], pTxData, TxLen);
+
+    do {
+        if (SerialIntrfStartTx(pDev, DevAddr))
+        {
+            count = pDev->TxData(pDev, d, AdCmdLen + TxLen);
+            SerialIntrfStopTx(pDev);
+        }
+    } while (count <= 0 && nrtry-- > 0);
+
+    if (count >= AdCmdLen)
+        count -= AdCmdLen;
+    else
+        count = 0;
+
+    return count;
 }
 
-// Transmit full frame
-int SerialIntrf::Tx(int DevAddr, uint8_t *pData, int DataLen)
-{
-	int count = 0;
-
-	if (pData && StartTx(DevAddr))
-	{
-		count = TxData(pData, DataLen);
-		StopTx();
-	}
-
-	return count;
-}
-*/

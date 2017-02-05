@@ -56,6 +56,7 @@ typedef struct _Seep_Config {
     uint8_t AddrLen;	// Serial EEPROM memory address length in bytes
     uint16_t PageSize;	// Wrap around page size in bytes
     uint32_t Size;      // Total EEPROM size in bytes
+    uint32_t WrDelay;   // Write delay time in msec
     IOPINCFG WrProtPin; // if Write protect pin is not used, set {-1, -1, }
                         // This pin is assumed active high,
                         // ie. Set to 1 to enable Write Protect
@@ -71,6 +72,7 @@ typedef struct {
 	uint8_t AddrLen;    // Serial EEPROM memory address length in bytes
 	uint16_t PageSize;	// Wrap around page size
 	uint32_t Size;      // Total EEPROM size in bytes
+	uint32_t WrDelay;   // Write delay in usec
 	IOPINCFG WrProtPin; // Write protect I/O pin
 	SERINTRFDEV	*pInterf;
 	SEEPCB pWaitCB;	    // If provided, this is called when there are long delays
@@ -161,7 +163,9 @@ public:
     virtual ~Seep();
     Seep(Seep&);    // copy ctor not allowed
 
-    virtual bool Init(SEEP_CFG &Cfg, SerialIntrf *pInterf);
+    virtual bool Init(SEEP_CFG &Cfg, SerialIntrf *pInterf) {
+        return SeepInit(&vDevData, &Cfg, *pInterf);
+    }
 
 /*    virtual void Set(int DevAddr, int PageSize, int AddrLen) {
         vDevData.DevAddr = DevAddr;

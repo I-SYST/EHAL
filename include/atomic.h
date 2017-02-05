@@ -194,6 +194,76 @@ static inline void AtomicAssign(sig_atomic_t *pVar, sig_atomic_t NewVal) {
 }
 #endif // __TSOK__
 
+/**
+ * Atomic exchange value
+ *
+ * @Param   pVar   : Pointer to data value to be decreased
+ * @param   NewVal : New value to be assigned to pVar
+ */
+#if defined(__TSOK__) || defined(__ADSPBLACKFIN__)
+
+sig_atomic_t AtomicExchange(sig_atomic_t *pVar, sig_atomic_t NewVal);
+
+#else
+
+static inline sig_atomic_t AtomicExchange(sig_atomic_t *pVar, sig_atomic_t NewVal) {
+
+#if defined(_WIN32) || defined(WIN32)
+
+#elif defined(__TCS__)
+
+#elif defined(__GNUC__)
+   return __atomic_exchange_n(pVar, NewVal, __ATOMIC_SEQ_CST);
+#endif
+}
+#endif // __TSOK__
+
+/**
+ * Atomic test and set value
+ *
+ * @Param   pVar   : Pointer to data value to be decreased
+ */
+#if defined(__TSOK__) || defined(__ADSPBLACKFIN__)
+
+sig_atomic_t AtomicExchange(sig_atomic_t *pVar, sig_atomic_t NewVal);
+
+#else
+
+static inline bool AtomicTestAndSet(void *pVar) {
+
+#if defined(_WIN32) || defined(WIN32)
+
+#elif defined(__TCS__)
+
+#elif defined(__GNUC__)
+   return __atomic_test_and_set(pVar, __ATOMIC_SEQ_CST);
+#endif
+}
+#endif // __TSOK__
+
+/**
+ * Atomic clear
+ *
+ * @Param   pVar   : Pointer to data value to be decreased
+ */
+#if defined(__TSOK__) || defined(__ADSPBLACKFIN__)
+
+sig_atomic_t AtomicExchange(sig_atomic_t *pVar, sig_atomic_t NewVal);
+
+#else
+
+static inline void AtomicClear(void *pVar) {
+
+#if defined(_WIN32) || defined(WIN32)
+
+#elif defined(__TCS__)
+
+#elif defined(__GNUC__)
+   return __atomic_clear(pVar, __ATOMIC_SEQ_CST);
+#endif
+}
+#endif // __TSOK__
+
 #if defined(_WIN32) || defined(WIN32)
 #else
 static inline uint32_t EnterCriticalSection(void) {

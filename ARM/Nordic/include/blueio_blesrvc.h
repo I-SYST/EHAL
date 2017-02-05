@@ -33,8 +33,8 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
-#ifndef __BLUEIO_SVC_H__
-#define __BLUEIO_SVC_H__
+#ifndef __BLUEIO_BLESRVC_H__
+#define __BLUEIO_BLESRVC_H__
 
 #include "ble_srv_common.h"
 
@@ -45,6 +45,10 @@ Modified by          Date              Description
 #define BLUEIO_UUID_SERVICE 		0x1
 #define BLUEIO_UUID_RDCHAR 			0x2
 #define BLUEIO_UUID_WRCHAR 			0x3
+
+#define BLUEIO_UUID_UART_SERVICE 	0x101
+#define BLUEIO_UUID_UART_RX_CHAR	0x102
+#define BLUEIO_UUID_UART_TX_CHAR	0x103
 
 #define BLUEIOSVC_CHAR_PROP_READ			(1<<0)
 #define BLUEIOSVC_CHAR_PROP_NOTIFY			(1<<1)
@@ -86,6 +90,8 @@ typedef struct {
 	uint16_t		UuidSvc;				// Service UUID
 	int             NbChar;                 // Total number of characteristics for the service
 	BLUEIOSRVC_CHAR *pCharArray;            // Pointer a an array of characteristic
+    uint8_t			*pLongWrBuff;			// pointer to user long write buffer
+    int				LongWrBuffSize;			// long write buffer size
 } BLUEIOSRVC_CFG;
 
 /*
@@ -101,6 +107,8 @@ struct __BlueIOBLEService {
     uint16_t        ConnHdl;				// Connection handle
     uint16_t        UuidSvc;                // Service UUID
     uint8_t         UuidType;
+    uint8_t			*pLongWrBuff;			// pointer to user long write buffer
+    int				LongWrBuffSize;			// long write buffer size
 };
 
 #pragma pack(pop)
@@ -140,5 +148,5 @@ void BlueIOBleSvcEvtHandler(BLUEIOSRVC *pSrvc, ble_evt_t *pBleEvt);
 }
 #endif
 
-#endif // __BLUEIO_SVC_H__
+#endif // __BLUEIO_BLESRVC_H__
 
