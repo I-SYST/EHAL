@@ -1,9 +1,9 @@
 /*--------------------------------------------------------------------------
-File   : sha1.c
+File   : isha256.c
 
 Author : Hoang Nguyen Hoan          Aug. 17, 2014
 
-Desc   : SHA-1 computation
+Desc   : SHA-256 computation
 
 Copyright (c) 2014, I-SYST inc., all rights reserved
 
@@ -36,104 +36,123 @@ Modified by          Date              Description
 #include <string.h>
 
 #include "istddef.h"
-#include "sha1.h"
+#include "isha256.h"
 
 /*
  * Test cases
  * Data   : null, zero length
- * SHA1   : da39a3ee 5e6b4b0d 3255bfef 95601890 afd80709
+ * SHA256 : e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
  *
  * Data   : "abc"
- * SHA1 : a9993e36 4706816a ba3e2571 7850c26c 9cd0d89d
+ * SHA256 : BA7816BF 8F01CFEA 414140DE 5DAE2223 B00361A3 96177A9C B410FF61 F20015AD
  *
  * Data   : "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
- * SHA1 : 84983e44 1c3bd26e baae4aa1 f95129e5 e54670f1
+ * SHA256 : 248D6A61 D20638B8 E5C02693 0C3E6039 A33CE459 64FF2167 F6ECEDD4 19DB06C1
  *
  * Data   : repeat 'a' 1000000 times
- * SHA1 : 34aa973c d4c4daa4 f61eeb2b dbad2731 6534016f
+ * SHA256 : cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0
  *
  * Data   : "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu"
- * SHA1 :  a49b2446 a02c645b f419f995 b6709125 3a04a259
+ * SHA256 :  cf5b16a7 78af8380 036ce59e 7b049237 0b249b11 e8f07a51 afac4503 7afee9d1
  *
  */
 
-#define K0	0x5a827999
-#define K1	0x6ed9eba1
-#define K2 	0x8f1bbcdc
-#define K3	0xca62c1d6
+#define H0	0x6a09e667
+#define H1	0xbb67ae85
+#define H2	0x3c6ef372
+#define H3	0xa54ff53a
+#define H4	0x510e527f
+#define H5	0x9b05688c
+#define H6	0x1f83d9ab
+#define H7	0x5be0cd19
 
-#define H0	0x67452301
-#define H1	0xefcdab89
-#define H2	0x98badcfe
-#define H3	0x10325476
-#define H4	0xc3d2e1f0
+static uint32_t g_Sha256KValue[] = {
+	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 
+	0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+	0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
+	0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 
+	0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 
+	0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 
+	0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b,
+	0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 
+	0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a,
+	0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+	0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+};
 
-inline uint32_t ROTR(uint32_t x, uint32_t n)
+inline uint32_t ROTR(uint32_t x, uint32_t n) 
 {
     return (x >> n) | (x << (32-n));
 }
 
-inline uint32_t ROTL(uint32_t x, uint32_t n)
+inline uint32_t ROTL(uint32_t x, uint32_t n) 
 {
 	return (x << n) | (x >> (32 - n));
 }
+		
+inline uint32_t SUM0(uint32_t x)
+{ 
+	return ROTR(x, 2) ^ ROTR(x, 13) ^ ROTR(x, 22);
+}
+
+inline uint32_t SUM1(uint32_t x)
+{ 
+	return ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25);
+}
+
+inline uint32_t SIGMA0(uint32_t x)
+{ 
+	return ROTR(x, 7) ^ ROTR(x, 18) ^ (x >> 3);
+}
+
+inline uint32_t SIGMA1(uint32_t x)
+{ 
+	return ROTR(x, 17) ^ ROTR(x, 19) ^ (x >> 10);
+}
 
 inline uint32_t CH(uint32_t x, uint32_t y, uint32_t z)
-{
-	return (x & y) ^ (~x & z);
+{ 
+	return (x & y) ^ (~x & z); 
 }
 
 inline uint32_t MAJ(uint32_t x, uint32_t y, uint32_t z)
-{
-	return (x & y) ^ (x & z) ^ (y & z);
+{ 
+	return (x & y) ^ (x & z) ^ (y & z); 
 }
 
-inline uint32_t PAR(uint32_t x, uint32_t y, uint32_t z)
+void Sha256Compute(uint32_t *W, uint32_t *H)
 {
-	return (x ^ y) ^ z;
-}
-
-static void Sha1Compute(uint32_t *W, uint32_t *H)
-{
-	uint32_t a, b, c, d, e;
+	uint32_t a, b, c, d, e, f, g, h;
 
 	a = H[0];
 	b = H[1];
 	c = H[2];
 	d = H[3];
 	e = H[4];
+	f = H[5];
+	g = H[6];
+	h = H[7];
 
-	for (int t = 0; t < 80; t++)
+
+	for (int t = 0; t < 64; t++)
 	{
-		uint32_t T;
+		uint32_t T1;
+		uint32_t T2;
 
 		if (t > 15)
-			W[t] = ROTL(((W[t-3] ^ W[t-8]) ^ W[t-14]) ^ W[t-16], 1);
+			W[t] = (SIGMA1(W[t-2]) + W[t-7] + SIGMA0(W[t-15]) + W[t-16]) & 0xffffffff;
 
-		if (t < 20)
-		{
-			T = CH(b, c, d) + K0;
-		}
-		else if (t < 40)
-		{
-			T = PAR(b, c, d) + K1;
-		}
-		else if (t < 60)
-		{
-			T = MAJ(b, c, d) + K2;
-		}
-		else
-		{
-			T = PAR(b, c, d) + K3;
-		}
+		T1 = h + SUM1(e) + CH(e, f, g) + g_Sha256KValue[t] + W[t];
+		T2 = SUM0(a) + MAJ(a, b, c);
 
-		T += ROTL(a, 5) + e + W[t];
-
-		e = d;
+		h = g;
+		g = f;
+		f = e;
+		e = (d + T1);
 		d = c;
-		c = ROTL(b, 30);
+		c = b;
 		b = a;
-		a = T;
+		a = (T1 + T2);
 	}
 
 	H[0] = (H[0] + a);
@@ -141,36 +160,40 @@ static void Sha1Compute(uint32_t *W, uint32_t *H)
 	H[2] = (H[2] + c);
 	H[3] = (H[3] + d);
 	H[4] = (H[4] + e);
+	H[5] = (H[5] + f);
+	H[6] = (H[6] + g);
+	H[7] = (H[7] + h);
 }
 
 static int g_LastWIdx = 0;
 static int g_LastOctet = 0;
 static uint64_t g_TotalBitLen = 0;
-static char g_Sha1Digest[34] = { 0,};
-static uint32_t W[80];
-static uint32_t H[5] = { H0, H1, H2, H3, H4 };
+static char g_Sha256Digest[66] = { 0,};
+static uint32_t H[8] = { H0, H1, H2, H3, H4, H5, H6, H7 };
+static uint32_t W[64];
+
 
 /*
  * Generate SHA digest code.  Call this function until all data are processed.
  * set bLast parameter to true for last data packet to process.
  *
  * Make sure to have enough memory for returning results.  pRes must have at
- * least 33 bytes.
+ * least 65 bytes.
  *
  * @param 	pSrc 	: Pointer to source data
  * 			SrcLen	: Source data length in bytes
  *			bLast	: set true to indicate last data packet
- * 			pRes	: Pointer to buffer to store results of 32 characters
+ * 			pRes	: Pointer to buffer to store results of 64 characters
  * 					  if NULL is passed, internal buffer will be used
  *
  * 	@return	Pointer to digest string. If pRes is NULL, internal buffer is returned
  * 			NULL if incomplete
  */
-char *Sha1(uint8_t *pData, int DataLen, bool bLast, char *pRes)
+char *Sha256(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 {
 	uint8_t *p = pData;
 	int t = 0, j = 0;
-	char *digest = g_Sha1Digest;
+	char *digest = g_Sha256Digest;
 
 	g_TotalBitLen += DataLen << 3;
 
@@ -197,7 +220,7 @@ char *Sha1(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 		if (t >= 16)
 		{
 			// We have complete 512
-			Sha1Compute(W, H);
+			Sha256Compute(W, H);
 			memset(W, 0, sizeof(W));
 			t = 0; j = 0;
 		}
@@ -215,7 +238,7 @@ char *Sha1(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 				p += 4;
 				DataLen -= 4;
 			}
-			Sha1Compute(W, H);
+			Sha256Compute(W, H);
 		}
 		t = 0;
 		j = 0;
@@ -253,17 +276,17 @@ char *Sha1(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 		W[t] |= 0x80 << (24 - (j << 3));
 		t++;
 		if (t > 14)
-			Sha1Compute(W, H);
+			Sha256Compute(W, H);
 		{
 			W[14] = g_TotalBitLen >> 32;
 			W[15] = g_TotalBitLen & 0xffffffff;
 		}
-		Sha1Compute(W, H);
+		Sha256Compute(W, H);
 
 		if (pRes)
 			digest = pRes;
 
-		sprintf(digest, "%08lX%08lX%08lX%08lX%08lX", H[0], H[1], H[2], H[3], H[4]);
+		sprintf(digest, "%08lX%08lX%08lX%08lX%08lX%08lX%08lX%08lX", H[0], H[1], H[2], H[3], H[4], H[5], H[6], H[7]);
 
 		// Reset memory, ready for new processing
 
@@ -272,6 +295,9 @@ char *Sha1(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 		H[2] = H2;
 		H[3] = H3;
 		H[4] = H4;
+		H[5] = H5;
+		H[6] = H6;
+		H[7] = H7;
 
 		memset(W, 0, sizeof(W));
 		g_LastWIdx = 0;
@@ -281,3 +307,4 @@ char *Sha1(uint8_t *pData, int DataLen, bool bLast, char *pRes)
 
 	return digest;
 }
+
