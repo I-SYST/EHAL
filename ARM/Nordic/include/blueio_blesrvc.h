@@ -33,8 +33,8 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
-#ifndef __BLUEIO_SVC_H__
-#define __BLUEIO_SVC_H__
+#ifndef __BLUEIO_BLESRVC_H__
+#define __BLUEIO_BLESRVC_H__
 
 #include "ble_srv_common.h"
 
@@ -45,6 +45,10 @@ Modified by          Date              Description
 #define BLUEIO_UUID_SERVICE 		0x1
 #define BLUEIO_UUID_RDCHAR 			0x2
 #define BLUEIO_UUID_WRCHAR 			0x3
+
+#define BLUEIO_UUID_UART_SERVICE 	0x101
+#define BLUEIO_UUID_UART_RX_CHAR	0x102
+#define BLUEIO_UUID_UART_TX_CHAR	0x103
 
 #define BLUEIOSVC_CHAR_PROP_READ			(1<<0)
 #define BLUEIOSVC_CHAR_PROP_NOTIFY			(1<<1)
@@ -140,5 +144,5 @@ void BlueIOBleSvcEvtHandler(BLUEIOSRVC *pSrvc, ble_evt_t *pBleEvt);
 }
 #endif
 
-#endif // __BLUEIO_SVC_H__
+#endif // __BLUEIO_BLESRVC_H__
 

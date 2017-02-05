@@ -34,6 +34,11 @@ Modified by          Date              Description
 #ifndef __BLE_PERIPH_APP_H__
 #define __BLE_PERIPH_APP_H__
 
+#include <stdint.h>
+
+#include "ble.h"
+#include "nrf_sdm.h"
+
 #define APP_TIMER_PRESCALER             	0   /**< Value of the RTC1 PRESCALER register. */
 
 typedef enum _BleAppMode {
@@ -65,6 +70,7 @@ typedef void (*PRIVINITCB)();
 #pragma pack(push, 4)
 
 typedef struct _BleAppConfig {
+	nrf_clock_lf_cfg_t ClkCfg;
 	BLEAPP_MODE AppMode;
 	const char *pDevName;		// Device name
 	const char *pModelName;		// Model name
@@ -86,7 +92,7 @@ typedef struct _BleAppConfig {
 								// slow interval on adv timeout and advertise until connected
 	int ConnLedPort;
 	int ConnLedPin;
-	softdevice_evt_schedule_func_t SDEvtHandler;	// Require for BLEAPP_MODE_RTOS
+	uint32_t (*SDEvtHandler)(void) ;	// Require for BLEAPP_MODE_RTOS
 } BLEAPP_CFG;
 
 #pragma pack(pop)

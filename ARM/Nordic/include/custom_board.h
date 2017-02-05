@@ -73,6 +73,9 @@ Modified by          Date              Description
 #define BSP_BUTTON_1   BUTTON_2
 #define BSP_BUTTON_3   BUTTON_1		// Remap for Nordic DFU
 
+#define RX_PIN_NUMBER		BLUEIO_UART_RX_PIN
+#define TX_PIN_NUMBER		BLUEIO_UART_TX_PIN
+
 // Low frequency clock source to be used by the SoftDevice
 // I don't like this kind of define to set the default data
 // but it is used by Nordic SDK
