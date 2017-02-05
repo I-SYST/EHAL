@@ -90,6 +90,8 @@ typedef struct {
 	uint16_t		UuidSvc;				// Service UUID
 	int             NbChar;                 // Total number of characteristics for the service
 	BLUEIOSRVC_CHAR *pCharArray;            // Pointer a an array of characteristic
+    uint8_t			*pLongWrBuff;			// pointer to user long write buffer
+    int				LongWrBuffSize;			// long write buffer size
 } BLUEIOSRVC_CFG;
 
 /*
@@ -105,6 +107,8 @@ struct __BlueIOBLEService {
     uint16_t        ConnHdl;				// Connection handle
     uint16_t        UuidSvc;                // Service UUID
     uint8_t         UuidType;
+    uint8_t			*pLongWrBuff;			// pointer to user long write buffer
+    int				LongWrBuffSize;			// long write buffer size
 };
 
 #pragma pack(pop)

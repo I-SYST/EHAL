@@ -357,22 +357,6 @@ static void conn_params_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
-
-/**@brief Function for putting the chip into sleep mode.
- *
- * @note This function will not return.
- */
-static void sleep_mode_enter(void)
-{
-    // Prepare wakeup buttons.
-//    err_code = bsp_btn_ble_sleep_mode_prepare();
-//    APP_ERROR_CHECK(err_code);
-
-    // Go to system-off mode (this function will not return; wakeup will cause a reset).
-    uint32_t err_code = sd_power_system_off();
-    APP_ERROR_CHECK(err_code);
-}
-
 /**@brief Function for handling advertising events.
  *
  * @details This function will be called for advertising events which are passed to the application.
@@ -381,8 +365,6 @@ static void sleep_mode_enter(void)
  */
 static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
 {
-    uint32_t err_code;
-
     switch (ble_adv_evt)
     {
         case BLE_ADV_EVT_FAST:
@@ -859,6 +841,7 @@ bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     }
 
     g_BleAppData.AppMode = pBleAppCfg->AppMode;
+    g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
 
     switch (pBleAppCfg->AppMode)
     {
