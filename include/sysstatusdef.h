@@ -9,7 +9,7 @@ Desc   : System status definitions & encoding.
 
          it consists of a 32 bits value encoded as follow:
 
-         31           28|27              16|15                8|7              0
+         31           28|27                 16|15                8|7              0
          +--------------+---------------------+-------------------+---------------+
          | Type (4 bits)| Module ID (12 bits) | reserved (8 bits) | Code (8 bits) |
          +--------------+---------------------+-------------------+---------------+

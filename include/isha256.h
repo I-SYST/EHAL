@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : sha256.h
+File   : isha256.h
 
 Author : Hoang Nguyen Hoan          Aug. 17, 2014
 
@@ -32,8 +32,8 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
-#ifndef __SHA256_H__
-#define __SHA256_H__
+#ifndef __ISHA256_H__
+#define __ISHA256_H__
 
 #include <stdint.h>
 
@@ -84,4 +84,4 @@ char *Sha256(uint8_t *pData, int DataLen, bool bLast, char *pRes);
 #endif
 
 
-#endif // __SHA256_H__
+#endif // __ISHA256_H__

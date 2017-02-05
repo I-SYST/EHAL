@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : sha1.h
+File   : isha1.h
 
 Author : Hoang Nguyen Hoan          Aug. 17, 2014
 
@@ -32,8 +32,8 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
-#ifndef __SHA1_H__
-#define __SHA1_H__
+#ifndef __ISHA1_H__
+#define __ISHA1_H__
 
 #include <stdint.h>
 
@@ -84,4 +84,4 @@ char *Sha1(uint8_t *pData, int DataLen, bool bLast, char *pRes);
 #endif
 
 
-#endif // __SHA1_H__
+#endif // __ISHA1_H__

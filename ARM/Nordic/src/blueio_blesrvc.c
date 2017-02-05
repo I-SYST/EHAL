@@ -62,7 +62,8 @@ uint16_t BlueIOBleSrvcCharSend(BLUEIOSRVC *pSrvc, int CharIdx, uint8_t *pData, u
     params.p_data = pData;
     params.p_len = &DataLen;
 
-    if (sd_ble_gatts_hvx(pSrvc->ConnHdl, &params) == NRF_SUCCESS)
+    uint32_t err_code = sd_ble_gatts_hvx(pSrvc->ConnHdl, &params);
+    if (err_code == NRF_SUCCESS)
     	return DataLen;
 
     return 0;
@@ -198,7 +199,10 @@ static uint32_t BlueIOBleSrvcCharAdd(BLUEIOSRVC *pSrvc, uint16_t CharUuid,
 
     char_md.p_char_user_desc  = (uint8_t*)pDesc;
     if (pDesc != NULL)
+    {
     	char_md.char_user_desc_max_size = strlen(pDesc) + 1;
+    	char_md.char_user_desc_size = strlen(pDesc) + 1;
+    }
     char_md.p_char_pf = NULL;
     char_md.p_user_desc_md = NULL;
     char_md.p_cccd_md = NULL;
@@ -282,16 +286,18 @@ uint32_t BlueIOBleSrvcInit(BLUEIOSRVC *pSrvc, const BLUEIOSRVC_CFG *pCfg)
 
     pSrvc->NbChar = pCfg->NbChar;
 
-    memcpy(pSrvc->pCharArray, pCfg->pCharArray, pCfg->NbChar);
+    //memcpy(pSrvc->pCharArray, pCfg->pCharArray, pCfg->NbChar);
+
+    pSrvc->pCharArray = pCfg->pCharArray;
 
     for (pSrvc->NbChar = 0; pSrvc->NbChar < pCfg->NbChar; pSrvc->NbChar++)
     {
-        err = BlueIOBleSrvcCharAdd(pSrvc, pCfg->pCharArray[pSrvc->NbChar].Uuid,
-                                   pCfg->pCharArray[pSrvc->NbChar].MaxDataLen,
-                                   pCfg->pCharArray[pSrvc->NbChar].Property,
-                                   pCfg->pCharArray[pSrvc->NbChar].pDesc,
-                                   &pCfg->pCharArray[pSrvc->NbChar].Hdl,
-                                   pCfg->SecType);
+        err = BlueIOBleSrvcCharAdd(pSrvc, pSrvc->pCharArray[pSrvc->NbChar].Uuid,
+        						   pSrvc->pCharArray[pSrvc->NbChar].MaxDataLen,
+								   pSrvc->pCharArray[pSrvc->NbChar].Property,
+								   pSrvc->pCharArray[pSrvc->NbChar].pDesc,
+                                   &pSrvc->pCharArray[pSrvc->NbChar].Hdl,
+								   pCfg->SecType);
         if (err != NRF_SUCCESS)
         {
             return err;
