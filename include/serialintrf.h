@@ -261,6 +261,10 @@ struct _serialintrf_dev {
 
 #pragma pack(pop)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // C only function prototypes
 static inline void SerialIntrfDisable(SERINTRFDEV *pDev) {
 	pDev->Disable(pDev);
@@ -323,6 +327,8 @@ static inline void SerialIntrfReset(SERINTRFDEV *pDev) {
 }
 
 #ifdef __cplusplus
+}
+
 /*
  * C++ interface class
  */
