@@ -321,11 +321,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sdcard_impl.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/seep.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/seep.c</locationURI>
-		</link>
-		<link>
 			<name>src/seep_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/seep_impl.cpp</locationURI>

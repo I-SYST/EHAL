@@ -136,6 +136,14 @@ static inline int I2CRx(I2CDEV *pDev, int DevAddr, uint8_t *pBuff, int Bufflen) 
 static inline int I2CTx(I2CDEV *pDev, int DevAddr, uint8_t *pData, int Datalen) {
 	return SerialIntrfTx(&pDev->SerIntrf, DevAddr, pData, Datalen);
 }
+static inline int I2CRead(I2CDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
+        uint8_t *pRxBuff, int RxLen) {
+	return SerialIntrfRead(&pDev->SerIntrf, DevAddr, pAdCmd, AdCmdLen, pRxBuff, RxLen);
+}
+static inline int I2CWrite(I2CDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
+        uint8_t *pTxData, int TxLen) {
+	return SerialIntrfRead(&pDev->SerIntrf, DevAddr, pAdCmd, AdCmdLen, pTxData, TxLen);
+}
 static inline bool I2CStartRx(I2CDEV *pDev, int DevAddr) {
 	return SerialIntrfStartRx(&pDev->SerIntrf, DevAddr);
 }
