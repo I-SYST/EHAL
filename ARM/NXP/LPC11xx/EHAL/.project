@@ -96,6 +96,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/iopincfg.h</locationURI>
 		</link>
 		<link>
+			<name>include/isha1.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/isha1.h</locationURI>
+		</link>
+		<link>
+			<name>include/isha256.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/isha256.h</locationURI>
+		</link>
+		<link>
 			<name>include/istddef.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/istddef.h</locationURI>
@@ -139,16 +149,6 @@
 			<name>include/serialintrf.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/serialintrf.h</locationURI>
-		</link>
-		<link>
-			<name>include/sha1.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/sha1.h</locationURI>
-		</link>
-		<link>
-			<name>include/sha256.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/sha256.h</locationURI>
 		</link>
 		<link>
 			<name>include/spi.h</name>
@@ -326,6 +326,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/intelhex.c</locationURI>
 		</link>
 		<link>
+			<name>src/isha1.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/isha1.c</locationURI>
+		</link>
+		<link>
+			<name>src/isha256.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/isha256.c</locationURI>
+		</link>
+		<link>
 			<name>src/ledmx.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/ledmx.c</locationURI>
@@ -364,16 +374,6 @@
 			<name>src/serialintrf.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/serialintrf.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/sha1.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/sha1.c</locationURI>
-		</link>
-		<link>
-			<name>src/sha256.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/sha256.c</locationURI>
 		</link>
 		<link>
 			<name>src/spi_lpcxx.c</name>
