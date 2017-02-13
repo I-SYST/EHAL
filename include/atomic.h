@@ -76,7 +76,7 @@ Hoan				17 nov. 2014	Adapt to GNU GCC
 #endif
 #endif
 
-#include "core_cmFunc.h"
+#include "cmsis_gcc.h"
 #endif
 
 #else
