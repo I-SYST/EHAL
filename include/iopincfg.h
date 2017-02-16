@@ -53,10 +53,17 @@ typedef enum _iopin_dir {
 } IOPINDIR;
 
 // I/O pin type
-typedef enum {
+typedef enum _iopin_type {
 	IOPINTYPE_NORMAL = 0,
 	IOPINTYPE_OPENDRAIN = 1
 } IOPINTYPE;
+
+typedef enum _iopin_sense {
+	IOPINSENSE_LOW_TRANSISTION,		// Event on falling edge
+	IOPINSENSE_HIGH_TRANSITION,		// Event on raising edge
+	IOPINSENSE_TOGGLE,				// Event on state change
+	IOPINSENSE_COUNT	// Count max number of enum
+} IOPINSENSE;
 
 #pragma pack(push,4)
 
@@ -71,12 +78,14 @@ typedef struct _iopin_cfg {
 
 #pragma pack(pop)
 
+typedef void (*IOPINEVT_CB)(int PortMask, int PinMask, IOPINSENSE Sense);
+
 #ifdef 	__cplusplus
 extern "C" {
 #endif
 
-/*
- * Configure individual I/O pin.
+/**
+ * @brief Configure individual I/O pin.
  *
  * Note : This function is MCU dependent. Needs to be implemented per MCU
  *
@@ -90,16 +99,12 @@ extern "C" {
  */
 void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resistor, IOPINTYPE Type);
 
-#ifdef __cplusplus
-}
-#endif
-
-/*
- * Configure I/O pin with IOPIN_CFG data structure. Can be used for batch config
+/**
+ * @brief Configure I/O pin with IOPIN_CFG data structure. Can be used for batch configuration
  *
  * @param   pCfg   : Pointer to an array gpio pin configuration
  *          NbPins : Number of gpio pins to configure 
-*/
+ */
 static inline void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
 	if (pCfg == NULL || NbPins <= 0)
 		return;
@@ -111,6 +116,21 @@ static inline void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
 	}
 }
 
+/**
+ * @brief Register for I/O pin sensing interrupt event
+ *
+ * Note : Only one callback per event.  Setting the same event will overwrite the previous
+ * 		  setting.
+ *
+ * @param	PortMask : Bit position represent port number (up to 32 ports)
+ * 			PinMask  : Bit position represent pin number (up to 32 pins)
+ * 			Sense    : Sense type of event on the I/O pin
+ * 			pEvtCB	 : Pointer to callback funtion when event occurs
+ */
+void IOPinSenseEvent(int PortMask, int PinMask, IOPINSENSE Sense, IOPINEVT_CB pEvtCB);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif	// __IOPINCFG_H__
