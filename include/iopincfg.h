@@ -36,9 +36,10 @@ Modified by          Date              Description
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 // I/O pin resistor config
-typedef enum _iopin_resistor {
+typedef enum __iopin_resistor {
 	IOPINRES_NONE,
 	IOPINRES_PULLUP,
 	IOPINRES_PULLDOWN,
@@ -46,28 +47,27 @@ typedef enum _iopin_resistor {
 } IOPINRES;
 
 // I/O pin direction config
-typedef enum _iopin_dir {
+typedef enum __iopin_dir {
     IOPINDIR_INPUT = 0,
     IOPINDIR_OUTPUT = 1,
     IOPINDIR_BI = 2,		// Bidirectional
 } IOPINDIR;
 
 // I/O pin type
-typedef enum _iopin_type {
+typedef enum __iopin_type {
 	IOPINTYPE_NORMAL = 0,
 	IOPINTYPE_OPENDRAIN = 1
 } IOPINTYPE;
 
-typedef enum _iopin_sense {
-	IOPINSENSE_LOW_TRANSISTION,		// Event on falling edge
+typedef enum __iopin_sense {
+	IOPINSENSE_LOW_TRANSITION,		// Event on falling edge
 	IOPINSENSE_HIGH_TRANSITION,		// Event on raising edge
 	IOPINSENSE_TOGGLE,				// Event on state change
-	IOPINSENSE_COUNT	// Count max number of enum
 } IOPINSENSE;
 
 #pragma pack(push,4)
 
-typedef struct _iopin_cfg {
+typedef struct __iopin_cfg {
 	int 		PortNo;		// Port number
 	int 		PinNo;		// Pin number
 	int 		PinOp;		// Pin function select index from 0, MCU dependent
@@ -78,7 +78,7 @@ typedef struct _iopin_cfg {
 
 #pragma pack(pop)
 
-typedef void (*IOPINEVT_CB)(int PortMask, int PinMask, IOPINSENSE Sense);
+typedef void (*IOPINEVT_CB)(int IntNo);
 
 #ifdef 	__cplusplus
 extern "C" {
@@ -117,17 +117,24 @@ static inline void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
 }
 
 /**
- * @brief Register for I/O pin sensing interrupt event
+ * @brief	Diable I/O pin sense interrupt
  *
- * Note : Only one callback per event.  Setting the same event will overwrite the previous
- * 		  setting.
- *
- * @param	PortMask : Bit position represent port number (up to 32 ports)
- * 			PinMask  : Bit position represent pin number (up to 32 pins)
- * 			Sense    : Sense type of event on the I/O pin
- * 			pEvtCB	 : Pointer to callback funtion when event occurs
+ * @param	IntNo : Interrupt number to disable
  */
-void IOPinSenseEvent(int PortMask, int PinMask, IOPINSENSE Sense, IOPINEVT_CB pEvtCB);
+void IOPinDisbleInterrupt(int IntNo);
+
+/**
+ * @brief Enable I/O pin sensing interrupt event
+ *
+ *
+ * @param	IntNo	: Interrupt number
+ * 			IntPrio : Interrupt priority
+ * 			PortNo  : Port number (up to 32 ports)
+ * 			PinNo   : Pin number (up to 32 pins)
+ * 			Sense   : Sense type of event on the I/O pin
+ * 			pEvtCB	: Pointer to callback function when event occurs
+ */
+bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSENSE Sense, IOPINEVT_CB pEvtCB);
 
 #ifdef __cplusplus
 }
