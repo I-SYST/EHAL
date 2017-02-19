@@ -113,6 +113,9 @@ void BlueIOBleSvcEvtHandler(BLUEIOSRVC *pSrvc, ble_evt_t *pBleEvt)
 							{
 								pSrvc->pCharArray[i].bNotify = false;
 							}
+							// Set notify callback
+							if (pSrvc->pCharArray[i].SetNotifCB)
+								pSrvc->pCharArray[i].SetNotifCB(pSrvc, pSrvc->pCharArray[i].bNotify);
 						}
 						else if ((p_evt_write->handle == pSrvc->pCharArray[i].Hdl.value_handle) &&
 								 (pSrvc->pCharArray[i].WrCB != NULL))
@@ -176,14 +179,14 @@ static void BlueIOBleSrvcEncSec(ble_gap_conn_sec_mode_t *pSecMode, BLUEIOSRVC_SE
 
 /**@brief Add control characteristic.
  *
- * @param[in]   p_blueios        LEDButton Service structure.
- * @param[in]   p_iodata_init   Information needed to initialize the service.
+ * @param[in]   	pSrvc   : Service data.
+ * @param[in/out]   pChar   : characteristic to initialize.
+ * @param[in]		SecType : Security type
  *
  * @return      NRF_SUCCESS on success, otherwise an error code.
  */
-static uint32_t BlueIOBleSrvcCharAdd(BLUEIOSRVC *pSrvc, uint16_t CharUuid,
-								 	int MaxDataLen, uint32_t CharProp, const char *pDesc,
-									ble_gatts_char_handles_t *pCharHdl, BLUEIOSRVC_SECTYPE SecType)
+static uint32_t BlueIOBleSrvcCharAdd(BLUEIOSRVC *pSrvc, BLUEIOSRVC_CHAR *pChar,
+									 BLUEIOSRVC_SECTYPE SecType)
 {
     ble_gatts_char_md_t char_md;
     ble_gatts_attr_md_t cccd_md;
@@ -197,18 +200,18 @@ static uint32_t BlueIOBleSrvcCharAdd(BLUEIOSRVC *pSrvc, uint16_t CharUuid,
 
     cccd_md.vloc = BLE_GATTS_VLOC_STACK;
 
-    char_md.p_char_user_desc  = (uint8_t*)pDesc;
-    if (pDesc != NULL)
+    char_md.p_char_user_desc  = (uint8_t*)pChar->pDesc;
+    if (pChar->pDesc != NULL)
     {
-    	char_md.char_user_desc_max_size = strlen(pDesc) + 1;
-    	char_md.char_user_desc_size = strlen(pDesc) + 1;
+    	char_md.char_user_desc_max_size = strlen(pChar->pDesc) + 1;
+    	char_md.char_user_desc_size = strlen(pChar->pDesc) + 1;
     }
     char_md.p_char_pf = NULL;
     char_md.p_user_desc_md = NULL;
     char_md.p_cccd_md = NULL;
     char_md.p_sccd_md = NULL;
 
-    if (CharProp & BLUEIOSVC_CHAR_PROP_NOTIFY)
+    if (pChar->Property & BLUEIOSVC_CHAR_PROP_NOTIFY)
     {
     	char_md.char_props.notify = 1;
     	BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
@@ -217,21 +220,21 @@ static uint32_t BlueIOBleSrvcCharAdd(BLUEIOSRVC *pSrvc, uint16_t CharUuid,
         char_md.p_cccd_md         = &cccd_md;
     }
 
-    if (CharProp & BLUEIOSVC_CHAR_PROP_READ)
+    if (pChar->Property & BLUEIOSVC_CHAR_PROP_READ)
     {
     	char_md.char_props.read   = 1;
     	BlueIOBleSrvcEncSec(&attr_md.read_perm, SecType);
         BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.write_perm);
     }
 
-    if (CharProp & BLUEIOSVC_CHAR_PROP_WRITE)
+    if (pChar->Property & BLUEIOSVC_CHAR_PROP_WRITE)
     {
     	char_md.char_props.write  = 1;
     	BlueIOBleSrvcEncSec(&attr_md.write_perm, SecType);
         BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.read_perm);
     }
 
-    if (CharProp & BLUEIOSVC_CHAR_PROP_WRITEWORESP)
+    if (pChar->Property & BLUEIOSVC_CHAR_PROP_WRITEWORESP)
 	{
 		char_md.char_props.write_wo_resp = 1;
     	BlueIOBleSrvcEncSec(&attr_md.write_perm, SecType);
@@ -239,27 +242,40 @@ static uint32_t BlueIOBleSrvcCharAdd(BLUEIOSRVC *pSrvc, uint16_t CharUuid,
 	}
 
     ble_uuid.type = pSrvc->UuidType;
-    ble_uuid.uuid = CharUuid;
+    ble_uuid.uuid = pChar->Uuid;
 
 
 
     attr_md.vloc       = BLE_GATTS_VLOC_STACK;
     attr_md.rd_auth    = 0;
     attr_md.wr_auth    = 0;
-    attr_md.vlen       = 1;	// Variable length
+    if (pChar->Property & BLUEIOSVC_CHAR_PROP_VARLEN)
+    {
+    	attr_md.vlen       = 1;	// Variable length
+    }
+    else
+    {
+    	attr_md.vlen       = 0;	// Fixed length
+    }
 
     memset(&attr_char_value, 0, sizeof(attr_char_value));
 
     attr_char_value.p_uuid       = &ble_uuid;
     attr_char_value.p_attr_md    = &attr_md;
-    attr_char_value.init_len     = 0;
     attr_char_value.init_offs    = 0;
-    attr_char_value.max_len      = MaxDataLen;
-    attr_char_value.p_value      = NULL;
+    attr_char_value.max_len      = pChar->MaxDataLen;
+    attr_char_value.init_len     = pChar->ValueLen;
+    attr_char_value.p_value      = pChar->pDefValue;
 
-    return sd_ble_gatts_characteristic_add(pSrvc->SrvcHdl, &char_md, &attr_char_value, pCharHdl);
+    return sd_ble_gatts_characteristic_add(pSrvc->SrvcHdl, &char_md, &attr_char_value, &pChar->Hdl);
 }
 
+/**
+ * @brief Create BLE service
+ *
+ * @param [in/out]	pSrvc : Service handle
+ * @param [in]		pCfg  : Service configuraton data
+ */
 uint32_t BlueIOBleSrvcInit(BLUEIOSRVC *pSrvc, const BLUEIOSRVC_CFG *pCfg)
 {
     uint32_t   err;
@@ -286,17 +302,11 @@ uint32_t BlueIOBleSrvcInit(BLUEIOSRVC *pSrvc, const BLUEIOSRVC_CFG *pCfg)
 
     pSrvc->NbChar = pCfg->NbChar;
 
-    //memcpy(pSrvc->pCharArray, pCfg->pCharArray, pCfg->NbChar);
-
     pSrvc->pCharArray = pCfg->pCharArray;
 
-    for (pSrvc->NbChar = 0; pSrvc->NbChar < pCfg->NbChar; pSrvc->NbChar++)
+    for (int i = 0; i < pCfg->NbChar; i++)
     {
-        err = BlueIOBleSrvcCharAdd(pSrvc, pSrvc->pCharArray[pSrvc->NbChar].Uuid,
-        						   pSrvc->pCharArray[pSrvc->NbChar].MaxDataLen,
-								   pSrvc->pCharArray[pSrvc->NbChar].Property,
-								   pSrvc->pCharArray[pSrvc->NbChar].pDesc,
-                                   &pSrvc->pCharArray[pSrvc->NbChar].Hdl,
+    	err = BlueIOBleSrvcCharAdd(pSrvc, &pSrvc->pCharArray[i],
 								   pCfg->SecType);
         if (err != NRF_SUCCESS)
         {

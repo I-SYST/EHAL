@@ -37,6 +37,7 @@ Modified by          Date              Description
 #define __BLUEIO_BLESRVC_H__
 
 #include "ble_srv_common.h"
+#include "serialintrf.h"
 
 // Default BlueIO UUID.  User should use privately generated UUID
 // UUID : 00000000-287c-11e4-ab74-0002a5d5c51b
@@ -54,10 +55,19 @@ Modified by          Date              Description
 #define BLUEIOSVC_CHAR_PROP_NOTIFY			(1<<1)
 #define BLUEIOSVC_CHAR_PROP_WRITEWORESP		(1<<2)
 #define BLUEIOSVC_CHAR_PROP_WRITE			(1<<3)
+#define BLUEIOSVC_CHAR_PROP_VARLEN			(1<<4)
 
 typedef struct __BlueIOBLEService BLUEIOSRVC;
 
+/**
+ * Callback on write
+ */
 typedef void (*BLUEIOSRVC_WRCB) (BLUEIOSRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
+
+/**
+ * Callback on set notification
+ */
+typedef void (*BLUEIOSRVC_SETNOTCB)(BLUEIOSRVC *pBlueIOSvc, bool bEnable);
 
 // Service connection security types
 typedef enum {
@@ -78,6 +88,9 @@ typedef struct {
     const char *pDesc;                      // char UTF-8 description string
     BLUEIOSRVC_WRCB WrCB;                   // Callback for write char, set to NULL for read char
     bool bNotify;                           // Notify flag for read characteristic
+    BLUEIOSRVC_SETNOTCB SetNotifCB;			// Callback on set notification
+    uint8_t *pDefValue;						// pointer to char default values
+    uint16_t ValueLen;						// Default value length in bytes
     ble_gatts_char_handles_t Hdl;           // char handle
 } BLUEIOSRVC_CHAR;
 
