@@ -154,7 +154,7 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
     return true;
 }
 
-void GPIOTE_IRQHandler(void)
+void __WEAK GPIOTE_IRQHandler(void)
 {
 	for (int i = 0; i < IOPIN_MAX_INT; i++)
 	{
