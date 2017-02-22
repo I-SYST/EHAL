@@ -117,7 +117,19 @@ static inline void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
 }
 
 /**
- * @brief	Diable I/O pin sense interrupt
+ * @brief	Disable I/O pin
+ *
+ * Some hardware such as low power mcu allow I/O pin to be disconnected
+ * in order to save power. There is no enable function. Reconfigure the
+ * I/O pin to re-enable it.
+ *
+ * @param	PortNo 	: Port number
+ * @param	PinNo	: Pin Number
+ */
+void IOPinDisable(int PortNo, int PinNo);
+
+/**
+ * @brief	Disable I/O pin sense interrupt
  *
  * @param	IntNo : Interrupt number to disable
  */
@@ -126,8 +138,12 @@ void IOPinDisbleInterrupt(int IntNo);
 /**
  * @brief Enable I/O pin sensing interrupt event
  *
+ * Generate an interrupt when I/O sense a state change.
+ * The IntNo (interrupt number) parameter is processor dependent. Some is
+ * directly the hardware interrupt number other is just an index in an array
  *
- * @param	IntNo	: Interrupt number
+ *
+ * @param	IntNo	: Interrupt number.
  * 			IntPrio : Interrupt priority
  * 			PortNo  : Port number (up to 32 ports)
  * 			PinNo   : Pin number (up to 32 pins)

@@ -56,7 +56,7 @@ typedef struct {
 
 IOPINSENS_EVTHOOK s_GpIOSenseEvt[IOPIN_MAX_INT] = { {0, NULL}, };
 
-/*
+/**
  * Configure individual I/O pin. nRF51 only have 1 port so PortNo is not used
  *
  * @Param 	PortNo	: Port number
@@ -101,6 +101,26 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 	NRF_GPIO->PIN_CNF[PinNo] = cnf;
 }
 
+/**
+ * @brief	Disable I/O pin
+ *
+ * Some hardware such as low power mcu allow I/O pin to be disconnected
+ * in order to save power. There is no enable function. Reconfigure the
+ * I/O pin to re-enable it.
+ *
+ * @param	PortNo 	: Port number
+ * @param	PinNo	: Pin Number
+ */
+void IOPinDisable(int PortNo, int PinNo)
+{
+	// TODO : Implement disconnect pin
+}
+
+/**
+ * @brief	Disable I/O pin sense interrupt
+ *
+ * @param	IntNo : Interrupt number to disable
+ */
 void IOPinDisbleInterrupt(int IntNo)
 {
 	if (IntNo >= 0 && IntNo < 8)
@@ -110,6 +130,21 @@ void IOPinDisbleInterrupt(int IntNo)
 	}
 }
 
+/**
+ * @brief Enable I/O pin sensing interrupt event
+ *
+ * Generate an interrupt when I/O sense a state change.
+ * The IntNo (interrupt number) parameter is processor dependent. Some is
+ * directly the hardware interrupt number other is just an index in an array
+ *
+ *
+ * @param	IntNo	: Interrupt number.
+ * 			IntPrio : Interrupt priority
+ * 			PortNo  : Port number (up to 32 ports)
+ * 			PinNo   : Pin number (up to 32 pins)
+ * 			Sense   : Sense type of event on the I/O pin
+ * 			pEvtCB	: Pointer to callback function when event occurs
+ */
 bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSENSE Sense, IOPINEVT_CB pEvtCB)
 {
 	if (IntNo < 0 || IntNo >= IOPIN_MAX_INT)
