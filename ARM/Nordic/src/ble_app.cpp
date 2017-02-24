@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : ble_periph_app.cpp
+File   : ble_app.cpp
 
 Author : Hoang Nguyen Hoan          Dec 26, 2016
 
@@ -65,7 +65,7 @@ Modified by          Date              Description
 #include "custom_board.h"
 #include "iopincfg.h"
 #include "iopinctrl.h"
-#include "ble_periph_app.h"
+#include "ble_app.h"
 
 //#define IS_SRVC_CHANGED_CHARACT_PRESENT 1                                           /**< Include the service_changed characteristic. If not enabled, the server's database cannot be changed for the lifetime of the device. */
 
@@ -77,8 +77,8 @@ Modified by          Date              Description
 
 #define APP_FEATURE_NOT_SUPPORTED       BLE_GATT_STATUS_ATTERR_APP_BEGIN + 2        /**< Reply when unsupported features are requested. */
 
-#define CENTRAL_LINK_COUNT              0                                           /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
-#define PERIPHERAL_LINK_COUNT           1                                           /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
+//#define CENTRAL_LINK_COUNT              0                                           /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
+//#define PERIPHERAL_LINK_COUNT           1                                           /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
 
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(64, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      180                                         /**< The advertising timeout (in units of seconds). */
@@ -214,7 +214,7 @@ static inline void BleConnLedOn() {
 	IOPinClear(g_BleAppData.ConnLedPort, g_BleAppData.ConnLedPin);
 }
 
-void BlePeriphAppDfuCallback(fs_evt_t const * const evt, fs_ret_t result)
+void BleAppDfuCallback(fs_evt_t const * const evt, fs_ret_t result)
 {
     if (result == FS_SUCCESS)
     {
@@ -222,7 +222,7 @@ void BlePeriphAppDfuCallback(fs_evt_t const * const evt, fs_ret_t result)
     }
 }
 
-void BlePeriphAppEnterDfu()
+void BleAppEnterDfu()
 {
     uint32_t err_code = nrf_dfu_flash_init(true);
 
@@ -230,7 +230,7 @@ void BlePeriphAppEnterDfu()
 
     s_dfu_settings.enter_buttonless_dfu = true;
 
-    err_code = nrf_dfu_settings_write(BlePeriphAppDfuCallback);
+    err_code = nrf_dfu_settings_write(BleAppDfuCallback);
 
     if (err_code != NRF_SUCCESS)
     {
@@ -457,6 +457,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
                     (req.request.write.op == BLE_GATTS_OP_EXEC_WRITE_REQ_NOW) ||
                     (req.request.write.op == BLE_GATTS_OP_EXEC_WRITE_REQ_CANCEL))
                 {
+                	printf("BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST\r\n");
                     if (req.type == BLE_GATTS_AUTHORIZE_TYPE_WRITE)
                     {
                         auth_reply.type = BLE_GATTS_AUTHORIZE_TYPE_WRITE;
@@ -649,12 +650,43 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
  */
 static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
 {
+    uint16_t role = ble_conn_state_role(p_ble_evt->evt.gap_evt.conn_handle);
+
     ble_conn_state_on_ble_evt(p_ble_evt);
     pm_on_ble_evt(p_ble_evt);
-    BlePeriphAppSrvcEvtDispatch(p_ble_evt);
-    ble_conn_params_on_ble_evt(p_ble_evt);
+
     on_ble_evt(p_ble_evt);
-    ble_advertising_on_ble_evt(p_ble_evt);
+    if (role == BLE_GAP_ROLE_PERIPH)
+    {
+        ble_advertising_on_ble_evt(p_ble_evt);
+        ble_conn_params_on_ble_evt(p_ble_evt);
+        BlePeriphEvtUserHandler(p_ble_evt);
+    }
+    else if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT))
+    {
+        BleCentralEvtUserHandler(p_ble_evt);
+#if 0
+    	/** on_ble_central_evt will update the connection handles, so we want to execute it
+         * after dispatching to the central applications upon disconnection. */
+        if (p_ble_evt->header.evt_id != BLE_GAP_EVT_DISCONNECTED)
+        {
+            on_ble_central_evt(p_ble_evt);
+        }
+
+        if (conn_handle < NRF_BLE_LINK_COUNT)
+        {
+            ble_db_discovery_on_ble_evt(&m_ble_db_discovery[conn_handle], p_ble_evt);
+        }
+        ble_hrs_c_on_ble_evt(&m_ble_hrs_c, p_ble_evt);
+
+        // If the peer disconnected, we update the connection handles last.
+        if (p_ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED)
+        {
+            on_ble_central_evt(p_ble_evt);
+        }
+#endif
+    }
+
 }
 
 /**@brief Function for dispatching a system event to interested modules.
@@ -683,7 +715,7 @@ static void sys_evt_dispatch(uint32_t sys_evt)
  * @param[in] erase_bonds  Indicates whether bonding information should be cleared from
  *                         persistent storage during initialization of the Peer Manager.
  */
-static void BlePeriphAppPeerMngrInit(BLEAPP_SECTYPE SecType, uint8_t SecKeyExchg, bool bEraseBond)
+static void BleAppPeerMngrInit(BLEAPP_SECTYPE SecType, uint8_t SecKeyExchg, bool bEraseBond)
 {
     ble_gap_sec_params_t sec_param;
     ret_code_t           err_code;
@@ -786,7 +818,7 @@ static void sec_req_timeout_handler(void * p_context)
 
 /**@brief Function for initializing the Advertising functionality.
  */
-void BlePeriphAppAdvInit(const BLEAPP_CFG *pCfg)
+void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 {
     uint32_t               err_code;
     ble_advdata_t          advdata;
@@ -826,11 +858,44 @@ void BlePeriphAppAdvInit(const BLEAPP_CFG *pCfg)
     APP_ERROR_CHECK(err_code);
 }
 
-/**@brief Function for the SoftDevice initialization.
+void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
+{
+    ble_dis_init_t   dis_init;
+    ble_dis_pnp_id_t pnp_id;
+
+    // Initialize Device Information Service.
+    memset(&dis_init, 0, sizeof(dis_init));
+
+    if (pBleAppCfg->pDevDesc)
+    {
+    	ble_srv_ascii_to_utf8(&dis_init.manufact_name_str, (char*)pBleAppCfg->pDevDesc->ManufName);
+    	ble_srv_ascii_to_utf8(&dis_init.model_num_str, (char*)pBleAppCfg->pDevDesc->ModelName);
+    	if (pBleAppCfg->pDevDesc->pSerialNoStr)
+    		ble_srv_ascii_to_utf8(&dis_init.serial_num_str, (char*)pBleAppCfg->pDevDesc->pSerialNoStr);
+    	if (pBleAppCfg->pDevDesc->pFwVerStr)
+    		ble_srv_ascii_to_utf8(&dis_init.fw_rev_str, (char*)pBleAppCfg->pDevDesc->pFwVerStr);
+    	if (pBleAppCfg->pDevDesc->pHwVerStr)
+    		ble_srv_ascii_to_utf8(&dis_init.hw_rev_str, (char*)pBleAppCfg->pDevDesc->pHwVerStr);
+    }
+
+    pnp_id.vendor_id  = pBleAppCfg->VendorID;
+    pnp_id.product_id = pBleAppCfg->ProductId;
+    dis_init.p_pnp_id = &pnp_id;
+
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&dis_init.dis_attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&dis_init.dis_attr_md.write_perm);
+
+    uint32_t err_code = ble_dis_init(&dis_init);
+    APP_ERROR_CHECK(err_code);
+
+}
+
+/**
+ * @brief Function for the SoftDevice initialization.
  *
  * @details This function initializes the SoftDevice and the BLE event interrupt.
  */
-bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
+bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 {
     uint32_t err_code;
 
@@ -865,8 +930,8 @@ bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     // Initialize SoftDevice.
 
     ble_enable_params_t ble_enable_params;
-    err_code = softdevice_enable_get_default_config(CENTRAL_LINK_COUNT,
-                                                    PERIPHERAL_LINK_COUNT,
+    err_code = softdevice_enable_get_default_config(pBleAppCfg->CentLinkCount,
+                                                    pBleAppCfg->PeriLinkCount,
                                                     &ble_enable_params);
     APP_ERROR_CHECK(err_code);
 
@@ -887,7 +952,7 @@ bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
     APP_ERROR_CHECK(err_code);
 
-    BlePeriphAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
+    BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
 
     nrf_crypto_init();
 
@@ -908,77 +973,41 @@ bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     gap_params_init(pBleAppCfg);
 
-    BlePeriphAppInitUserData();
+    BleAppInitUserData();
 
-    BlePeriphAppInitServices();
+    BleAppInitUserServices();
 
-    ble_dis_init_t   dis_init;
-    ble_dis_pnp_id_t pnp_id;
+    if (pBleAppCfg->bEnDevInfoService)
+    	BleAppDisInit(pBleAppCfg);
 
-    // Initialize Device Information Service.
-    memset(&dis_init, 0, sizeof(dis_init));
-
-    if (pBleAppCfg->pManufName)
-    {
-    	ble_srv_ascii_to_utf8(&dis_init.manufact_name_str, (char*)pBleAppCfg->pManufName);
-    }
-
-    if (pBleAppCfg->pModelName)
-    {
-    	ble_srv_ascii_to_utf8(&dis_init.model_num_str, (char*)pBleAppCfg->pModelName);
-    }
-
-    if (pBleAppCfg->pSerialNoStr)
-    {
-    	ble_srv_ascii_to_utf8(&dis_init.serial_num_str, (char*)pBleAppCfg->pSerialNoStr);
-    }
-
-    if (pBleAppCfg->pFwVerStr)
-    {
-    	ble_srv_ascii_to_utf8(&dis_init.fw_rev_str, (char*)pBleAppCfg->pFwVerStr);
-    }
-
-    if (pBleAppCfg->pHwVerStr)
-    {
-    	ble_srv_ascii_to_utf8(&dis_init.hw_rev_str, (char*)pBleAppCfg->pHwVerStr);
-    }
-
-    pnp_id.vendor_id  = pBleAppCfg->VendorID;
-    dis_init.p_pnp_id = &pnp_id;
-
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&dis_init.dis_attr_md.read_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&dis_init.dis_attr_md.write_perm);
-
-    err_code = ble_dis_init(&dis_init);
-    APP_ERROR_CHECK(err_code);
-
-    BlePeriphAppAdvInit(pBleAppCfg);
+    BleAppAdvInit(pBleAppCfg);
 
     conn_params_init();
 
     return true;
 }
 
-void BlePeriphAppStart()
+void BleAppStart()
 {
 
     uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
     APP_ERROR_CHECK(err_code);
-}
 
-void BlePeriphAppProcessEvt()
-{
-    if (g_BleAppData.AppMode == BLEAPP_MODE_RTOS)
+    while (1)
     {
-        intern_softdevice_events_execute();
-    }
-    else
-    {
-		if (g_BleAppData.AppMode == BLEAPP_MODE_APPSCHED)
+		if (g_BleAppData.AppMode == BLEAPP_MODE_RTOS)
 		{
-			app_sched_execute();
+			BleAppRtosWaitEvt();
+			intern_softdevice_events_execute();
 		}
-		sd_app_evt_wait();
+		else
+		{
+			if (g_BleAppData.AppMode == BLEAPP_MODE_APPSCHED)
+			{
+				app_sched_execute();
+			}
+			sd_app_evt_wait();
+		}
     }
 }
 
