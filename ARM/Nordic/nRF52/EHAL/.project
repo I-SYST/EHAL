@@ -36,9 +36,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/base64.h</locationURI>
 		</link>
 		<link>
-			<name>include/ble_periph_app.h</name>
+			<name>include/ble_app.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/ble_periph_app.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ble_app.h</locationURI>
 		</link>
 		<link>
 			<name>include/blueio_blesrvc.h</name>
@@ -216,9 +216,14 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/base64.c</locationURI>
 		</link>
 		<link>
-			<name>src/ble_periph_app.cpp</name>
+			<name>src/ble_app.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/ble_periph_app.cpp</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/ble_app_handler.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app_handler.c</locationURI>
 		</link>
 		<link>
 			<name>src/blueio_blesrvc.c</name>
@@ -294,6 +299,11 @@
 			<name>src/nRF5_SDK_12</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrf_log_backend_printf.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_log_backend_printf.c</locationURI>
 		</link>
 		<link>
 			<name>src/prbs.c</name>
@@ -597,11 +607,6 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK_12/libraries/scheduler</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_12/libraries/sha256</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -1033,7 +1038,7 @@
 		<link>
 			<name>src/nRF5_SDK_12/libraries/sha256/sha256.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_12/components/libraries/sha256/sha256.c</locationURI>
+			<locationURI>$%7BPARENT-5-PROJECT_LOC%7D/external/nRF5_SDK_12/components/libraries/sha256/sha256.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK_12/libraries/svc/nrf_svc_handler.c</name>
