@@ -36,8 +36,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by         Date              	Description
 Hoan				Mar. 2, 2017		Renaming from SerialIntrf to DeviceInterf
 ----------------------------------------------------------------------------*/
-#ifndef __DEVICEINTERF_H__
-#define __DEVICEINTERF_H__
+#ifndef __DEVICEINTRF_H__
+#define __DEVICEINTRF_H__
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -115,7 +115,7 @@ struct __device_intrf {
 	 * be turned back on without going through the full init sequence
 	 *
 	 * @param
-	 * 		pSerDev : Pointer to an instance of the Device Interface
+	 * 		pDevIntrf : Pointer to an instance of the Device Interface
 	 *
 	 * @return None
 	 */
@@ -126,7 +126,7 @@ struct __device_intrf {
 	 * 		Turn on the interface.
 	 *
 	 * @param
-	 * 		pSerDev : Pointer to an instance of the Device Interface
+	 * 		pDevIntrf : Pointer to an instance of the Device Interface
 	 *
 	 * @return None
 	 */
@@ -139,7 +139,7 @@ struct __device_intrf {
 	 * implementation as bits/sec or bytes/sec or whatever the case
 	 *
 	 * @param
-	 * 		pSerDev : Pointer to an instance of the Device Interface
+	 * 		pDevIntrf : Pointer to an instance of the Device Interface
 	 *
 	 * @return Transfer rate per second
 	 */
@@ -152,8 +152,8 @@ struct __device_intrf {
 	 * implementation as bits/sec or bytes/sec or whatever the case
 	 *
 	 * @param
-	 * 		pSerDev : Pointer to an instance of the Device Interface
-	 * 		Rate 	: Data rate to be set in Hertz (transfer per second)
+	 * 		pDevIntrf : Pointer to an instance of the Device Interface
+	 * 		Rate 	  : Data rate to be set in Hertz (transfer per second)
 	 *
 	 * @return 	Actual transfer rate per second set.  It is the real capable rate
 	 * 			closes to rate being requested.
@@ -168,8 +168,8 @@ struct __device_intrf {
 	 * This function must check & set the busy state for re-entrancy
 	 *
 	 * @param
-	 * 		pSerDev : Pointer to an instance of the Device Interface
-	 * 		DevAddr : The device selection id scheme
+	 * 		pDevIntrf : Pointer to an instance of the Device Interface
+	 * 		DevAddr   : The device selection id scheme
 	 *
 	 * @return 	true - Success
 	 * 			false - failed.
@@ -182,9 +182,9 @@ struct __device_intrf {
 	 * called prior calling this function to get the actual data
 	 *
 	 * @param
-	 * 		pSerDev : Pointer to an instance of the Device Interface
-	 * 		pBuff 	: Pointer to memory area to receive data.
-	 * 		BuffLen : Length of buffer memory in bytes
+	 * 		pDevIntrf : Pointer to an instance of the Device Interface
+	 * 		pBuff 	  : Pointer to memory area to receive data.
+	 * 		BuffLen   : Length of buffer memory in bytes
 	 *
 	 * @return	Number of bytes read
 	 */
@@ -197,7 +197,7 @@ struct __device_intrf {
 	 * This function must clear the busy state for re-entrancy
 	 *
 	 * @param
-	 * 		pSerDev : Pointer to an instance of the Device Interface
+	 * 		pDevIntrf : Pointer to an instance of the Device Interface
 	 *
 	 * @return	None
 	 */
@@ -211,8 +211,8 @@ struct __device_intrf {
 	 * This function must check & set the busy state for re-entrancy
 	 *
 	 * @param
-	 * 		pSerDev : Pointer to an instance of the Device Interface
-	 * 		DevAddr : The device selection id scheme
+	 * 		pDevIntrf : Pointer to an instance of the Device Interface
+	 * 		DevAddr   : The device selection id scheme
 	 *
 	 * @return 	true - Success
 	 * 			false - failed
@@ -225,7 +225,7 @@ struct __device_intrf {
 	 * called prior calling this function to send the actual data
 	 *
 	 * @param
-	 * 		pSerDev : Pointer to an instance of the Device Interface
+	 * 		pDevIntrf : Pointer to an instance of the Device Interface
 	 * 		pData 	: Pointer to memory area of data to send.
 	 * 		DataLen : Length of data memory in bytes
 	 *
@@ -240,7 +240,7 @@ struct __device_intrf {
 	 * This function must clear the busy state for re-entrancy
 	 *
 	 * @param
-	 * 		pSerDev : Pointer to an instance of the Device Interface
+	 * 		pDevIntrf : Pointer to an instance of the Device Interface
 	 *
 	 * @return	None
 	 */
@@ -252,7 +252,7 @@ struct __device_intrf {
 	 * function of not used.
 	 *
      * @param
-     *      pSerDev : Pointer to an instance of the Device Interface
+     *      pDevIntrf : Pointer to an instance of the Device Interface
      *
      * @return  None
 	 */
@@ -332,9 +332,9 @@ static inline void DevIntrfReset(DEVINTRF *pDev) {
 /*
  * C++ interface class
  */
-class DeviceInterf {
+class DeviceIntrf {
 public:
-	virtual ~DeviceInterf() {}
+	virtual ~DeviceIntrf() {}
 	virtual operator DEVINTRF* () = 0;	// Get device interface data (handle)
 	// Set data rate in bits/sec (Hz)
 	virtual int Rate(int DataRate) = 0;
@@ -384,4 +384,4 @@ public:
 
 #endif
 
-#endif	// __DEVICEINTERF_H__
+#endif	// __DEVICEINTRF_H__
