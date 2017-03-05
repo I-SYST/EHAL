@@ -301,11 +301,6 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nrf_log_backend_printf.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_log_backend_printf.c</locationURI>
-		</link>
-		<link>
 			<name>src/prbs.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/prbs.c</locationURI>
