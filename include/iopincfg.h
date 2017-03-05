@@ -36,9 +36,10 @@ Modified by          Date              Description
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 // I/O pin resistor config
-typedef enum _iopin_resistor {
+typedef enum __iopin_resistor {
 	IOPINRES_NONE,
 	IOPINRES_PULLUP,
 	IOPINRES_PULLDOWN,
@@ -46,21 +47,27 @@ typedef enum _iopin_resistor {
 } IOPINRES;
 
 // I/O pin direction config
-typedef enum _iopin_dir {
+typedef enum __iopin_dir {
     IOPINDIR_INPUT = 0,
     IOPINDIR_OUTPUT = 1,
     IOPINDIR_BI = 2,		// Bidirectional
 } IOPINDIR;
 
 // I/O pin type
-typedef enum {
+typedef enum __iopin_type {
 	IOPINTYPE_NORMAL = 0,
 	IOPINTYPE_OPENDRAIN = 1
 } IOPINTYPE;
 
+typedef enum __iopin_sense {
+	IOPINSENSE_LOW_TRANSITION,		// Event on falling edge
+	IOPINSENSE_HIGH_TRANSITION,		// Event on raising edge
+	IOPINSENSE_TOGGLE,				// Event on state change
+} IOPINSENSE;
+
 #pragma pack(push,4)
 
-typedef struct _iopin_cfg {
+typedef struct __iopin_cfg {
 	int 		PortNo;		// Port number
 	int 		PinNo;		// Pin number
 	int 		PinOp;		// Pin function select index from 0, MCU dependent
@@ -71,12 +78,14 @@ typedef struct _iopin_cfg {
 
 #pragma pack(pop)
 
+typedef void (*IOPINEVT_CB)(int IntNo);
+
 #ifdef 	__cplusplus
 extern "C" {
 #endif
 
-/*
- * Configure individual I/O pin.
+/**
+ * @brief Configure individual I/O pin.
  *
  * Note : This function is MCU dependent. Needs to be implemented per MCU
  *
@@ -90,16 +99,12 @@ extern "C" {
  */
 void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resistor, IOPINTYPE Type);
 
-#ifdef __cplusplus
-}
-#endif
-
-/*
- * Configure I/O pin with IOPIN_CFG data structure. Can be used for batch config
+/**
+ * @brief Configure I/O pin with IOPIN_CFG data structure. Can be used for batch configuration
  *
  * @param   pCfg   : Pointer to an array gpio pin configuration
  *          NbPins : Number of gpio pins to configure 
-*/
+ */
 static inline void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
 	if (pCfg == NULL || NbPins <= 0)
 		return;
@@ -111,6 +116,44 @@ static inline void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
 	}
 }
 
+/**
+ * @brief	Disable I/O pin
+ *
+ * Some hardware such as low power mcu allow I/O pin to be disconnected
+ * in order to save power. There is no enable function. Reconfigure the
+ * I/O pin to re-enable it.
+ *
+ * @param	PortNo 	: Port number
+ * @param	PinNo	: Pin Number
+ */
+void IOPinDisable(int PortNo, int PinNo);
 
+/**
+ * @brief	Disable I/O pin sense interrupt
+ *
+ * @param	IntNo : Interrupt number to disable
+ */
+void IOPinDisbleInterrupt(int IntNo);
+
+/**
+ * @brief Enable I/O pin sensing interrupt event
+ *
+ * Generate an interrupt when I/O sense a state change.
+ * The IntNo (interrupt number) parameter is processor dependent. Some is
+ * directly the hardware interrupt number other is just an index in an array
+ *
+ *
+ * @param	IntNo	: Interrupt number.
+ * 			IntPrio : Interrupt priority
+ * 			PortNo  : Port number (up to 32 ports)
+ * 			PinNo   : Pin number (up to 32 pins)
+ * 			Sense   : Sense type of event on the I/O pin
+ * 			pEvtCB	: Pointer to callback function when event occurs
+ */
+bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSENSE Sense, IOPINEVT_CB pEvtCB);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	// __IOPINCFG_H__

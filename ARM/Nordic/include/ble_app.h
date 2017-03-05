@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : ble_periph_app.h
+File   : ble_app.h
 
 Author : Hoang Nguyen Hoan          Dec 26, 2016
 
@@ -31,8 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#ifndef __BLE_PERIPH_APP_H__
-#define __BLE_PERIPH_APP_H__
+#ifndef __BLE_APP_H__
+#define __BLE_APP_H__
 
 #include <stdint.h>
 
@@ -66,20 +66,29 @@ typedef enum {
 #define BLEAPP_INFOSTR_MAX_SIZE			20
 
 typedef void (*PRIVINITCB)();
+typedef void (*BLEEVTHANDLER)(ble_evt_t *pEvt);
 
 #pragma pack(push, 4)
 
+typedef struct _BleAppDevInfo {
+	const char ModelName[16];	// Model name
+	const char ManufName[16];	// Manufacturer name
+	const char *pSerialNoStr;// Serial number string
+	const char *pFwVerStr;	// Firmware version string
+	const char *pHwVerStr;	// Hardware version string
+} BLEAPP_DEVDESC;
+
 typedef struct _BleAppConfig {
-	nrf_clock_lf_cfg_t ClkCfg;
-	BLEAPP_MODE AppMode;
+	nrf_clock_lf_cfg_t ClkCfg;	// Clock config
+	int CentLinkCount;			// Number of central link
+	int	PeriLinkCount;			// Number of peripheral link
+	BLEAPP_MODE AppMode;		// App use scheduler, rtos
 	const char *pDevName;		// Device name
-	const char *pModelName;		// Model name
-	const char *pManufName;		// Manufacturer name
-	const char *pSerialNoStr;	// Serial number string
-	const char *pFwVerStr;		// Firmware version string
-	const char *pHwVerStr;		// Hardware version string
 	uint16_t VendorID;			// PnP Bluetooth/USB vendor id
-	uint16_t ProductId;			// PnP Product ID
+	uint16_t ProductId;			// PnP product ID
+	uint16_t ProductVer;		// PnP product version
+	bool bEnDevInfoService;		// Enable device information service (DIS)
+	const BLEAPP_DEVDESC *pDevDesc;	// Pointer device info descriptor
 	const uint8_t *pManData;	// Manufacture specific data to advertise
 	int ManDataLen;				// Length of manufacture specific data
 	BLEAPP_SECTYPE SecType;		// Secure connection type
@@ -90,35 +99,64 @@ typedef struct _BleAppConfig {
 	uint32_t AdvTimeout;		// In sec
 	uint32_t AdvSlowInterval;	// Slow advertising interval, if > 0, fallback to
 								// slow interval on adv timeout and advertise until connected
-	int ConnLedPort;
+	int ConnLedPort;			// Connection LED port & pin number
 	int ConnLedPin;
-	uint32_t (*SDEvtHandler)(void) ;	// Require for BLEAPP_MODE_RTOS
+	uint32_t (*SDEvtHandler)(void) ;// Require for BLEAPP_MODE_RTOS
 } BLEAPP_CFG;
 
 #pragma pack(pop)
 
 #ifdef __cplusplus
+
+class BleApp {
+public:
+	virtual bool Init(BLEAPP_CFG &CfgData);
+
+	virtual void InitCustomData() = 0;
+	virtual void InitServices() = 0;
+	virtual void SrvcEvtDispatch(ble_evt_t * p_ble_evt) = 0;
+
+	virtual void ProcessEvt();
+	virtual void EnterDfu();
+	virtual void Start();
+
+private:
+};
+
 extern "C" {
 #endif
 
+
 // ***
-// Require implementations per app
+// Implementations per app as require
 //
-void BlePeriphAppInitUserData();
-void BlePeriphAppInitServices();
-void BlePeriphAppSrvcEvtDispatch(ble_evt_t * p_ble_evt);
+void BleAppInitUserData();
+void BleAppInitUserServices();
+void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt);
+void BleCentralEvtUserHandler(ble_evt_t * p_ble_evt);
+
+//*** Require implementation if app operating mode is BLEAPP_MODE_RTOS
+// This function should normal wait for RTOS to signal an event on sent by
+// Softdevice
+void BleAppRtosWaitEvt(void);
 
 /**
- * BLE App initialization
+ * @brief	BLE main App initialization
+ *
+ * @param	pBleAppCfg : Pointer to app configuration data
+ * @param	bEraseBond : true to force erase all bonding info
+ *
+ * @return	true - success
  */
-bool BlePeriphAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond);
-void BlePeriphAppProcessEvt();
-void BlePeriphAppEnterDfu();
-void BlePeriphAppStart();
+bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond);
+void BleAppProcessEvt();
+void BleAppEnterDfu();
+void BleAppStart();
+uint16_t BleAppGetConnHandle();
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __BLE_PERIPH_APP_H__
+#endif // __BLE_APP_H__
 

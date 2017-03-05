@@ -33,6 +33,8 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdbool.h>
+
 #ifdef NRF51
 #include "nrf51.h"
 #include "nrf51_bitfields.h"
@@ -41,9 +43,20 @@ Modified by          Date              Description
 #include "nrf52_bitfields.h"
 #define NRF_GPIO		NRF_P0
 #endif
+#include "nrf_gpiote.h"
+
 #include "iopincfg.h"
 
-/*
+#define IOPIN_MAX_INT			(GPIOTE_CH_NUM)
+
+typedef struct {
+	IOPINSENSE Sense;
+	IOPINEVT_CB SensEvtCB;
+} IOPINSENS_EVTHOOK;
+
+IOPINSENS_EVTHOOK s_GpIOSenseEvt[IOPIN_MAX_INT] = { {0, NULL}, };
+
+/**
  * Configure individual I/O pin. nRF51 only have 1 port so PortNo is not used
  *
  * @Param 	PortNo	: Port number
@@ -87,3 +100,106 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 
 	NRF_GPIO->PIN_CNF[PinNo] = cnf;
 }
+
+/**
+ * @brief	Disable I/O pin
+ *
+ * Some hardware such as low power mcu allow I/O pin to be disconnected
+ * in order to save power. There is no enable function. Reconfigure the
+ * I/O pin to re-enable it.
+ *
+ * @param	PortNo 	: Port number
+ * @param	PinNo	: Pin Number
+ */
+void IOPinDisable(int PortNo, int PinNo)
+{
+	// TODO : Implement disconnect pin
+}
+
+/**
+ * @brief	Disable I/O pin sense interrupt
+ *
+ * @param	IntNo : Interrupt number to disable
+ */
+void IOPinDisbleInterrupt(int IntNo)
+{
+	if (IntNo >= 0 && IntNo < 8)
+	{
+		NRF_GPIOTE->CONFIG[IntNo] = 0;
+		s_GpIOSenseEvt[IntNo].SensEvtCB = NULL;
+	}
+}
+
+/**
+ * @brief Enable I/O pin sensing interrupt event
+ *
+ * Generate an interrupt when I/O sense a state change.
+ * The IntNo (interrupt number) parameter is processor dependent. Some is
+ * directly the hardware interrupt number other is just an index in an array
+ *
+ *
+ * @param	IntNo	: Interrupt number.
+ * 			IntPrio : Interrupt priority
+ * 			PortNo  : Port number (up to 32 ports)
+ * 			PinNo   : Pin number (up to 32 pins)
+ * 			Sense   : Sense type of event on the I/O pin
+ * 			pEvtCB	: Pointer to callback function when event occurs
+ */
+bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSENSE Sense, IOPINEVT_CB pEvtCB)
+{
+	if (IntNo < 0 || IntNo >= IOPIN_MAX_INT)
+		return false;
+
+	//NRF_GPIOTE->CONFIG[IntNo] &= ~(GPIOTE_CONFIG_PORT_PIN_Msk | GPIOTE_CONFIG_POLARITY_Msk);
+	switch (Sense)
+	{
+		case IOPINSENSE_LOW_TRANSITION:
+			NRF_GPIOTE->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_HiToLo << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
+					                    | ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
+					                    | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
+			NRF_GPIO->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
+			break;
+		case IOPINSENSE_HIGH_TRANSITION:
+			NRF_GPIOTE->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_LoToHi << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
+					                    | ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
+					                    | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
+			NRF_GPIO->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_High << GPIO_PIN_CNF_SENSE_Pos);
+			break;
+		case IOPINSENSE_TOGGLE:
+			NRF_GPIOTE->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_Toggle << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
+					                    | ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
+					                    | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
+			NRF_GPIO->PIN_CNF[PinNo] |= (3 << GPIO_PIN_CNF_SENSE_Pos);
+			break;
+	}
+
+	s_GpIOSenseEvt[IntNo].SensEvtCB = pEvtCB;
+
+	NRF_GPIOTE->INTENCLR = 0xFFFFFFFF;
+
+    NVIC_ClearPendingIRQ(GPIOTE_IRQn);
+    NVIC_SetPriority(GPIOTE_IRQn, IntPrio);
+    NVIC_EnableIRQ(GPIOTE_IRQn);
+
+    NRF_GPIOTE->EVENTS_PORT = 0;
+
+    NRF_GPIOTE->INTENSET |= (1 << IntNo);
+    NRF_GPIOTE->INTENSET |= GPIOTE_INTENSET_PORT_Msk;
+
+    return true;
+}
+
+void __WEAK GPIOTE_IRQHandler(void)
+{
+	for (int i = 0; i < IOPIN_MAX_INT; i++)
+	{
+		if (NRF_GPIOTE->EVENTS_IN[i] || NRF_GPIOTE->EVENTS_PORT)
+		{
+			if (s_GpIOSenseEvt[i].SensEvtCB)
+				s_GpIOSenseEvt[i].SensEvtCB(i);
+			NRF_GPIOTE->EVENTS_IN[i] = 0;
+		}
+	}
+	NRF_GPIOTE->EVENTS_PORT = 0;
+}
+

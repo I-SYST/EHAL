@@ -36,9 +36,9 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/base64.h</locationURI>
 		</link>
 		<link>
-			<name>include/ble_periph_app.h</name>
+			<name>include/ble_app.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/ble_periph_app.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ble_app.h</locationURI>
 		</link>
 		<link>
 			<name>include/blueio_blesrvc.h</name>
@@ -49,6 +49,11 @@
 			<name>include/blueio_board.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_board.h</locationURI>
+		</link>
+		<link>
+			<name>include/bme280.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/bme280.h</locationURI>
 		</link>
 		<link>
 			<name>include/cfifo.h</name>
@@ -99,6 +104,11 @@
 			<name>include/idelay.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/include/idelay.h</locationURI>
+		</link>
+		<link>
+			<name>include/idevice.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/idevice.h</locationURI>
 		</link>
 		<link>
 			<name>include/intelhex.h</name>
@@ -206,9 +216,14 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/base64.c</locationURI>
 		</link>
 		<link>
-			<name>src/ble_periph_app.cpp</name>
+			<name>src/ble_app.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/ble_periph_app.cpp</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/ble_app_handler.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app_handler.c</locationURI>
 		</link>
 		<link>
 			<name>src/blueio_blesrvc.c</name>
