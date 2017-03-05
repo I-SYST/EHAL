@@ -4,3 +4,7 @@ ARM/Nordic/nRF52/CMSIS/Debug/sources.mk
 
 # Eclipse
 language.settings.xml
+
+ARM/NXP/LPC11xx/exemples/UartDemo/Release/
+
+ARM/Nordic/nRF51/exemples/Uart_Ble/Release/

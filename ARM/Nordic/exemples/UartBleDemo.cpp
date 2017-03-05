@@ -35,7 +35,7 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 
 #include "istddef.h"
-#include "ble_periph_app.h"
+#include "ble_app.h"
 #include "blueio_blesrvc.h"
 #include "blueio_board.h"
 #include "uart.h"
@@ -75,57 +75,72 @@ BLUEIOSRVC_CHAR g_UartChars[] = {
 		BLUEIO_UUID_UART_RX_CHAR,
 		20,
 		BLUEIOSVC_CHAR_PROP_READ | BLUEIOSVC_CHAR_PROP_NOTIFY,
-		s_RxCharDescString,
-		NULL,
-		true,
+		s_RxCharDescString,         // char UTF-8 description string
+		NULL,                       // Callback for write char, set to NULL for read char
+		true,                       // Notify flag for read characteristic
+		NULL,						// Callback on set notification
+		NULL,						// pointer to char default values
+		0,							// Default value length in bytes
 	},
 	{
-		BLUEIO_UUID_UART_TX_CHAR,
-		20,
-		BLUEIOSVC_CHAR_PROP_WRITEWORESP,
-		s_TxCharDescString,
-		UartTxSrvcCallback,
-		false,
+		BLUEIO_UUID_UART_TX_CHAR,	// char UUID
+		20,                         // char max data length
+		BLUEIOSVC_CHAR_PROP_WRITEWORESP,	// char properties define by BLUEIOSVC_CHAR_PROP_...
+		s_TxCharDescString,			// char UTF-8 description string
+		UartTxSrvcCallback,         // Callback for write char, set to NULL for read char
+		false,                      // Notify flag for read characteristic
+		NULL,						// Callback on set notification
+		NULL,						// pointer to char default values
+		0							// Default value length in bytes
 	},
 };
 
 uint8_t g_LWrBuffer[512];
 
 const BLUEIOSRVC_CFG s_UartSrvcCfg = {
-	BLUEIOSRVC_SECTYPE_NONE,
-	BLUEIO_UUID_BASE,
-	BLUEIO_UUID_UART_SERVICE,
-	2,
-	g_UartChars,
-	g_LWrBuffer,
-	sizeof(g_LWrBuffer)
+	BLUEIOSRVC_SECTYPE_NONE,	// Secure or Open service/char
+	BLUEIO_UUID_BASE,           // Base UUID
+	BLUEIO_UUID_UART_SERVICE,   // Service UUID
+	2,                          // Total number of characteristics for the service
+	g_UartChars,                // Pointer a an array of characteristic
+	g_LWrBuffer,                // pointer to user long write buffer
+	sizeof(g_LWrBuffer)         // long write buffer size
 };
 
 BLUEIOSRVC g_UartBleSrvc;
 
+const BLEAPP_DEVDESC s_UartBleDevDesc {
+	"IBK-BLUEIO",           // Model name
+	"I-SYST inc.",          // Manufacturer name
+	"",                     // Serial number string
+	"0.0",                  // Firmware version string
+	"0.0",                  // Hardware version string
+};
+
 const BLEAPP_CFG s_BleAppCfg = {
-	NRF_CLOCK_LFCLKSRC,
-	BLEAPP_MODE_APPSCHED,
-	"UART",
-	"IBK-BLUEIO",
-	"I-SYST inc.",
-	"",
-	"0.0",
-	"0.0",
-	ISYST_BLUETOOTH_ID,
-	1,
-	g_ManData,
-	sizeof(g_ManData),
-	BLEAPP_SECTYPE_NONE,
-	BLEAPP_SECEXCHG_NONE,
-	NULL,//s_AdvUuids,
-	0,//sizeof(s_AdvUuids) / sizeof(ble_uuid_t),
-	APP_ADV_INTERVAL,
-	APP_ADV_TIMEOUT_IN_SECONDS,
-	0,
-	BLUEIO_CONNECT_LED_PORT,
-	BLUEIO_CONNECT_LED_PIN,
-	NULL
+	NRF_CLOCK_LFCLKSRC,		// Clock config
+	0, 						// Number of central link
+	1, 						// Number of peripheral link
+	BLEAPP_MODE_APPSCHED,   // Use scheduler
+	"OurHubTag",                 // Device name
+	ISYST_BLUETOOTH_ID,     // PnP Bluetooth/USB vendor id
+	1,                      // PnP Product ID
+	0,						// Pnp prod version
+	true,					// Enable device information service (DIS)
+	&s_UartBleDevDesc,
+	g_ManData,              // Manufacture specific data to advertise
+	sizeof(g_ManData),      // Length of manufacture specific data
+	BLEAPP_SECTYPE_NONE,    // Secure connection type
+	BLEAPP_SECEXCHG_NONE,   // Security key exchange
+	NULL,      				// Service uuids to advertise
+	0, 						// Total number of uuids
+	APP_ADV_INTERVAL,       // Advertising interval in msec
+	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
+	0,                          // Slow advertising interval, if > 0, fallback to
+								// slow interval on adv timeout and advertise until connected
+	BLUEIO_CONNECT_LED_PORT,    // Led port nuber
+	BLUEIO_CONNECT_LED_PIN,     // Led pin number
+	NULL						// RTOS Softdevice handler
 };
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
@@ -133,8 +148,8 @@ int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buffe
 // UART configuration data
 
 static IOPINCFG s_UartPins[] = {
-	{BLUEIO_UART_RX_PORT, BLUEIO_UART_RX_PIN, BLUEIO_UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-	{BLUEIO_UART_TX_PORT, BLUEIO_UART_TX_PIN, BLUEIO_UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
+	{BLUEIO_UART_RX_PORT, 6/*BLUEIO_UART_RX_PIN*/, BLUEIO_UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
+	{BLUEIO_UART_TX_PORT, 5/*BLUEIO_UART_TX_PIN*/, BLUEIO_UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
 	{BLUEIO_UART_CTS_PORT, BLUEIO_UART_CTS_PIN, BLUEIO_UART_CTS_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// CTS
 	{BLUEIO_UART_RTS_PORT, BLUEIO_UART_RTS_PIN, BLUEIO_UART_RTS_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// RTS
 };
@@ -164,12 +179,12 @@ void UartTxSrvcCallback(BLUEIOSRVC *pBlueIOSvc, uint8_t *pData, int Offset, int 
 	g_Uart.Tx(pData, Len);
 }
 
-void BlePeriphAppSrvcEvtDispatch(ble_evt_t * p_ble_evt)
+void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 {
     BlueIOBleSvcEvtHandler(&g_UartBleSrvc, p_ble_evt);
 }
 
-void BlePeriphAppInitServices()
+void BleAppInitUserServices()
 {
     uint32_t       err_code;
 
@@ -182,7 +197,7 @@ void HardwareInit()
 	g_Uart.Init(g_UartCfg);
 }
 
-void BlePeriphAppInitUserData()
+void BleAppInitUserData()
 {
 
 }
@@ -236,13 +251,9 @@ int main()
 {
     HardwareInit();
 
-    BlePeriphAppInit(&s_BleAppCfg, true);
+    BleAppInit((const BLEAPP_CFG *)&s_BleAppCfg, true);
 
-    BlePeriphAppStart();
+    BleAppStart();
 
-    while(1)
-    {
-    	BlePeriphAppProcessEvt();
-    }
 	return 0;
 }
