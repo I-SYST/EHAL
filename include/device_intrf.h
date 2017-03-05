@@ -266,62 +266,88 @@ extern "C" {
 #endif
 
 // C only function prototypes
-static inline void DevIntrfDisable(DEVINTRF *pDev) {
+static inline void DeviceIntrfDisable(DEVINTRF *pDev) {
 	pDev->Disable(pDev);
 }
 
-static inline void DevIntrfEnable(DEVINTRF *pDev) {
+static inline void DeviceIntrfEnable(DEVINTRF *pDev) {
 	pDev->Enable(pDev);
 }
 
-static inline int DevIntrfGetRate(DEVINTRF *pDev) {
+static inline int DeviceIntrfGetRate(DEVINTRF *pDev) {
 	return pDev->GetRate(pDev);
 }
 
-static inline int DevIntrfSetRate(DEVINTRF *pDev, int Rate) {
+static inline int DeviceIntrfSetRate(DEVINTRF *pDev, int Rate) {
 	return pDev->SetRate(pDev, Rate);
 }
 
-int DevIntrfRx(DEVINTRF *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
-int DevIntrfTx(DEVINTRF *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
+int DeviceIntrfRx(DEVINTRF *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
+int DeviceIntrfTx(DEVINTRF *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
 // Read transfer. Send setup data (pAdCmd) then read return data.
-int DevIntrfRead(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
+int DeviceIntrfRead(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
                     uint8_t *pRxBuff, int RxLen);
 // Write transfer. Send setup data (pAdCmd) and write data in single transfer.
-int DevIntrfWrite(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
+int DeviceIntrfWrite(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
                      uint8_t *pTxData, int TxLen);
 
-static inline bool DevIntrfStartRx(DEVINTRF *pDev, int DevAddr) {
+// Initiate receive
+// WARNING this function must be used in pair with StopRx
+// Re-entrance protection flag is used
+// On success, StopRx must be after transmission is completed to release flag
+static inline bool DeviceIntrfStartRx(DEVINTRF *pDev, int DevAddr) {
     if (AtomicTestAndSet(&pDev->Busy))
         return false;
-    return pDev->StartRx(pDev, DevAddr);
+
+    bool retval = pDev->StartRx(pDev, DevAddr);
+
+    // In case of returned false, app would not call Stop to release busy flag
+    // so we need to do that here before returning
+    if (retval == false) {
+        AtomicClear(&pDev->Busy);
+    }
+
+    return retval;
 }
 
-static inline int DevIntrfRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen) {
+static inline int DeviceIntrfRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen) {
 	return pDev->RxData(pDev, pBuff, BuffLen);
 }
 
-static inline void DevIntrfStopRx(DEVINTRF *pDev) {
+static inline void DeviceIntrfStopRx(DEVINTRF *pDev) {
     pDev->StopRx(pDev);
     AtomicClear(&pDev->Busy);
 }
 
-static inline bool DevIntrfStartTx(DEVINTRF *pDev, int DevAddr) {
+// Initiate receive
+// WARNING this function must be used in pair with StopTx
+// Re-entrance protection flag is used
+// On success, StopTx must be after transmission is completed to release flag
+static inline bool DeviceIntrfStartTx(DEVINTRF *pDev, int DevAddr) {
     if (AtomicTestAndSet(&pDev->Busy))
         return false;
-    return pDev->StartTx(pDev, DevAddr);
+
+    bool retval =  pDev->StartTx(pDev, DevAddr);
+
+    // In case of returned false, app would not call Stop to release busy flag
+    // so we need to do that here before returning
+    if (retval == false) {
+        AtomicClear(&pDev->Busy);
+    }
+
+    return retval;
 }
 
-static inline int DevIntrfTxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen) {
+static inline int DeviceIntrfTxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen) {
 	return pDev->TxData(pDev, pBuff, BuffLen);
 }
 
-static inline void DevIntrfStopTx(DEVINTRF *pDev) {
+static inline void DeviceIntrfStopTx(DEVINTRF *pDev) {
     pDev->StopTx(pDev);
     AtomicClear(&pDev->Busy);
 }
 
-static inline void DevIntrfReset(DEVINTRF *pDev) {
+static inline void DeviceIntrfReset(DEVINTRF *pDev) {
     if (pDev->Reset)
         pDev->Reset(pDev);
 }
@@ -347,39 +373,45 @@ public:
 	virtual void Enable(void) = 0;
 	// Receive full frame
 	virtual int Rx(int DevAddr, uint8_t *pBuff, int BuffLen) {
-		return DevIntrfRx(*this,DevAddr, pBuff, BuffLen);
+		return DeviceIntrfRx(*this,DevAddr, pBuff, BuffLen);
 	}
 	// Transmit full frame
 	virtual int Tx(int DevAddr, uint8_t *pData, int DataLen) {
-		return DevIntrfTx(*this, DevAddr, pData, DataLen);
+		return DeviceIntrfTx(*this, DevAddr, pData, DataLen);
 	}
 	// Read transfer. Send setup data then read return data.
     virtual int Read(int DevAddr, uint8_t *pAdCmd, int AdCmdLen, uint8_t *pRxBuff, int RxLen) {
-        return DevIntrfRead(*this, DevAddr, pAdCmd, AdCmdLen, pRxBuff, RxLen);
+        return DeviceIntrfRead(*this, DevAddr, pAdCmd, AdCmdLen, pRxBuff, RxLen);
     }
     // Write transfer. Send setup data and write data in single transfer.
     // @return  number of bytes of write data send (not count setup data)
     virtual int Write(int DevAddr, uint8_t *pAdCmd, int AdCmdLen, uint8_t *pTxData, int TxLen) {
-        return DevIntrfWrite(*this, DevAddr, pAdCmd, AdCmdLen, pTxData, TxLen);
+        return DeviceIntrfWrite(*this, DevAddr, pAdCmd, AdCmdLen, pTxData, TxLen);
     }
 	// Initiate receive
+    // WARNING this function must be used in pair with StopRx
+    // Re-entrance protection flag is used
+    // On success, StopRx must be after transmission is completed to release flag
 	virtual bool StartRx(int DevAddr) = 0;
 	// Receive Data only, no Start/Stop condition
 	virtual int RxData(uint8_t *pBuff, int BuffLen) = 0;
 	// Stop receive
-	// BEWARE !!!!!
+	// WARNING !!!!!
 	// This functions MUST ONLY be called if StartRx returns true.
 	virtual void StopRx(void) = 0;
 	// Initiate transmit
+    // WARNING this function must be used in pair with StopTx
+    // Re-entrance protection flag is used
+    // On success, StopTx must be after transmission is completed to release flag
 	virtual bool StartTx(int DevAddr) = 0;
 	// Transmit Data only, no Start/Stop condition
 	virtual int TxData(uint8_t *pData, int DataLen) = 0;
 	// Stop transmit
-	// BEWARE !!!!!
+	// WARNING !!!!!
 	// This functions MUST ONLY be called if StartTx returns true.
 	virtual void StopTx(void) = 0;
 	//
-	virtual void Reset(void) { DevIntrfReset(*this); }
+	virtual void Reset(void) { DeviceIntrfReset(*this); }
 };
 
 #endif
