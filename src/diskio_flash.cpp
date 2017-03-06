@@ -186,7 +186,7 @@ void FlashDiskIO::EraseBlock(uint32_t BlkNo, int NbBlk)
     {
         for (int i = 1; i <= vAddrSize; i++)
             d[i] = p[vAddrSize - i];
-        WaitReady(-1, 10);
+        WaitReady(-1, 1000);
 
         // Need to re-enable write here, because some flash
         // devices may reset write enable after a write
