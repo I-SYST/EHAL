@@ -1,10 +1,11 @@
 /*--------------------------------------------------------------------------
-File   : blueio_blesrvc.h
+File   : ble_service.h
 
 Author : Hoang Nguyen Hoan          Mar. 25, 2014
 
 Desc   : Implementation allow the creation of generic custom Bluetooth Smart
 		 service with multiple user defined characteristics.
+		 This implementation is to be used with Nordic SDK
 
 Copyright (c) 2014, I-SYST inc., all rights reserved
 
@@ -33,11 +34,10 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
-#ifndef __BLUEIO_BLESRVC_H__
-#define __BLUEIO_BLESRVC_H__
+#ifndef __BLE_SERVICE_H__
+#define __BLE_SERVICE_H__
 
 #include "ble_srv_common.h"
-#include "serialintrf.h"
 
 // Default BlueIO UUID.  User should use privately generated UUID
 // UUID : 00000000-287c-11e4-ab74-0002a5d5c51b
@@ -51,61 +51,61 @@ Modified by          Date              Description
 #define BLUEIO_UUID_UART_RX_CHAR	0x102
 #define BLUEIO_UUID_UART_TX_CHAR	0x103
 
-#define BLUEIOSVC_CHAR_PROP_READ			(1<<0)
-#define BLUEIOSVC_CHAR_PROP_NOTIFY			(1<<1)
-#define BLUEIOSVC_CHAR_PROP_WRITEWORESP		(1<<2)
-#define BLUEIOSVC_CHAR_PROP_WRITE			(1<<3)
-#define BLUEIOSVC_CHAR_PROP_VARLEN			(1<<4)
+#define BLESVC_CHAR_PROP_READ			(1<<0)
+#define BLESVC_CHAR_PROP_NOTIFY			(1<<1)
+#define BLESVC_CHAR_PROP_WRITEWORESP	(1<<2)
+#define BLESVC_CHAR_PROP_WRITE			(1<<3)
+#define BLESVC_CHAR_PROP_VARLEN			(1<<4)
 
-typedef struct __BlueIOBLEService BLUEIOSRVC;
+typedef struct __BLE_Service_Data BLESRVC;
 
 /**
  * Callback on write
  */
-typedef void (*BLUEIOSRVC_WRCB) (BLUEIOSRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
+typedef void (*BLESRVC_WRCB) (BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
 
 /**
  * Callback on set notification
  */
-typedef void (*BLUEIOSRVC_SETNOTCB)(BLUEIOSRVC *pBlueIOSvc, bool bEnable);
+typedef void (*BLESRVC_SETNOTCB)(BLESRVC *pBlueIOSvc, bool bEnable);
 
 // Service connection security types
 typedef enum {
-	BLUEIOSRVC_SECTYPE_NONE,				// open, no security
-	BLUEIOSRVC_SECTYPE_STATICKEY_NO_MITM,	// Bonding static pass key without Man In The Middle
-	BLUEIOSRVC_SECTYPE_STATICKEY_MITM,		// Bonding static pass key with MITM
-	BLUEIOSRVC_SECTYPE_LESC_MITM,			// LE secure encryption
-	BLUEIOSRVC_SECTYPE_SIGNED_NO_MITM,		// AES signed encryption without MITM
-	BLUEIOSRVC_SECTYPE_SIGNED_MITM,			// AES signed encryption with MITM
-} BLUEIOSRVC_SECTYPE;
+	BLESRVC_SECTYPE_NONE,				// open, no security
+	BLESRVC_SECTYPE_STATICKEY_NO_MITM,	// Bonding static pass key without Man In The Middle
+	BLESRVC_SECTYPE_STATICKEY_MITM,		// Bonding static pass key with MITM
+	BLESRVC_SECTYPE_LESC_MITM,			// LE secure encryption
+	BLESRVC_SECTYPE_SIGNED_NO_MITM,		// AES signed encryption without MITM
+	BLESRVC_SECTYPE_SIGNED_MITM,			// AES signed encryption with MITM
+} BLESRVC_SECTYPE;
 
 #pragma pack(push,4)
 
-typedef struct {
+typedef struct __BLE_Service_Char_Data {
     uint16_t Uuid;                          // char UUID
     int MaxDataLen;                         // char max data length
     uint32_t Property;                      // char properties define by BLUEIOSVC_CHAR_PROP_...
     const char *pDesc;                      // char UTF-8 description string
-    BLUEIOSRVC_WRCB WrCB;                   // Callback for write char, set to NULL for read char
+    BLESRVC_WRCB WrCB;                   // Callback for write char, set to NULL for read char
     bool bNotify;                           // Notify flag for read characteristic
-    BLUEIOSRVC_SETNOTCB SetNotifCB;			// Callback on set notification
+    BLESRVC_SETNOTCB SetNotifCB;			// Callback on set notification
     uint8_t *pDefValue;						// pointer to char default values
     uint16_t ValueLen;						// Default value length in bytes
     ble_gatts_char_handles_t Hdl;           // char handle
-} BLUEIOSRVC_CHAR;
+} BLESRVC_CHAR;
 
 /*
  * User configuration for the service to be created
  */
-typedef struct {
-	BLUEIOSRVC_SECTYPE SecType;				// Secure or Open service/char
+typedef struct __BLE_Service_Config {
+	BLESRVC_SECTYPE SecType;				// Secure or Open service/char
 	ble_uuid128_t	UuidBase;				// Base UUID
 	uint16_t		UuidSvc;				// Service UUID
 	int             NbChar;                 // Total number of characteristics for the service
-	BLUEIOSRVC_CHAR *pCharArray;            // Pointer a an array of characteristic
+	BLESRVC_CHAR *pCharArray;            // Pointer a an array of characteristic
     uint8_t			*pLongWrBuff;			// pointer to user long write buffer
     int				LongWrBuffSize;			// long write buffer size
-} BLUEIOSRVC_CFG;
+} BLESRVC_CFG;
 
 /*
  * Blue IO Service private data to be passed when calling service related functions.
@@ -113,9 +113,9 @@ typedef struct {
  * Pointer to this structure is often referred as Service Handle
  *
  */
-struct __BlueIOBLEService {
+struct __BLE_Service_Data {
     int             NbChar;                 // Number of characteristic defined for this service
-    BLUEIOSRVC_CHAR *pCharArray;            // Pointer to array of characteristics
+    BLESRVC_CHAR 	*pCharArray;            // Pointer to array of characteristics
     uint16_t        SrvcHdl;                // Service handle
     uint16_t        ConnHdl;				// Connection handle
     uint16_t        UuidSvc;                // Service UUID
@@ -139,27 +139,61 @@ extern "C" {
  *
  * @return	0 - Success
  */
-uint32_t BlueIOBleSrvcInit(BLUEIOSRVC *pSrvc, const BLUEIOSRVC_CFG *pCfg);
+uint32_t BleSrvcInit(BLESRVC *pSrvc, const BLESRVC_CFG *pCfg);
 
 /**
- * Send characteristic data
+ * Notify characteristic data
  *
  * @param	pSrvc : Pointer to Blue IO service data (Service Handle)
+ * 			Idx   : Characteristic index to notify
  *			pData : Pointer to data to be sent
  *			DataLen : Length of data to send in bytes
  *
- * @return	Number of bytes sent
+ * @return	0 - Success
  */
-uint16_t BlueIOBleSrvcCharSend(BLUEIOSRVC *pSrvc, int CharIdx, uint8_t *pData, uint16_t DataLen);
+uint32_t BleSrvcCharNotify(BLESRVC *pSrvc, int Idx, uint8_t *pData, uint16_t DataLen);
+
+/**
+ * Update characteristic data
+ *
+ * @param	pSrvc : Pointer to Blue IO service data (Service Handle)
+ * 			Idx   : Characteristic index to update
+ *			pData : Pointer to data to be sent
+ *			DataLen : Length of data to send in bytes
+ *
+ * @return	0 - Success
+ */
+uint32_t BleSrvcCharSetValue(BLESRVC *pSrvc, int Idx, uint8_t *pData, uint16_t DataLen);
 
 /**
  * BlueIO service event handler.  Call this within BLE dispatch event callback
  */
-void BlueIOBleSvcEvtHandler(BLUEIOSRVC *pSrvc, ble_evt_t *pBleEvt);
+void BleSvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt);
 
 #ifdef __cplusplus
 }
+
+class BleService {
+
+	BleService() {}
+	virtual ~BleService() {}
+
+	virtual uint32_t Init(BLESRVC_CFG &Cfg) {
+		return BleSrvcInit(&vSrvc, &Cfg);
+	}
+	virtual uint32_t CharNotify(int Idx, uint8_t *pData, int DataLen) {
+		return BleSrvcCharNotify(&vSrvc, Idx, pData, DataLen);
+	}
+	virtual uint32_t CharUpdate(int Idx, uint8_t *pData, int DataLen) {
+		return BleSrvcCharSetValue(&vSrvc, Idx, pData, DataLen);
+	}
+	virtual operator BLESRVC* () { return &vSrvc; }
+
+public:
+	BLESRVC vSrvc;
+};
+
 #endif
 
-#endif // __BLUEIO_BLESRVC_H__
+#endif // __BLE_SERVICE_H__
 

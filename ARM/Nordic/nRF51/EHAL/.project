@@ -41,9 +41,9 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/ble_app.h</locationURI>
 		</link>
 		<link>
-			<name>include/blueio_blesrvc.h</name>
+			<name>include/ble_service.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_blesrvc.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ble_service.h</locationURI>
 		</link>
 		<link>
 			<name>include/blueio_board.h</name>
@@ -226,9 +226,9 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app_handler.c</locationURI>
 		</link>
 		<link>
-			<name>src/blueio_blesrvc.c</name>
+			<name>src/ble_service.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/blueio_blesrvc.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_service.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/cfifo.c</name>

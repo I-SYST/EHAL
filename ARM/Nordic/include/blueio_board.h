@@ -53,6 +53,11 @@ Modified by          Date              Description
 #define BLUEIO_LED3_PIN						28
 #define BLUEIO_LED3_PINOP					0
 
+// Most IMM-NRF5x base boards use P0.30 for Bluetooth connection state LED
+#define BLUEIO_CONNECT_LED_PORT				BLUEIO_LED1_PORT
+#define BLUEIO_CONNECT_LED_PIN				BLUEIO_LED1_PIN
+
+// IBK-BLUEIO - Blue IO breakout board
 #define BLUEIO_LED_BLUE_PORT				BLUEIO_LED1_PORT
 #define BLUEIO_LED_BLUE_PIN					BLUEIO_LED1_PIN
 #define BLUEIO_LED_BLUE_PINOP				BLUEIO_LED1_PINOP
@@ -63,9 +68,14 @@ Modified by          Date              Description
 #define BLUEIO_LED_RED_PIN					BLUEIO_LED3_PIN
 #define BLUEIO_LED_RED_PINOP				BLUEIO_LED3_PINOP
 
-// Most IMM-NRF5x base boards use P0.30 for Bluetooth connection state LED
-#define BLUEIO_CONNECT_LED_PORT					BLUEIO_LED1_PORT
-#define BLUEIO_CONNECT_LED_PIN					BLUEIO_LED1_PIN
+// BLUEIO-TAG-BME280 board LEDs
+#define BLUEIO_TAG_BME280_LED1_PORT			BLUEIO_LED1_PORT
+#define BLUEIO_TAG_BME280_LED1_PIN			BLUEIO_LED1_PIN
+#define BLUEIO_TAG_BME280_LED1_PINOP		BLUEIO_LED1_PINOP
+
+#define BLUEIO_TAG_BME280_LED2_PORT			0
+#define BLUEIO_TAG_BME280_LED2_PIN			17
+#define BLUEIO_TAG_BME280_LED2_PINOP		0
 
 // Buttons
 #define BLUEIO_BUT1_PORT					0
@@ -75,6 +85,14 @@ Modified by          Date              Description
 #define BLUEIO_BUT2_PIN						13
 #define BLUEIO_BUT2_PINOP					0
 
+// BLUEIO-TAG-BME280 buttons
+#define BLUEIO_TAG_BME280_BUT1_PORT			0
+#define BLUEIO_TAG_BME280_BUT1_PIN			21	// This pin is default mapped as reset pin on nRF52
+#define BLUEIO_TAG_BME280_BUT1_PINOP		0
+
+#define BLUEIO_TAG_BME280_BUT2_PORT			BLUEIO_BUT2_PORT
+#define BLUEIO_TAG_BME280_BUT2_PIN			BLUEIO_BUT2_PIN
+#define BLUEIO_TAG_BME280_BUT2_PINOP		BLUEIO_BUT2_PINOP
 
 // UART pins
 #define BLUEIO_UART_RX_PORT					0
