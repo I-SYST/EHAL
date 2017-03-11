@@ -124,27 +124,27 @@ bool nRF52I2CWaitTxComplete(NRF52_I2CDEV *pDev, int Timeout)
     return false;
 }
 
-void nRF52I2CDisable(SERINTRFDEV *pDev)
+void nRF52I2CDisable(DEVINTRF *pDev)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
 	dev->pReg->ENABLE = (TWIM_ENABLE_ENABLE_Disabled << TWIM_ENABLE_ENABLE_Pos);
 }
-void nRF52I2CEnable(SERINTRFDEV *pDev)
+void nRF52I2CEnable(DEVINTRF *pDev)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
 	dev->pReg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 }
 
-int nRF52I2CGetRate(SERINTRFDEV *pDev)
+int nRF52I2CGetRate(DEVINTRF *pDev)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
 	return dev->pI2cDev->Rate;
 }
 
-int nRF52I2CSetRate(SERINTRFDEV *pDev, int RateHz)
+int nRF52I2CSetRate(DEVINTRF *pDev, int RateHz)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
@@ -167,7 +167,7 @@ int nRF52I2CSetRate(SERINTRFDEV *pDev, int RateHz)
 	return dev->pI2cDev->Rate;
 }
 
-bool nRF52I2CStartRx(SERINTRFDEV *pDev, int DevAddr)
+bool nRF52I2CStartRx(DEVINTRF *pDev, int DevAddr)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
@@ -177,7 +177,7 @@ bool nRF52I2CStartRx(SERINTRFDEV *pDev, int DevAddr)
 }
 
 // Receive Data only, no Start/Stop condition
-int nRF52I2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
+int nRF52I2CRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 	uint32_t d;
@@ -203,14 +203,14 @@ int nRF52I2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 	return cnt;
 }
 
-void nRF52I2CStopRx(SERINTRFDEV *pDev)
+void nRF52I2CStopRx(DEVINTRF *pDev)
 {
     NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
     dev->pReg->TASKS_STOP = 1;
     nRF52I2CWaitStop(dev, 1000);
 }
 
-bool nRF52I2CStartTx(SERINTRFDEV *pDev, int DevAddr)
+bool nRF52I2CStartTx(DEVINTRF *pDev, int DevAddr)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
@@ -221,7 +221,7 @@ bool nRF52I2CStartTx(SERINTRFDEV *pDev, int DevAddr)
 }
 
 // Send Data only, no Start/Stop condition
-int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
+int nRF52I2CTxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 	uint32_t d;
@@ -248,7 +248,7 @@ int nRF52I2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 	return cnt;
 }
 
-void nRF52I2CStopTx(SERINTRFDEV *pDev)
+void nRF52I2CStopTx(DEVINTRF *pDev)
 {
     NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
@@ -260,7 +260,7 @@ void nRF52I2CStopTx(SERINTRFDEV *pDev)
     nRF52I2CWaitStop(dev, 1000);
 }
 
-void nRF52I2CReset(SERINTRFDEV *pDev)
+void nRF52I2CReset(DEVINTRF *pDev)
 {
     NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
@@ -307,25 +307,25 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
     pDev->SlaveAddr = pCfgData->SlaveAddr;
 
 	s_nRF52I2CDev[pCfgData->DevNo].pI2cDev  = pDev;
-	pDev->SerIntrf.pDevData = (void*)&s_nRF52I2CDev[pCfgData->DevNo];
+	pDev->DevIntrf.pDevData = (void*)&s_nRF52I2CDev[pCfgData->DevNo];
 
-	nRF52I2CSetRate(&pDev->SerIntrf, pCfgData->Rate);
+	nRF52I2CSetRate(&pDev->DevIntrf, pCfgData->Rate);
 
-	pDev->SerIntrf.Disable = nRF52I2CDisable;
-	pDev->SerIntrf.Enable = nRF52I2CEnable;
-	pDev->SerIntrf.GetRate = nRF52I2CGetRate;
-	pDev->SerIntrf.SetRate = nRF52I2CSetRate;
-	pDev->SerIntrf.StartRx = nRF52I2CStartRx;
-	pDev->SerIntrf.RxData = nRF52I2CRxData;
-	pDev->SerIntrf.StopRx = nRF52I2CStopRx;
-	pDev->SerIntrf.StartTx = nRF52I2CStartTx;
-	pDev->SerIntrf.TxData = nRF52I2CTxData;
-	pDev->SerIntrf.StopTx = nRF52I2CStopTx;
-	pDev->SerIntrf.Reset = nRF52I2CReset;
-	pDev->SerIntrf.IntPrio = pCfgData->IntPrio;
-	pDev->SerIntrf.EvtCB = pCfgData->EvtCB;
-	pDev->SerIntrf.Busy = false;
-	pDev->SerIntrf.MaxRetry = pCfgData->MaxRetry;
+	pDev->DevIntrf.Disable = nRF52I2CDisable;
+	pDev->DevIntrf.Enable = nRF52I2CEnable;
+	pDev->DevIntrf.GetRate = nRF52I2CGetRate;
+	pDev->DevIntrf.SetRate = nRF52I2CSetRate;
+	pDev->DevIntrf.StartRx = nRF52I2CStartRx;
+	pDev->DevIntrf.RxData = nRF52I2CRxData;
+	pDev->DevIntrf.StopRx = nRF52I2CStopRx;
+	pDev->DevIntrf.StartTx = nRF52I2CStartTx;
+	pDev->DevIntrf.TxData = nRF52I2CTxData;
+	pDev->DevIntrf.StopTx = nRF52I2CStopTx;
+	pDev->DevIntrf.Reset = nRF52I2CReset;
+	pDev->DevIntrf.IntPrio = pCfgData->IntPrio;
+	pDev->DevIntrf.EvtCB = pCfgData->EvtCB;
+	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
 
 	// Clear all errors
     if (reg->EVENTS_ERROR)
@@ -336,7 +336,7 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
         reg->TASKS_STOP = 1;
     }
 
-    nRF52I2CReset(&pDev->SerIntrf);
+    nRF52I2CReset(&pDev->DevIntrf);
 
 	reg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 

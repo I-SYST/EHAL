@@ -56,6 +56,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/crc.h</locationURI>
 		</link>
 		<link>
+			<name>include/device_intrf.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/device_intrf.h</locationURI>
+		</link>
+		<link>
 			<name>include/diskio.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/diskio.h</locationURI>
@@ -144,11 +149,6 @@
 			<name>include/seep.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/seep.h</locationURI>
-		</link>
-		<link>
-			<name>include/serialintrf.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/serialintrf.h</locationURI>
 		</link>
 		<link>
 			<name>include/spi.h</name>
@@ -291,6 +291,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/crc.c</locationURI>
 		</link>
 		<link>
+			<name>src/device_intrf.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/device_intrf.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/diskio.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/src/diskio.c</locationURI>
@@ -369,11 +374,6 @@
 			<name>src/seep_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/seep_impl.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/serialintrf.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/serialintrf.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/spi_lpcxx.c</name>

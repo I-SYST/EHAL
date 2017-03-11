@@ -73,7 +73,7 @@ bool nRF52SPIWaitDMA(NRF52_SPIDEV *pDev, uint32_t Timeout)
 	return false;
 }
 
-int nRF52SPIGetRate(SERINTRFDEV *pDev)
+int nRF52SPIGetRate(DEVINTRF *pDev)
 {
 	int rate = 0;
 
@@ -85,7 +85,7 @@ int nRF52SPIGetRate(SERINTRFDEV *pDev)
 
 // Set data rate in bits/sec (Hz)
 // return actual rate
-int nRF52SPISetRate(SERINTRFDEV *pDev, int DataRate)
+int nRF52SPISetRate(DEVINTRF *pDev, int DataRate)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
@@ -130,14 +130,14 @@ int nRF52SPISetRate(SERINTRFDEV *pDev, int DataRate)
 	return dev->pSpiDev->Cfg.Rate;
 }
 
-void nRF52SPIDisable(SERINTRFDEV *pDev)
+void nRF52SPIDisable(DEVINTRF *pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
 	dev->pReg->ENABLE = (SPIM_ENABLE_ENABLE_Disabled << SPIM_ENABLE_ENABLE_Pos);
 }
 
-void nRF52SPIEnable(SERINTRFDEV *pDev)
+void nRF52SPIEnable(DEVINTRF *pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
@@ -145,7 +145,7 @@ void nRF52SPIEnable(SERINTRFDEV *pDev)
 }
 
 // Initial receive
-bool nRF52SPIStartRx(SERINTRFDEV *pDev, int DevCs)
+bool nRF52SPIStartRx(DEVINTRF *pDev, int DevCs)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
@@ -160,7 +160,7 @@ bool nRF52SPIStartRx(SERINTRFDEV *pDev, int DevCs)
 }
 
 // Receive Data only, no Start/Stop condition
-int nRF52SPIRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
+int nRF52SPIRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 	int cnt = 0;
@@ -190,7 +190,7 @@ int nRF52SPIRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 }
 
 // Stop receive
-void nRF52SPIStopRx(SERINTRFDEV *pDev)
+void nRF52SPIStopRx(DEVINTRF *pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
@@ -199,7 +199,7 @@ void nRF52SPIStopRx(SERINTRFDEV *pDev)
 }
 
 // Initiate transmit
-bool nRF52SPIStartTx(SERINTRFDEV *pDev, int DevCs)
+bool nRF52SPIStartTx(DEVINTRF *pDev, int DevCs)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
@@ -214,7 +214,7 @@ bool nRF52SPIStartTx(SERINTRFDEV *pDev, int DevCs)
 }
 
 // Transmit Data only, no Start/Stop condition
-int nRF52SPITxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
+int nRF52SPITxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 	int cnt = 0;
@@ -246,7 +246,7 @@ int nRF52SPITxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 }
 
 // Stop transmit
-void nRF52SPIStopTx(SERINTRFDEV *pDev)
+void nRF52SPIStopTx(DEVINTRF *pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
@@ -313,24 +313,24 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 
 	pDev->Cfg = *pCfgData;
 	s_nRF52SPIDev[pCfgData->DevNo].pSpiDev  = pDev;
-	pDev->SerIntrf.pDevData = (void*)&s_nRF52SPIDev[pCfgData->DevNo];
+	pDev->DevIntrf.pDevData = (void*)&s_nRF52SPIDev[pCfgData->DevNo];
 
-	nRF52SPISetRate(&pDev->SerIntrf, pCfgData->Rate);
+	nRF52SPISetRate(&pDev->DevIntrf, pCfgData->Rate);
 
-	pDev->SerIntrf.Disable = nRF52SPIDisable;
-	pDev->SerIntrf.Enable = nRF52SPIEnable;
-	pDev->SerIntrf.GetRate = nRF52SPIGetRate;
-	pDev->SerIntrf.SetRate = nRF52SPISetRate;
-	pDev->SerIntrf.StartRx = nRF52SPIStartRx;
-	pDev->SerIntrf.RxData = nRF52SPIRxData;
-	pDev->SerIntrf.StopRx = nRF52SPIStopRx;
-	pDev->SerIntrf.StartTx = nRF52SPIStartTx;
-	pDev->SerIntrf.TxData = nRF52SPITxData;
-	pDev->SerIntrf.StopTx = nRF52SPIStopTx;
-	pDev->SerIntrf.IntPrio = pCfgData->IntPrio;
-	pDev->SerIntrf.EvtCB = pCfgData->EvtCB;
-	pDev->SerIntrf.Busy = false;
-	pDev->SerIntrf.MaxRetry = 0;
+	pDev->DevIntrf.Disable = nRF52SPIDisable;
+	pDev->DevIntrf.Enable = nRF52SPIEnable;
+	pDev->DevIntrf.GetRate = nRF52SPIGetRate;
+	pDev->DevIntrf.SetRate = nRF52SPISetRate;
+	pDev->DevIntrf.StartRx = nRF52SPIStartRx;
+	pDev->DevIntrf.RxData = nRF52SPIRxData;
+	pDev->DevIntrf.StopRx = nRF52SPIStopRx;
+	pDev->DevIntrf.StartTx = nRF52SPIStartTx;
+	pDev->DevIntrf.TxData = nRF52SPITxData;
+	pDev->DevIntrf.StopTx = nRF52SPIStopTx;
+	pDev->DevIntrf.IntPrio = pCfgData->IntPrio;
+	pDev->DevIntrf.EvtCB = pCfgData->EvtCB;
+	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.MaxRetry = 0;
 
 	reg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
 }

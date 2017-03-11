@@ -43,7 +43,7 @@ Modified by          Date              Description
 #include <stdbool.h>
 #endif
 
-#include "serialintrf.h"
+#include "device_intrf.h"
 #include "cfifo.h"
 
 // Possible baudrate values
@@ -158,7 +158,7 @@ struct __Uart_Dev {
 	bool bIrDAInvert;			// IrDA input inverted
 	bool bIrDAFixPulse;			// Enable IrDA fix pulse
 	int	IrDAPulseDiv;			// Fix pulse divider
-	SERINTRFDEV	SerIntrf;		// Serial device interface implementation
+	DEVINTRF DevIntrf;			// Device interface implementation
 	UARTEVTCB EvtCallback;		// UART event callback
 	void *pObj;					// Pointer to UART object instance
 	HCFIFO hRxFifo;				// Rx FIFO handle
@@ -177,9 +177,9 @@ extern "C" {
 // Require implementations
 bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfgData);
 void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState);
-
-inline int UARTGetRate(UARTDEV *pDev) { return pDev->SerIntrf.GetRate(&pDev->SerIntrf); }
-inline int UARTSetRate(UARTDEV *pDev, int Rate) { return pDev->SerIntrf.SetRate(&pDev->SerIntrf, Rate); }
+UARTDEV *UARTGetInstance(int DevNo);
+inline int UARTGetRate(UARTDEV *pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
+inline int UARTSetRate(UARTDEV *pDev, int Rate) { return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate); }
 int UARTRx(UARTDEV *pDev, uint8_t *pBuff, int Bufflen);
 int UARTTx(UARTDEV *pDev, uint8_t *pData, int Datalen);
 void UARTprintf(UARTDEV *pDev, const char *pFormat, ...);
@@ -193,7 +193,7 @@ void UARTRetargetDisable(UARTDEV *pDev, int FileNo);
 // C++ class wrapper
 
 // C++ class wrapper
-class UART: public SerialIntrf {
+class UART: public DeviceIntrf {
 public:
 	UART() {
 		memset(&vDevData, 0, sizeof(vDevData));
@@ -206,34 +206,34 @@ public:
 		return UARTInit(&vDevData, &CfgData);
 	}
 
-	operator SERINTRFDEV* () { return &vDevData.SerIntrf; }
+	operator DEVINTRF* () { return &vDevData.DevIntrf; }
 
 	// ++ ** Require implementation
 	// Set data baudrate
 	virtual int Rate(int DataRate) { return UARTSetRate(&vDevData, DataRate); }
 	// Get current data baudrate
 	virtual int Rate(void) { return UARTGetRate(&vDevData); }
-    void Enable(void) { SerialIntrfEnable(&vDevData.SerIntrf); }
-    void Disable(void) { SerialIntrfDisable(&vDevData.SerIntrf); }
+    void Enable(void) { DeviceIntrfEnable(&vDevData.DevIntrf); }
+    void Disable(void) { DeviceIntrfDisable(&vDevData.DevIntrf); }
 	virtual void SetCtrlLineState(int LineState) { UARTSetCtrlLineState(&vDevData, LineState); }
-	virtual int Rx(uint8_t *pBuff, uint32_t Len) { return ((SerialIntrf *)this)->Rx(0, pBuff, Len); }
+	virtual int Rx(uint8_t *pBuff, uint32_t Len) { return ((DeviceIntrf *)this)->Rx(0, pBuff, Len); }
 	// Initiate receive
-	virtual bool StartRx(int DevAddr) { return SerialIntrfStartRx(&vDevData.SerIntrf, DevAddr); }
+	virtual bool StartRx(int DevAddr) { return DeviceIntrfStartRx(&vDevData.DevIntrf, DevAddr); }
 	// Receive Data only, no Start/Stop condition
 	virtual int RxData(uint8_t *pBuff, int BuffLen) {
-		return SerialIntrfRxData(&vDevData.SerIntrf, pBuff, BuffLen);
+		return DeviceIntrfRxData(&vDevData.DevIntrf, pBuff, BuffLen);
 	}
 	// Stop receive
-	virtual void StopRx(void) { SerialIntrfStopRx(&vDevData.SerIntrf); }
-	virtual int Tx(uint8_t *pData, uint32_t Len) { return ((SerialIntrf*)this)->Tx(0, pData, Len); }
+	virtual void StopRx(void) { DeviceIntrfStopRx(&vDevData.DevIntrf); }
+	virtual int Tx(uint8_t *pData, uint32_t Len) { return ((DeviceIntrf*)this)->Tx(0, pData, Len); }
 	// Initiate transmit
-	virtual bool StartTx(int DevAddr) { return SerialIntrfStartTx(&vDevData.SerIntrf, DevAddr); }
+	virtual bool StartTx(int DevAddr) { return DeviceIntrfStartTx(&vDevData.DevIntrf, DevAddr); }
 	// Transmit Data only, no Start/Stop condition
 	virtual int TxData(uint8_t *pData, int DataLen) {
-		return SerialIntrfTxData(&vDevData.SerIntrf, pData, DataLen);
+		return DeviceIntrfTxData(&vDevData.DevIntrf, pData, DataLen);
 	}
 	// Stop transmit
-	virtual void StopTx(void) { SerialIntrfStopTx(&vDevData.SerIntrf); }
+	virtual void StopTx(void) { DeviceIntrfStopTx(&vDevData.DevIntrf); }
 	// -- **
 	void printf(const char *pFormat, ...) {
 		va_list vl;

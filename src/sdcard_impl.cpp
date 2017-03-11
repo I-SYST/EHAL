@@ -49,12 +49,12 @@ SDCard::~SDCard()
 
 }
 
-bool SDCard::Init(SerialIntrf *pSerInterf, DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk)
+bool SDCard::Init(DeviceIntrf *pDevInterf, DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk)
 {
 	uint8_t data[4];
 	uint16_t r = 0xffff;
 	//vpInterf = std::shared_ptr<SerialIntrf>(pSerInterf);
-	vpInterf = pSerInterf;
+	vpInterf = pDevInterf;
 
 	// Reset SD Card to SPI mode
 	// Need to send reset sequence at a lower rate

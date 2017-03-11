@@ -44,13 +44,13 @@ extern uint32_t SystemClkFreq;
 
 void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState)
 {
-	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->SerIntrf.pDevData;
+	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->DevIntrf.pDevData;
 
 	dev->pUartReg->MCR &= ~3;
 	dev->pUartReg->MCR |= LineState & 3;
 }
 
-int LpcUARTGetRate(SERINTRFDEV *pDev)
+int LpcUARTGetRate(DEVINTRF *pDev)
 {
 	int rate = 0;
 
@@ -60,7 +60,7 @@ int LpcUARTGetRate(SERINTRFDEV *pDev)
 	return rate;
 }
 
-int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate)
+int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 {
 	uint32_t pclk = LpcGetUartClk();//SystemClkFreq  / g_UartClkDiv;// >> 2;
 	uint32_t rate16 = Rate << 4;
@@ -137,7 +137,7 @@ int LpcUARTSetRate(SERINTRFDEV *pDev, int Rate)
 	return dev->pUartDev->Rate;
 }
 
-int LpcUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
+int LpcUARTRxData(DEVINTRF *pDev, uint8_t *pBuff, int Bufflen)
 {
 	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
 	int cnt = 0;
@@ -174,7 +174,7 @@ int LpcUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 	return cnt;
 }
 
-int LpcUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
+int LpcUARTTxData(DEVINTRF *pDev, uint8_t *pData, int Datalen)
 {
 	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
 	int cnt = 0;

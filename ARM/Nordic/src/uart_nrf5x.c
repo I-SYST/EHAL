@@ -262,7 +262,7 @@ void UART0_IRQHandler()
 	}
 }
 
-int nRFUARTSetRate(SERINTRFDEV *pDev, int Rate)
+int nRFUARTSetRate(DEVINTRF *pDev, int Rate)
 {
 	int rate = s_BaudnRF[s_NbBaudnRF].Baud;
 
@@ -280,7 +280,7 @@ int nRFUARTSetRate(SERINTRFDEV *pDev, int Rate)
 	return rate;
 }
 
-int nRFUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
+int nRFUARTRxData(DEVINTRF *pDev, uint8_t *pBuff, int Bufflen)
 {
 	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
 	int cnt = 0;
@@ -313,7 +313,7 @@ int nRFUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
 	return cnt;
 }
 
-int nRFUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
+int nRFUARTTxData(DEVINTRF *pDev, uint8_t *pData, int Datalen)
 {
     NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
     int cnt = 0;
@@ -386,7 +386,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 //    nrf_gpio_cfg_output(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
 //    nrf_gpio_cfg_input(pCfg->PinCfg[UARTPIN_RX_IDX].PinNo, NRF_GPIO_PIN_PULLUP);
 
-	pDev->SerIntrf.pDevData = &s_nRFUartDev;
+	pDev->DevIntrf.pDevData = &s_nRFUartDev;
 	s_nRFUartDev.pUartDev = pDev;
 
 	//NRF_UART0->POWER = UART_POWER_POWER_Enabled << UART_POWER_POWER_Pos;
@@ -395,7 +395,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	NRF_UART0->PSELTXD = pincfg[UARTPIN_TX_IDX].PinNo;
 
     // Set baud
-    pDev->Rate = nRFUARTSetRate(&pDev->SerIntrf, pCfg->Rate);
+    pDev->Rate = nRFUARTSetRate(&pDev->DevIntrf, pCfg->Rate);
 
     NRF_UART0->CONFIG &= ~(UART_CONFIG_PARITY_Msk << UART_CONFIG_PARITY_Pos);
 	if (pCfg->Parity == UART_PARITY_NONE)
@@ -453,18 +453,18 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->Parity = pCfg->Parity;
 	pDev->bIntMode = pCfg->bIntMode;
 	pDev->EvtCallback = pCfg->EvtCallback;
-	pDev->SerIntrf.Disable = nRFUARTDisable;
-	pDev->SerIntrf.Enable = nRFUARTEnable;
-	pDev->SerIntrf.GetRate = nRFUARTGetRate;
-	pDev->SerIntrf.SetRate = nRFUARTSetRate;
-	pDev->SerIntrf.StartRx = nRFUARTStartRx;
-	pDev->SerIntrf.RxData = nRFUARTRxData;
-	pDev->SerIntrf.StopRx = nRFUARTStopRx;
-	pDev->SerIntrf.StartTx = nRFUARTStartTx;
-	pDev->SerIntrf.TxData = nRFUARTTxData;
-	pDev->SerIntrf.StopTx = nRFUARTStopTx;
-	pDev->SerIntrf.Busy = false;
-	pDev->SerIntrf.MaxRetry = 0;
+	pDev->DevIntrf.Disable = nRFUARTDisable;
+	pDev->DevIntrf.Enable = nRFUARTEnable;
+	pDev->DevIntrf.GetRate = nRFUARTGetRate;
+	pDev->DevIntrf.SetRate = nRFUARTSetRate;
+	pDev->DevIntrf.StartRx = nRFUARTStartRx;
+	pDev->DevIntrf.RxData = nRFUARTRxData;
+	pDev->DevIntrf.StopRx = nRFUARTStopRx;
+	pDev->DevIntrf.StartTx = nRFUARTStartTx;
+	pDev->DevIntrf.TxData = nRFUARTTxData;
+	pDev->DevIntrf.StopTx = nRFUARTStopTx;
+	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.MaxRetry = 0;
 
     NRF_UART0->TASKS_STARTTX = 1;
     NRF_UART0->TASKS_STARTRX = 1;
@@ -488,7 +488,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	return true;
 }
 
-void nRFUARTDisable(SERINTRFDEV *pDev)
+void nRFUARTDisable(DEVINTRF *pDev)
 {
 	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
 
@@ -503,7 +503,7 @@ void nRFUARTDisable(SERINTRFDEV *pDev)
 	dev->pReg->ENABLE  &= ~(UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
 }
 
-void nRFUARTEnable(SERINTRFDEV *pDev)
+void nRFUARTEnable(DEVINTRF *pDev)
 {
 	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
 
@@ -521,5 +521,10 @@ void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState)
 {
 //	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->SerIntrf.pDevData;
 
+}
+
+UARTDEV *UARTGetInstance(int DevNo)
+{
+	return s_nRFUartDev.pUartDev;
 }
 

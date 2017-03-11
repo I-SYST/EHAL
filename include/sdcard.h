@@ -36,7 +36,7 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
-#include "serialintrf.h"
+#include "device_intrf.h"
 #include "diskio.h"
 
 #pragma pack(push, 4)
@@ -51,14 +51,14 @@ typedef struct {
 
 typedef struct {
 	int Rate;
-	SERINTRFDEV *pSerIntrf;
+	DEVINTRF *pSerIntrf;
 } SDCFG;
 
 typedef struct {
 	int SectSize;
 	int TotalSect;
 	SDCSD Csd;
-	SERINTRFDEV *pSerIntrf;
+	DEVINTRF *pSerIntrf;
 } SDDEV;
 
 #pragma pack(pop)
@@ -78,7 +78,7 @@ public:
 	SDCard();
 	virtual ~SDCard();
 
-	virtual bool Init(SerialIntrf *pSerInterf, DISKIO_CACHE_DESC *pCacheBlk = NULL, int NbCacheBlk = 0);
+	virtual bool Init(DeviceIntrf *pDevInterf, DISKIO_CACHE_DESC *pCacheBlk = NULL, int NbCacheBlk = 0);
 	int Cmd(uint8_t Cmd, uint32_t param);
 	int GetResponse(uint8_t *pBuff, int BuffLen);
 	int ReadData(uint8_t *pBuff, int BuffLen);
@@ -100,7 +100,7 @@ public:
 protected:
 private:
 	//std::shared_ptr<SerialIntrf> vpInterf;
-	SerialIntrf *vpInterf;
+	DeviceIntrf *vpInterf;
 	SDDEV vDev;
 };
 

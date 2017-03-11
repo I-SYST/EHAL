@@ -105,28 +105,28 @@ typedef struct {
 extern "C" {
 #endif
 
-static inline void LpcSSPDisable(SERINTRFDEV *pDev) {}
-static inline void LpcSSPEnable(SERINTRFDEV *pDev) {}
+static inline void LpcSSPDisable(DEVINTRF *pDev) {}
+static inline void LpcSSPEnable(DEVINTRF *pDev) {}
 
 // Get current data rate in bits/sec (Hz)
-int LpcSSPGetRate(SERINTRFDEV *pDev);
+int LpcSSPGetRate(DEVINTRF *pDev);
 // Set data rate in bits/sec (Hz)
-int LpcSSPSetRate(SERINTRFDEV *pDev, int DataRate);
+int LpcSSPSetRate(DEVINTRF *pDev, int DataRate);
 // Initiate receive
-bool LpcSSPStartRx(SERINTRFDEV *pDev, int DevAddr);
+bool LpcSSPStartRx(DEVINTRF *pDev, int DevAddr);
 // Receive Data only, no Start/Stop condition
-int LpcSSPRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen);
+int LpcSSPRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen);
 // Stop receive
-void LpcSSPStopRx(SERINTRFDEV *pDev);
+void LpcSSPStopRx(DEVINTRF *pDev);
 // Receive stream
 //int LpcSSPRx(SSPDEV *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
 
 // Initiate transmit
-bool LpcSSPStartTx(SERINTRFDEV *pDev, int DevAddr);
+bool LpcSSPStartTx(DEVINTRF *pDev, int DevAddr);
 // Transmit Data only, no Start/Stop condition
-int LpcSSPTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen);
+int LpcSSPTxData(DEVINTRF *pDev, uint8_t *pData, int DataLen);
 // Stop transmit
-void LpcSSPStopTx(SERINTRFDEV *pDev);
+void LpcSSPStopTx(DEVINTRF *pDev);
 // Transmit stream
 //int LpcSSPTx(SSPDEV *pDev, int DevAddr, uint8_t *pData, int DataLen);
 
