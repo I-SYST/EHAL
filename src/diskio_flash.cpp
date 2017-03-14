@@ -42,7 +42,7 @@ FlashDiskIO::FlashDiskIO() : DiskIO()
 	vpInterf = NULL;
 }
 
-bool FlashDiskIO::Init(FLASHDISKIO_CFG &Cfg, SerialIntrf *pInterf,
+bool FlashDiskIO::Init(FLASHDISKIO_CFG &Cfg, DeviceIntrf *pInterf,
                        DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk)
 {
     if (pInterf == NULL)

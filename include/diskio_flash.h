@@ -40,7 +40,7 @@ Modified by          Date              Description
 
 #include <stdint.h>
 #include "diskio.h"
-#include "serialintrf.h"
+#include "device_intrf.h"
 
 #define FLASH_CMD_READID			0x9F
 #define FLASH_CMD_RDCR              0x15    // Read configuration register
@@ -67,7 +67,7 @@ Modified by          Date              Description
  * @return  true - Success
  *          false - Failed.
  */
-typedef bool (*FLASHDISKIOCB)(int DevNo, SerialIntrf *pInterf);
+typedef bool (*FLASHDISKIOCB)(int DevNo, DeviceIntrf *pInterf);
 
 typedef struct {
     int         DevNo;          // Device number or address for interface use
@@ -92,7 +92,7 @@ public:
 	FlashDiskIO();
 	virtual ~FlashDiskIO() {}
 
-	bool Init(FLASHDISKIO_CFG &Cfg, SerialIntrf *pInterf,
+	bool Init(FLASHDISKIO_CFG &Cfg, DeviceIntrf *pInterf,
 	          DISKIO_CACHE_DESC *pCacheBlk = NULL, int NbChaceBlk = 0);
 
     /**
@@ -152,7 +152,7 @@ private:
     uint64_t    vTotalSize;    // Total Flash size in bytes
     int         vAddrSize;     // Address size in bytes
     int         vDevNo;
-    SerialIntrf *vpInterf;
+    DeviceIntrf *vpInterf;
     FLASHDISKIOCB vpWaitCB;
 };
 
