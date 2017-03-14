@@ -181,7 +181,7 @@ void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len
 
 void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 {
-    BleSvcEvtHandler(&g_UartBleSrvc, p_ble_evt);
+    BleSrvcEvtHandler(&g_UartBleSrvc, p_ble_evt);
 }
 
 void BleAppInitUserServices()

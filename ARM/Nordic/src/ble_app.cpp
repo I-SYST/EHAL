@@ -522,6 +522,9 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             break; // BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST
 #endif
 
+        case BLE_EVT_TX_COMPLETE:
+        	break;
+
         default:
             // No implementation needed.
             break;
@@ -889,6 +892,11 @@ void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
     uint32_t err_code = ble_dis_init(&dis_init);
     APP_ERROR_CHECK(err_code);
 
+}
+
+uint16_t BleAppGetConnHandle()
+{
+	return g_BleAppData.ConnHdl;
 }
 
 /**

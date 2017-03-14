@@ -168,7 +168,7 @@ uint32_t BleSrvcCharSetValue(BLESRVC *pSrvc, int Idx, uint8_t *pData, uint16_t D
 /**
  * BlueIO service event handler.  Call this within BLE dispatch event callback
  */
-void BleSvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt);
+void BleSrvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt);
 
 #ifdef __cplusplus
 }

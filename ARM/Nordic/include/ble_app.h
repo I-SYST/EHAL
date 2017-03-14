@@ -128,11 +128,30 @@ extern "C" {
 
 
 // ***
-// Implementations per app as require
+// Require implementations per app
 //
+/**
+ * @Brief	User function to initialize any app specific data
+ * 	This function is called prio to initializing services
+ *
+ */
 void BleAppInitUserData();
+
+/**
+ * @brief	User function to initialize all app services
+ * 	This is called before initializing advertisement
+ */
 void BleAppInitUserServices();
+
+/**
+ * @Brief	User peripheral app event handler
+ */
 void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt);
+
+/**
+ * @Brief	User central app event handler
+ *
+ */
 void BleCentralEvtUserHandler(ble_evt_t * p_ble_evt);
 
 //*** Require implementation if app operating mode is BLEAPP_MODE_RTOS
@@ -149,7 +168,6 @@ void BleAppRtosWaitEvt(void);
  * @return	true - success
  */
 bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond);
-void BleAppProcessEvt();
 void BleAppEnterDfu();
 void BleAppStart();
 uint16_t BleAppGetConnHandle();
