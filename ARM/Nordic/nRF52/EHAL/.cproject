@@ -101,6 +101,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/mem_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/bootloader/dfu&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/nrf_ble_gatt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
@@ -183,6 +184,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/mem_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/bootloader/dfu&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/nrf_ble_gatt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
@@ -323,6 +325,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/mem_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/bootloader/dfu&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/nrf_ble_gatt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
@@ -405,6 +408,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/mem_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/bootloader/dfu&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/nrf_ble_gatt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
@@ -547,6 +551,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/mem_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/bootloader/dfu&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/nrf_ble_gatt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
@@ -629,6 +634,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/mem_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/bootloader/dfu&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/nrf_ble_gatt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
@@ -771,6 +777,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/mem_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/bootloader/dfu&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/nrf_ble_gatt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
@@ -853,6 +860,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/mem_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/bootloader/dfu&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/nrf_ble_gatt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>

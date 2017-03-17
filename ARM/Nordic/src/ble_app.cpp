@@ -45,6 +45,7 @@ Modified by          Date              Description
 #include "ble_conn_params.h"
 #include "ble_conn_state.h"
 #include "ble_dis.h"
+#include "nrf_ble_gatt.h"
 #include "peer_manager.h"
 extern "C" {
 #include "softdevice_handler_appsh.h"
@@ -90,6 +91,8 @@ extern "C" {
 #endif
 
 #define APP_FEATURE_NOT_SUPPORTED       BLE_GATT_STATUS_ATTERR_APP_BEGIN + 2        /**< Reply when unsupported features are requested. */
+
+#define CONN_CFG_TAG                     1                                          /**< A tag that refers to the BLE stack configuration we set with @ref sd_ble_cfg_set. Default tag is @ref BLE_CONN_CFG_TAG_DEFAULT. */
 
 //#define CENTRAL_LINK_COUNT              0                                           /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
 //#define PERIPHERAL_LINK_COUNT           1                                           /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
@@ -141,6 +144,7 @@ BLEAPP_DATA g_BleAppData = {
 };
 
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
+static nrf_ble_gatt_t                   s_Gatt;                                     /**< GATT module instance. */
 
 #ifdef LESC_DEBUG_MODE
 
@@ -886,6 +890,8 @@ void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 
     err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
     APP_ERROR_CHECK(err_code);
+
+    ble_advertising_conn_cfg_tag_set(CONN_CFG_TAG);
 }
 
 void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
@@ -923,6 +929,29 @@ void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
 uint16_t BleAppGetConnHandle()
 {
 	return g_BleAppData.ConnHdl;
+}
+
+/**@brief Function for handling events from the GATT library. */
+void gatt_evt_handler(nrf_ble_gatt_t * p_gatt, const nrf_ble_gatt_evt_t * p_evt)
+{
+    if ((g_BleAppData.ConnHdl == p_evt->conn_handle) && (p_evt->evt_id == NRF_BLE_GATT_EVT_ATT_MTU_UPDATED))
+    {
+       // m_ble_nus_max_data_len = p_evt->params.att_mtu_effective - OPCODE_LENGTH - HANDLE_LENGTH;
+        //NRF_LOG_INFO("Data len is set to 0x%X(%d)\r\n", m_ble_nus_max_data_len, m_ble_nus_max_data_len);
+    }
+   // NRF_LOG_DEBUG("ATT MTU exchange completed. central 0x%x peripheral 0x%x\r\n", p_gatt->att_mtu_desired_central, p_gatt->att_mtu_desired_periph);
+}
+
+/**@brief Function for initializing the GATT library. */
+void gatt_init(void)
+{
+    ret_code_t err_code;
+
+    err_code = nrf_ble_gatt_init(&s_Gatt, gatt_evt_handler);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = nrf_ble_gatt_att_mtu_periph_set(&s_Gatt, 64);
+    APP_ERROR_CHECK(err_code);
 }
 
 /**
@@ -1008,8 +1037,22 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
      err_code = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, ram_start);
      APP_ERROR_CHECK(err_code);
 
-     //   ble_enable_params.gatt_enable_params.att_mtu = NRF_BLE_MAX_MTU_SIZE;
-    // Enable BLE stack.
+     // Configure the maximum ATT MTU.
+     memset(&ble_cfg, 0x00, sizeof(ble_cfg));
+     ble_cfg.conn_cfg.conn_cfg_tag                 = CONN_CFG_TAG;
+     ble_cfg.conn_cfg.params.gatt_conn_cfg.att_mtu = NRF_BLE_GATT_MAX_MTU_SIZE;
+     err_code = sd_ble_cfg_set(BLE_CONN_CFG_GATT, &ble_cfg, ram_start);
+     APP_ERROR_CHECK(err_code);
+
+     // Configure the maximum event length.
+     memset(&ble_cfg, 0x00, sizeof(ble_cfg));
+     ble_cfg.conn_cfg.conn_cfg_tag                     = CONN_CFG_TAG;
+     ble_cfg.conn_cfg.params.gap_conn_cfg.event_length = 320;
+     ble_cfg.conn_cfg.params.gap_conn_cfg.conn_count   = BLE_GAP_CONN_COUNT_DEFAULT;
+     err_code = sd_ble_cfg_set(BLE_CONN_CFG_GAP, &ble_cfg, ram_start);
+     APP_ERROR_CHECK(err_code);
+
+     // Enable BLE stack.
     err_code = softdevice_enable(&ram_start);
     APP_ERROR_CHECK(err_code);
 #endif
@@ -1041,6 +1084,10 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 #endif
 
     gap_params_init(pBleAppCfg);
+
+#if (NRF_SD_BLE_API_VERSION > 3)
+    gatt_init();
+#endif
 
     BleAppInitUserData();
 

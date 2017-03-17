@@ -117,12 +117,24 @@ const BLEAPP_DEVDESC s_UartBleDevDesc {
 	"0.0",                  // Hardware version string
 };
 
+const BLEAPP_CFG s_BleAppCfg1 = {
+};
+
 const BLEAPP_CFG s_BleAppCfg = {
-	NRF_CLOCK_LFCLKSRC,		// Clock config
+	{ // Clock config nrf_clock_lf_cfg_t
+#ifdef IMM_NRF51822
+		NRF_CLOCK_LF_SRC_RC,	// Source RC
+		1, 1, 0
+#else
+		NRF_CLOCK_LF_SRC_XTAL,	// Source 32KHz XTAL
+		0, 0, NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM
+#endif
+
+	},
 	0, 						// Number of central link
 	1, 						// Number of peripheral link
 	BLEAPP_MODE_APPSCHED,   // Use scheduler
-	"OurHubTag",                 // Device name
+	DEVICE_NAME,                 // Device name
 	ISYST_BLUETOOTH_ID,     // PnP Bluetooth/USB vendor id
 	1,                      // PnP Product ID
 	0,						// Pnp prod version

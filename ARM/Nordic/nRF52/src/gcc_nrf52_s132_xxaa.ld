@@ -9,7 +9,7 @@ GROUP(-lgcc -lc -lnosys -lCMSIS)
 MEMORY
 {
 	FLASH (rx) : ORIGIN = 0x1f000, LENGTH = 0x61000
-	RAM (rwx) :  ORIGIN = 0x20002200, LENGTH = 0xde00
+	RAM (rwx) :  ORIGIN = 0x20002600, LENGTH = 0xda00
 	/** Location of non initialized RAM. Non initialized RAM is used for exchanging bond information
 	*  from application to bootloader when using buttonluss DFU OTA.
 	*/
