@@ -178,8 +178,10 @@ extern "C" {
 bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfgData);
 void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState);
 UARTDEV *UARTGetInstance(int DevNo);
-inline int UARTGetRate(UARTDEV *pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
-inline int UARTSetRate(UARTDEV *pDev, int Rate) { return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate); }
+static inline int UARTGetRate(UARTDEV *pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
+static inline int UARTSetRate(UARTDEV *pDev, int Rate) { return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate); }
+static inline void UARTEnable(UARTDEV *pDev) { DeviceIntrfEnable(&pDev->DevIntrf); }
+static inline void UARTDisable(UARTDEV *pDev) { DeviceIntrfDisable(&pDev->DevIntrf); }
 int UARTRx(UARTDEV *pDev, uint8_t *pBuff, int Bufflen);
 int UARTTx(UARTDEV *pDev, uint8_t *pData, int Datalen);
 void UARTprintf(UARTDEV *pDev, const char *pFormat, ...);
