@@ -75,6 +75,8 @@ Modified by          Date              Description
 
 #define RX_PIN_NUMBER		BLUEIO_UART_RX_PIN
 #define TX_PIN_NUMBER		BLUEIO_UART_TX_PIN
+#define RTS_PIN_NUMBER		BLUEIO_UART_RTS_PIN
+#define CTS_PIN_NUMBER		BLUEIO_UART_CTS_PIN
 
 // Low frequency clock source to be used by the SoftDevice
 // I don't like this kind of define to set the default data

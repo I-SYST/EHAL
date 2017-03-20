@@ -1010,7 +1010,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     APP_ERROR_CHECK(err_code);
 
     //Check the ram settings against the used number of links
-    CHECK_RAM_START_ADDR(CENTRAL_LINK_COUNT,PERIPHERAL_LINK_COUNT);
+    CHECK_RAM_START_ADDR(pBleAppCfg->CentLinkCount, pBleAppCfg->PeriLinkCount);//CENTRAL_LINK_COUNT,PERIPHERAL_LINK_COUNT);
 
     err_code = softdevice_enable(&ble_enable_params);
     APP_ERROR_CHECK(err_code);
@@ -1031,8 +1031,8 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     // Configure the maximum number of connections.
      memset(&ble_cfg, 0, sizeof(ble_cfg));
-     ble_cfg.gap_cfg.role_count_cfg.periph_role_count  = BLE_GAP_ROLE_COUNT_PERIPH_DEFAULT;
-     ble_cfg.gap_cfg.role_count_cfg.central_role_count = 0;
+     ble_cfg.gap_cfg.role_count_cfg.periph_role_count  = pBleAppCfg->CentLinkCount;//PERIPHERAL_LINK_COUNT;//BLE_GAP_ROLE_COUNT_PERIPH_DEFAULT;
+     ble_cfg.gap_cfg.role_count_cfg.central_role_count = pBleAppCfg->PeriLinkCount;//CENTRAL_LINK_COUNT;
      ble_cfg.gap_cfg.role_count_cfg.central_sec_count  = 0;
      err_code = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, ram_start);
      APP_ERROR_CHECK(err_code);
