@@ -690,13 +690,7 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     pm_on_ble_evt(p_ble_evt);
 
     on_ble_evt(p_ble_evt);
-    if (role == BLE_GAP_ROLE_PERIPH)
-    {
-        ble_advertising_on_ble_evt(p_ble_evt);
-        ble_conn_params_on_ble_evt(p_ble_evt);
-        BlePeriphEvtUserHandler(p_ble_evt);
-    }
-    else if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT))
+    if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT))
     {
         BleCentralEvtUserHandler(p_ble_evt);
 #if 0
@@ -720,6 +714,13 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
         }
 #endif
     }
+    else
+    {
+        ble_advertising_on_ble_evt(p_ble_evt);
+        ble_conn_params_on_ble_evt(p_ble_evt);
+        BlePeriphEvtUserHandler(p_ble_evt);
+    }
+
 
 }
 
