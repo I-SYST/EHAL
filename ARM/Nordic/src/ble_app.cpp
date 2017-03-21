@@ -1084,13 +1084,14 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     APP_ERROR_CHECK(err_code);
 #endif
 
+    BleAppInitUserData();
+
     gap_params_init(pBleAppCfg);
 
 #if (NRF_SD_BLE_API_VERSION > 3)
     gatt_init();
 #endif
 
-    BleAppInitUserData();
 
     BleAppInitUserServices();
 
