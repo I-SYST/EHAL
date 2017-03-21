@@ -39,9 +39,9 @@
 #include <termios.h>
 #include <errno.h>
 //#include <IOKit/IOKitLib.h>
-//#include <IOKit/serial/IOSerialKeys.h>
+#include <IOKit/serial/IOSerialKeys.h>
 #include <IOKit/serial/ioss.h>
-//#include <IOKit/IOBSD.h>
+#include <IOKit/IOBSD.h>
 
 #include "uart_osx.h"
 
@@ -54,21 +54,21 @@ void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState)
     
 }
 
-int OsxUARTGetRate(SERINTRFDEV *pDev)
+int OsxUARTGetRate(DEVINTRF *pDev)
 {
     return 0;
 }
 
-int OsxUARTSetRate(SERINTRFDEV *pDev, int Rate)
+int OsxUARTSetRate(DEVINTRF *pDev, int Rate)
 {
     return 0;
 }
 
-static inline bool OsxUARTStartRx(SERINTRFDEV *pSerDev, int DevAddr) {
+static inline bool OsxUARTStartRx(DEVINTRF *pSerDev, int DevAddr) {
     return true;
 }
 
-int OsxUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
+int OsxUARTRxData(DEVINTRF *pDev, uint8_t *pBuff, int Bufflen)
 {
     int cnt = 0;
     
@@ -77,6 +77,12 @@ int OsxUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
         OSXUARTDEV *dev = (OSXUARTDEV *)pDev->pDevData;
         if (dev)
         	cnt = (int)read(dev->hDevFile, pBuff, Bufflen);
+/*		printf("OsxUartRxData : ")
+		;		for (int i = 0; i < cnt; i++)
+		{
+			printf("%02x ", pBuff[i]);
+		}
+		printf("\n");*/
     }
     
     if (cnt < 0)
@@ -85,13 +91,13 @@ int OsxUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen)
     return cnt;
 }
 
-static inline void OsxUARTStopRx(SERINTRFDEV *pSerDev) {}
+static inline void OsxUARTStopRx(DEVINTRF *pSerDev) {}
 
-static inline bool OsxUARTStartTx(SERINTRFDEV *pDev, int DevAddr) {
+static inline bool OsxUARTStartTx(DEVINTRF *pDev, int DevAddr) {
     return true;
 }
 
-int OsxUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
+int OsxUARTTxData(DEVINTRF *pDev, uint8_t *pData, int Datalen)
 {
     int cnt = 0;
     
@@ -105,9 +111,9 @@ int OsxUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen)
     return cnt;
 }
 
-static inline void OsxUARTStopTx(SERINTRFDEV *pDev) {}
+static inline void OsxUARTStopTx(DEVINTRF *pDev) {}
 
-void OsxUARTDisable(SERINTRFDEV *pDev)
+void OsxUARTDisable(DEVINTRF *pDev)
 {
     if (pDev)
     {
@@ -120,7 +126,7 @@ void OsxUARTDisable(SERINTRFDEV *pDev)
     }
 }
 
-void OsxUARTEnable(SERINTRFDEV *pDev)
+void OsxUARTEnable(DEVINTRF *pDev)
 {
     if (pDev)
     {
@@ -190,10 +196,17 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfgData)
     // The baud rate, word length, and handshake options can be set as follows:
     
     cfsetspeed(&options, B230400);//pCfgData->Rate);
-    options.c_cflag |= (CS8 	   | 	// Use 7 bit words
-                        CCTS_OFLOW | 	// CTS flow control of output
-                        CRTS_IFLOW);	// RTS flow control of input
-    
+	options.c_cflag |= CS8;//(CS8 	   | 	// Use 7 bit words
+                        //CCTS_OFLOW | 	// CTS flow control of output
+                        //CRTS_IFLOW);	// RTS flow control of input
+    if (pCfgData->FlowControl == UART_FLWCTRL_HW)
+	{
+		options.c_cflag |= CCTS_OFLOW | CRTS_IFLOW;
+	}
+	else
+	{
+		options.c_cflag &= ~(CCTS_OFLOW | CRTS_IFLOW);
+	}
     // Print the new input and output baud rates. Note that the IOSSIOSPEED ioctl interacts with the serial driver
     // directly bypassing the termios struct. This means that the following two calls will not be able to read
     // the current baud rate if the IOSSIOSPEED ioctl was used but will instead return the speed set by the last call
@@ -244,7 +257,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfgData)
                pathname, strerror(errno), errno);
     }
     
-    printf("Handshake lines currently set to %d\n", handshake);
+    //printf("Handshake lines currently set to %d\n", handshake);
     
     unsigned long mics = 1UL;
     
@@ -268,22 +281,22 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfgData)
     strcpy(osxdev->DevPath, (char*)pCfgData->pIoMap);
     osxdev->hDevFile = hdev;
     
-    pDev->SerIntrf.pDevData = osxdev;
+    pDev->DevIntrf.pDevData = osxdev;
     osxdev->pUartDev = pDev;
     osxdev->OrigTTYAttrs = OrigTTYAttrs;
     
     pDev->EvtCallback = pCfgData->EvtCallback;
-    pDev->SerIntrf.Disable = OsxUARTDisable;
-    pDev->SerIntrf.Enable = OsxUARTEnable;
-    pDev->SerIntrf.GetRate = OsxUARTGetRate;
-    pDev->SerIntrf.SetRate = OsxUARTSetRate;
-    pDev->SerIntrf.StartRx = OsxUARTStartRx;
-    pDev->SerIntrf.RxData = OsxUARTRxData;
-    pDev->SerIntrf.StopRx = OsxUARTStopRx;
-    pDev->SerIntrf.StartTx = OsxUARTStartTx;
-    pDev->SerIntrf.TxData = OsxUARTTxData;
-    pDev->SerIntrf.StopTx = OsxUARTStopTx;
-    pDev->SerIntrf.Busy = false;
+    pDev->DevIntrf.Disable = OsxUARTDisable;
+    pDev->DevIntrf.Enable = OsxUARTEnable;
+    pDev->DevIntrf.GetRate = OsxUARTGetRate;
+    pDev->DevIntrf.SetRate = OsxUARTSetRate;
+    pDev->DevIntrf.StartRx = OsxUARTStartRx;
+    pDev->DevIntrf.RxData = OsxUARTRxData;
+    pDev->DevIntrf.StopRx = OsxUARTStopRx;
+    pDev->DevIntrf.StartTx = OsxUARTStartTx;
+    pDev->DevIntrf.TxData = OsxUARTTxData;
+    pDev->DevIntrf.StopTx = OsxUARTStopTx;
+    pDev->DevIntrf.Busy = false;
     
     return true;
 }
