@@ -66,14 +66,14 @@ typedef enum {
 	UART_FLWCTRL_HW,
 } UART_FLWCTRL;
 
-#define UART_LINESTATE_DCD		(1<<0)		// Rx Carrier detect
-#define UART_LINESTATE_DSR		(1<<1)		// Tx Carrier detect (CTS/RTS)
+#define UART_LINESTATE_DCD		(1<<0)		// Carrier detect
+#define UART_LINESTATE_DSR		(1<<1)		// Data Set Ready
 #define UART_LINESTATE_BRK		(1<<2)		// Break
 #define UART_LINESTATE_RI		(1<<3)		// Ring detect
 #define UART_LINESTATE_FRMERR	(1<<4)		// Frame error
 #define UART_LINESTATE_PARERR	(1<<5)		// Parity error
 #define UART_LINESTATE_OVR		(1<<6)		// Overrun
-//#define UART_LINESTATE_CTS		(1<<7)
+#define UART_LINESTATE_CTS		(1<<7)      // Clear To Send
 //#define UART_LINESTATE_RTS		(1<<8)
 
 #define UART_NB_PINS			8

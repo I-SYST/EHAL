@@ -251,6 +251,13 @@ void UART0_IRQHandler()
 	if (s_nRFUartDev.pReg->EVENTS_CTS)
 	{
 		s_nRFUartDev.pReg->EVENTS_CTS = 0;
+        buff[0] = UART_LINESTATE_CTS;
+        buff[1] = 0;//UART_LINESTATE_CTS;
+        len = 2;
+        if (s_nRFUartDev.pUartDev->EvtCallback)
+        {
+            s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_LINESTATE, buff, len);
+        }
 		//NRF_UART0->TASKS_STARTTX = 1;
 		//s_nRFUartDev.bTxReady = true;
 	}
@@ -259,6 +266,13 @@ void UART0_IRQHandler()
 	{
 		s_nRFUartDev.pReg->EVENTS_NCTS = 0;
 		//NRF_UART0->TASKS_STOPTX = 1;
+        if (s_nRFUartDev.pUartDev->EvtCallback)
+        {
+            buff[0] = UART_LINESTATE_CTS;
+            buff[1] = UART_LINESTATE_CTS;
+            len = 2;
+            s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_LINESTATE, buff, len);
+        }
 	}
 }
 
