@@ -161,6 +161,7 @@ extern const uint8_t g_lesc_private_key[32];
 
 __ALIGN(4) static ble_gap_lesc_p256_pk_t    s_lesc_public_key;      /**< LESC ECC Public Key */
 __ALIGN(4) static ble_gap_lesc_dhkey_t      s_lesc_dh_key;          /**< LESC ECC DH Key*/
+static ble_gap_conn_sec_mode_t s_gap_conn_mode;
 
 #if NRF_SD_BLE_API_VERSION <= 3
 static nrf_crypto_key_t m_crypto_key_sk =
@@ -282,35 +283,35 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
  * @details This function will set up all the necessary GAP (Generic Access Profile) parameters of
  *          the device. It also sets the permissions and appearance.
  */
+
 static void gap_params_init(const BLEAPP_CFG *pBleAppCfg)
 {
     uint32_t                err_code;
     ble_gap_conn_params_t   gap_conn_params;
-    ble_gap_conn_sec_mode_t sec_mode;
 
     switch (pBleAppCfg->SecType)
     {
     	case BLEAPP_SECTYPE_NONE:
-    	    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
+    	    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&s_gap_conn_mode);
     	    break;
 		case BLEAPP_SECTYPE_STATICKEY_NO_MITM:
-		    BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&sec_mode);
+		    BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&s_gap_conn_mode);
     	    break;
 		case BLEAPP_SECTYPE_STATICKEY_MITM:
-		    BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(&sec_mode);
+		    BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(&s_gap_conn_mode);
     	    break;
 		case BLEAPP_SECTYPE_LESC_MITM:
-			BLE_GAP_CONN_SEC_MODE_SET_LESC_ENC_WITH_MITM(&sec_mode);
+			BLE_GAP_CONN_SEC_MODE_SET_LESC_ENC_WITH_MITM(&s_gap_conn_mode);
     	    break;
 		case BLEAPP_SECTYPE_SIGNED_NO_MITM:
-			BLE_GAP_CONN_SEC_MODE_SET_SIGNED_NO_MITM(&sec_mode);
+			BLE_GAP_CONN_SEC_MODE_SET_SIGNED_NO_MITM(&s_gap_conn_mode);
     	    break;
 		case BLEAPP_SECTYPE_SIGNED_MITM:
-			BLE_GAP_CONN_SEC_MODE_SET_SIGNED_WITH_MITM(&sec_mode);
+			BLE_GAP_CONN_SEC_MODE_SET_SIGNED_WITH_MITM(&s_gap_conn_mode);
     	    break;
     }
 
-    err_code = sd_ble_gap_device_name_set(&sec_mode,
+    err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
                                           (const uint8_t *) pBleAppCfg->pDevName,
                                           strlen(pBleAppCfg->pDevName));
     APP_ERROR_CHECK(err_code);
@@ -323,6 +324,16 @@ static void gap_params_init(const BLEAPP_CFG *pBleAppCfg)
     gap_conn_params.conn_sup_timeout  = CONN_SUP_TIMEOUT;
 
     err_code = sd_ble_gap_ppcp_set(&gap_conn_params);
+    APP_ERROR_CHECK(err_code);
+}
+
+void gap_device_name_set( const char* ppDeviceName )
+{
+    uint32_t                err_code;
+
+    err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
+                                          (const uint8_t *)ppDeviceName,
+                                          strlen( ppDeviceName ));
     APP_ERROR_CHECK(err_code);
 }
 
