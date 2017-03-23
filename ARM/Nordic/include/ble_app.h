@@ -57,12 +57,12 @@ typedef enum {
 	BLEAPP_SECTYPE_SIGNED_MITM,			// AES signed encryption with MITM
 } BLEAPP_SECTYPE;
 
-#define BLEAPP_SECEXCHG_NONE		0
-#define BLEAPP_SECEXCHG_KEYBOARD	(1<<0)
-#define BLEAPP_SECEXCHG_DISPLAY		(1<<1)
-#define BLEAPP_SECEXCHG_OOB			(1<<2)
+#define BLEAPP_SECEXCHG_NONE		    0
+#define BLEAPP_SECEXCHG_KEYBOARD	    (1<<0)
+#define BLEAPP_SECEXCHG_DISPLAY		    (1<<1)
+#define BLEAPP_SECEXCHG_OOB			    (1<<2)
 
-#define BLEAPP_DEVNAME_MAX_SIZE			10
+#define BLEAPP_DEVNAME_MAX_SIZE			BLE_GAP_DEVNAME_DEFAULT_LEN
 #define BLEAPP_INFOSTR_MAX_SIZE			20
 
 typedef void (*PRIVINITCB)();
@@ -71,8 +71,8 @@ typedef void (*BLEEVTHANDLER)(ble_evt_t *pEvt);
 #pragma pack(push, 4)
 
 typedef struct _BleAppDevInfo {
-	const char ModelName[16];	// Model name
-	const char ManufName[16];	// Manufacturer name
+	const char ModelName[BLEAPP_INFOSTR_MAX_SIZE];	// Model name
+	const char ManufName[BLEAPP_INFOSTR_MAX_SIZE];	// Manufacturer name
 	const char *pSerialNoStr;// Serial number string
 	const char *pFwVerStr;	// Firmware version string
 	const char *pHwVerStr;	// Hardware version string
@@ -99,6 +99,8 @@ typedef struct _BleAppConfig {
 	uint32_t AdvTimeout;		// In sec
 	uint32_t AdvSlowInterval;	// Slow advertising interval, if > 0, fallback to
 								// slow interval on adv timeout and advertise until connected
+	uint32_t ConnIntervalMin;   // Min. connection interval
+	uint32_t ConnIntervalMax;   // Max connection interval
 	int ConnLedPort;			// Connection LED port & pin number
 	int ConnLedPin;
 	uint32_t (*SDEvtHandler)(void) ;// Require for BLEAPP_MODE_RTOS
