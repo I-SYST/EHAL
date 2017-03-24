@@ -74,7 +74,8 @@ typedef enum {
 #define UART_LINESTATE_PARERR	(1<<5)		// Parity error
 #define UART_LINESTATE_OVR		(1<<6)		// Overrun
 #define UART_LINESTATE_CTS		(1<<7)      // Clear To Send
-//#define UART_LINESTATE_RTS		(1<<8)
+#define UART_LINESTATE_RTS		(1<<8)
+#define UART_LINESTATE_DTR      (1<<9)
 
 #define UART_NB_PINS			8
 
@@ -245,6 +246,11 @@ public:
 	}
 
 	operator UARTDEV * () { return &vDevData; }
+    virtual bool RequestToSend(int NbBytes) {
+        if (CFifoAvail(vDevData.hTxFifo) < NbBytes)
+            return false;
+        return true;
+    }
 
 private:
 	UARTDEV	vDevData;
