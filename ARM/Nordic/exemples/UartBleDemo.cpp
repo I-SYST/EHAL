@@ -54,6 +54,9 @@ Modified by          Date              Description
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(64, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      180                                         /**< The advertising timeout (in units of seconds). */
 
+#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)             /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
+#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)             /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
+
 void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
 
 static const ble_uuid_t  s_AdvUuids[] = {
@@ -150,6 +153,8 @@ const BLEAPP_CFG s_BleAppCfg = {
 	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
 	0,                          // Slow advertising interval, if > 0, fallback to
 								// slow interval on adv timeout and advertise until connected
+	MIN_CONN_INTERVAL,
+	MAX_CONN_INTERVAL,
 	BLUEIO_CONNECT_LED_PORT,    // Led port nuber
 	BLUEIO_CONNECT_LED_PIN,     // Led pin number
 	NULL						// RTOS Softdevice handler
