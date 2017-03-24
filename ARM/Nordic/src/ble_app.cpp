@@ -908,7 +908,9 @@ void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
     APP_ERROR_CHECK(err_code);
 
+#if (NRF_SD_BLE_API_VERSION > 3)
     ble_advertising_conn_cfg_tag_set(CONN_CFG_TAG);
+#endif
 }
 
 void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
@@ -949,13 +951,17 @@ uint16_t BleAppGetConnHandle()
 }
 
 /**@brief Function for handling events from the GATT library. */
+#if (NRF_SD_BLE_API_VERSION > 3)
 void gatt_evt_handler(nrf_ble_gatt_t * p_gatt, const nrf_ble_gatt_evt_t * p_evt)
+#else
+void gatt_evt_handler(nrf_ble_gatt_t * p_gatt, nrf_ble_gatt_evt_t * p_evt)
+#endif
 {
-    if ((g_BleAppData.ConnHdl == p_evt->conn_handle) && (p_evt->evt_id == NRF_BLE_GATT_EVT_ATT_MTU_UPDATED))
+ /*   if ((g_BleAppData.ConnHdl == p_evt->conn_handle) && (p_evt->evt_id == NRF_BLE_GATT_EVT_ATT_MTU_UPDATED))
     {
        // m_ble_nus_max_data_len = p_evt->params.att_mtu_effective - OPCODE_LENGTH - HANDLE_LENGTH;
         //NRF_LOG_INFO("Data len is set to 0x%X(%d)\r\n", m_ble_nus_max_data_len, m_ble_nus_max_data_len);
-    }
+    }*/
    // NRF_LOG_DEBUG("ATT MTU exchange completed. central 0x%x peripheral 0x%x\r\n", p_gatt->att_mtu_desired_central, p_gatt->att_mtu_desired_periph);
 }
 
