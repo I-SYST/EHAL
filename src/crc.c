@@ -34,19 +34,22 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #include "crc.h"
 
-/*
- * Calculate 8 bits CRC value
+/**
+ * @brief   Calculate 8 bits CRC value
+ *          Polynomial : (x7 + x3 + 1) × x (left-shifted CRC-7-CCITT)
+ *          0x12 = (0x09 << 1) (MSBF/normal)
  *
  * @param	pData 	: Pointer to data buffer to calculate
  * 			Len		: Data length in bytes
+ * 			SeedVal : Initial CRC seed value
  *
- * 	@return	8 bits CRC value
+ * @return	8 bits CRC value
  */
-uint8_t crc8(uint8_t *pData, int Len)
+uint8_t crc8_ccitt(uint8_t *pData, int Len, uint8_t SeedVal)
 {
 	uint8_t i, e, f, crc;
 
-	crc = 0;
+	crc = SeedVal;
 	for (i = 0; i < Len; i++)
 	{
 		e = crc ^ pData[i];
@@ -56,21 +59,56 @@ uint8_t crc8(uint8_t *pData, int Len)
 	return crc;
 }
 
-/*
- * Calculate 16 bits CRC value
+/**
+ * @brief   Calculate 16 bits CRC value
+ *          Polynomial : x16 + x15 + x2 + 1 (CRC-16-ANSI)
+ *          0x8005 (MSBF/normal)
+ *
+ * @param   pData   : Pointer to data buffer to calculate
+ *          Len     : Data length in bytes
+ *          SeedVal : Initial CRC seed value
+ *
+ * @return 16 bits CRC value
+ */
+uint16_t crc16_ansi(uint8_t *pData, int Len, uint16_t SeedVal)
+{
+    uint8_t  s;
+    uint16_t t, crc;
+    int i;
+
+    crc = SeedVal;
+    for (i = 0; i < Len; i++)
+    {
+        s = pData[i] ^ (crc >> 8);
+        t = s ^ (s >> 4);
+        t ^= (t >> 2);
+        t ^= (t >> 1);
+        t &= 1;
+        t |= (s << 1);
+        crc = (crc << 8) ^ t ^ (t << 1) ^ (t << 15);
+    }
+
+    return crc;
+}
+
+/**
+ * @brief   Calculate 16 bits CRC value
+ *          Polynomial : x16 + x12 + x5 + 1 (CRC-16-CCITT)
+ *          0x1021 (MSBF/normal)
  *
  * @param	pData 	: Pointer to data buffer to calculate
  * 			Len		: Data length in bytes
+ *          SeedVal : Initial CRC seed value
  *
- * 	@return	16 bits CRC value
+ * @return	16 bits CRC value
  */
-uint16_t crc16(uint8_t *pData, int Len)
+uint16_t crc16_ccitt(uint8_t *pData, int Len, uint16_t SeedVal)
 {
 	uint8_t  s, t;
 	uint16_t crc;
 	int i;
 
-	crc = 0;
+	crc = SeedVal;
 	for (i = 0; i < Len; i++)
 	{
 		s = pData[i] ^ (crc >> 8);
@@ -81,13 +119,13 @@ uint16_t crc16(uint8_t *pData, int Len)
 	return crc;
 }
 
-/*
+/**
  * Calculate 32 bits CRC value
  *
  * @param	pData 	: Pointer to data buffer to calculate
  * 			Len		: Data length in bytes
  *
- * 	@return	32 bits CRC value
+ * @return	32 bits CRC value
  */
 uint32_t crc32(uint8_t *pData, int Len)
 {
