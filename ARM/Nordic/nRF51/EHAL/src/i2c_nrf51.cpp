@@ -240,14 +240,13 @@ int nRF51I2CTxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
 
 	while (DataLen > 0)
 	{
+		dev->pReg->TXD = *pData;
+
 		if (nRF51I2CWaitTxComplete(dev, 100000) == false)
 		{
 			dev->pReg->EVENTS_ERROR = 0;
 			break;
 		}
-
-		dev->pReg->TXD = *pData;
-		dev->pReg->TASKS_RESUME = 1;
 
 		DataLen--;
 		pData++;
