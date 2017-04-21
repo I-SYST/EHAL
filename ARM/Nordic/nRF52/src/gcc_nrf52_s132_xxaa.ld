@@ -3,7 +3,9 @@ SEARCH_DIR(.)
 SEARCH_DIR("../../../../src")
 SEARCH_DIR("../../../../../src")
 SEARCH_DIR("../../../../../../src")
+SEARCH_DIR("../../../../EHAL/ARM/src")
 SEARCH_DIR("../../../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../../../EHAL/ARM/src")
 GROUP(-lgcc -lc -lnosys -lCMSIS)
 
 MEMORY
