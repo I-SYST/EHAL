@@ -46,8 +46,8 @@ Modified by          Date              Description
 #include "pth_sensor.h"
 
 // Device address depending on SDO wiring
-#define BME280_DEV_ADDR0				0x76	// SDO to GND
-#define BME280_DEV_ADDR1				0x77	// SDO to VCC
+#define BME280_I2C_DEV_ADDR0			0x76	// SDO to GND
+#define BME280_I2C_DEV_ADDR1			0x77	// SDO to VCC
 
 #define BME280_REG_HUM_LSB				0xFE
 #define BME280_REG_HUM_MSB				0xFD
@@ -68,12 +68,34 @@ Modified by          Date              Description
 
 #define BME280_ID						0x60
 
-#pragma pack(push, 4)
+#define BME280_REG_CTRL_MEAS_MODE_MASK		3
+#define BME280_REG_CTRL_MEAS_MODE_SLEEP		0
+#define BME280_REG_CTRL_MEAS_MODE_FORCED	1
+#define BME280_REG_CTRL_MEAS_MODE_NORMAL	3
 
+#define BME280_REG_RESET_VAL			0xB6
+
+#pragma pack(push, 1)
 typedef struct {
-
-} BME280_CFG;
-
+	uint16_t dig_T1;
+	int16_t dig_T2;
+	int16_t dig_T3;
+	uint16_t dig_P1;
+	int16_t dig_P2;
+	int16_t dig_P3;
+	int16_t dig_P4;
+	int16_t dig_P5;
+	int16_t dig_P6;
+	int16_t dig_P7;
+	int16_t dig_P8;
+	int16_t dig_P9;
+	uint8_t dig_H1;
+	int16_t dig_H2;
+	uint8_t dig_H3;
+	int16_t dig_H4;
+	int16_t dig_H5;
+	int8_t dig_H6;
+} BME280_CALIB_DATA;
 #pragma pack(pop)
 
 #ifdef __cplusplus
@@ -82,7 +104,27 @@ class BME280 : public PTHSensor {
 public:
 	BME280() : vCalibTFine(0) {}
 	virtual ~BME280() {}
-	virtual bool Init(void *pCfgData, DeviceIntrf *pIntrf);
+	virtual bool Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf);
+
+	/**
+	 * @brief Set operating mode
+	 *
+	 * @param OpMode : Operating mode
+	 * 					- PTHSENSOR_OPMODE_SLEEP
+	 * 					- PTHSENSOR_OPMODE_SINGLE
+	 * 					- PTHSENSOR_OPMODE_CONTINUOUS
+	 * @param Freq : Sampling frequency in Hz for continuous mode
+	 *
+	 * @return true- if success
+	 */
+	virtual bool SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq);
+
+	/**
+	 * @brief	Start sampling data
+	 *
+	 * @return	true - success
+	 */
+	virtual bool StartSampling();
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
@@ -95,9 +137,11 @@ private:
 	uint32_t CompenHum(int32_t RawHum);
 
 	int32_t vCurTemp;
-	int32_t vCurBarPres;
-	int32_t vCurRelHum;
+	uint32_t vCurBarPres;
+	uint32_t vCurRelHum;
 	int32_t vCalibTFine;	// For internal calibration use only
+	BME280_CALIB_DATA vCalibData;
+	uint8_t vCtrlReg;
 };
 
 extern "C" {

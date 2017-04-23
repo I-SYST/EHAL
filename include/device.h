@@ -52,7 +52,6 @@ Modified by          Date              Description
 
 class Device {
 public:
-	virtual bool Init(void *pCfgData, DeviceIntrf *pIntrf) = 0;
 	virtual bool Enable() = 0;
 	virtual void Disable() = 0;
 	virtual void Reset() = 0;
@@ -70,13 +69,35 @@ public:
 		return 0;
 	}
 
-	virtual uint8_t ReadReg8(uint8_t *pRegAddr, int RegAddrLen);
-	virtual uint16_t ReadReg16(uint8_t *pRegAddr, int RegAddrLen);
-	virtual uint32_t ReadReg32(uint8_t *pRegAddr, int RegAddrLen);
+	virtual uint8_t ReadReg8(uint8_t *pRegAddr, int RegAddrLen) {
+		uint8_t val = 0;
+		Read(pRegAddr, RegAddrLen, &val, 1);
+		return val;
+	}
 
-	virtual bool WriteReg(uint8_t *pRegAddr, int RegAddrLen, uint8_t Data);
-	virtual bool WriteReg(uint8_t *pRegAddr, int RegAddrLen, uint16_t Data);
-	virtual bool WriteReg(uint8_t *pRegAddr, int RegAddrLen, uint32_t Data);
+	virtual uint16_t ReadReg16(uint8_t *pRegAddr, int RegAddrLen) {
+		uint16_t val = 0;
+		Read(pRegAddr, RegAddrLen,(uint8_t*) &val, 2);
+		return val;
+	}
+
+	virtual uint32_t ReadReg32(uint8_t *pRegAddr, int RegAddrLen) {
+		uint32_t val = 0;
+		Read(pRegAddr, RegAddrLen, (uint8_t*)&val, 4);
+		return val;
+	}
+
+	virtual bool WriteReg(uint8_t *pRegAddr, int RegAddrLen, uint8_t Data) {
+		return Write(pRegAddr, RegAddrLen, &Data, 1) > 0;
+	}
+
+	virtual bool WriteReg(uint8_t *pRegAddr, int RegAddrLen, uint16_t Data) {
+		return Write(pRegAddr, RegAddrLen, (uint8_t*)&Data, 2) > 1;
+	}
+
+	virtual bool WriteReg(uint8_t *pRegAddr, int RegAddrLen, uint32_t Data) {
+		return Write(pRegAddr, RegAddrLen, (uint8_t*)&Data, 1) > 3;
+	}
 
 protected:
 

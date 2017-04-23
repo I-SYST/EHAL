@@ -44,30 +44,7 @@ Modified by          Date              Description
 #include "iopincfg.h"
 #include "sensors/pth_bme280.h"
 
-#pragma pack(push, 1)
-typedef struct {
-	uint16_t dig_T1;
-	int16_t dig_T2;
-	int16_t dig_T3;
-	uint16_t dig_P1;
-	int16_t dig_P2;
-	int16_t dig_P3;
-	int16_t dig_P4;
-	int16_t dig_P5;
-	int16_t dig_P6;
-	int16_t dig_P7;
-	int16_t dig_P8;
-	int16_t dig_P9;
-	uint8_t dig_H1;
-	int16_t dig_H2;
-	uint8_t dig_H3;
-	int16_t dig_H4;
-	int16_t dig_H5;
-	int8_t dig_H6;
-} BME280_CALIB_DATA;
-#pragma pack(pop)
-
-static BME280_CALIB_DATA s_Bme280CalibData;
+//static BME280_CALIB_DATA s_Bme280CalibData;
 
 // Returns temperature in DegC, resolution is 0.01 DegC. Output value of “5123” equals 51.23 DegC.
 // t_fine carries fine temperature as global value
@@ -75,9 +52,9 @@ int32_t BME280::CompenTemp(int32_t adc_T)
 {
 	int32_t var1, var2, t;
 
-	var1 = ((((adc_T >> 3) - ((int32_t)s_Bme280CalibData.dig_T1 << 1))) * ((int32_t)s_Bme280CalibData.dig_T2)) >> 11;
-	var2 = (((((adc_T >> 4) - ((int32_t)s_Bme280CalibData.dig_T1)) * ((adc_T >> 4) -
-		    ((int32_t)s_Bme280CalibData.dig_T1))) >> 12) * ((int32_t)s_Bme280CalibData.dig_T3)) >> 14;
+	var1 = ((((adc_T >> 3) - ((int32_t)vCalibData.dig_T1 << 1))) * ((int32_t)vCalibData.dig_T2)) >> 11;
+	var2 = (((((adc_T >> 4) - ((int32_t)vCalibData.dig_T1)) * ((adc_T >> 4) -
+		    ((int32_t)vCalibData.dig_T1))) >> 12) * ((int32_t)vCalibData.dig_T3)) >> 14;
 	vCalibTFine = var1 + var2;
 	t = (vCalibTFine * 5 + 128) >> 8;
 
@@ -88,13 +65,16 @@ int32_t BME280::CompenTemp(int32_t adc_T)
 // Output value of “24674867” represents 24674867/256 = 96386.2 Pa = 963.862 hPa
 uint32_t BME280::CompenPress(int32_t adc_P)
 {
-	int64_t var1, var2, p;
-	var1 = ((int64_t)vCalibTFine) - 128000;
-	var2 = var1 * var1 * (int64_t)s_Bme280CalibData.dig_P6;
-	var2 = var2 + ((var1*(int64_t)s_Bme280CalibData.dig_P5) << 17);
-	var2 = var2 + (((int64_t)s_Bme280CalibData.dig_P4) << 35);
-	var1 = ((var1 * var1 * (int64_t)s_Bme280CalibData.dig_P3) >> 8) + ((var1 * (int64_t)s_Bme280CalibData.dig_P2) << 12);
-	var1 = (((((int64_t)1) << 47) + var1)) * ((int64_t)s_Bme280CalibData.dig_P1) >> 33;
+	int64_t var1, var2;
+	uint64_t p;
+
+	var1 = (int64_t)vCalibTFine - 128000;
+	var2 = var1 * var1 * (int64_t)vCalibData.dig_P6;
+	var2 = var2 + ((var1 * (int64_t)vCalibData.dig_P5) << 17LL);
+	var2 = var2 + ((int64_t)vCalibData.dig_P4 << 35LL);
+	var1 = ((var1 * var1 * (int64_t)vCalibData.dig_P3) >> 8) +
+		   ((var1 * (int64_t)vCalibData.dig_P2) << 12);
+	var1 = ((1LL << 47LL) + var1) * ((int64_t)vCalibData.dig_P1) >> 33;
 
 	if (var1 == 0)
 	{
@@ -102,10 +82,10 @@ uint32_t BME280::CompenPress(int32_t adc_P)
 	}
 
 	p = 1048576 - adc_P;
-	p = (((p<<31) - var2) * 3125) / var1;
-	var1 = (((int64_t)s_Bme280CalibData.dig_P9) * (p >> 13) * (p >> 13)) >> 25;
-	var2 = (((int64_t)s_Bme280CalibData.dig_P8) * p) >> 19;
-	p = ((p + var1 + var2) >> 8) + (((int64_t)s_Bme280CalibData.dig_P7) << 4);
+	p = (((p << 31LL) - var2) * 3125LL) / var1;
+	var1 = ((int64_t)vCalibData.dig_P9 * (p >> 13LL) * (p >> 13LL)) >> 25LL;
+	var2 = (((int64_t)vCalibData.dig_P8 * p) >> 19LL);
+	p = ((p + var1 + var2) >> 8) + ((int64_t)vCalibData.dig_P7 << 4);
 
 	return (uint32_t)p;
 }
@@ -114,97 +94,194 @@ uint32_t BME280::CompenPress(int32_t adc_P)
 // Output value of “47445” represents 47445/1024 = 46.333 %RH
 uint32_t BME280::CompenHum(int32_t adc_H)
 {
-	int32_t v_x1_u32r;
-	v_x1_u32r = (vCalibTFine - 76800);
-	v_x1_u32r = (((( (adc_H << 14) - (((int32_t)s_Bme280CalibData.dig_H4) << 20) -
-				 (((int32_t)s_Bme280CalibData.dig_H5) * v_x1_u32r)) +
-				 16384) >> 15) * (((((((v_x1_u32r * ((int32_t)s_Bme280CalibData.dig_H6)) >> 10) * (((v_x1_u32r *
-				 ((int32_t)s_Bme280CalibData.dig_H3)) >> 11) + 32768)) >> 10) + 2097152) *
-				((int32_t)s_Bme280CalibData.dig_H2) + 8192) >> 14));
-	v_x1_u32r = (v_x1_u32r - (((((v_x1_u32r >> 15) * (v_x1_u32r >> 15)) >> 7) * ((int32_t)s_Bme280CalibData.dig_H1)) >> 4));
-	v_x1_u32r = (v_x1_u32r < 0 ? 0 : v_x1_u32r);
-	v_x1_u32r = (v_x1_u32r > 419430400 ? 419430400 : v_x1_u32r);
+	int32_t var1;
 
-	return (uint32_t)(v_x1_u32r>>12);
+	var1 = (vCalibTFine - 76800);
+	var1 = (((( (adc_H << 14) - (((int32_t)vCalibData.dig_H4) << 20) -
+				 (((int32_t)vCalibData.dig_H5) * var1)) +
+				 16384) >> 15) * (((((((var1 * ((int32_t)vCalibData.dig_H6)) >> 10) * (((var1 *
+				 ((int32_t)vCalibData.dig_H3)) >> 11) + 32768)) >> 10) + 2097152) *
+				((int32_t)vCalibData.dig_H2) + 8192) >> 14));
+	var1 = (var1 - (((((var1 >> 15) * (var1 >> 15)) >> 7) * ((int32_t)vCalibData.dig_H1)) >> 4));
+	var1 = (var1 < 0 ? 0 : var1);
+	var1 = (var1 > 419430400 ? 419430400 : var1);
+
+	return (uint32_t)(var1 >> 12);
 }
 
-bool BME280::Init(void *pCfgData, DeviceIntrf *pIntrf)
+bool BME280::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
 {
-	uint8_t addr = BME280_REG_ID;
+	uint8_t regaddr = BME280_REG_ID;
 	uint8_t d;
 	bool found = false;
 
+	vCalibTFine = 0;
+
 	SetInterface(pIntrf);
-	SetDeviceAddess(BME280_DEV_ADDR0);
+	SetDeviceAddess(CfgData.DevAddr);
 
-	//Reset();
-
-	Read((uint8_t*)&addr, 1, &d, 1);
+	Read((uint8_t*)&regaddr, 1, &d, 1);
 
 	if (d == BME280_ID)
 	{
-		found = true;
-	}
-	else
-	{
-		SetDeviceAddess(BME280_DEV_ADDR1);
-		Read((uint8_t*)&addr, 1, &d, 1);
-		if (d == BME280_ID)
-		{
-			found = true;
-		}
-	}
+		Reset();
 
-	if (found == true)
-	{
-		usDelay(1000);
+		usDelay(30000);
 
-		addr = BME280_REG_CALIB_00_25_START;
-		Read(&addr, 1, (uint8_t*)&s_Bme280CalibData, 26);
+		regaddr = BME280_REG_CTRL_MEAS;
+		Read(&regaddr, 1, &vCtrlReg, 1);
 
-		uint8_t *p =  (uint8_t*)&s_Bme280CalibData;
+		vCtrlReg |= BME280_REG_CTRL_MEAS_MODE_NORMAL;
+		Write(&regaddr, 1, &vCtrlReg, 1);
+
+		// Load calibration data
+
+		regaddr = BME280_REG_CALIB_00_25_START;
+		Read(&regaddr, 1, (uint8_t*)&vCalibData, 26);
+
+		uint8_t *p =  (uint8_t*)&vCalibData;
 
 		p[24] = p[25];
 
 		uint8_t cd[8];
 
-		addr = BME280_REG_CALIB_26_41_START;
-		Read(&addr, 1, cd, 8);
+		regaddr = BME280_REG_CALIB_26_41_START;
+		Read(&regaddr, 1, cd, 8);
 
 		p[25] = cd[0];
 		p[26] = cd[1];
 		p[27] = cd[2];
 
-		s_Bme280CalibData.dig_H4 = ((int16_t)cd[3] << 4) | (cd[4] & 0xF);
-		s_Bme280CalibData.dig_H5 = ((int16_t)cd[5] << 4) | (cd[4] >> 4);
-		s_Bme280CalibData.dig_H6 = cd[6];
+		vCalibData.dig_H4 = ((int16_t)cd[3] << 4) | (cd[4] & 0xF);
+		vCalibData.dig_H5 = ((int16_t)cd[5] << 4) | (cd[4] >> 4);
+		vCalibData.dig_H6 = cd[6];
 
-		addr = BME280_REG_CTRL_HUM;
-		d = 1;	// oversampling x 1
-		Write(&addr, 1, &d, 1);
+		SetMode(CfgData.OpMode, CfgData.Freq);
 
-		addr = BME280_REG_CTRL_MEAS;
-		d = (1 << 5) | (1 << 2) | 0;	// oversampling x1, forced
-		Write(&addr, 1, &d, 1);
 	}
 
 	return found;
 }
 
+/**
+ * @brief Set operating mode
+ *
+ * @param OpMode : Operating mode
+ * 					- PTHSENSOR_OPMODE_SLEEP
+ * 					- PTHSENSOR_OPMODE_SINGLE
+ * 					- PTHSENSOR_OPMODE_CONTINUOUS
+ * @param Freq : Sampling frequency in Hz for continuous mode
+ *
+ * @return true- if success
+ */
+bool BME280::SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq)
+{
+	uint8_t regaddr;
+	uint8_t d = 0;
+
+	vOpMode = OpMode;
+	vSampFreq = Freq;
+
+	// read current ctrl_meas register
+	regaddr = BME280_REG_CTRL_MEAS;
+	Read(&regaddr, 1, &vCtrlReg, 1);
+
+	vCtrlReg &= ~BME280_REG_CTRL_MEAS_MODE_MASK;
+
+	switch (OpMode)
+	{
+		case PTHSENSOR_OPMODE_SLEEP:
+			regaddr = BME280_REG_CTRL_MEAS;
+			Write(&regaddr, 1, &vCtrlReg, 1);
+			break;
+		case PTHSENSOR_OPMODE_SINGLE:
+			regaddr = BME280_REG_CTRL_HUM;
+			d = 1;								// Humi oversampling x 1
+			Write(&regaddr, 1, &d, 1);
+
+			// PT config
+			vCtrlReg = (1 << 5) | (1 << 2) | 1;	// oversampling x1, forced
+			break;
+		case PTHSENSOR_OPMODE_CONTINUOUS:
+			{
+				uint32_t period = 1000 / Freq;
+				if (period >= 1000)
+				{
+					d = (5 << 5) | (4 << 2);
+				}
+				else if (period >= 500)
+				{
+					d = (4 << 5) | (4 << 2);
+				}
+				else if (period >= 250)
+				{
+					d = (3 << 5) | (3 << 2);
+				}
+				else if (period >= 125)
+				{
+					d = (2 << 5) | (3 << 2);
+				}
+				else if (period >= 62)
+				{
+					d = (1 << 5) | (3 << 2);
+				}
+				else if (period >= 20)
+				{
+					d = (7 << 5) | (2 << 2);
+				}
+				else if (period >= 10)
+				{
+					d = (6 << 5) | (1 << 2);
+				}
+				else
+				{
+					d = 0;
+				}
+
+				regaddr = BME280_REG_CONFIG;
+				Write(&regaddr, 1, &d, 1);
+
+				regaddr = BME280_REG_CTRL_HUM;
+				d = 1;								// Humi oversampling x 1
+				Write(&regaddr, 1, &d, 1);
+
+				vCtrlReg = (1 << 5) | (1 << 2) | 3;	// oversampling x1, continuous
+			}
+			break;
+	}
+
+	StartSampling();
+
+	return true;
+}
+
+/**
+ * @brief	Start sampling data
+ *
+ * @return	true - success
+ */
+bool BME280::StartSampling()
+{
+	uint8_t regaddr = BME280_REG_CTRL_MEAS;
+	Write(&regaddr, 1, &vCtrlReg, 1);
+
+	return true;
+}
+
 bool BME280::Enable()
 {
-
+	SetMode(PTHSENSOR_OPMODE_CONTINUOUS, vSampFreq);
 }
 
 void BME280::Disable()
 {
-
+	SetMode(PTHSENSOR_OPMODE_SLEEP, 0);
 }
 
 void BME280::Reset()
 {
 	uint8_t addr = BME280_REG_RESET;
-	uint8_t d = 0xB6;
+	uint8_t d = BME280_REG_RESET_VAL;
 
 	Write(&addr, 1, &d, 1);
 }
@@ -214,33 +291,39 @@ bool BME280::ReadPTH(PTHSENSOR_DATA &PthData)
 	uint8_t addr = BME280_REG_STATUS;
 	uint8_t status = 0;
 	bool retval = false;
-	int timeout = 10000;
+	int timeout = 10;
+
+	if (vOpMode == PTHSENSOR_OPMODE_SINGLE)
+	{
+		StartSampling();
+		usDelay(20000);
+	}
 
 	do {
 		Read(&addr, 1, &status, 1);
-	} while ((status ) != 0 && timeout-- > 0);
+		usDelay(1000);
+	} while ((status & 9) != 0 && timeout-- > 0);
 
-	if ((status & 9) == 0)
+	if ((status & 9)== 0)
 	{
 		uint8_t d[8];
 		addr = BME280_REG_PRESS_MSB;
 
 		if (Read(&addr, 1, d, 8) == 8)
 		{
-			int32_t p = ((int32_t)d[0] << 12) | ((int32_t)d[1] << 4) | ((int32_t)d[2] >> 4);
-			int32_t t = ((int32_t)d[3] << 12) | ((int32_t)d[4] << 4) | ((int32_t)d[5] >> 4);
-			int32_t h = ((int32_t)d[6] << 8) | d[7];
+			int32_t p = (((uint32_t)d[0] << 12) | ((uint32_t)d[1] << 4) | ((uint32_t)d[2] >> 4));
+			int32_t t = (((uint32_t)d[3] << 12) | ((uint32_t)d[4] << 4) | ((uint32_t)d[5] >> 4));
+			int32_t h = (((uint32_t)d[6] << 8) | d[7]);
 
 			vCurTemp = CompenTemp(t);
-			vCurBarPres = CompenPress(p);
-			vCurRelHum = CompenHum(h);
-
+			vCurBarPres = CompenPress(p) * 100 / 256;
+			vCurRelHum = CompenHum(h) * 100 / 1024;
 			retval = true;
 		}
 	}
 
-	PthData.Humidity = (int16_t)(((float)vCurRelHum / 1024.0) * 100.0);
-	PthData.Pressure = (int16_t)(((float)vCurBarPres / 256.0) * 100.0);
+	PthData.Humidity = (int16_t)vCurRelHum;
+	PthData.Pressure = (uint32_t)vCurBarPres;
 	PthData.Temperature = vCurTemp;
 
 	return retval;

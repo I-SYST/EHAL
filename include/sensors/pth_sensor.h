@@ -45,18 +45,37 @@ Modified by          Date              Description
 #include "iopincfg.h"
 #include "device.h"
 
-#define PTHSENSOR_OPMODE_SINGLE			1
-#define PTHSENSOR_OPMODE_CONTINUOUS		2
-
 #pragma pack(push, 4)
 
+//
+// PTH sensor operating mode
+//
+typedef enum __PthSensor_OpMode {
+	PTHSENSOR_OPMODE_SLEEP,
+	PTHSENSOR_OPMODE_SINGLE,		// Single capture
+	PTHSENSOR_OPMODE_CONTINUOUS		// Continuous capture
+} PTHSENSOR_OPMODE;
+
+//
+// PTH sensor data
+//
 // 2 decimals fix point data
 // value 1234 means 12.34
-typedef struct {
-	uint16_t Pressure;		// Barometric pressure in KPa
+//
+typedef struct __PthSensor_Data {
+	uint32_t Pressure;		// Barometric pressure in Pa
 	int16_t  Temperature;	// Temperature in degree C
 	uint16_t Humidity;		// Relative humidity in %
 } PTHSENSOR_DATA;
+
+//
+// PTH sensor configuration
+//
+typedef struct __PthSensor_Config {
+	uint32_t		DevAddr;	// Either I2C dev address or CS index select if SPI is used
+	PTHSENSOR_OPMODE OpMode;	// Operating mode
+	uint32_t		Freq;		// Sampling frequency in Hz if continuous mode is used
+} PTHSENSOR_CFG;
 
 #pragma pack(pop)
 
@@ -64,6 +83,8 @@ typedef struct {
 
 class PTHSensor : public Device {
 public:
+	virtual bool Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf) = 0;
+
 	/**
 	 * @brief	Read PTH data
 	 * 			Read PTH data from device if available. If not
@@ -75,6 +96,26 @@ public:
 	 * 			false - old data
 	 */
 	virtual bool ReadPTH(PTHSENSOR_DATA &PthData) = 0;
+
+	/**
+	 * @brief Set operating mode
+	 *
+	 * @param OpMode : Operating mode
+	 * 					- PTHSENSOR_OPMODE_SLEEP
+	 * 					- PTHSENSOR_OPMODE_SINGLE
+	 * 					- PTHSENSOR_OPMODE_CONTINUOUS
+	 * @param Freq : Sampling frequency in Hz for continuous mode
+	 *
+	 * @return true- if success
+	 */
+	virtual bool SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq) = 0;
+
+	/**
+	 * @brief	Start sampling data
+	 *
+	 * @return	true - success
+	 */
+	virtual bool StartSampling() = 0;
 
 	float ReadTemperature() {
 		PTHSENSOR_DATA pthdata;
@@ -93,6 +134,9 @@ public:
 		ReadPTH(pthdata);
 		return (float)pthdata.Humidity / 100.0;
 	}
+protected:
+	PTHSENSOR_OPMODE vOpMode;
+	uint32_t vSampFreq;			// Sampling frequency in Hz
 };
 
 extern "C" {
