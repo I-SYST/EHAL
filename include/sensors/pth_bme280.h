@@ -100,10 +100,10 @@ typedef struct {
 
 #ifdef __cplusplus
 
-class BME280 : public PTHSensor {
+class PthBme280 : public PTHSensor {
 public:
-	BME280() : vCalibTFine(0) {}
-	virtual ~BME280() {}
+	PthBme280() : vCalibTFine(0), vRegWrMask(0xFF) {}
+	virtual ~PthBme280() {}
 	virtual bool Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf);
 
 	/**
@@ -142,6 +142,7 @@ private:
 	int32_t vCalibTFine;	// For internal calibration use only
 	BME280_CALIB_DATA vCalibData;
 	uint8_t vCtrlReg;
+	uint8_t vRegWrMask;
 };
 
 extern "C" {

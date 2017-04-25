@@ -40,7 +40,7 @@ Modified by          Date              Description
 #endif
 
 #include "idelay.h"
-#include "serialintrf.h"
+#include "device_intrf.h"
 #include "iopincfg.h"
 #include "sensors/pth_bme280.h"
 
@@ -48,7 +48,7 @@ Modified by          Date              Description
 
 // Returns temperature in DegC, resolution is 0.01 DegC. Output value of “5123” equals 51.23 DegC.
 // t_fine carries fine temperature as global value
-int32_t BME280::CompenTemp(int32_t adc_T)
+int32_t PthBme280::CompenTemp(int32_t adc_T)
 {
 	int32_t var1, var2, t;
 
@@ -63,7 +63,7 @@ int32_t BME280::CompenTemp(int32_t adc_T)
 
 // Returns pressure in Pa as unsigned 32 bit integer in Q24.8 format (24 integer bits and 8 fractional bits).
 // Output value of “24674867” represents 24674867/256 = 96386.2 Pa = 963.862 hPa
-uint32_t BME280::CompenPress(int32_t adc_P)
+uint32_t PthBme280::CompenPress(int32_t adc_P)
 {
 	int64_t var1, var2;
 	uint64_t p;
@@ -92,7 +92,7 @@ uint32_t BME280::CompenPress(int32_t adc_P)
 
 // Returns humidity in %RH as unsigned 32 bit integer in Q22.10 format (22 integer and 10 fractional bits).
 // Output value of “47445” represents 47445/1024 = 46.333 %RH
-uint32_t BME280::CompenHum(int32_t adc_H)
+uint32_t PthBme280::CompenHum(int32_t adc_H)
 {
 	int32_t var1;
 
@@ -109,7 +109,7 @@ uint32_t BME280::CompenHum(int32_t adc_H)
 	return (uint32_t)(var1 >> 12);
 }
 
-bool BME280::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
+bool PthBme280::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
 {
 	uint8_t regaddr = BME280_REG_ID;
 	uint8_t d;
@@ -120,6 +120,16 @@ bool BME280::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
 	SetInterface(pIntrf);
 	SetDeviceAddess(CfgData.DevAddr);
 
+	if (CfgData.DevAddr == BME280_I2C_DEV_ADDR0 || CfgData.DevAddr == BME280_I2C_DEV_ADDR1)
+	{
+		// I2C mode
+		vRegWrMask = 0xFF;
+	}
+	else
+	{
+		vRegWrMask = 0x7F;
+	}
+
 	Read((uint8_t*)&regaddr, 1, &d, 1);
 
 	if (d == BME280_ID)
@@ -128,11 +138,6 @@ bool BME280::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
 
 		usDelay(30000);
 
-		regaddr = BME280_REG_CTRL_MEAS;
-		Read(&regaddr, 1, &vCtrlReg, 1);
-
-		vCtrlReg |= BME280_REG_CTRL_MEAS_MODE_NORMAL;
-		Write(&regaddr, 1, &vCtrlReg, 1);
 
 		// Load calibration data
 
@@ -174,7 +179,7 @@ bool BME280::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
  *
  * @return true- if success
  */
-bool BME280::SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq)
+bool PthBme280::SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq)
 {
 	uint8_t regaddr;
 	uint8_t d = 0;
@@ -191,11 +196,11 @@ bool BME280::SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq)
 	switch (OpMode)
 	{
 		case PTHSENSOR_OPMODE_SLEEP:
-			regaddr = BME280_REG_CTRL_MEAS;
+			regaddr = BME280_REG_CTRL_MEAS & vRegWrMask;
 			Write(&regaddr, 1, &vCtrlReg, 1);
 			break;
 		case PTHSENSOR_OPMODE_SINGLE:
-			regaddr = BME280_REG_CTRL_HUM;
+			regaddr = BME280_REG_CTRL_HUM & vRegWrMask;
 			d = 1;								// Humi oversampling x 1
 			Write(&regaddr, 1, &d, 1);
 
@@ -238,10 +243,10 @@ bool BME280::SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq)
 					d = 0;
 				}
 
-				regaddr = BME280_REG_CONFIG;
+				regaddr = BME280_REG_CONFIG & vRegWrMask;
 				Write(&regaddr, 1, &d, 1);
 
-				regaddr = BME280_REG_CTRL_HUM;
+				regaddr = BME280_REG_CTRL_HUM & vRegWrMask;
 				d = 1;								// Humi oversampling x 1
 				Write(&regaddr, 1, &d, 1);
 
@@ -260,33 +265,33 @@ bool BME280::SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq)
  *
  * @return	true - success
  */
-bool BME280::StartSampling()
+bool PthBme280::StartSampling()
 {
-	uint8_t regaddr = BME280_REG_CTRL_MEAS;
+	uint8_t regaddr = BME280_REG_CTRL_MEAS & vRegWrMask;
 	Write(&regaddr, 1, &vCtrlReg, 1);
 
 	return true;
 }
 
-bool BME280::Enable()
+bool PthBme280::Enable()
 {
 	SetMode(PTHSENSOR_OPMODE_CONTINUOUS, vSampFreq);
 }
 
-void BME280::Disable()
+void PthBme280::Disable()
 {
 	SetMode(PTHSENSOR_OPMODE_SLEEP, 0);
 }
 
-void BME280::Reset()
+void PthBme280::Reset()
 {
-	uint8_t addr = BME280_REG_RESET;
+	uint8_t addr = BME280_REG_RESET & vRegWrMask;
 	uint8_t d = BME280_REG_RESET_VAL;
 
 	Write(&addr, 1, &d, 1);
 }
 
-bool BME280::ReadPTH(PTHSENSOR_DATA &PthData)
+bool PthBme280::ReadPTH(PTHSENSOR_DATA &PthData)
 {
 	uint8_t addr = BME280_REG_STATUS;
 	uint8_t status = 0;
