@@ -105,22 +105,22 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	}
 
 	dev->pSpiDev = pDev;
-	pDev->SerIntrf.pDevData = (void*)dev;
+	pDev->DevIntrf.pDevData = (void*)dev;
 	pDev->Cfg = *pCfgData;
-	pDev->SerIntrf.Disable = LpcSSPDisable;
-	pDev->SerIntrf.Enable = LpcSSPEnable;
-	pDev->SerIntrf.GetRate = LpcSSPGetRate;
-	pDev->SerIntrf.SetRate = LpcSSPSetRate;
-	pDev->SerIntrf.StartRx = LpcSSPStartRx;
-	pDev->SerIntrf.RxData = LpcSSPRxData;
-	pDev->SerIntrf.StopRx = LpcSSPStopRx;
-	pDev->SerIntrf.StartTx = LpcSSPStartTx;
-	pDev->SerIntrf.TxData = LpcSSPTxData;
-	pDev->SerIntrf.StopTx = LpcSSPStopTx;
-	pDev->SerIntrf.Busy = false;
-	pDev->SerIntrf.MaxRetry = 0;
+	pDev->DevIntrf.Disable = LpcSSPDisable;
+	pDev->DevIntrf.Enable = LpcSSPEnable;
+	pDev->DevIntrf.GetRate = LpcSSPGetRate;
+	pDev->DevIntrf.SetRate = LpcSSPSetRate;
+	pDev->DevIntrf.StartRx = LpcSSPStartRx;
+	pDev->DevIntrf.RxData = LpcSSPRxData;
+	pDev->DevIntrf.StopRx = LpcSSPStopRx;
+	pDev->DevIntrf.StartTx = LpcSSPStartTx;
+	pDev->DevIntrf.TxData = LpcSSPTxData;
+	pDev->DevIntrf.StopTx = LpcSSPStopTx;
+	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.MaxRetry = 0;
 
-	LpcSSPSetRate(&pDev->SerIntrf, pCfgData->Rate);
+	LpcSSPSetRate(&pDev->DevIntrf, pCfgData->Rate);
 
 	return true;
 }

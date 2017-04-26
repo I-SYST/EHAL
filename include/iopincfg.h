@@ -43,19 +43,19 @@ typedef enum __iopin_resistor {
 	IOPINRES_NONE,
 	IOPINRES_PULLUP,
 	IOPINRES_PULLDOWN,
-	IOPINRES_FOLLOW
+	IOPINRES_FOLLOW		// Few MCUs support this mode
 } IOPINRES;
 
 // I/O pin direction config
 typedef enum __iopin_dir {
-    IOPINDIR_INPUT = 0,
+    IOPINDIR_INPUT  = 0,
     IOPINDIR_OUTPUT = 1,
-    IOPINDIR_BI = 2,		// Bidirectional
+    IOPINDIR_BI     = 2,	// Bidirectional, few MCUs support this mode
 } IOPINDIR;
 
 // I/O pin type
 typedef enum __iopin_type {
-	IOPINTYPE_NORMAL = 0,
+	IOPINTYPE_NORMAL    = 0,
 	IOPINTYPE_OPENDRAIN = 1
 } IOPINTYPE;
 

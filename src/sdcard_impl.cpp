@@ -49,12 +49,12 @@ SDCard::~SDCard()
 
 }
 
-bool SDCard::Init(SerialIntrf *pSerInterf, DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk)
+bool SDCard::Init(DeviceIntrf *pDevInterf, DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk)
 {
 	uint8_t data[4];
 	uint16_t r = 0xffff;
 	//vpInterf = std::shared_ptr<SerialIntrf>(pSerInterf);
-	vpInterf = pSerInterf;
+	vpInterf = pDevInterf;
 
 	// Reset SD Card to SPI mode
 	// Need to send reset sequence at a lower rate
@@ -148,7 +148,7 @@ int SDCard::Cmd(uint8_t Cmd, uint32_t param)
 	data[2] = (param >> 16) & 0xff;
 	data[3] = (param >> 8) & 0xff;
 	data[4] = param & 0xff;
-	data[5] = crc8(data, 5) | 1; //SDCmdCrc(data) | 1;
+	data[5] = crc8_ccitt(data, 5, 0) | 1; //SDCmdCrc(data) | 1;
 	data[6] = 0xff;
 
 	// Send command
@@ -200,7 +200,7 @@ int SDCard::ReadData(uint8_t *pBuff, int BuffLen)
 	d = 0xff;
 	cnt = vpInterf->Rx(0, pBuff, BuffLen);
 
-	calccrc = crc16(pBuff, cnt);
+	calccrc = crc16_ccitt(pBuff, cnt, 0);
 
 	if (cnt <= BuffLen)
 	{
@@ -228,7 +228,7 @@ int SDCard::WriteData(uint8_t *pData, int Len)
 	if (pData == NULL)
 		return -1;
 
-	crc = crc16(pData, Len);
+	crc = crc16_ccitt(pData, Len, 0);
 
 	vpInterf->Tx(0, d, 2);
 

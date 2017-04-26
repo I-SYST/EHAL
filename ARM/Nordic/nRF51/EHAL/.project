@@ -41,19 +41,19 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/ble_app.h</locationURI>
 		</link>
 		<link>
-			<name>include/blueio_blesrvc.h</name>
+			<name>include/ble_interf.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_blesrvc.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ble_interf.h</locationURI>
+		</link>
+		<link>
+			<name>include/ble_service.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ble_service.h</locationURI>
 		</link>
 		<link>
 			<name>include/blueio_board.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_board.h</locationURI>
-		</link>
-		<link>
-			<name>include/bme280.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/bme280.h</locationURI>
 		</link>
 		<link>
 			<name>include/cfifo.h</name>
@@ -76,9 +76,14 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/custom_board.h</locationURI>
 		</link>
 		<link>
-			<name>include/dirent.h</name>
+			<name>include/device.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/dirent.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/device.h</locationURI>
+		</link>
+		<link>
+			<name>include/device_intrf.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/device_intrf.h</locationURI>
 		</link>
 		<link>
 			<name>include/diskio.h</name>
@@ -161,9 +166,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/seep.h</locationURI>
 		</link>
 		<link>
-			<name>include/serialintrf.h</name>
-			<type>1</type>
-			<locationURI>PARENT-3-WORKSPACE_LOC/include/serialintrf.h</locationURI>
+			<name>include/sensors</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>include/spi.h</name>
@@ -174,6 +179,11 @@
 			<name>include/stddev.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/stddev.h</locationURI>
+		</link>
+		<link>
+			<name>include/sys</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>include/sysstatus.h</name>
@@ -226,9 +236,14 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app_handler.c</locationURI>
 		</link>
 		<link>
-			<name>src/blueio_blesrvc.c</name>
+			<name>src/ble_interf.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/blueio_blesrvc.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_interf.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/ble_service.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_service.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/cfifo.c</name>
@@ -239,6 +254,16 @@
 			<name>src/crc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/crc.c</locationURI>
+		</link>
+		<link>
+			<name>src/device.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/device.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/device_intrf.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/device_intrf.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/diskio_flash.cpp</name>
@@ -291,6 +316,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nrf_log_backend_printf.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_log_backend_printf.c</locationURI>
+		</link>
+		<link>
 			<name>src/nrf_uart_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_uart_impl.cpp</locationURI>
@@ -316,9 +346,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/seep_impl.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/serialintrf.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/serialintrf.cpp</locationURI>
+			<name>src/sensors</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/stddev.c</name>
@@ -356,6 +386,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/utf8cvt.cpp</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/pth_bme280.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pth_bme280.h</locationURI>
+		</link>
+		<link>
+			<name>include/sys/dirent.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sys/dirent.h</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -379,6 +419,11 @@
 			<name>src/nRF5_SDK/uECC.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_12/external/micro-ecc/micro-ecc/uECC.c</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/pth_bme280.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/pth_bme280.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/ble_advertising</name>

@@ -41,6 +41,7 @@
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.command.ar.816843399" name="Archiver" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.command.ar" value="ar" valueType="string"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.command.make.377972717" name="Build command" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.command.make" value="make" valueType="string"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm.663460985" name="Remove command" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm" value="rm" valueType="string"/>
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.thumbinterwork.206157084" name="Thumb interwork (-mthumb-interwork)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.thumbinterwork" value="false" valueType="boolean"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform.311201227" isAbstract="false" osList="all" superClass="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform"/>
 							<builder buildPath="${workspace_loc:/EHAL}/Debug" id="ilg.gnuarmeclipse.managedbuild.cross.builder.1838870129" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="ilg.gnuarmeclipse.managedbuild.cross.builder"/>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.118798729" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
@@ -55,6 +56,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include/sensors&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/device&quot;"/>
@@ -81,6 +83,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/nrf_ble_gatt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/ble_services/ble_dis&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/softdevice/common/softdevice_handler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/softdevice/s130/headers&quot;"/>
@@ -120,6 +123,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include/sensors&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/device&quot;"/>
@@ -146,6 +150,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/nrf_ble_gatt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/ble_services/ble_dis&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/softdevice/common/softdevice_handler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/softdevice/s130/headers&quot;"/>
@@ -256,6 +261,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include/sensors&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/device&quot;"/>
@@ -282,6 +288,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/nrf_ble_gatt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/ble_services/ble_dis&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/softdevice/common/softdevice_handler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/softdevice/s130/headers&quot;"/>
@@ -320,6 +327,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include/sensors&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/device&quot;"/>
@@ -346,6 +354,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/nrf_ble_gatt&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/ble/ble_services/ble_dis&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/softdevice/common/softdevice_handler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/softdevice/s130/headers&quot;"/>

@@ -75,22 +75,18 @@ Modified by          Date              Description
 
 #define RX_PIN_NUMBER		BLUEIO_UART_RX_PIN
 #define TX_PIN_NUMBER		BLUEIO_UART_TX_PIN
+#define RTS_PIN_NUMBER		BLUEIO_UART_RTS_PIN
+#define CTS_PIN_NUMBER		BLUEIO_UART_CTS_PIN
 
 // Low frequency clock source to be used by the SoftDevice
 // I don't like this kind of define to set the default data
 // but it is used by Nordic SDK
 #ifdef IMM_NRF51822
 // Does not have crystal, use internal RC
-#define NRF_CLOCK_LFCLKSRC      {.source        = NRF_CLOCK_LF_SRC_RC,\
-                                 .rc_ctiv       = 1,                  \
-                                 .rc_temp_ctiv  = 1,                  \
-                                 .xtal_accuracy = 0}
+#define NRF_CLOCK_LFCLKSRC      { NRF_CLOCK_LF_SRC_RC, 1, 1, 0 }
 #else
 // IMM-NRF51422 & IMM-NRF52832 have 32KHz crystal
-#define NRF_CLOCK_LFCLKSRC      {.source        = NRF_CLOCK_LF_SRC_XTAL,\
-                                 .rc_ctiv       = 0,                    \
-                                 .rc_temp_ctiv  = 0,                    \
-                                 .xtal_accuracy = NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM}
+#define NRF_CLOCK_LFCLKSRC      { NRF_CLOCK_LF_SRC_XTAL, 0, 0, NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM }
 #endif
 
 #endif // __CUSTOM_BOARD_H__

@@ -49,7 +49,7 @@ Seep::~Seep()
 {
 }
 
-bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf)
+bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, DEVINTRF *pInterf)
 {
     pDev->pInterf = pInterf;
     pDev->DevAddr = pCfgData->DevAddr;
@@ -82,7 +82,7 @@ int SeepRead(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
         ad[i] = p[pDev->AddrLen - i - 1];
     }
 
-    return SerialIntrfRead(pDev->pInterf, pDev->DevAddr, ad, pDev->AddrLen, pData, Len);
+    return DeviceIntrfRead(pDev->pInterf, pDev->DevAddr, ad, pDev->AddrLen, pData, Len);
 }
 
 // Note: Sequential write is bound by page size boundary
@@ -100,7 +100,7 @@ int SeepWrite(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
             ad[i] = p[pDev->AddrLen - i - 1];
         }
 
-        size = SerialIntrfWrite(pDev->pInterf, pDev->DevAddr, ad, pDev->AddrLen, pData, size);
+        size = DeviceIntrfWrite(pDev->pInterf, pDev->DevAddr, ad, pDev->AddrLen, pData, size);
         if (pDev->pWaitCB)
         {
             pDev->pWaitCB(pDev->DevAddr, pDev->pInterf);

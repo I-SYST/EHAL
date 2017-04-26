@@ -41,33 +41,52 @@ Modified by          Date              Description
 extern "C" {
 #endif
 
-/*
+/**
+ * @brief   Calculate 8 bits CRC value
+ *          Polynomial : (x7 + x3 + 1) × x (left-shifted CRC-7-CCITT)
+ *          0x12 = (0x09 << 1) (MSBF/normal)
+ *
+ * @param   pData   : Pointer to data buffer to calculate
+ *          Len     : Data length in bytes
+ *          SeedVal : Initial CRC seed value
+ *
+ * @return 8 bits CRC value
+ */
+uint8_t crc8_ccitt(uint8_t *pData, int Len, uint8_t SeedVal);
+
+/**
+ * @brief   Calculate 16 bits CRC value
+ *          Polynomial : x16 + x15 + x2 + 1 (CRC-16-ANSI)
+ *          0x8005 (MSBF/normal)
+ *
+ * @param   pData   : Pointer to data buffer to calculate
+ *          Len     : Data length in bytes
+ *          SeedVal : Initial CRC seed value
+ *
+ * @return 16 bits CRC value
+ */
+uint16_t crc16_ansi(uint8_t *pData, int Len, uint16_t SeedVal);
+
+/**
+ * @brief   Calculate 16 bits CRC value
+ *          Polynomial : x16 + x12 + x5 + 1 (CRC-16-CCITT)
+ *          0x1021 (MSBF/normal)
+ *
+ * @param	pData 	: Pointer to data buffer to calculate
+ * 			Len		: Data length in bytes
+ *          SeedVal : Initial CRC seed value
+ *
+ * @return	16 bits CRC value
+ */
+uint16_t crc16_ccitt(uint8_t *pData, int Len, uint16_t SeedVal);
+
+/**
  * Calculate 8 bits CRC value
  *
  * @param	pData 	: Pointer to data buffer to calculate
  * 			Len		: Data length in bytes
  *
- * 	@return	8 bits CRC value
- */
-uint8_t crc8(uint8_t *pData, int Len);
-
-/*
- * Calculate 16 bits CRC value
- *
- * @param	pData 	: Pointer to data buffer to calculate
- * 			Len		: Data length in bytes
- *
- * 	@return	16 bits CRC value
- */
-uint16_t crc16(uint8_t *pData, int Len);
-
-/*
- * Calculate 8 bits CRC value
- *
- * @param	pData 	: Pointer to data buffer to calculate
- * 			Len		: Data length in bytes
- *
- * 	@return	32 bits CRC value
+ * @return	32 bits CRC value
  */
 uint32_t crc32(uint8_t *pData, int Len);
 

@@ -40,6 +40,8 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
+#pragma pack(push,4)
+
 typedef struct {
 	volatile int32_t PutIdx;	// Idx to start of empty data block
 	volatile int32_t GetIdx;	// Idx to start of used data block
@@ -50,6 +52,8 @@ typedef struct {
 	uint32_t MemSize;			// Total fifo memory size allocated
 	uint8_t *pMemStart;			// Start of fifo data memory
 } CFIFOHDR;
+
+#pragma pack(pop)
 
 // defines CFIFO handle
 typedef CFIFOHDR*	HCFIFO;

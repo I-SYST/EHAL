@@ -45,7 +45,7 @@ Hoan				Feb. 20, 2015	New EHAL
 #endif
 
 #include "iopincfg.h"
-#include "serialintrf.h"
+#include "device_intrf.h"
 
 
 
@@ -104,13 +104,13 @@ typedef struct _SPI_Config {
 	SPICLKPOL ClkPol;		// Clock Out Polarity.
 	SPICSEL ChipSel;		// Chip select mode
 	int IntPrio;			// Interrupt priority
-	SERINTRFEVCB EvtCB;		// Event callback
+	DEVINTRF_EVTCB EvtCB;		// Event callback
 } SPICFG;
 
 // Device driver data require by low level fonctions
 typedef struct {
 	SPICFG 		Cfg;		// Config data
-	SERINTRFDEV	SerIntrf;	// device interface implementation
+	DEVINTRF	DevIntrf;	// device interface implementation
 	int			FirstRdData;// This is to keep the first dummy read data of SPI
 							// there are devices that may return a status code through this
 	int			CurDevCs;	// Current active device CS
@@ -125,32 +125,32 @@ extern "C" {
 // Require implementations
 bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData);
 
-static inline int SPIGetRate(SPIDEV *pDev) { return pDev->SerIntrf.GetRate(&pDev->SerIntrf); }
+static inline int SPIGetRate(SPIDEV *pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
 static inline int SPISetRate(SPIDEV *pDev, int Rate) {
-	return pDev->SerIntrf.SetRate(&pDev->SerIntrf, Rate);
+	return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate);
 }
-static inline void SPIEnable(SPIDEV *pDev) { pDev->SerIntrf.Enable(&pDev->SerIntrf); }
-static inline void SPIDisable(SPIDEV *pDev) { pDev->SerIntrf.Disable(&pDev->SerIntrf); }
+static inline void SPIEnable(SPIDEV *pDev) { pDev->DevIntrf.Enable(&pDev->DevIntrf); }
+static inline void SPIDisable(SPIDEV *pDev) { pDev->DevIntrf.Disable(&pDev->DevIntrf); }
 static inline int SPIRx(SPIDEV *pDev, int DevCs, uint8_t *pBuff, int Bufflen) {
-	return SerialIntrfRx(&pDev->SerIntrf, DevCs, pBuff, Bufflen);
+	return DeviceIntrfRx(&pDev->DevIntrf, DevCs, pBuff, Bufflen);
 }
 static inline int SPITx(SPIDEV *pDev, int DevCs, uint8_t *pData, int DataLen) {
-	return SerialIntrfTx(&pDev->SerIntrf, DevCs, pData, DataLen);
+	return DeviceIntrfTx(&pDev->DevIntrf, DevCs, pData, DataLen);
 }
 static inline bool SPIStartRx(SPIDEV *pDev, int DevAddr) {
-	return SerialIntrfStartRx(&pDev->SerIntrf, DevAddr);
+	return DeviceIntrfStartRx(&pDev->DevIntrf, DevAddr);
 }
 static inline int SPIRxData(SPIDEV *pDev, uint8_t *pBuff, int Bufflen) {
-	return SerialIntrfRxData(&pDev->SerIntrf, pBuff, Bufflen);
+	return DeviceIntrfRxData(&pDev->DevIntrf, pBuff, Bufflen);
 }
-static inline void SPIStopRx(SPIDEV *pDev) { SerialIntrfStopRx(&pDev->SerIntrf); }
+static inline void SPIStopRx(SPIDEV *pDev) { DeviceIntrfStopRx(&pDev->DevIntrf); }
 static inline bool SPIStartTx(SPIDEV *pDev, int DevAddr) {
-	return SerialIntrfStartTx(&pDev->SerIntrf, DevAddr);
+	return DeviceIntrfStartTx(&pDev->DevIntrf, DevAddr);
 }
 static inline int SPITxData(SPIDEV *pDev, uint8_t *pData, int Datalen) {
-	return SerialIntrfTxData(&pDev->SerIntrf, pData, Datalen);
+	return DeviceIntrfTxData(&pDev->DevIntrf, pData, Datalen);
 }
-static inline void SPIStopTx(SPIDEV *pDev) { SerialIntrfStopTx(&pDev->SerIntrf); }
+static inline void SPIStopTx(SPIDEV *pDev) { DeviceIntrfStopTx(&pDev->DevIntrf); }
 
 
 #ifdef __cplusplus
@@ -158,7 +158,7 @@ static inline void SPIStopTx(SPIDEV *pDev) { SerialIntrfStopTx(&pDev->SerIntrf);
 
 // C++ class wrapper
 
-class SPI : public SerialIntrf {
+class SPI : public DeviceIntrf {
 public:
 	SPI() {
 		memset((void*)&vDevData, 0, (int)sizeof(vDevData));
@@ -172,33 +172,33 @@ public:
 
 	bool Init(const SPICFG &CfgData) { return SPIInit(&vDevData, &CfgData); }
 
-	operator SERINTRFDEV* () { return &vDevData.SerIntrf; }
+	operator DEVINTRF* () { return &vDevData.DevIntrf; }
 	operator SPIDEV& () { return vDevData; };	// Get config data
-	int Rate(int RateHz) { return vDevData.SerIntrf.SetRate(&vDevData.SerIntrf, RateHz); }
-	int Rate(void) { return vDevData.SerIntrf.GetRate(&vDevData.SerIntrf); }	// Get rate in Hz
-	void Enable(void) { SerialIntrfEnable(&vDevData.SerIntrf); }
-	void Disable(void) { SerialIntrfDisable(&vDevData.SerIntrf); }
+	int Rate(int RateHz) { return vDevData.DevIntrf.SetRate(&vDevData.DevIntrf, RateHz); }
+	int Rate(void) { return vDevData.DevIntrf.GetRate(&vDevData.DevIntrf); }	// Get rate in Hz
+	void Enable(void) { DeviceIntrfEnable(&vDevData.DevIntrf); }
+	void Disable(void) { DeviceIntrfDisable(&vDevData.DevIntrf); }
 
 	// DevCs is the ordinal starting from 0 of device connected to the SPI bus.
 	// It is translated to CS index in the I/O pin map
 	virtual bool StartRx(int DevCs) {
-		return SerialIntrfStartRx(&vDevData.SerIntrf, DevCs);
+		return DeviceIntrfStartRx(&vDevData.DevIntrf, DevCs);
 	}
 	// Receive Data only, no Start/Stop condition
 	virtual int RxData(uint8_t *pBuff, int BuffLen) {
-		return SerialIntrfRxData(&vDevData.SerIntrf, pBuff, BuffLen);
+		return DeviceIntrfRxData(&vDevData.DevIntrf, pBuff, BuffLen);
 	}
-	virtual void StopRx(void) { SerialIntrfStopRx(&vDevData.SerIntrf); }
+	virtual void StopRx(void) { DeviceIntrfStopRx(&vDevData.DevIntrf); }
 	// DevAddr is the ordinal starting from 0 of device connected to the SPI bus.
 	// It is translated to CS index in the I/O pin map
 	virtual bool StartTx(int DevCs) {
-		return SerialIntrfStartTx(&vDevData.SerIntrf, DevCs);
+		return DeviceIntrfStartTx(&vDevData.DevIntrf, DevCs);
 	}
 	// Send Data only, no Start/Stop condition
 	virtual int TxData(uint8_t *pData, int DataLen) {
-		return SerialIntrfTxData(&vDevData.SerIntrf, pData, DataLen);
+		return DeviceIntrfTxData(&vDevData.DevIntrf, pData, DataLen);
 	}
-	virtual void StopTx(void) { SerialIntrfStopTx(&vDevData.SerIntrf); }
+	virtual void StopTx(void) { DeviceIntrfStopTx(&vDevData.DevIntrf); }
 	int GetFirstRead(void) {return vDevData.FirstRdData;}
 
 private:

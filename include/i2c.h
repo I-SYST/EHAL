@@ -44,7 +44,7 @@ Modified by          Date              Description
 #include <stdbool.h>
 #endif
 
-#include "serialintrf.h"
+#include "device_intrf.h"
 #include "iopincfg.h"
 
 // I2C Status code
@@ -97,7 +97,7 @@ typedef struct _I2C_Config {
 	int SlaveAddr;		// I2C slave address used in slave mode only
 	int MaxRetry;		// Max number of retry
 	int	IntPrio;		// Interrupt priority.  Value is implementation specific
-	SERINTRFEVCB EvtCB;	// Interrupt based event callback function pointer. Must be set to NULL if not used
+	DEVINTRF_EVTCB EvtCB;	// Interrupt based event callback function pointer. Must be set to NULL if not used
 } I2CCFG;
 
 // Device driver data require by low level functions
@@ -106,7 +106,7 @@ typedef struct {
 	int 	Rate;				// Speed in Hz
 	int 	SlaveAddr;			// I2C slave address used in slave mode only
 	int 	MaxRetry;			// Max number of retry
-	SERINTRFDEV	SerIntrf;		// I2C device interface implementation
+	DEVINTRF DevIntrf;		// I2C device interface implementation
 } I2CDEV;
 
 #pragma pack(pop)
@@ -124,47 +124,47 @@ extern "C" {
  *
  */
 bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData);
-static inline int I2CGetRate(I2CDEV *pDev) { return pDev->SerIntrf.GetRate(&pDev->SerIntrf); }
+static inline int I2CGetRate(I2CDEV *pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
 static inline int I2CSetRate(I2CDEV *pDev, int Rate) {
-	return pDev->SerIntrf.SetRate(&pDev->SerIntrf, Rate);
+	return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate);
 }
-static inline void I2CEnable(I2CDEV *pDev) { pDev->SerIntrf.Enable(&pDev->SerIntrf); }
-static inline void I2CDisable(I2CDEV *pDev) { pDev->SerIntrf.Disable(&pDev->SerIntrf); }
+static inline void I2CEnable(I2CDEV *pDev) { pDev->DevIntrf.Enable(&pDev->DevIntrf); }
+static inline void I2CDisable(I2CDEV *pDev) { pDev->DevIntrf.Disable(&pDev->DevIntrf); }
 static inline int I2CRx(I2CDEV *pDev, int DevAddr, uint8_t *pBuff, int Bufflen) {
-	return SerialIntrfRx(&pDev->SerIntrf, DevAddr, pBuff, Bufflen);
+	return DeviceIntrfRx(&pDev->DevIntrf, DevAddr, pBuff, Bufflen);
 }
 static inline int I2CTx(I2CDEV *pDev, int DevAddr, uint8_t *pData, int Datalen) {
-	return SerialIntrfTx(&pDev->SerIntrf, DevAddr, pData, Datalen);
+	return DeviceIntrfTx(&pDev->DevIntrf, DevAddr, pData, Datalen);
 }
 static inline int I2CRead(I2CDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
         uint8_t *pRxBuff, int RxLen) {
-	return SerialIntrfRead(&pDev->SerIntrf, DevAddr, pAdCmd, AdCmdLen, pRxBuff, RxLen);
+	return DeviceIntrfRead(&pDev->DevIntrf, DevAddr, pAdCmd, AdCmdLen, pRxBuff, RxLen);
 }
 static inline int I2CWrite(I2CDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
         uint8_t *pTxData, int TxLen) {
-	return SerialIntrfRead(&pDev->SerIntrf, DevAddr, pAdCmd, AdCmdLen, pTxData, TxLen);
+	return DeviceIntrfRead(&pDev->DevIntrf, DevAddr, pAdCmd, AdCmdLen, pTxData, TxLen);
 }
 static inline bool I2CStartRx(I2CDEV *pDev, int DevAddr) {
-	return SerialIntrfStartRx(&pDev->SerIntrf, DevAddr);
+	return DeviceIntrfStartRx(&pDev->DevIntrf, DevAddr);
 }
 static inline int I2CRxData(I2CDEV *pDev, uint8_t *pBuff, int Bufflen) {
-	return SerialIntrfRxData(&pDev->SerIntrf, pBuff, Bufflen);
+	return DeviceIntrfRxData(&pDev->DevIntrf, pBuff, Bufflen);
 }
-static inline void I2CStopRx(I2CDEV *pDev) { SerialIntrfStopRx(&pDev->SerIntrf); }
+static inline void I2CStopRx(I2CDEV *pDev) { DeviceIntrfStopRx(&pDev->DevIntrf); }
 static inline bool I2CStartTx(I2CDEV *pDev, int DevAddr) {
-	return SerialIntrfStartTx(&pDev->SerIntrf, DevAddr);
+	return DeviceIntrfStartTx(&pDev->DevIntrf, DevAddr);
 }
 static inline int I2CTxData(I2CDEV *pDev, uint8_t *pData, int Datalen) {
-	return SerialIntrfTxData(&pDev->SerIntrf, pData, Datalen);
+	return DeviceIntrfTxData(&pDev->DevIntrf, pData, Datalen);
 }
-static inline void I2CStopTx(I2CDEV *pDev) { SerialIntrfStopTx(&pDev->SerIntrf); }
+static inline void I2CStopTx(I2CDEV *pDev) { DeviceIntrfStopTx(&pDev->DevIntrf); }
 
 #ifdef __cplusplus
 }
 
 // C++ class wrapper
 
-class I2C : public SerialIntrf {
+class I2C : public DeviceIntrf {
 public:
 	I2C() {
 		memset((void*)&vDevData, 0, (int)sizeof(vDevData));
@@ -176,29 +176,29 @@ public:
 
 	I2C(I2C&);	// Copy ctor not allowed
 
-	bool Init(I2CCFG &CfgData) { return I2CInit(&vDevData, &CfgData); }
-	operator SERINTRFDEV*() { return &vDevData.SerIntrf; }
+	bool Init(const I2CCFG &CfgData) { return I2CInit(&vDevData, &CfgData); }
+	operator DEVINTRF*() { return &vDevData.DevIntrf; }
 	operator I2CDEV& () { return vDevData; };	// Get config data
-	int Rate(int RateHz) { return SerialIntrfSetRate(&vDevData.SerIntrf, RateHz); }
+	int Rate(int RateHz) { return DeviceIntrfSetRate(&vDevData.DevIntrf, RateHz); }
 	int Rate(void) { return vDevData.Rate; };	// Get rate in Hz
-	void Enable(void) { SerialIntrfEnable(&vDevData.SerIntrf); }
-	void Disable(void) { SerialIntrfDisable(&vDevData.SerIntrf); }
+	void Enable(void) { DeviceIntrfEnable(&vDevData.DevIntrf); }
+	void Disable(void) { DeviceIntrfDisable(&vDevData.DevIntrf); }
 	virtual bool StartRx(int DevAddr) {
-		return SerialIntrfStartRx(&vDevData.SerIntrf, DevAddr);
+		return DeviceIntrfStartRx(&vDevData.DevIntrf, DevAddr);
 	}
 	// Receive Data only, no Start/Stop condition
 	virtual int RxData(uint8_t *pBuff, int BuffLen) {
-		return SerialIntrfRxData(&vDevData.SerIntrf, pBuff, BuffLen);
+		return DeviceIntrfRxData(&vDevData.DevIntrf, pBuff, BuffLen);
 	}
-	virtual void StopRx(void) { SerialIntrfStopRx(&vDevData.SerIntrf); }
+	virtual void StopRx(void) { DeviceIntrfStopRx(&vDevData.DevIntrf); }
 	virtual bool StartTx(int DevAddr) {
-		return SerialIntrfStartTx(&vDevData.SerIntrf, DevAddr);
+		return DeviceIntrfStartTx(&vDevData.DevIntrf, DevAddr);
 	}
 	// Send Data only, no Start/Stop condition
 	virtual int TxData(uint8_t *pData, int DataLen) {
-		return SerialIntrfTxData(&vDevData.SerIntrf, pData, DataLen);
+		return DeviceIntrfTxData(&vDevData.DevIntrf, pData, DataLen);
 	}
-	virtual void StopTx(void) { SerialIntrfStopTx(&vDevData.SerIntrf); }
+	virtual void StopTx(void) { DeviceIntrfStopTx(&vDevData.DevIntrf); }
 	
 private:
 	I2CDEV vDevData;

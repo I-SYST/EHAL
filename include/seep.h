@@ -36,7 +36,7 @@ Modified by          Date              Description
 
 #include <stdbool.h>
 
-#include "serialintrf.h"
+#include "device_intrf.h"
 #include "iopincfg.h"
 
 #pragma pack(push,4)
@@ -49,7 +49,7 @@ Modified by          Date              Description
  * @param DevAddr : Device address
  * 		  pInterf : Pointer to physical interface connected to the device
  */
-typedef bool (*SEEPCB)(int DevAddr, SERINTRFDEV *pInterf);
+typedef bool (*SEEPCB)(int DevAddr, DEVINTRF *pInterf);
 
 typedef struct _Seep_Config {
     uint8_t DevAddr;	// Device address
@@ -74,7 +74,7 @@ typedef struct {
 	uint32_t Size;      // Total EEPROM size in bytes
 	uint32_t WrDelay;   // Write delay in usec
 	IOPINCFG WrProtPin; // Write protect I/O pin
-	SERINTRFDEV	*pInterf;
+	DEVINTRF	*pInterf;
 	SEEPCB pWaitCB;	    // If provided, this is called when there are long delays
 					    // for a device to complete its write cycle
    					    // This is to allow application to perform other tasks
@@ -97,7 +97,7 @@ extern "C" {
  *
  * @return  true - initialization successful
  */
-bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, SERINTRFDEV *pInterf);
+bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, DEVINTRF *pInterf);
 
 /**
  * @brief Get EEPROM size
@@ -163,7 +163,7 @@ public:
     virtual ~Seep();
     Seep(Seep&);    // copy ctor not allowed
 
-    virtual bool Init(SEEP_CFG &Cfg, SerialIntrf *pInterf) {
+    virtual bool Init(SEEP_CFG &Cfg, DeviceIntrf *pInterf) {
         return SeepInit(&vDevData, &Cfg, *pInterf);
     }
 

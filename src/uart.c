@@ -51,9 +51,9 @@ int UARTRx(UARTDEV *pDev, uint8_t *pBuff, int Bufflen)
 {
 	int len = 0;
 
-    pDev->SerIntrf.StartRx(&pDev->SerIntrf, 0);
-    len = pDev->SerIntrf.RxData(&pDev->SerIntrf, pBuff, Bufflen);
-    pDev->SerIntrf.StopRx(&pDev->SerIntrf);
+    pDev->DevIntrf.StartRx(&pDev->DevIntrf, 0);
+    len = pDev->DevIntrf.RxData(&pDev->DevIntrf, pBuff, Bufflen);
+    pDev->DevIntrf.StopRx(&pDev->DevIntrf);
 
     return len;
 }
@@ -62,9 +62,9 @@ int UARTTx(UARTDEV *pDev, uint8_t *pData, int Datalen)
 {
 	int len = 0;
 
-    pDev->SerIntrf.StartTx(&pDev->SerIntrf, 0);
-    len = pDev->SerIntrf.TxData(&pDev->SerIntrf, pData, Datalen);
-    pDev->SerIntrf.StopTx(&pDev->SerIntrf);
+    pDev->DevIntrf.StartTx(&pDev->DevIntrf, 0);
+    len = pDev->DevIntrf.TxData(&pDev->DevIntrf, pData, Datalen);
+    pDev->DevIntrf.StopTx(&pDev->DevIntrf);
 
     return len;
 }

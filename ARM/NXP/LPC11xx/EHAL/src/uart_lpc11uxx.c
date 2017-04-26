@@ -253,10 +253,10 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	g_LpcUartDev[pCfg->DevNo].pUartReg = reg;
 	g_LpcUartDev[pCfg->DevNo].pUartDev = pDev;
 
-	pDev->SerIntrf.pDevData = (void*)&g_LpcUartDev[pCfg->DevNo];
+	pDev->DevIntrf.pDevData = (void*)&g_LpcUartDev[pCfg->DevNo];
 
 	if (pCfg->Rate)
-		pDev->Rate = LpcUARTSetRate(&pDev->SerIntrf, pCfg->Rate);
+		pDev->Rate = LpcUARTSetRate(&pDev->DevIntrf, pCfg->Rate);
 	else
 	{
 		// Auto baudrate
@@ -318,18 +318,18 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->bIrDAMode = pCfg->bIrDAMode;
 	pDev->IrDAPulseDiv = pCfg->IrDAPulseDiv;
 	pDev->Parity = pCfg->Parity;
-	pDev->SerIntrf.Disable = LpcUARTDisable;
-	pDev->SerIntrf.Enable = LpcUARTEnable;
-	pDev->SerIntrf.GetRate = LpcUARTGetRate;
-	pDev->SerIntrf.SetRate = LpcUARTSetRate;
-	pDev->SerIntrf.StartRx = LpcUARTStartRx;
-	pDev->SerIntrf.RxData = LpcUARTRxData;
-	pDev->SerIntrf.StopRx = LpcUARTStopRx;
-	pDev->SerIntrf.StartTx = LpcUARTStartTx;
-	pDev->SerIntrf.TxData = LpcUARTTxData;
-	pDev->SerIntrf.StopTx = LpcUARTStopTx;
-	pDev->SerIntrf.Busy = false;
-	pDev->SerIntrf.MaxRetry = 0;
+	pDev->DevIntrf.Disable = LpcUARTDisable;
+	pDev->DevIntrf.Enable = LpcUARTEnable;
+	pDev->DevIntrf.GetRate = LpcUARTGetRate;
+	pDev->DevIntrf.SetRate = LpcUARTSetRate;
+	pDev->DevIntrf.StartRx = LpcUARTStartRx;
+	pDev->DevIntrf.RxData = LpcUARTRxData;
+	pDev->DevIntrf.StopRx = LpcUARTStopRx;
+	pDev->DevIntrf.StartTx = LpcUARTStartTx;
+	pDev->DevIntrf.TxData = LpcUARTTxData;
+	pDev->DevIntrf.StopTx = LpcUARTStopTx;
+	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.MaxRetry = 0;
 	pDev->EvtCallback = pCfg->EvtCallback;
 
 	g_LpcUartDev[pCfg->DevNo].bTxReady = true;

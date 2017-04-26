@@ -410,6 +410,7 @@ public:
 	// WARNING !!!!!
 	// This functions MUST ONLY be called if StartTx returns true.
 	virtual void StopTx(void) = 0;
+	virtual bool RequestToSend(int NbBytes) { return true; }
 	//
 	virtual void Reset(void) { DeviceIntrfReset(*this); }
 };

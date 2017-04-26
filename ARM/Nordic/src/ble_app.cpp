@@ -39,17 +39,20 @@ Modified by          Date              Description
 #include "ble_hci.h"
 #include "nrf_error.h"
 #include "nrf_gpio.h"
+#include "ble_gatt.h"
 #include "ble_advdata.h"
 #include "ble_advertising.h"
 #include "ble_conn_params.h"
 #include "ble_conn_state.h"
 #include "ble_dis.h"
+#include "nrf_ble_gatt.h"
 #include "peer_manager.h"
+extern "C" {
 #include "softdevice_handler_appsh.h"
+}
 #include "app_timer.h"
 #include "app_util_platform.h"
 #include "app_scheduler.h"
-#include "app_timer_appsh.h"
 #include "app_scheduler.h"
 #include "fds.h"
 #include "fstorage.h"
@@ -58,6 +61,8 @@ Modified by          Date              Description
 
 #if NRF_SD_BLE_API_VERSION > 3
 #include "nrf_crypto_keys.h"
+#else
+#include "app_timer_appsh.h"
 #endif
 
 #include "istddef.h"
@@ -70,12 +75,24 @@ Modified by          Date              Description
 //#define IS_SRVC_CHANGED_CHARACT_PRESENT 1                                           /**< Include the service_changed characteristic. If not enabled, the server's database cannot be changed for the lifetime of the device. */
 
 #if (NRF_SD_BLE_API_VERSION <= 3)
-    #define NRF_BLE_MAX_MTU_SIZE        GATT_MTU_SIZE_DEFAULT                   /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
+   #define NRF_BLE_MAX_MTU_SIZE        GATT_MTU_SIZE_DEFAULT                   /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
 #else
-    #define NRF_BLE_MAX_MTU_SIZE        BLE_GATT_MTU_SIZE_DEFAULT
+
+#if  defined(BLE_GATT_MTU_SIZE_DEFAULT) && !defined(GATT_MTU_SIZE_DEFAULT)
+#define GATT_MTU_SIZE_DEFAULT BLE_GATT_MTU_SIZE_DEFAULT
+#endif
+
+#if  defined(BLE_GATT_ATT_MTU_DEFAULT) && !defined(GATT_MTU_SIZE_DEFAULT)
+#define GATT_MTU_SIZE_DEFAULT BLE_GATT_ATT_MTU_DEFAULT
+#endif
+
+#define NRF_BLE_MAX_MTU_SIZE        NRF_BLE_GATT_MAX_MTU_SIZE//GATT_MTU_SIZE_DEFAULT
+
 #endif
 
 #define APP_FEATURE_NOT_SUPPORTED       BLE_GATT_STATUS_ATTERR_APP_BEGIN + 2        /**< Reply when unsupported features are requested. */
+
+#define CONN_CFG_TAG                     1                                          /**< A tag that refers to the BLE stack configuration we set with @ref sd_ble_cfg_set. Default tag is @ref BLE_CONN_CFG_TAG_DEFAULT. */
 
 //#define CENTRAL_LINK_COUNT              0                                           /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
 //#define PERIPHERAL_LINK_COUNT           1                                           /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
@@ -93,12 +110,19 @@ Modified by          Date              Description
 #define SCHED_QUEUE_SIZE          		10                        /**< Maximum number of events in the scheduler queue. */
 #endif
 
-#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(20, UNIT_1_25_MS)             /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
-#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(75, UNIT_1_25_MS)             /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
+#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)             /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
+#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)             /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
 #define SLAVE_LATENCY                   0                                           /**< Slave latency. */
 #define CONN_SUP_TIMEOUT                MSEC_TO_UNITS(4000, UNIT_10_MS)             /**< Connection supervisory timeout (4 seconds), Supervision Timeout uses 10 ms units. */
+
+#if (NRF_SD_BLE_API_VERSION <= 3)
 #define FIRST_CONN_PARAMS_UPDATE_DELAY  APP_TIMER_TICKS(5000, APP_TIMER_PRESCALER)  /**< Time from initiating event (connect or start of notification) to first time sd_ble_gap_conn_param_update is called (5 seconds). */
 #define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000, APP_TIMER_PRESCALER) /**< Time between each call to sd_ble_gap_conn_param_update after the first call (30 seconds). */
+#else
+#define FIRST_CONN_PARAMS_UPDATE_DELAY  APP_TIMER_TICKS(5000)  /**< Time from initiating event (connect or start of notification) to first time sd_ble_gap_conn_param_update is called (5 seconds). */
+#define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000) /**< Time between each call to sd_ble_gap_conn_param_update after the first call (30 seconds). */
+#endif
+
 #define MAX_CONN_PARAMS_UPDATE_COUNT    3                                           /**< Number of attempts before giving up the connection parameter negotiation. */
 
 #define SEC_PARAM_MIN_KEY_SIZE          7                                           /**< Minimum encryption key size. */
@@ -122,6 +146,7 @@ BLEAPP_DATA g_BleAppData = {
 };
 
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
+static nrf_ble_gatt_t                   s_Gatt;                                     /**< GATT module instance. */
 
 #ifdef LESC_DEBUG_MODE
 
@@ -132,11 +157,13 @@ __ALIGN(4) const uint8_t g_lesc_private_key[32] = {
     0x50,0x3f,0x10,0xd2,0xe3,0xb3,0xc9,0x74,0x38,0x5f,0xc5,0xa3,0xd4,0xf6,0x49,0x3f,
 };
 #else
+// Release build reuire extern Private Key
 extern const uint8_t g_lesc_private_key[32];
 #endif
 
 __ALIGN(4) static ble_gap_lesc_p256_pk_t    s_lesc_public_key;      /**< LESC ECC Public Key */
 __ALIGN(4) static ble_gap_lesc_dhkey_t      s_lesc_dh_key;          /**< LESC ECC DH Key*/
+static ble_gap_conn_sec_mode_t s_gap_conn_mode;
 
 #if NRF_SD_BLE_API_VERSION <= 3
 static nrf_crypto_key_t m_crypto_key_sk =
@@ -258,47 +285,57 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
  * @details This function will set up all the necessary GAP (Generic Access Profile) parameters of
  *          the device. It also sets the permissions and appearance.
  */
+
 static void gap_params_init(const BLEAPP_CFG *pBleAppCfg)
 {
     uint32_t                err_code;
     ble_gap_conn_params_t   gap_conn_params;
-    ble_gap_conn_sec_mode_t sec_mode;
 
     switch (pBleAppCfg->SecType)
     {
     	case BLEAPP_SECTYPE_NONE:
-    	    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
+    	    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&s_gap_conn_mode);
     	    break;
 		case BLEAPP_SECTYPE_STATICKEY_NO_MITM:
-		    BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&sec_mode);
+		    BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&s_gap_conn_mode);
     	    break;
 		case BLEAPP_SECTYPE_STATICKEY_MITM:
-		    BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(&sec_mode);
+		    BLE_GAP_CONN_SEC_MODE_SET_ENC_WITH_MITM(&s_gap_conn_mode);
     	    break;
 		case BLEAPP_SECTYPE_LESC_MITM:
-			BLE_GAP_CONN_SEC_MODE_SET_LESC_ENC_WITH_MITM(&sec_mode);
+			BLE_GAP_CONN_SEC_MODE_SET_LESC_ENC_WITH_MITM(&s_gap_conn_mode);
     	    break;
 		case BLEAPP_SECTYPE_SIGNED_NO_MITM:
-			BLE_GAP_CONN_SEC_MODE_SET_SIGNED_NO_MITM(&sec_mode);
+			BLE_GAP_CONN_SEC_MODE_SET_SIGNED_NO_MITM(&s_gap_conn_mode);
     	    break;
 		case BLEAPP_SECTYPE_SIGNED_MITM:
-			BLE_GAP_CONN_SEC_MODE_SET_SIGNED_WITH_MITM(&sec_mode);
+			BLE_GAP_CONN_SEC_MODE_SET_SIGNED_WITH_MITM(&s_gap_conn_mode);
     	    break;
     }
 
-    err_code = sd_ble_gap_device_name_set(&sec_mode,
+    err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
                                           (const uint8_t *) pBleAppCfg->pDevName,
                                           strlen(pBleAppCfg->pDevName));
     APP_ERROR_CHECK(err_code);
 
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
 
-    gap_conn_params.min_conn_interval = MIN_CONN_INTERVAL;
-    gap_conn_params.max_conn_interval = MAX_CONN_INTERVAL;
+    gap_conn_params.min_conn_interval = pBleAppCfg->ConnIntervalMin;// MIN_CONN_INTERVAL;
+    gap_conn_params.max_conn_interval = pBleAppCfg->ConnIntervalMax;//MAX_CONN_INTERVAL;
     gap_conn_params.slave_latency     = SLAVE_LATENCY;
     gap_conn_params.conn_sup_timeout  = CONN_SUP_TIMEOUT;
 
     err_code = sd_ble_gap_ppcp_set(&gap_conn_params);
+    APP_ERROR_CHECK(err_code);
+}
+
+void gap_device_name_set( const char* ppDeviceName )
+{
+    uint32_t                err_code;
+
+    err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
+                                          (const uint8_t *)ppDeviceName,
+                                          strlen( ppDeviceName ));
     APP_ERROR_CHECK(err_code);
 }
 
@@ -521,6 +558,16 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             break; // BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST
 #endif
 
+#if (NRF_SD_BLE_API_VERSION > 3)
+        case BLE_GATTS_EVT_HVN_TX_COMPLETE:
+            break;
+#else
+        case BLE_EVT_TX_COMPLETE:
+            break;
+
+#endif
+
+
         default:
             // No implementation needed.
             break;
@@ -656,13 +703,7 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     pm_on_ble_evt(p_ble_evt);
 
     on_ble_evt(p_ble_evt);
-    if (role == BLE_GAP_ROLE_PERIPH)
-    {
-        ble_advertising_on_ble_evt(p_ble_evt);
-        ble_conn_params_on_ble_evt(p_ble_evt);
-        BlePeriphEvtUserHandler(p_ble_evt);
-    }
-    else if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT))
+    if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT))
     {
         BleCentralEvtUserHandler(p_ble_evt);
 #if 0
@@ -686,6 +727,13 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
         }
 #endif
     }
+    else
+    {
+        ble_advertising_on_ble_evt(p_ble_evt);
+        ble_conn_params_on_ble_evt(p_ble_evt);
+        BlePeriphEvtUserHandler(p_ble_evt);
+    }
+
 
 }
 
@@ -835,19 +883,22 @@ void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     advdata.name_type          = BLE_ADVDATA_FULL_NAME;
     advdata.include_appearance = false;
     advdata.flags              = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
-    advdata.p_manuf_specific_data = &mdata;
+    advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+    advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+    //advdata.p_manuf_specific_data = &mdata;
 
     memset(&scanrsp, 0, sizeof(scanrsp));
 
-    scanrsp.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-    scanrsp.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+    scanrsp.p_manuf_specific_data = &mdata;
+//    scanrsp.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+//    scanrsp.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
 
     memset(&options, 0, sizeof(options));
     options.ble_adv_fast_enabled  = true;
     options.ble_adv_fast_interval = pCfg->AdvInterval;
     options.ble_adv_fast_timeout  = pCfg->AdvTimeout;
 
-   // if (pCfg->AdvSlowInterval > 0)
+    if (pCfg->AdvSlowInterval > 0)
     {
 		options.ble_adv_slow_enabled  = true;
 		options.ble_adv_slow_interval = pCfg->AdvSlowInterval;
@@ -856,6 +907,10 @@ void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 
     err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
     APP_ERROR_CHECK(err_code);
+
+#if (NRF_SD_BLE_API_VERSION > 3)
+    ble_advertising_conn_cfg_tag_set(CONN_CFG_TAG);
+#endif
 }
 
 void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
@@ -890,6 +945,38 @@ void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
 
 }
 
+uint16_t BleAppGetConnHandle()
+{
+	return g_BleAppData.ConnHdl;
+}
+
+/**@brief Function for handling events from the GATT library. */
+#if (NRF_SD_BLE_API_VERSION > 3)
+void gatt_evt_handler(nrf_ble_gatt_t * p_gatt, const nrf_ble_gatt_evt_t * p_evt)
+#else
+void gatt_evt_handler(nrf_ble_gatt_t * p_gatt, nrf_ble_gatt_evt_t * p_evt)
+#endif
+{
+ /*   if ((g_BleAppData.ConnHdl == p_evt->conn_handle) && (p_evt->evt_id == NRF_BLE_GATT_EVT_ATT_MTU_UPDATED))
+    {
+       // m_ble_nus_max_data_len = p_evt->params.att_mtu_effective - OPCODE_LENGTH - HANDLE_LENGTH;
+        //NRF_LOG_INFO("Data len is set to 0x%X(%d)\r\n", m_ble_nus_max_data_len, m_ble_nus_max_data_len);
+    }*/
+   // NRF_LOG_DEBUG("ATT MTU exchange completed. central 0x%x peripheral 0x%x\r\n", p_gatt->att_mtu_desired_central, p_gatt->att_mtu_desired_periph);
+}
+
+/**@brief Function for initializing the GATT library. */
+void gatt_init(void)
+{
+    ret_code_t err_code;
+
+    err_code = nrf_ble_gatt_init(&s_Gatt, gatt_evt_handler);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = nrf_ble_gatt_att_mtu_periph_set(&s_Gatt, 64);
+    APP_ERROR_CHECK(err_code);
+}
+
 /**
  * @brief Function for the SoftDevice initialization.
  *
@@ -911,13 +998,22 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     switch (pBleAppCfg->AppMode)
     {
     	case BLEAPP_MODE_LOOP:
+
+#if (NRF_SD_BLE_API_VERSION > 3)
+    	        app_timer_init();
+#else
     		APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
-        	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+#endif
+//        	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
             SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, NULL);
     		break;
     	case BLEAPP_MODE_APPSCHED:
+#if (NRF_SD_BLE_API_VERSION > 3)
+                app_timer_init();
+#else
     		APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
-        	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+#endif
+    		APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
             SOFTDEVICE_HANDLER_APPSH_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, true);
     		break;
     	case BLEAPP_MODE_RTOS:
@@ -929,6 +1025,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     // Initialize SoftDevice.
 
+#if (NRF_SD_BLE_API_VERSION <= 3)
     ble_enable_params_t ble_enable_params;
     err_code = softdevice_enable_get_default_config(pBleAppCfg->CentLinkCount,
                                                     pBleAppCfg->PeriLinkCount,
@@ -936,14 +1033,52 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     APP_ERROR_CHECK(err_code);
 
     //Check the ram settings against the used number of links
-    CHECK_RAM_START_ADDR(CENTRAL_LINK_COUNT,PERIPHERAL_LINK_COUNT);
+    CHECK_RAM_START_ADDR(pBleAppCfg->CentLinkCount, pBleAppCfg->PeriLinkCount);//CENTRAL_LINK_COUNT,PERIPHERAL_LINK_COUNT);
 
-    // Enable BLE stack.
-#if (NRF_SD_BLE_API_VERSION >= 3)
-    ble_enable_params.gatt_enable_params.att_mtu = NRF_BLE_MAX_MTU_SIZE;
-#endif
     err_code = softdevice_enable(&ble_enable_params);
     APP_ERROR_CHECK(err_code);
+#else
+    // Fetch the start address of the application RAM.
+    uint32_t ram_start = 0;
+    err_code = softdevice_app_ram_start_get(&ram_start);
+    APP_ERROR_CHECK(err_code);
+
+    // Overwrite some of the default configurations for the BLE stack.
+    ble_cfg_t ble_cfg;
+
+    // Configure the number of custom UUIDS.
+    memset(&ble_cfg, 0, sizeof(ble_cfg));
+    ble_cfg.common_cfg.vs_uuid_cfg.vs_uuid_count = 1;
+    err_code = sd_ble_cfg_set(BLE_COMMON_CFG_VS_UUID, &ble_cfg, ram_start);
+    APP_ERROR_CHECK(err_code);
+
+    // Configure the maximum number of connections.
+     memset(&ble_cfg, 0, sizeof(ble_cfg));
+     ble_cfg.gap_cfg.role_count_cfg.periph_role_count  = pBleAppCfg->PeriLinkCount;//PERIPHERAL_LINK_COUNT;//BLE_GAP_ROLE_COUNT_PERIPH_DEFAULT;
+     ble_cfg.gap_cfg.role_count_cfg.central_role_count = pBleAppCfg->CentLinkCount;//CENTRAL_LINK_COUNT;
+     ble_cfg.gap_cfg.role_count_cfg.central_sec_count  = 0;
+     err_code = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, ram_start);
+     APP_ERROR_CHECK(err_code);
+
+     // Configure the maximum ATT MTU.
+     memset(&ble_cfg, 0x00, sizeof(ble_cfg));
+     ble_cfg.conn_cfg.conn_cfg_tag                 = CONN_CFG_TAG;
+     ble_cfg.conn_cfg.params.gatt_conn_cfg.att_mtu = NRF_BLE_GATT_MAX_MTU_SIZE;
+     err_code = sd_ble_cfg_set(BLE_CONN_CFG_GATT, &ble_cfg, ram_start);
+     APP_ERROR_CHECK(err_code);
+
+     // Configure the maximum event length.
+     memset(&ble_cfg, 0x00, sizeof(ble_cfg));
+     ble_cfg.conn_cfg.conn_cfg_tag                     = CONN_CFG_TAG;
+     ble_cfg.conn_cfg.params.gap_conn_cfg.event_length = 320;
+     ble_cfg.conn_cfg.params.gap_conn_cfg.conn_count   = BLE_GAP_CONN_COUNT_DEFAULT;
+     err_code = sd_ble_cfg_set(BLE_CONN_CFG_GAP, &ble_cfg, ram_start);
+     APP_ERROR_CHECK(err_code);
+
+     // Enable BLE stack.
+    err_code = softdevice_enable(&ram_start);
+    APP_ERROR_CHECK(err_code);
+#endif
 
     // Subscribe for BLE events.
     err_code = softdevice_ble_evt_handler_set(ble_evt_dispatch);
@@ -971,9 +1106,14 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     APP_ERROR_CHECK(err_code);
 #endif
 
+    BleAppInitUserData();
+
     gap_params_init(pBleAppCfg);
 
-    BleAppInitUserData();
+#if (NRF_SD_BLE_API_VERSION > 3)
+    gatt_init();
+#endif
+
 
     BleAppInitUserServices();
 

@@ -62,19 +62,19 @@ typedef struct _nRF_UART_Dev {
 #ifdef __cplusplus
 extern "C" {
 #endif
-void nRFUARTDisable(SERINTRFDEV *pDev);
-void nRFUARTEnable(SERINTRFDEV *pDev);
-static inline int nRFUARTGetRate(SERINTRFDEV *pDev) { return ((NRFUARTDEV*)pDev->pDevData)->pUartDev->Rate; }
-int nRFUARTSetRate(SERINTRFDEV *pDev, int Rate);
-static inline bool nRFUARTStartRx(SERINTRFDEV *pSerDev, int DevAddr) { return true; }
-int nRFUARTRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int Bufflen);
-static inline void nRFUARTStopRx(SERINTRFDEV *pSerDev) {}
-static inline bool nRFUARTStartTx(SERINTRFDEV *pDev, int DevAddr) {
+void nRFUARTDisable(DEVINTRF *pDev);
+void nRFUARTEnable(DEVINTRF *pDev);
+static inline int nRFUARTGetRate(DEVINTRF *pDev) { return ((NRFUARTDEV*)pDev->pDevData)->pUartDev->Rate; }
+int nRFUARTSetRate(DEVINTRF *pDev, int Rate);
+static inline bool nRFUARTStartRx(DEVINTRF *pSerDev, int DevAddr) { return true; }
+int nRFUARTRxData(DEVINTRF *pDev, uint8_t *pBuff, int Bufflen);
+static inline void nRFUARTStopRx(DEVINTRF *pSerDev) {}
+static inline bool nRFUARTStartTx(DEVINTRF *pDev, int DevAddr) {
 //	((NRFUARTDEV*)pDev->pDevData)->pReg->TASKS_STARTTX = 1;
 	return true;
 }
-int nRFUARTTxData(SERINTRFDEV *pDev, uint8_t *pData, int Datalen);
-static inline void nRFUARTStopTx(SERINTRFDEV *pDev) {	}//((NRFUARTDEV*)pDev->pDevData)->pReg->TASKS_STOPTX = 1; }
+int nRFUARTTxData(DEVINTRF *pDev, uint8_t *pData, int Datalen);
+static inline void nRFUARTStopTx(DEVINTRF *pDev) {	}//((NRFUARTDEV*)pDev->pDevData)->pReg->TASKS_STOPTX = 1; }
 
 #ifdef __cplusplus
 }

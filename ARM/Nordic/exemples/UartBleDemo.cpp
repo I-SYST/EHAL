@@ -36,7 +36,7 @@ Modified by          Date              Description
 
 #include "istddef.h"
 #include "ble_app.h"
-#include "blueio_blesrvc.h"
+#include "ble_service.h"
 #include "blueio_board.h"
 #include "uart.h"
 #include "custom_board.h"
@@ -54,7 +54,10 @@ Modified by          Date              Description
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(64, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      180                                         /**< The advertising timeout (in units of seconds). */
 
-void UartTxSrvcCallback(BLUEIOSRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
+#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)             /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
+#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)             /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
+
+void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
 
 static const ble_uuid_t  s_AdvUuids[] = {
 	{BLUEIO_UUID_UART_SERVICE, BLE_UUID_TYPE_VENDOR_BEGIN}
@@ -70,11 +73,11 @@ static const char s_TxCharDescString[] = {
 
 uint8_t g_ManData[8];
 
-BLUEIOSRVC_CHAR g_UartChars[] = {
+BLESRVC_CHAR g_UartChars[] = {
 	{
 		BLUEIO_UUID_UART_RX_CHAR,
 		20,
-		BLUEIOSVC_CHAR_PROP_READ | BLUEIOSVC_CHAR_PROP_NOTIFY,
+		BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY,
 		s_RxCharDescString,         // char UTF-8 description string
 		NULL,                       // Callback for write char, set to NULL for read char
 		true,                       // Notify flag for read characteristic
@@ -85,7 +88,7 @@ BLUEIOSRVC_CHAR g_UartChars[] = {
 	{
 		BLUEIO_UUID_UART_TX_CHAR,	// char UUID
 		20,                         // char max data length
-		BLUEIOSVC_CHAR_PROP_WRITEWORESP,	// char properties define by BLUEIOSVC_CHAR_PROP_...
+		BLESVC_CHAR_PROP_WRITEWORESP,	// char properties define by BLUEIOSVC_CHAR_PROP_...
 		s_TxCharDescString,			// char UTF-8 description string
 		UartTxSrvcCallback,         // Callback for write char, set to NULL for read char
 		false,                      // Notify flag for read characteristic
@@ -97,8 +100,8 @@ BLUEIOSRVC_CHAR g_UartChars[] = {
 
 uint8_t g_LWrBuffer[512];
 
-const BLUEIOSRVC_CFG s_UartSrvcCfg = {
-	BLUEIOSRVC_SECTYPE_NONE,	// Secure or Open service/char
+const BLESRVC_CFG s_UartSrvcCfg = {
+	BLESRVC_SECTYPE_NONE,	// Secure or Open service/char
 	BLUEIO_UUID_BASE,           // Base UUID
 	BLUEIO_UUID_UART_SERVICE,   // Service UUID
 	2,                          // Total number of characteristics for the service
@@ -107,7 +110,7 @@ const BLUEIOSRVC_CFG s_UartSrvcCfg = {
 	sizeof(g_LWrBuffer)         // long write buffer size
 };
 
-BLUEIOSRVC g_UartBleSrvc;
+BLESRVC g_UartBleSrvc;
 
 const BLEAPP_DEVDESC s_UartBleDevDesc {
 	"IBK-BLUEIO",           // Model name
@@ -117,12 +120,24 @@ const BLEAPP_DEVDESC s_UartBleDevDesc {
 	"0.0",                  // Hardware version string
 };
 
+const BLEAPP_CFG s_BleAppCfg1 = {
+};
+
 const BLEAPP_CFG s_BleAppCfg = {
-	NRF_CLOCK_LFCLKSRC,		// Clock config
+	{ // Clock config nrf_clock_lf_cfg_t
+#ifdef IMM_NRF51822
+		NRF_CLOCK_LF_SRC_RC,	// Source RC
+		1, 1, 0
+#else
+		NRF_CLOCK_LF_SRC_XTAL,	// Source 32KHz XTAL
+		0, 0, NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM
+#endif
+
+	},
 	0, 						// Number of central link
 	1, 						// Number of peripheral link
 	BLEAPP_MODE_APPSCHED,   // Use scheduler
-	"OurHubTag",                 // Device name
+	DEVICE_NAME,                 // Device name
 	ISYST_BLUETOOTH_ID,     // PnP Bluetooth/USB vendor id
 	1,                      // PnP Product ID
 	0,						// Pnp prod version
@@ -138,6 +153,8 @@ const BLEAPP_CFG s_BleAppCfg = {
 	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
 	0,                          // Slow advertising interval, if > 0, fallback to
 								// slow interval on adv timeout and advertise until connected
+	MIN_CONN_INTERVAL,
+	MAX_CONN_INTERVAL,
 	BLUEIO_CONNECT_LED_PORT,    // Led port nuber
 	BLUEIO_CONNECT_LED_PIN,     // Led pin number
 	NULL						// RTOS Softdevice handler
@@ -174,21 +191,21 @@ UART g_Uart;
 
 int g_DelayCnt = 0;
 
-void UartTxSrvcCallback(BLUEIOSRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len)
+void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len)
 {
 	g_Uart.Tx(pData, Len);
 }
 
 void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 {
-    BlueIOBleSvcEvtHandler(&g_UartBleSrvc, p_ble_evt);
+    BleSrvcEvtHandler(&g_UartBleSrvc, p_ble_evt);
 }
 
 void BleAppInitUserServices()
 {
     uint32_t       err_code;
 
-    err_code = BlueIOBleSrvcInit(&g_UartBleSrvc, &s_UartSrvcCfg);
+    err_code = BleSrvcInit(&g_UartBleSrvc, &s_UartSrvcCfg);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -209,7 +226,7 @@ void UartRxChedHandler(void * p_event_data, uint16_t event_size)
 	int l = g_Uart.Rx(buff, 128);
 	if (l > 0)
 	{
-		BlueIOBleSrvcCharSend(&g_UartBleSrvc, 0, buff, l);
+		BleSrvcCharNotify(&g_UartBleSrvc, 0, buff, l);
 	}
 }
 
