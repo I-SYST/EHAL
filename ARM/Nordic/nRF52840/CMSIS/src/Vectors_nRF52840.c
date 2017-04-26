@@ -7,7 +7,7 @@ Desc   : Interrupt Vectors table for ARM Cortex-M4 specific nRF52840
 		 CMSIS & GCC compiler
 		 linker section name .Vectors is used for the table
 
-Copyright (c) 2015, I-SYST inc., all rights reserved
+Copyright (c) 2017, I-SYST inc., all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
