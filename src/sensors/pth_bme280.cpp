@@ -165,6 +165,7 @@ bool PthBme280::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
 
 		SetMode(CfgData.OpMode, CfgData.Freq);
 
+		usDelay(10000);
 	}
 
 	return found;
@@ -300,7 +301,7 @@ bool PthBme280::ReadPTH(PTHSENSOR_DATA &PthData)
 	uint8_t addr = BME280_REG_STATUS;
 	uint8_t status = 0;
 	bool retval = false;
-	int timeout = 10;
+	int timeout = 20;
 
 	if (vOpMode == PTHSENSOR_OPMODE_SINGLE)
 	{

@@ -120,7 +120,7 @@ uint16_t crc16_ccitt(uint8_t *pData, int Len, uint16_t SeedVal)
 }
 
 /**
- * Calculate 32 bits CRC value
+ * @brief	Calculate 32 bits CRC value
  *
  * @param	pData 	: Pointer to data buffer to calculate
  * 			Len		: Data length in bytes

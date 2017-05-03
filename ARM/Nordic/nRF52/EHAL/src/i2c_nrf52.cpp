@@ -60,7 +60,6 @@ static NRF52_I2CDEV s_nRF52I2CDev[NRF52_I2C_MAXDEV] = {
 
 bool nRF52I2CWaitStop(NRF52_I2CDEV *pDev, int Timeout)
 {
-    uint32_t d;
     do {
         if (pDev->pReg->EVENTS_ERROR)
         {
@@ -70,6 +69,7 @@ bool nRF52I2CWaitStop(NRF52_I2CDEV *pDev, int Timeout)
             pDev->pReg->TASKS_RESUME = 1;
             pDev->pReg->TASKS_STOP = 1;
             while( !pDev->pReg->EVENTS_STOPPED );
+
             return false;
         }
         if (pDev->pReg->EVENTS_STOPPED)
@@ -77,6 +77,7 @@ bool nRF52I2CWaitStop(NRF52_I2CDEV *pDev, int Timeout)
             // Must wait for stop, other wise DMA count would
             // not be updated with correct value
             pDev->pReg->EVENTS_STOPPED = 0;
+
             return true;
         }
     } while (Timeout-- >  0);
@@ -90,13 +91,14 @@ bool nRF52I2CWaitRxComplete(NRF52_I2CDEV *pDev, int Timeout)
         if (pDev->pReg->EVENTS_ERROR)
         {
             while ( !nRF52I2CWaitStop( pDev, Timeout ) );
+
             return false;
         }
         if (pDev->pReg->EVENTS_LASTRX)
         {
             // Must wait for last DMA then issue a stop
             pDev->pReg->EVENTS_LASTRX = 0;
-            //pDev->pReg->TASKS_STOP = 1;
+
             return true;
         }
     } while (Timeout-- >  0);
@@ -106,17 +108,18 @@ bool nRF52I2CWaitRxComplete(NRF52_I2CDEV *pDev, int Timeout)
 
 bool nRF52I2CWaitTxComplete(NRF52_I2CDEV *pDev, int Timeout)
 {
-    uint32_t d;
     do {
         if (pDev->pReg->EVENTS_ERROR)
         {
             while ( !nRF52I2CWaitStop( pDev, Timeout ) );
+
             return false;
         }
         if (pDev->pReg->EVENTS_LASTTX)
         {
             // Must wait for last DMA then issue a stop
             pDev->pReg->EVENTS_LASTTX = 0;
+
             return true;
         }
     } while (Timeout-- >  0);
