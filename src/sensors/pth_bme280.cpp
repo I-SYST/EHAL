@@ -134,6 +134,8 @@ bool PthBme280::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
 
 	if (d == BME280_ID)
 	{
+		found  = true;
+
 		Reset();
 
 		usDelay(30000);
@@ -276,6 +278,8 @@ bool PthBme280::StartSampling()
 bool PthBme280::Enable()
 {
 	SetMode(PTHSENSOR_OPMODE_CONTINUOUS, vSampFreq);
+
+	return true;
 }
 
 void PthBme280::Disable()
