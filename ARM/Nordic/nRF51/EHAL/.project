@@ -391,6 +391,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pth_bme280.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/pth_ms8607.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pth_ms8607.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/pth_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pth_sensor.h</locationURI>
+		</link>
+		<link>
 			<name>include/sys/dirent.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sys/dirent.h</locationURI>
