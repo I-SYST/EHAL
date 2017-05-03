@@ -43,17 +43,16 @@ Modified by         Date            Description
 typedef struct {
 	int DevNo;
 	I2CDEV *pI2cDev;
-	uint32_t Clk;
 	NRF_TWI_Type *pReg;	// Register map
 } NRF51_I2CDEV;
 #pragma pack(pop)
 
 static NRF51_I2CDEV s_nRF51I2CDev[NRF51_I2C_MAXDEV] = {
 	{
-		0, NULL, 0, (NRF_TWI_Type *)NRF_TWI0_BASE
+		0, NULL, NRF_TWI0//(NRF_TWI_Type *)NRF_TWI0_BASE
 	},
 	{
-		1, NULL, 0, (NRF_TWI_Type *)NRF_TWI1_BASE
+		1, NULL, NRF_TWI1//(NRF_TWI_Type *)NRF_TWI1_BASE
 	},
 };
 
@@ -171,6 +170,10 @@ bool nRF51I2CStartRx(DEVINTRF *pDev, int DevAddr)
 
 	dev->pReg->ADDRESS = DevAddr;
 	dev->pReg->INTENCLR = 0xFFFFFFFF;
+	dev->pReg->EVENTS_STOPPED = 0;
+	dev->pReg->EVENTS_ERROR = 0;
+	dev->pReg->SHORTS = 0;
+
 	return true;
 }
 
@@ -180,7 +183,7 @@ int nRF51I2CRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
 	NRF51_I2CDEV *dev = (NRF51_I2CDEV*)pDev->pDevData;
 	int cnt = 0;
 
-	if (pBuff == NULL)
+	if (pBuff == NULL || BuffLen <= 0)
 	{
 		return 0;
 	}
@@ -192,12 +195,10 @@ int nRF51I2CRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
 	{
 		if (nRF51I2CWaitRxComplete(dev, 100000) == false)
 		{
-			dev->pReg->EVENTS_ERROR = 0;
 			break;
 		}
 
 		*pBuff = dev->pReg->RXD;
-		dev->pReg->TASKS_RESUME = 1;
 
 		BuffLen--;
 		pBuff++;
@@ -210,8 +211,14 @@ int nRF51I2CRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
 void nRF51I2CStopRx(DEVINTRF *pDev)
 {
     NRF51_I2CDEV *dev = (NRF51_I2CDEV*)pDev->pDevData;
+
     dev->pReg->TASKS_STOP = 1;
-    nRF51I2CWaitStop(dev, 1000);
+
+    // must read dummy last byte to generate NACK & STOP condition
+    nRF51I2CWaitRxComplete(dev, 100000);
+	uint8_t d = dev->pReg->RXD;
+
+    nRF51I2CWaitStop(dev, 10000);
 }
 
 bool nRF51I2CStartTx(DEVINTRF *pDev, int DevAddr)
@@ -220,6 +227,8 @@ bool nRF51I2CStartTx(DEVINTRF *pDev, int DevAddr)
 
 	dev->pReg->ADDRESS = DevAddr;
 	dev->pReg->INTENCLR = 0xFFFFFFFF;
+	dev->pReg->EVENTS_STOPPED = 0;
+	dev->pReg->EVENTS_ERROR = 0;
 
 	return true;
 }
@@ -235,7 +244,6 @@ int nRF51I2CTxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
 		return 0;
 	}
 
-	dev->pReg->EVENTS_STOPPED = 0;
 	dev->pReg->TASKS_STARTTX = 1;
 
 	while (DataLen > 0)
@@ -244,7 +252,6 @@ int nRF51I2CTxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
 
 		if (nRF51I2CWaitTxComplete(dev, 100000) == false)
 		{
-			dev->pReg->EVENTS_ERROR = 0;
 			break;
 		}
 
@@ -261,7 +268,7 @@ void nRF51I2CStopTx(DEVINTRF *pDev)
     NRF51_I2CDEV *dev = (NRF51_I2CDEV*)pDev->pDevData;
 
     dev->pReg->TASKS_STOP = 1;
-    nRF51I2CWaitStop(dev, 1000);
+    nRF51I2CWaitStop(dev, 10000);
 }
 
 void nRF51I2CReset(DEVINTRF *pDev)
@@ -280,13 +287,14 @@ void nRF51I2CReset(DEVINTRF *pDev)
         IOPinSet(0, dev->pReg->PSELSCL);
 //        usDelay(5);
         IOPinClear(0, dev->pReg->PSELSCL);
-        //usDelay(5);
+//        usDelay(5);
     }
+
     IOPinConfig(0, dev->pReg->PSELSDA, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
     IOPinClear(0, dev->pReg->PSELSDA);
 //    usDelay(5);
     IOPinSet(0, dev->pReg->PSELSCL);
-    //usDelay(2);
+//    usDelay(2);
     IOPinSet(0, dev->pReg->PSELSDA);
 
     nRF51I2CEnable(pDev);
@@ -310,6 +318,7 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
     pDev->Mode = pCfgData->Mode;
     pDev->SlaveAddr = pCfgData->SlaveAddr;
 
+    s_nRF51I2CDev[pCfgData->DevNo].DevNo = pCfgData->DevNo;
 	s_nRF51I2CDev[pCfgData->DevNo].pI2cDev  = pDev;
 	pDev->DevIntrf.pDevData = (void*)&s_nRF51I2CDev[pCfgData->DevNo];
 
@@ -338,6 +347,7 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
         reg->EVENTS_ERROR = 0;
         reg->TASKS_RESUME = 1;
         reg->TASKS_STOP = 1;
+
     }
 
     nRF51I2CReset(&pDev->DevIntrf);
