@@ -216,7 +216,7 @@ void nRF51I2CStopRx(DEVINTRF *pDev)
 
     // must read dummy last byte to generate NACK & STOP condition
     nRF51I2CWaitRxComplete(dev, 100000);
-	uint8_t d = dev->pReg->RXD;
+	uint8_t d __attribute__((unused)) = dev->pReg->RXD;
 
     nRF51I2CWaitStop(dev, 10000);
 }
