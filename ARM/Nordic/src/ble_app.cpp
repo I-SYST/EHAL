@@ -86,7 +86,7 @@ extern "C" {
 #define GATT_MTU_SIZE_DEFAULT BLE_GATT_ATT_MTU_DEFAULT
 #endif
 
-#define NRF_BLE_MAX_MTU_SIZE        /*NRF_BLE_GATT_MAX_MTU_SIZE*/GATT_MTU_SIZE_DEFAULT
+#define NRF_BLE_MAX_MTU_SIZE            NRF_BLE_GATT_MAX_MTU_SIZE//GATT_MTU_SIZE_DEFAULT
 
 #endif
 
@@ -867,9 +867,9 @@ static void sec_req_timeout_handler(void * p_context)
     }
 }
 
-/**@brief Function for initializing the Advertising functionality.
+/**@brief Overloadable function for initializing the Advertising functionality.
  */
-void BleAppAdvInit(const BLEAPP_CFG *pCfg)
+__WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 {
     uint32_t               err_code;
     ble_advdata_t          advdata;
@@ -885,10 +885,16 @@ void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     memset(&advdata, 0, sizeof(advdata));
     memset(&scanrsp, 0, sizeof(scanrsp));
 
+    advdata.include_appearance = false;
+    advdata.flags              = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+
     if (pCfg->pDevName != NULL)
     {
     	if (strlen(pCfg->pDevName) < 14)
-        	advdata.name_type          = BLE_ADVDATA_SHORT_NAME;
+    	{
+    	    advdata.name_type      = BLE_ADVDATA_SHORT_NAME;
+    	    advdata.short_name_len = strlen(pCfg->pDevName);
+    	}
     	else
     		advdata.name_type          = BLE_ADVDATA_FULL_NAME;
     }
@@ -897,22 +903,30 @@ void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     	advdata.name_type          = BLE_ADVDATA_NO_NAME;
     }
 
-    advdata.include_appearance = false;
-    advdata.flags              = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
-
-    if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
+    if (advdata.name_type == BLE_ADVDATA_NO_NAME)
     {
-    	advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-    	advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
-
-    	scanrsp.p_manuf_specific_data = &mdata;
+        if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
+        {
+            advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+            advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+        }
+        if (pCfg->pManData != NULL)
+        {
+            scanrsp.p_manuf_specific_data = &mdata;
+        }
     }
     else
     {
-    	advdata.p_manuf_specific_data = &mdata;
+        if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
+        {
+            scanrsp.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+            scanrsp.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+        }
+        if (pCfg->pManData != NULL)
+        {
+            advdata.p_manuf_specific_data = &mdata;
+        }
     }
-//    scanrsp.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-//    scanrsp.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
 
     memset(&options, 0, sizeof(options));
     options.ble_adv_fast_enabled  = true;
