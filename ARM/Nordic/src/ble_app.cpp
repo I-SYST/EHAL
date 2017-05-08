@@ -909,10 +909,17 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
         {
             advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
             advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+			if (pCfg->pManData != NULL)
+			{
+				scanrsp.p_manuf_specific_data = &mdata;
+			}
         }
-        if (pCfg->pManData != NULL)
+        else
         {
-            scanrsp.p_manuf_specific_data = &mdata;
+			if (pCfg->pManData != NULL)
+			{
+				advdata.p_manuf_specific_data = &mdata;
+			}
         }
     }
     else
