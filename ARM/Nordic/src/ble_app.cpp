@@ -86,7 +86,7 @@ extern "C" {
 #define GATT_MTU_SIZE_DEFAULT BLE_GATT_ATT_MTU_DEFAULT
 #endif
 
-#define NRF_BLE_MAX_MTU_SIZE        NRF_BLE_GATT_MAX_MTU_SIZE//GATT_MTU_SIZE_DEFAULT
+#define NRF_BLE_MAX_MTU_SIZE        /*NRF_BLE_GATT_MAX_MTU_SIZE*/GATT_MTU_SIZE_DEFAULT
 
 #endif
 
@@ -313,10 +313,13 @@ static void gap_params_init(const BLEAPP_CFG *pBleAppCfg)
     	    break;
     }
 
-    err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
+    if (pBleAppCfg->pDevName != NULL)
+    {
+    	err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
                                           (const uint8_t *) pBleAppCfg->pDevName,
                                           strlen(pBleAppCfg->pDevName));
-    APP_ERROR_CHECK(err_code);
+    	APP_ERROR_CHECK(err_code);
+    }
 
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
 
@@ -880,16 +883,34 @@ void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 
     // Build advertising data struct to pass into @ref ble_advertising_init.
     memset(&advdata, 0, sizeof(advdata));
-    advdata.name_type          = BLE_ADVDATA_FULL_NAME;
-    advdata.include_appearance = false;
-    advdata.flags              = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
-    advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-    advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
-    //advdata.p_manuf_specific_data = &mdata;
-
     memset(&scanrsp, 0, sizeof(scanrsp));
 
-    scanrsp.p_manuf_specific_data = &mdata;
+    if (pCfg->pDevName != NULL)
+    {
+    	if (strlen(pCfg->pDevName) < 14)
+        	advdata.name_type          = BLE_ADVDATA_SHORT_NAME;
+    	else
+    		advdata.name_type          = BLE_ADVDATA_FULL_NAME;
+    }
+    else
+    {
+    	advdata.name_type          = BLE_ADVDATA_NO_NAME;
+    }
+
+    advdata.include_appearance = false;
+    advdata.flags              = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+
+    if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
+    {
+    	advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+    	advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+
+    	scanrsp.p_manuf_specific_data = &mdata;
+    }
+    else
+    {
+    	advdata.p_manuf_specific_data = &mdata;
+    }
 //    scanrsp.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
 //    scanrsp.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
 
