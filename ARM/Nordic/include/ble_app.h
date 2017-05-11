@@ -44,7 +44,8 @@ Modified by          Date              Description
 typedef enum _BleAppMode {
 	BLEAPP_MODE_LOOP,		// just main loop, No scheduler, no RTOS
 	BLEAPP_MODE_APPSCHED,	// use app_cheduler
-	BLEAPP_MODE_RTOS		// use RTOS
+	BLEAPP_MODE_RTOS,		// use RTOS
+	BLEAPP_MODE_NOCONNECT	// Connectionless beacon type of app.
 } BLEAPP_MODE;
 
 // Service connection security types
