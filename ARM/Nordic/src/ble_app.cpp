@@ -141,6 +141,8 @@ typedef struct _BleAppData {
 
 #pragma pack(pop)
 
+static ble_gap_adv_params_t s_AdvParams;                                 /**< Parameters to be passed to the stack when starting advertising. */
+
 BLEAPP_DATA g_BleAppData = {
 	BLEAPP_MODE_LOOP, BLE_CONN_HANDLE_INVALID, -1, -1
 };
@@ -935,24 +937,41 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
         }
     }
 
-    memset(&options, 0, sizeof(options));
-    options.ble_adv_fast_enabled  = true;
-    options.ble_adv_fast_interval = pCfg->AdvInterval;
-    options.ble_adv_fast_timeout  = pCfg->AdvTimeout;
-
-    if (pCfg->AdvSlowInterval > 0)
+    if (pCfg->AppMode == BLEAPP_MODE_NOCONNECT)
     {
-		options.ble_adv_slow_enabled  = true;
-		options.ble_adv_slow_interval = pCfg->AdvSlowInterval;
-		options.ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
-    }
+        err_code = ble_advdata_set(&advdata, &scanrsp);
+        APP_ERROR_CHECK(err_code);
 
-    err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
-    APP_ERROR_CHECK(err_code);
+        // Initialize advertising parameters (used when starting advertising).
+        memset(&s_AdvParams, 0, sizeof(s_AdvParams));
+
+        s_AdvParams.type        = BLE_GAP_ADV_TYPE_ADV_NONCONN_IND;
+        s_AdvParams.p_peer_addr = NULL;                             // Undirected advertisement.
+        s_AdvParams.fp          = BLE_GAP_ADV_FP_ANY;
+        s_AdvParams.interval    = pCfg->AdvInterval;
+        s_AdvParams.timeout     = pCfg->AdvTimeout;
+    }
+    else
+    {
+		memset(&options, 0, sizeof(options));
+		options.ble_adv_fast_enabled  = true;
+		options.ble_adv_fast_interval = pCfg->AdvInterval;
+		options.ble_adv_fast_timeout  = pCfg->AdvTimeout;
+
+		if (pCfg->AdvSlowInterval > 0)
+		{
+			options.ble_adv_slow_enabled  = true;
+			options.ble_adv_slow_interval = pCfg->AdvSlowInterval;
+			options.ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
+		}
+
+		err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
+		APP_ERROR_CHECK(err_code);
 
 #if (NRF_SD_BLE_API_VERSION > 3)
-    ble_advertising_conn_cfg_tag_set(CONN_CFG_TAG);
+		ble_advertising_conn_cfg_tag_set(CONN_CFG_TAG);
 #endif
+    }
 }
 
 void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
@@ -1019,6 +1038,49 @@ void gatt_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
+bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
+{
+	uint32_t err_code;
+
+    BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
+
+    nrf_crypto_init();
+
+#if NRF_SD_BLE_API_VERSION <= 3
+
+    err_code = nrf_crypto_public_key_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &m_crypto_key_pk);
+    APP_ERROR_CHECK(err_code);
+
+    /* Set the public key */
+    err_code = pm_lesc_public_key_set(&s_lesc_public_key);
+    APP_ERROR_CHECK(err_code);
+#else
+    // Private public keypair must be generated at least once for each device. It can be stored
+    // beyond this point. Here it is generated at bootup.
+    err_code = lesc_generate_key_pair();
+    APP_ERROR_CHECK(err_code);
+#endif
+
+    BleAppInitUserData();
+
+    gap_params_init(pBleAppCfg);
+
+#if (NRF_SD_BLE_API_VERSION > 3)
+    gatt_init();
+#endif
+
+
+    BleAppInitUserServices();
+
+    if (pBleAppCfg->bEnDevInfoService)
+    	BleAppDisInit(pBleAppCfg);
+
+    if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
+    	conn_params_init();
+
+    return true;
+}
+
 /**
  * @brief Function for the SoftDevice initialization.
  *
@@ -1040,7 +1102,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     switch (pBleAppCfg->AppMode)
     {
     	case BLEAPP_MODE_LOOP:
-
+    	case BLEAPP_MODE_NOCONNECT:
 #if (NRF_SD_BLE_API_VERSION > 3)
     	        app_timer_init();
 #else
@@ -1129,42 +1191,17 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
     APP_ERROR_CHECK(err_code);
 
-    BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
-
-    nrf_crypto_init();
-
-#if NRF_SD_BLE_API_VERSION <= 3
-
-    err_code = nrf_crypto_public_key_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &m_crypto_key_pk);
-    APP_ERROR_CHECK(err_code);
-
-    /* Set the public key */
-    err_code = pm_lesc_public_key_set(&s_lesc_public_key);
-    APP_ERROR_CHECK(err_code);
-#else
-    // Private public keypair must be generated at least once for each device. It can be stored
-    // beyond this point. Here it is generated at bootup.
-    err_code = lesc_generate_key_pair();
-    APP_ERROR_CHECK(err_code);
-#endif
-
-    BleAppInitUserData();
-
-    gap_params_init(pBleAppCfg);
-
-#if (NRF_SD_BLE_API_VERSION > 3)
-    gatt_init();
-#endif
-
-
-    BleAppInitUserServices();
-
-    if (pBleAppCfg->bEnDevInfoService)
-    	BleAppDisInit(pBleAppCfg);
+    if (pBleAppCfg->AppMode == BLEAPP_MODE_NOCONNECT)
+    {
+        BleAppInitUserData();
+        gap_params_init(pBleAppCfg);
+    }
+    else
+    {
+    	BleAppConnectable(pBleAppCfg, bEraseBond);
+    }
 
     BleAppAdvInit(pBleAppCfg);
-
-    conn_params_init();
 
     return true;
 }
@@ -1172,8 +1209,20 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 void BleAppStart()
 {
 
-    uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
-    APP_ERROR_CHECK(err_code);
+	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+	{
+#if (NRF_SD_BLE_API_VERSION <= 3)
+		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams);
+#else
+		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams, CONN_CFG_TAG);//BLE_CONN_CFG_TAG_DEFAULT);
+#endif
+		APP_ERROR_CHECK(err_code);
+	}
+	else
+	{
+		uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
+		APP_ERROR_CHECK(err_code);
+	}
 
     while (1)
     {
