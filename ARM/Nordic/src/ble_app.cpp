@@ -1215,7 +1215,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     return true;
 }
 
-void BleAppStart()
+void BleAppRun()
 {
 
 	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)

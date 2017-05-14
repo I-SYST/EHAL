@@ -172,7 +172,7 @@ void BleAppRtosWaitEvt(void);
  */
 bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond);
 void BleAppEnterDfu();
-void BleAppStart();
+void BleAppRun();
 uint16_t BleAppGetConnHandle();
 
 #ifdef __cplusplus

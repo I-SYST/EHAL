@@ -52,7 +52,7 @@ Modified by          Date              Description
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(100, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      60                                         /**< The advertising timeout (in units of seconds). */
 
-
+// Evironmental Sensor Data to advertise
 PTHSENSOR_DATA g_PTHData;
 
 const BLEAPP_CFG s_BleAppCfg = {
@@ -74,7 +74,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	1,                      // PnP Product ID
 	0,						// Pnp prod version
 	false,					// Enable device information service (DIS)
-	NULL,//&s_UartBleDevDesc,
+	NULL,
 	(uint8_t*)&g_PTHData,              // Manufacture specific data to advertise
 	sizeof(g_PTHData),      // Length of manufacture specific data
 	BLEAPP_SECTYPE_NONE,    // Secure connection type
@@ -92,6 +92,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	NULL						// RTOS Softdevice handler
 };
 
+// Configure I2C interface
 static const I2CCFG s_I2cCfg = {
 	0,			// I2C device number
 	{
@@ -106,15 +107,17 @@ static const I2CCFG s_I2cCfg = {
 	NULL		// Event callback
 };
 
+// I2C interface instance
 I2C g_I2c;
 
+// Configure environmental sensor
 static PTHSENSOR_CFG s_PthSensorCfg = {
 	BME280_I2C_DEV_ADDR0,
 	PTHSENSOR_OPMODE_SINGLE,
 	0
 };
 
-// Environmental sensor
+// Environmental sensor instance
 PthBme280 g_PthSensor;
 
 void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
@@ -130,25 +133,15 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 
 void HardwareInit()
 {
+	// Initialize I2C
 	g_I2c.Init(s_I2cCfg);
 
+	// Inititalize sensor
     g_PthSensor.Init(s_PthSensorCfg, &g_I2c);
 
+    // Update sensor data
 	g_PthSensor.ReadPTH(g_PTHData);
 }
-
-//
-// Print a greeting message on standard output and exit.
-//
-// On embedded platforms this might require semi-hosting or similar.
-//
-// For example, for toolchains derived from GNU Tools for Embedded,
-// to enable semi-hosting, the following was added to the linker:
-//
-// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lc -lm -lrdimon -Wl,--end-group
-//
-// Adjust it for other toolchains.
-//
 
 int main()
 {
@@ -156,7 +149,7 @@ int main()
 
     BleAppInit((const BLEAPP_CFG *)&s_BleAppCfg, true);
 
-    BleAppStart();
+    BleAppRun();
 
 	return 0;
 }
