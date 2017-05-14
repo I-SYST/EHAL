@@ -288,7 +288,7 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
  *          the device. It also sets the permissions and appearance.
  */
 
-static void gap_params_init(const BLEAPP_CFG *pBleAppCfg)
+static void BleAppGapParamInit(const BLEAPP_CFG *pBleAppCfg)
 {
     uint32_t                err_code;
     ble_gap_conn_params_t   gap_conn_params;
@@ -314,7 +314,7 @@ static void gap_params_init(const BLEAPP_CFG *pBleAppCfg)
 			BLE_GAP_CONN_SEC_MODE_SET_SIGNED_WITH_MITM(&s_gap_conn_mode);
     	    break;
     }
-
+/*
     if (pBleAppCfg->pDevName != NULL)
     {
     	err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
@@ -322,16 +322,19 @@ static void gap_params_init(const BLEAPP_CFG *pBleAppCfg)
                                           strlen(pBleAppCfg->pDevName));
     	APP_ERROR_CHECK(err_code);
     }
-
+*/
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
 
-    gap_conn_params.min_conn_interval = pBleAppCfg->ConnIntervalMin;// MIN_CONN_INTERVAL;
-    gap_conn_params.max_conn_interval = pBleAppCfg->ConnIntervalMax;//MAX_CONN_INTERVAL;
-    gap_conn_params.slave_latency     = SLAVE_LATENCY;
-    gap_conn_params.conn_sup_timeout  = CONN_SUP_TIMEOUT;
+    if (pBleAppCfg->SecType != BLEAPP_SECTYPE_NONE)
+    {
+		gap_conn_params.min_conn_interval = pBleAppCfg->ConnIntervalMin;// MIN_CONN_INTERVAL;
+		gap_conn_params.max_conn_interval = pBleAppCfg->ConnIntervalMax;//MAX_CONN_INTERVAL;
+		gap_conn_params.slave_latency     = SLAVE_LATENCY;
+		gap_conn_params.conn_sup_timeout  = CONN_SUP_TIMEOUT;
 
-    err_code = sd_ble_gap_ppcp_set(&gap_conn_params);
-    APP_ERROR_CHECK(err_code);
+		err_code = sd_ble_gap_ppcp_set(&gap_conn_params);
+		APP_ERROR_CHECK(err_code);
+    }
 }
 
 void gap_device_name_set( const char* ppDeviceName )
@@ -461,10 +464,11 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             break; // BLE_GATTS_EVT_SYS_ATTR_MISSING
 
         case BLE_GAP_EVT_TIMEOUT:
-/*            if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
+            if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
             {
-            	ble_advertising_start(BLE_ADV_MODE_SLOW);
-            }*/
+            	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+            		ble_advertising_start(BLE_ADV_MODE_SLOW);
+            }
             break;
 
         case BLE_GATTC_EVT_TIMEOUT:
@@ -707,7 +711,6 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     ble_conn_state_on_ble_evt(p_ble_evt);
     pm_on_ble_evt(p_ble_evt);
 
-    on_ble_evt(p_ble_evt);
     if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT))
     {
         BleCentralEvtUserHandler(p_ble_evt);
@@ -738,6 +741,7 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
         ble_conn_params_on_ble_evt(p_ble_evt);
         BlePeriphEvtUserHandler(p_ble_evt);
     }
+    on_ble_evt(p_ble_evt);
 
 
 }
@@ -1061,9 +1065,9 @@ bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     APP_ERROR_CHECK(err_code);
 #endif
 
-    BleAppInitUserData();
+    //BleAppInitUserData();
 
-    gap_params_init(pBleAppCfg);
+    BleAppGapParamInit(pBleAppCfg);
 
 #if (NRF_SD_BLE_API_VERSION > 3)
     gatt_init();
@@ -1191,15 +1195,20 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
     APP_ERROR_CHECK(err_code);
 
-    if (pBleAppCfg->AppMode == BLEAPP_MODE_NOCONNECT)
+    if (pBleAppCfg->pDevName != NULL)
     {
-        BleAppInitUserData();
-        gap_params_init(pBleAppCfg);
+    	err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
+                                          (const uint8_t *) pBleAppCfg->pDevName,
+                                          strlen(pBleAppCfg->pDevName));
+    	APP_ERROR_CHECK(err_code);
     }
-    else
+
+    if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
     {
     	BleAppConnectable(pBleAppCfg, bEraseBond);
     }
+
+    BleAppInitUserData();
 
     BleAppAdvInit(pBleAppCfg);
 
