@@ -335,33 +335,37 @@ int nRFUARTTxData(DEVINTRF *pDev, uint8_t *pData, int Datalen)
 {
     NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
     int cnt = 0;
+    int rtry = pDev->MaxRetry;
 
-    uint32_t state = DisableInterrupt();
-
-    while (Datalen > 0)
+    while (Datalen > 0 && rtry-- > 0)
     {
-        int l = Datalen;
-        uint8_t *p = CFifoPutMultiple(dev->pUartDev->hTxFifo, &l);
-        if (p == NULL)
-            break;
-        memcpy(p, pData, l);
-        Datalen -= l;
-        pData += l;
-        cnt += l;
-    }
-    EnableInterrupt(state);
+        uint32_t state = DisableInterrupt();
 
-    if (dev->bTxReady)
-    {
-        //if (nRFUARTWaitForTxReady(dev, 1000))
+        while (Datalen > 0)
         {
-            dev->pReg->EVENTS_TXDRDY = 0;
-            dev->bTxReady = true;
-            uint8_t *p = CFifoGet(dev->pUartDev->hTxFifo);
-            if (p)
+            int l = Datalen;
+            uint8_t *p = CFifoPutMultiple(dev->pUartDev->hTxFifo, &l);
+            if (p == NULL)
+                break;
+            memcpy(p, pData, l);
+            Datalen -= l;
+            pData += l;
+            cnt += l;
+        }
+        EnableInterrupt(state);
+
+        if (dev->bTxReady)
+        {
+            //if (nRFUARTWaitForTxReady(dev, 1000))
             {
-                dev->bTxReady = false;
-                dev->pReg->TXD = *p;
+                dev->pReg->EVENTS_TXDRDY = 0;
+                dev->bTxReady = true;
+                uint8_t *p = CFifoGet(dev->pUartDev->hTxFifo);
+                if (p)
+                {
+                    dev->bTxReady = false;
+                    dev->pReg->TXD = *p;
+                }
             }
         }
     }
@@ -482,7 +486,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->DevIntrf.TxData = nRFUARTTxData;
 	pDev->DevIntrf.StopTx = nRFUARTStopTx;
 	pDev->DevIntrf.Busy = false;
-	pDev->DevIntrf.MaxRetry = 0;
+	pDev->DevIntrf.MaxRetry = UART_RETRY_MAX;
 
     NRF_UART0->TASKS_STARTTX = 1;
     NRF_UART0->TASKS_STARTRX = 1;
