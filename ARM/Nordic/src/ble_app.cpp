@@ -74,22 +74,6 @@ extern "C" {
 
 //#define IS_SRVC_CHANGED_CHARACT_PRESENT 1                                           /**< Include the service_changed characteristic. If not enabled, the server's database cannot be changed for the lifetime of the device. */
 
-#if (NRF_SD_BLE_API_VERSION <= 3)
-   #define NRF_BLE_MAX_MTU_SIZE        GATT_MTU_SIZE_DEFAULT                   /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
-#else
-
-#if  defined(BLE_GATT_MTU_SIZE_DEFAULT) && !defined(GATT_MTU_SIZE_DEFAULT)
-#define GATT_MTU_SIZE_DEFAULT BLE_GATT_MTU_SIZE_DEFAULT
-#endif
-
-#if  defined(BLE_GATT_ATT_MTU_DEFAULT) && !defined(GATT_MTU_SIZE_DEFAULT)
-#define GATT_MTU_SIZE_DEFAULT BLE_GATT_ATT_MTU_DEFAULT
-#endif
-
-#define NRF_BLE_MAX_MTU_SIZE        NRF_BLE_GATT_MAX_MTU_SIZE//GATT_MTU_SIZE_DEFAULT
-
-#endif
-
 #define APP_FEATURE_NOT_SUPPORTED       BLE_GATT_STATUS_ATTERR_APP_BEGIN + 2        /**< Reply when unsupported features are requested. */
 
 #define CONN_CFG_TAG                     1                                          /**< A tag that refers to the BLE stack configuration we set with @ref sd_ble_cfg_set. Default tag is @ref BLE_CONN_CFG_TAG_DEFAULT. */
@@ -141,6 +125,8 @@ typedef struct _BleAppData {
 
 #pragma pack(pop)
 
+static ble_gap_adv_params_t s_AdvParams;                                 /**< Parameters to be passed to the stack when starting advertising. */
+
 BLEAPP_DATA g_BleAppData = {
 	BLEAPP_MODE_LOOP, BLE_CONN_HANDLE_INVALID, -1, -1
 };
@@ -148,18 +134,11 @@ BLEAPP_DATA g_BleAppData = {
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
 static nrf_ble_gatt_t                   s_Gatt;                                     /**< GATT module instance. */
 
-#ifdef LESC_DEBUG_MODE
-
 /**@brief Bluetooth SIG debug mode Private Key */
-//#error Generated private key is not supported.
-__ALIGN(4) const uint8_t g_lesc_private_key[32] = {
+__ALIGN(4) __WEAK extern const uint8_t g_lesc_private_key[32] = {
     0xbd,0x1a,0x3c,0xcd,0xa6,0xb8,0x99,0x58,0x99,0xb7,0x40,0xeb,0x7b,0x60,0xff,0x4a,
     0x50,0x3f,0x10,0xd2,0xe3,0xb3,0xc9,0x74,0x38,0x5f,0xc5,0xa3,0xd4,0xf6,0x49,0x3f,
 };
-#else
-// Release build reuire extern Private Key
-extern const uint8_t g_lesc_private_key[32];
-#endif
 
 __ALIGN(4) static ble_gap_lesc_p256_pk_t    s_lesc_public_key;      /**< LESC ECC Public Key */
 __ALIGN(4) static ble_gap_lesc_dhkey_t      s_lesc_dh_key;          /**< LESC ECC DH Key*/
@@ -286,7 +265,7 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
  *          the device. It also sets the permissions and appearance.
  */
 
-static void gap_params_init(const BLEAPP_CFG *pBleAppCfg)
+static void BleAppGapParamInit(const BLEAPP_CFG *pBleAppCfg)
 {
     uint32_t                err_code;
     ble_gap_conn_params_t   gap_conn_params;
@@ -312,21 +291,27 @@ static void gap_params_init(const BLEAPP_CFG *pBleAppCfg)
 			BLE_GAP_CONN_SEC_MODE_SET_SIGNED_WITH_MITM(&s_gap_conn_mode);
     	    break;
     }
-
-    err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
+/*
+    if (pBleAppCfg->pDevName != NULL)
+    {
+    	err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
                                           (const uint8_t *) pBleAppCfg->pDevName,
                                           strlen(pBleAppCfg->pDevName));
-    APP_ERROR_CHECK(err_code);
-
+    	APP_ERROR_CHECK(err_code);
+    }
+*/
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
 
-    gap_conn_params.min_conn_interval = pBleAppCfg->ConnIntervalMin;// MIN_CONN_INTERVAL;
-    gap_conn_params.max_conn_interval = pBleAppCfg->ConnIntervalMax;//MAX_CONN_INTERVAL;
-    gap_conn_params.slave_latency     = SLAVE_LATENCY;
-    gap_conn_params.conn_sup_timeout  = CONN_SUP_TIMEOUT;
+    if (pBleAppCfg->SecType != BLEAPP_SECTYPE_NONE)
+    {
+		gap_conn_params.min_conn_interval = pBleAppCfg->ConnIntervalMin;// MIN_CONN_INTERVAL;
+		gap_conn_params.max_conn_interval = pBleAppCfg->ConnIntervalMax;//MAX_CONN_INTERVAL;
+		gap_conn_params.slave_latency     = SLAVE_LATENCY;
+		gap_conn_params.conn_sup_timeout  = CONN_SUP_TIMEOUT;
 
-    err_code = sd_ble_gap_ppcp_set(&gap_conn_params);
-    APP_ERROR_CHECK(err_code);
+		err_code = sd_ble_gap_ppcp_set(&gap_conn_params);
+		APP_ERROR_CHECK(err_code);
+    }
 }
 
 void gap_device_name_set( const char* ppDeviceName )
@@ -456,10 +441,11 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             break; // BLE_GATTS_EVT_SYS_ATTR_MISSING
 
         case BLE_GAP_EVT_TIMEOUT:
-/*            if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
+            if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
             {
-            	ble_advertising_start(BLE_ADV_MODE_SLOW);
-            }*/
+            	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+            		ble_advertising_start(BLE_ADV_MODE_SLOW);
+            }
             break;
 
         case BLE_GATTC_EVT_TIMEOUT:
@@ -702,7 +688,6 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     ble_conn_state_on_ble_evt(p_ble_evt);
     pm_on_ble_evt(p_ble_evt);
 
-    on_ble_evt(p_ble_evt);
     if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT))
     {
         BleCentralEvtUserHandler(p_ble_evt);
@@ -733,6 +718,7 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
         ble_conn_params_on_ble_evt(p_ble_evt);
         BlePeriphEvtUserHandler(p_ble_evt);
     }
+    on_ble_evt(p_ble_evt);
 
 
 }
@@ -864,9 +850,9 @@ static void sec_req_timeout_handler(void * p_context)
     }
 }
 
-/**@brief Function for initializing the Advertising functionality.
+/**@brief Overloadable function for initializing the Advertising functionality.
  */
-void BleAppAdvInit(const BLEAPP_CFG *pCfg)
+__WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 {
     uint32_t               err_code;
     ble_advdata_t          advdata;
@@ -880,37 +866,93 @@ void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 
     // Build advertising data struct to pass into @ref ble_advertising_init.
     memset(&advdata, 0, sizeof(advdata));
-    advdata.name_type          = BLE_ADVDATA_FULL_NAME;
-    advdata.include_appearance = false;
-    advdata.flags              = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
-    advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-    advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
-    //advdata.p_manuf_specific_data = &mdata;
-
     memset(&scanrsp, 0, sizeof(scanrsp));
 
-    scanrsp.p_manuf_specific_data = &mdata;
-//    scanrsp.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-//    scanrsp.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+    advdata.include_appearance = false;
+    advdata.flags              = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
 
-    memset(&options, 0, sizeof(options));
-    options.ble_adv_fast_enabled  = true;
-    options.ble_adv_fast_interval = pCfg->AdvInterval;
-    options.ble_adv_fast_timeout  = pCfg->AdvTimeout;
-
-    if (pCfg->AdvSlowInterval > 0)
+    if (pCfg->pDevName != NULL)
     {
-		options.ble_adv_slow_enabled  = true;
-		options.ble_adv_slow_interval = pCfg->AdvSlowInterval;
-		options.ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
+    	if (strlen(pCfg->pDevName) < 14)
+    	{
+    	    advdata.name_type      = BLE_ADVDATA_SHORT_NAME;
+    	    advdata.short_name_len = strlen(pCfg->pDevName);
+    	}
+    	else
+    		advdata.name_type          = BLE_ADVDATA_FULL_NAME;
+    }
+    else
+    {
+    	advdata.name_type          = BLE_ADVDATA_NO_NAME;
     }
 
-    err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
-    APP_ERROR_CHECK(err_code);
+    if (advdata.name_type == BLE_ADVDATA_NO_NAME)
+    {
+        if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
+        {
+            advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+            advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+			if (pCfg->pManData != NULL)
+			{
+				scanrsp.p_manuf_specific_data = &mdata;
+			}
+        }
+        else
+        {
+			if (pCfg->pManData != NULL)
+			{
+				advdata.p_manuf_specific_data = &mdata;
+			}
+        }
+    }
+    else
+    {
+        if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
+        {
+            scanrsp.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+            scanrsp.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+        }
+        if (pCfg->pManData != NULL)
+        {
+            advdata.p_manuf_specific_data = &mdata;
+        }
+    }
+
+    if (pCfg->AppMode == BLEAPP_MODE_NOCONNECT)
+    {
+        err_code = ble_advdata_set(&advdata, &scanrsp);
+        APP_ERROR_CHECK(err_code);
+
+        // Initialize advertising parameters (used when starting advertising).
+        memset(&s_AdvParams, 0, sizeof(s_AdvParams));
+
+        s_AdvParams.type        = BLE_GAP_ADV_TYPE_ADV_NONCONN_IND;
+        s_AdvParams.p_peer_addr = NULL;                             // Undirected advertisement.
+        s_AdvParams.fp          = BLE_GAP_ADV_FP_ANY;
+        s_AdvParams.interval    = pCfg->AdvInterval;
+        s_AdvParams.timeout     = pCfg->AdvTimeout;
+    }
+    else
+    {
+		memset(&options, 0, sizeof(options));
+		options.ble_adv_fast_enabled  = true;
+		options.ble_adv_fast_interval = pCfg->AdvInterval;
+		options.ble_adv_fast_timeout  = pCfg->AdvTimeout;
+
+		if (pCfg->AdvSlowInterval > 0)
+		{
+			options.ble_adv_slow_enabled  = true;
+			options.ble_adv_slow_interval = pCfg->AdvSlowInterval;
+			options.ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
+		}
+
+		err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
+		APP_ERROR_CHECK(err_code);
 
 #if (NRF_SD_BLE_API_VERSION > 3)
-    ble_advertising_conn_cfg_tag_set(CONN_CFG_TAG);
+		ble_advertising_conn_cfg_tag_set(CONN_CFG_TAG);
 #endif
+    }
 }
 
 void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
@@ -977,6 +1019,49 @@ void gatt_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
+bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
+{
+	uint32_t err_code;
+
+    BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
+
+    nrf_crypto_init();
+
+#if NRF_SD_BLE_API_VERSION <= 3
+
+    err_code = nrf_crypto_public_key_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &m_crypto_key_pk);
+    APP_ERROR_CHECK(err_code);
+
+    /* Set the public key */
+    err_code = pm_lesc_public_key_set(&s_lesc_public_key);
+    APP_ERROR_CHECK(err_code);
+#else
+    // Private public keypair must be generated at least once for each device. It can be stored
+    // beyond this point. Here it is generated at bootup.
+    err_code = lesc_generate_key_pair();
+    APP_ERROR_CHECK(err_code);
+#endif
+
+    //BleAppInitUserData();
+
+    BleAppGapParamInit(pBleAppCfg);
+
+#if (NRF_SD_BLE_API_VERSION > 3)
+    gatt_init();
+#endif
+
+
+    BleAppInitUserServices();
+
+    if (pBleAppCfg->bEnDevInfoService)
+    	BleAppDisInit(pBleAppCfg);
+
+    if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
+    	conn_params_init();
+
+    return true;
+}
+
 /**
  * @brief Function for the SoftDevice initialization.
  *
@@ -998,7 +1083,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     switch (pBleAppCfg->AppMode)
     {
     	case BLEAPP_MODE_LOOP:
-
+    	case BLEAPP_MODE_NOCONNECT:
 #if (NRF_SD_BLE_API_VERSION > 3)
     	        app_timer_init();
 #else
@@ -1087,51 +1172,43 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
     APP_ERROR_CHECK(err_code);
 
-    BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
+    if (pBleAppCfg->pDevName != NULL)
+    {
+    	err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
+                                          (const uint8_t *) pBleAppCfg->pDevName,
+                                          strlen(pBleAppCfg->pDevName));
+    	APP_ERROR_CHECK(err_code);
+    }
 
-    nrf_crypto_init();
-
-#if NRF_SD_BLE_API_VERSION <= 3
-
-    err_code = nrf_crypto_public_key_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &m_crypto_key_pk);
-    APP_ERROR_CHECK(err_code);
-
-    /* Set the public key */
-    err_code = pm_lesc_public_key_set(&s_lesc_public_key);
-    APP_ERROR_CHECK(err_code);
-#else
-    // Private public keypair must be generated at least once for each device. It can be stored
-    // beyond this point. Here it is generated at bootup.
-    err_code = lesc_generate_key_pair();
-    APP_ERROR_CHECK(err_code);
-#endif
+    if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
+    {
+    	BleAppConnectable(pBleAppCfg, bEraseBond);
+    }
 
     BleAppInitUserData();
 
-    gap_params_init(pBleAppCfg);
-
-#if (NRF_SD_BLE_API_VERSION > 3)
-    gatt_init();
-#endif
-
-
-    BleAppInitUserServices();
-
-    if (pBleAppCfg->bEnDevInfoService)
-    	BleAppDisInit(pBleAppCfg);
-
     BleAppAdvInit(pBleAppCfg);
-
-    conn_params_init();
 
     return true;
 }
 
-void BleAppStart()
+void BleAppRun()
 {
 
-    uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
-    APP_ERROR_CHECK(err_code);
+	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+	{
+#if (NRF_SD_BLE_API_VERSION <= 3)
+		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams);
+#else
+		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams, CONN_CFG_TAG);//BLE_CONN_CFG_TAG_DEFAULT);
+#endif
+		APP_ERROR_CHECK(err_code);
+	}
+	else
+	{
+		uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
+		APP_ERROR_CHECK(err_code);
+	}
 
     while (1)
     {

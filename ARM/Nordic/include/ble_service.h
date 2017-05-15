@@ -122,6 +122,7 @@ struct __BLE_Service_Data {
     uint8_t         UuidType;
     uint8_t			*pLongWrBuff;			// pointer to user long write buffer
     int				LongWrBuffSize;			// long write buffer size
+    void			*pContext;
 };
 
 #pragma pack(pop)

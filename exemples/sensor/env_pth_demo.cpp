@@ -10,7 +10,6 @@
 #include "spi.h"
 #include "sensors/pth_bme280.h"
 #include "blueio_board.h"
-#include "bme280.h"
 #include "board.h"
 
 #define PTH_I2C
@@ -74,18 +73,7 @@ static const PTHSENSOR_CFG s_PthSensorCfg = {
 };
 
 PthBme280 g_PthSensor;
-extern "C" {
-s8 BME280_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
-{
-	return g_I2c.Read(dev_addr, &reg_addr, 1, reg_data, cnt);
-}
 
-s8 BME280_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
-{
-	return g_I2c.Write(dev_addr, &reg_addr, 1, reg_data, cnt);
-}
-s32 bme280_data_readout_template(void);
-}
 //
 // Print a greeting message on standard output and exit.
 //
@@ -98,8 +86,6 @@ s32 bme280_data_readout_template(void);
 //
 // Adjust it for other toolchains.
 //
-extern struct bme280_t bme280;
-extern uint8_t *pCalibData;
 
 int main()
 {
@@ -113,22 +99,9 @@ int main()
 	g_PthSensor.Init(s_PthSensorCfg, &g_Spi);
 #endif
 
-	//bme280_data_readout_template();
-/*
-	//if (memcmp(&bme280.cal_param, pCalibData, sizeof(bme280.cal_param)) != 0)
-	uint8_t *p = (uint8_t*)&bme280.cal_param;
-	for (int i = 0; i < sizeof(bme280.cal_param); i++)
-	{
-		if (p[i] != pCalibData[i])
-		{
-			uint8_t a = p[i];
-			uint8_t b = pCalibData[i];
-			printf("Failed %d %d %d\r\n", i, a, b);
-		}
-	}*/
 
 	while (res == true) {
-	float t = g_PthSensor.ReadTemperature();
+		float t = g_PthSensor.ReadTemperature();
 	}
 	return 0;
 }

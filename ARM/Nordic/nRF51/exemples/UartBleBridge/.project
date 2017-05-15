@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>PthDemo</name>
+	<name>UartBleBridge</name>
 	<comment></comment>
 	<projects>
-		<project>CMSIS</project>
-		<project>EHAL</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -28,9 +26,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/env_pth_demo.cpp</name>
+			<name>src/UartBleBridge.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/exemples/sensor/env_pth_demo.cpp</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/UartBleBridge.cpp</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

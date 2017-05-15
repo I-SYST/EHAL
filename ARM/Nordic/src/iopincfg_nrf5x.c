@@ -35,14 +35,16 @@ Modified by          Date              Description
 #include <stdio.h>
 #include <stdbool.h>
 
-#ifdef NRF51
+#include "nrf.h"
+
+/*#ifdef NRF51
 #include "nrf51.h"
 #include "nrf51_bitfields.h"
 #else
 #include "nrf52.h"
 #include "nrf52_bitfields.h"
 #define NRF_GPIO		NRF_P0
-#endif
+#endif*/
 #include "nrf_gpiote.h"
 
 #include "iopincfg.h"

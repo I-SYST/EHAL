@@ -39,12 +39,31 @@ Modified by          Date              Description
 #include "ble.h"
 #include "nrf_sdm.h"
 
+/**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
+#if (NRF_SD_BLE_API_VERSION <= 3)
+   #define NRF_BLE_MAX_MTU_SIZE        GATT_MTU_SIZE_DEFAULT
+#else
+
+#if  defined(BLE_GATT_MTU_SIZE_DEFAULT) && !defined(GATT_MTU_SIZE_DEFAULT)
+#define GATT_MTU_SIZE_DEFAULT BLE_GATT_MTU_SIZE_DEFAULT
+#endif
+
+#if  defined(BLE_GATT_ATT_MTU_DEFAULT) && !defined(GATT_MTU_SIZE_DEFAULT)
+#define GATT_MTU_SIZE_DEFAULT BLE_GATT_ATT_MTU_DEFAULT
+#endif
+
+#define NRF_BLE_MAX_MTU_SIZE            GATT_MTU_SIZE_DEFAULT
+
+#endif
+
+
 #define APP_TIMER_PRESCALER             	0   /**< Value of the RTC1 PRESCALER register. */
 
 typedef enum _BleAppMode {
 	BLEAPP_MODE_LOOP,		// just main loop, No scheduler, no RTOS
 	BLEAPP_MODE_APPSCHED,	// use app_cheduler
-	BLEAPP_MODE_RTOS		// use RTOS
+	BLEAPP_MODE_RTOS,		// use RTOS
+	BLEAPP_MODE_NOCONNECT	// Connectionless beacon type of app.
 } BLEAPP_MODE;
 
 // Service connection security types
@@ -171,7 +190,7 @@ void BleAppRtosWaitEvt(void);
  */
 bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond);
 void BleAppEnterDfu();
-void BleAppStart();
+void BleAppRun();
 uint16_t BleAppGetConnHandle();
 
 #ifdef __cplusplus

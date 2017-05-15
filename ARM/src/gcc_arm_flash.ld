@@ -117,30 +117,32 @@ SECTIONS {
 	} > FLASH
     
 
-	.ARM.extab : 
+	.ARM.extab : ALIGN(4)
 	{
 		*(.ARM.extab* .gnu.linkonce.armextab.*)
 	} > FLASH
 
 	PROVIDE (__exidx_start = .);
-	.ARM.exidx :
+	.ARM.exidx : ALIGN(4)
 	{
 		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
 	} > FLASH
 	PROVIDE (__exidx_end = .);
 
-	.eh_frame_hdr : 
+	.eh_frame_hdr : ALIGN(4)
 	{ 
 		*(.eh_frame_hdr) 
 	} > FLASH
 	
 	.eh_frame : ONLY_IF_RO 
 	{ 
+		. = ALIGN(4);
 		*(.eh_frame)
 	} > FLASH
 	
 	.gcc_except_table : ONLY_IF_RO 
 	{ 
+		. = ALIGN(4);
 		*(.gcc_except_table .gcc_except_table.*) 
 	} > FLASH
 	

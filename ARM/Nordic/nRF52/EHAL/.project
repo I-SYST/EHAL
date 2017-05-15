@@ -41,9 +41,9 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/ble_app.h</locationURI>
 		</link>
 		<link>
-			<name>include/ble_interf.h</name>
+			<name>include/ble_intrf.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/ble_interf.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ble_intrf.h</locationURI>
 		</link>
 		<link>
 			<name>include/ble_service.h</name>
@@ -241,9 +241,9 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app_handler.c</locationURI>
 		</link>
 		<link>
-			<name>src/ble_interf.cpp</name>
+			<name>src/ble_intrf.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/ble_interf.cpp</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_intrf.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/ble_service.cpp</name>

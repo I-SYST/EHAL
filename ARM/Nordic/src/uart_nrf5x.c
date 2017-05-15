@@ -36,6 +36,8 @@ Modified by          Date              Description
 #include <stdint.h>
 #include <stdarg.h>
 
+#include "nrf.h"
+/*
 #ifdef NRF51
 #include "nrf51.h"
 #include "nrf51_bitfields.h"
@@ -46,7 +48,7 @@ Modified by          Date              Description
 #define UART0_IRQn			UARTE0_UART0_IRQn
 #define UART0_IRQHandler	UARTE0_UART0_IRQHandler
 #endif
-
+*/
 #include "istddef.h"
 #include "uart_nrf5x.h"
 #include "idelay.h"
@@ -251,11 +253,12 @@ void UART0_IRQHandler()
 	if (s_nRFUartDev.pReg->EVENTS_CTS)
 	{
 		s_nRFUartDev.pReg->EVENTS_CTS = 0;
-        buff[0] = UART_LINESTATE_CTS;
-        buff[1] = 0;//UART_LINESTATE_CTS;
-        len = 2;
+		s_nRFUartDev.pUartDev->LineState &= ~UART_LINESTATE_CTS;
         if (s_nRFUartDev.pUartDev->EvtCallback)
         {
+            buff[0] = 0;//UART_LINESTATE_CTS;
+    //        buff[1] = 0;//UART_LINESTATE_CTS;
+            len = 1;
             s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_LINESTATE, buff, len);
         }
 		//NRF_UART0->TASKS_STARTTX = 1;
@@ -265,12 +268,13 @@ void UART0_IRQHandler()
 	if (s_nRFUartDev.pReg->EVENTS_NCTS)
 	{
 		s_nRFUartDev.pReg->EVENTS_NCTS = 0;
+		s_nRFUartDev.pUartDev->LineState |= UART_LINESTATE_CTS;
 		//NRF_UART0->TASKS_STOPTX = 1;
         if (s_nRFUartDev.pUartDev->EvtCallback)
         {
             buff[0] = UART_LINESTATE_CTS;
-            buff[1] = UART_LINESTATE_CTS;
-            len = 2;
+//            buff[1] = UART_LINESTATE_CTS;
+            len = 1;
             s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_LINESTATE, buff, len);
         }
 	}

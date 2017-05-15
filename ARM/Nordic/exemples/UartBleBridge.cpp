@@ -40,12 +40,13 @@ Modified by          Date              Description
 #include "istddef.h"
 #include "ble_app.h"
 #include "ble_service.h"
+#include "ble_intrf.h"
 #include "blueio_board.h"
 #include "uart.h"
 #include "custom_board.h"
 #include "iopincfg.h"
 
-#define DEVICE_NAME                     "UARTDemo"                            /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "UARTBridge"                            /**< Name of device. Will be included in the advertising data. */
 
 #define MANUFACTURER_NAME               "I-SYST inc."                       /**< Manufacturer. Will be passed to Device Information Service. */
 #define MODEL_NAME                      "IMM-NRF51x"                            /**< Model number. Will be passed to Device Information Service. */
@@ -58,7 +59,7 @@ Modified by          Date              Description
 #define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)             /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
 #define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)             /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
 
-void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
+int BleIntrfEvtCallback(DEVINTRF *pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 
 static const ble_uuid_t  s_AdvUuids[] = {
 	{BLUEIO_UUID_UART_SERVICE, BLE_UUID_TYPE_VENDOR_BEGIN}
@@ -74,12 +75,15 @@ static const char s_TxCharDescString[] = {
 
 uint8_t g_ManData[8];
 
+#define BLESRV_READ_CHAR_IDX		0
+#define BLESRV_WRITE_CHAR_IDX		1
+
 BLESRVC_CHAR g_UartChars[] = {
 	{
 		// Read characteristic
 		BLUEIO_UUID_UART_RX_CHAR,
 		20,
-		BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY,
+		BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN,
 		s_RxCharDescString,         // char UTF-8 description string
 		NULL,                       // Callback for write char, set to NULL for read char
 		true,                       // Notify flag for read characteristic
@@ -91,9 +95,9 @@ BLESRVC_CHAR g_UartChars[] = {
 		// Write characteristic
 		BLUEIO_UUID_UART_TX_CHAR,	// char UUID
 		20,                         // char max data length
-		BLESVC_CHAR_PROP_WRITEWORESP,	// char properties define by BLUEIOSVC_CHAR_PROP_...
+		BLESVC_CHAR_PROP_WRITEWORESP | BLESVC_CHAR_PROP_VARLEN,	// char properties define by BLUEIOSVC_CHAR_PROP_...
 		s_TxCharDescString,			// char UTF-8 description string
-		UartTxSrvcCallback,         // Callback for write char, set to NULL for read char
+		NULL,         // Callback for write char, set to NULL for read char
 		false,                      // Notify flag for read characteristic
 		NULL,						// Callback on set notification
 		NULL,						// pointer to char default values
@@ -116,8 +120,8 @@ const BLESRVC_CFG s_UartSrvcCfg = {
 BLESRVC g_UartBleSrvc;
 
 const BLEAPP_DEVDESC s_UartBleDevDesc {
-	MODEL_NAME,           // Model name
-	MANUFACTURER_NAME,          // Manufacturer name
+	MODEL_NAME,           	// Model name
+	MANUFACTURER_NAME,      // Manufacturer name
 	"",                     // Serial number string
 	"0.0",                  // Firmware version string
 	"0.0",                  // Hardware version string
@@ -160,13 +164,27 @@ const BLEAPP_CFG s_BleAppCfg = {
 	NULL						// RTOS Softdevice handler
 };
 
+static const BLEINTRF_CFG s_BleInrfCfg = {
+	&g_UartBleSrvc,
+	BLESRV_WRITE_CHAR_IDX,
+	BLESRV_READ_CHAR_IDX,
+	0,			// Packet size : use default
+	0,			// Rx Fifo mem size
+	NULL,		// Rx Fifo mem pointer
+	0,			// Tx Fifo mem size
+	NULL,		// Tx Fifo mem pointer
+	BleIntrfEvtCallback
+};
+
+BleIntrf g_BleIntrf;
+
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 
 // UART configuration data
 
 static IOPINCFG s_UartPins[] = {
-	{BLUEIO_UART_RX_PORT, 6/*BLUEIO_UART_RX_PIN*/, BLUEIO_UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-	{BLUEIO_UART_TX_PORT, 5/*BLUEIO_UART_TX_PIN*/, BLUEIO_UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
+	{BLUEIO_UART_RX_PORT, BLUEIO_UART_RX_PIN, BLUEIO_UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
+	{BLUEIO_UART_TX_PORT, BLUEIO_UART_TX_PIN, BLUEIO_UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
 	{BLUEIO_UART_CTS_PORT, BLUEIO_UART_CTS_PIN, BLUEIO_UART_CTS_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// CTS
 	{BLUEIO_UART_RTS_PORT, BLUEIO_UART_RTS_PIN, BLUEIO_UART_RTS_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// RTS
 };
@@ -191,9 +209,23 @@ UART g_Uart;
 
 int g_DelayCnt = 0;
 
-void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len)
+int BleIntrfEvtCallback(DEVINTRF *pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer, int BufferLen)
 {
-	g_Uart.Tx(pData, Len);
+	int cnt = 0;
+
+	if (EvtId == DEVINTRF_EVT_RX_DATA)
+	{
+		uint8_t buff[128];
+
+		int l = g_BleIntrf.Rx(0, buff, 128);
+		if (l > 0)
+		{
+			g_Uart.Tx(buff, l);
+		}
+		cnt += l;
+	}
+
+	return cnt;
 }
 
 void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
@@ -226,7 +258,7 @@ void UartRxChedHandler(void * p_event_data, uint16_t event_size)
 	int l = g_Uart.Rx(buff, 128);
 	if (l > 0)
 	{
-		BleSrvcCharNotify(&g_UartBleSrvc, 0, buff, l);
+		g_BleIntrf.Tx(0, buff, l);
 	}
 }
 
@@ -269,6 +301,8 @@ int main()
     HardwareInit();
 
     BleAppInit((const BLEAPP_CFG *)&s_BleAppCfg, true);
+
+    g_BleIntrf.Init(s_BleInrfCfg);
 
     BleAppRun();
 

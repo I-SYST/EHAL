@@ -3,8 +3,6 @@
 	<name>PthDemo</name>
 	<comment></comment>
 	<projects>
-		<project>CMSIS</project>
-		<project>EHAL</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
