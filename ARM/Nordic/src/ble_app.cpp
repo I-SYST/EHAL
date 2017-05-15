@@ -134,18 +134,11 @@ BLEAPP_DATA g_BleAppData = {
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
 static nrf_ble_gatt_t                   s_Gatt;                                     /**< GATT module instance. */
 
-#ifdef LESC_DEBUG_MODE
-
 /**@brief Bluetooth SIG debug mode Private Key */
-//#error Generated private key is not supported.
-__ALIGN(4) const uint8_t g_lesc_private_key[32] = {
+__ALIGN(4) __WEAK extern const uint8_t g_lesc_private_key[32] = {
     0xbd,0x1a,0x3c,0xcd,0xa6,0xb8,0x99,0x58,0x99,0xb7,0x40,0xeb,0x7b,0x60,0xff,0x4a,
     0x50,0x3f,0x10,0xd2,0xe3,0xb3,0xc9,0x74,0x38,0x5f,0xc5,0xa3,0xd4,0xf6,0x49,0x3f,
 };
-#else
-// Release build reuire extern Private Key
-extern const uint8_t g_lesc_private_key[32];
-#endif
 
 __ALIGN(4) static ble_gap_lesc_p256_pk_t    s_lesc_public_key;      /**< LESC ECC Public Key */
 __ALIGN(4) static ble_gap_lesc_dhkey_t      s_lesc_dh_key;          /**< LESC ECC DH Key*/
