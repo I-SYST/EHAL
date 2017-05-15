@@ -94,6 +94,8 @@ void UART_IRQHandler(void)
 						{
 							g_LpcUartDev->pUartDev->LineState ^= UART_LINESTATE_DSR;
 							data |= (g_LpcUartDev->pUartDev->LineState & UART_LINESTATE_DSR);
+							g_LpcUartDev->pUartDev->LineState ^= UART_LINESTATE_CTS;
+							data |= (g_LpcUartDev->pUartDev->LineState & UART_LINESTATE_CTS);
 						}
 						//data |= (r & LPCUART_MSR_CTS) ? UART_LINESTATE_CTS : 0;
 						//data |= (r & LPCUART_MSR_DDSR) ? UART_LINESTATE_DSR : 0;
