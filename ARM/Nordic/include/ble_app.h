@@ -39,6 +39,24 @@ Modified by          Date              Description
 #include "ble.h"
 #include "nrf_sdm.h"
 
+/**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
+#if (NRF_SD_BLE_API_VERSION <= 3)
+   #define NRF_BLE_MAX_MTU_SIZE        GATT_MTU_SIZE_DEFAULT
+#else
+
+#if  defined(BLE_GATT_MTU_SIZE_DEFAULT) && !defined(GATT_MTU_SIZE_DEFAULT)
+#define GATT_MTU_SIZE_DEFAULT BLE_GATT_MTU_SIZE_DEFAULT
+#endif
+
+#if  defined(BLE_GATT_ATT_MTU_DEFAULT) && !defined(GATT_MTU_SIZE_DEFAULT)
+#define GATT_MTU_SIZE_DEFAULT BLE_GATT_ATT_MTU_DEFAULT
+#endif
+
+#define NRF_BLE_MAX_MTU_SIZE            GATT_MTU_SIZE_DEFAULT
+
+#endif
+
+
 #define APP_TIMER_PRESCALER             	0   /**< Value of the RTC1 PRESCALER register. */
 
 typedef enum _BleAppMode {

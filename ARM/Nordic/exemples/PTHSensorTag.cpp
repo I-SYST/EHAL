@@ -49,7 +49,7 @@ Modified by          Date              Description
 
 #define DEVICE_NAME                     "PTHSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
-#define APP_ADV_INTERVAL                MSEC_TO_UNITS(100, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
+#define APP_ADV_INTERVAL                MSEC_TO_UNITS(1000, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      60                                         /**< The advertising timeout (in units of seconds). */
 
 // Evironmental Sensor Data to advertise
@@ -126,7 +126,9 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
     {
     	// Update environmental sensor data everytime advertisement timeout
     	// for re-advertisement
+    	g_I2c.Enable();
     	g_PthSensor.ReadPTH(g_PTHData);
+    	g_I2c.Disable();
     }
 }
 
@@ -141,6 +143,8 @@ void HardwareInit()
 
     // Update sensor data
 	g_PthSensor.ReadPTH(g_PTHData);
+
+	g_I2c.Disable();
 }
 
 int main()
