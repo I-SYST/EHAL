@@ -1172,20 +1172,20 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
     APP_ERROR_CHECK(err_code);
 
-    if (pBleAppCfg->pDevName != NULL)
-    {
-    	err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
-                                          (const uint8_t *) pBleAppCfg->pDevName,
-                                          strlen(pBleAppCfg->pDevName));
-    	APP_ERROR_CHECK(err_code);
-    }
-
     if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
     {
     	BleAppConnectable(pBleAppCfg, bEraseBond);
     }
 
     BleAppInitUserData();
+
+    if (pBleAppCfg->pDevName != NULL)
+    {
+        err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
+                                          (const uint8_t *) pBleAppCfg->pDevName,
+                                          strlen(pBleAppCfg->pDevName));
+        APP_ERROR_CHECK(err_code);
+    }
 
     BleAppAdvInit(pBleAppCfg);
 
