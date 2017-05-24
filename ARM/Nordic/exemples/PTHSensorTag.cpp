@@ -46,12 +46,18 @@ Modified by          Date              Description
 #include "app_util_platform.h"
 #include "app_scheduler.h"
 #include "pth_bme280.h"
+#include "pth_ms8607.h"
 
 #define DEVICE_NAME                     "PTHSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(1000, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      60                                         /**< The advertising timeout (in units of seconds). */
-
+/*
+__ALIGN(4) const uint8_t g_lesc_private_key[32] = {
+	0x9a, 0x58, 0xc0, 0xff, 0xeb, 0x7f, 0x4b, 0x89, 0x41, 0xc2, 0x05, 0xfc, 0x9c, 0xca, 0x3e, 0xe5,
+	0x66, 0x4f, 0xf8, 0x80, 0x1b, 0xe9, 0x56, 0x1d, 0xa3, 0x72, 0x82, 0x55, 0xb7, 0x4f, 0x47, 0xd0
+};
+*/
 // Evironmental Sensor Data to advertise
 PTHSENSOR_DATA g_PTHData;
 
@@ -96,8 +102,13 @@ const BLEAPP_CFG s_BleAppCfg = {
 static const I2CCFG s_I2cCfg = {
 	0,			// I2C device number
 	{
+#if 0
 		{BLUEIO_TAG_BME280_I2C_SDA_PORT, BLUEIO_TAG_BME280_I2C_SDA_PIN, BLUEIO_TAG_BME280_I2C_SDA_PINOP, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
 		{BLUEIO_TAG_BME280_I2C_SCL_PORT, BLUEIO_TAG_BME280_I2C_SCL_PIN, BLUEIO_TAG_BME280_I2C_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
+#else
+		{0, 4, 0, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
+		{0, 3, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
+#endif
 	},
 	100000,	// Rate
 	I2CMODE_MASTER,
@@ -118,7 +129,10 @@ static PTHSENSOR_CFG s_PthSensorCfg = {
 };
 
 // Environmental sensor instance
-PthBme280 g_PthSensor;
+PthBme280 g_Bme280Sensor;
+PthMS8607 g_MS8607Sensor;
+
+PTHSensor &g_PthSensor = g_MS8607Sensor;
 
 void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 {
