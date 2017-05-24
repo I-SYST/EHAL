@@ -1,9 +1,9 @@
 /*--------------------------------------------------------------------------
-File   : pth_sensor.h
+File   : pth_ms8607.h
 
 Author : Hoang Nguyen Hoan          			Feb. 12, 2017
 
-Desc   : Generic environment sensor abstraction
+Desc   : MS8607 environment sensor implementation
 			- Temperature, Humidity, Barometric pressure
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#ifndef __PTH_SENSOR_H__
-#define __PTH_SENSOR_H__
+#ifndef __PTH_MS8607_H__
+#define __PTH_MS8607_H__
 
 #include <stdint.h>
 #include <string.h>
@@ -43,59 +43,38 @@ Modified by          Date              Description
 #endif
 
 #include "iopincfg.h"
-#include "device.h"
+#include "pth_sensor.h"
 
-#pragma pack(push, 4)
+// Device address
+#define MS8607_PTDEV_ADDR				0x76
+#define MS8607_RHDEV_ADDR				0x40
 
-//
-// PTH sensor operating mode
-//
-typedef enum __PthSensor_OpMode {
-	PTHSENSOR_OPMODE_SLEEP,
-	PTHSENSOR_OPMODE_SINGLE,		// Single capture
-	PTHSENSOR_OPMODE_CONTINUOUS		// Continuous capture
-} PTHSENSOR_OPMODE;
+#define MS8607_CMD_PT_RESET				0x1E
+#define MS8607_CMD_ADC_READ				0
+#define MS8607_CMD_P_CONVERT_D1_256		0x40
+#define MS8607_CMD_P_CONVERT_D1_512		0x42
+#define MS8607_CMD_P_CONVERT_D1_1024	0x44
+#define MS8607_CMD_T_CONVERT_D2_256		0x50
+#define MS8607_CMD_T_CONVERT_D2_512		0x52
+#define MS8607_CMD_T_CONVERT_D2_1024	0x54
 
-//
-// PTH sensor data
-//
-// 2 decimals fix point data
-// value 1234 means 12.34
-//
-typedef struct __PthSensor_Data {
-	uint32_t Pressure;		// Barometric pressure in Pa
-	int16_t  Temperature;	// Temperature in degree C
-	uint16_t Humidity;		// Relative humidity in %
-} PTHSENSOR_DATA;
+#define MS8607_CMD_RH_RESET				0xFE
+#define MS8607_CMD_RH_HOLD_MASTER		0xE5
+#define MS8607_CMD_RH_WRITE_USER		0xE6
+#define MS8607_CMD_RH_READ_USER			0xE7
 
-//
-// PTH sensor configuration
-//
-typedef struct __PthSensor_Config {
-	uint32_t		DevAddr;	// Either I2C dev address or CS index select if SPI is used
-	PTHSENSOR_OPMODE OpMode;	// Operating mode
-	uint32_t		Freq;		// Sampling frequency in Hz if continuous mode is used
-} PTHSENSOR_CFG;
-
-#pragma pack(pop)
+#define MS8607_PROM_START_ADDR			0xA0
 
 #ifdef __cplusplus
 
-class PTHSensor : public Device {
+class PthMS8607 : public PTHSensor {
 public:
-	virtual bool Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf) = 0;
-
-	/**
-	 * @brief	Read PTH data
-	 * 			Read PTH data from device if available. If not
-	 * 			return previous data.
-	 *
-	 * @param PthData : PTH data to return
-	 *
-	 * @return	true - new data
-	 * 			false - old data
-	 */
-	virtual bool ReadPTH(PTHSENSOR_DATA &PthData) = 0;
+	PthMS8607() {}
+	virtual ~PthMS8607() {}
+	virtual bool Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf);
+	virtual bool Enable();
+	virtual void Disable();
+	virtual void Reset();
 
 	/**
 	 * @brief Set operating mode
@@ -108,39 +87,28 @@ public:
 	 *
 	 * @return true- if success
 	 */
-	virtual bool SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq) = 0;
+	virtual bool SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq);
 
 	/**
 	 * @brief	Start sampling data
 	 *
 	 * @return	true - success
 	 */
-	virtual bool StartSampling() = 0;
+	virtual bool StartSampling();
+	bool ReadPTH(PTHSENSOR_DATA &PthData);
+	float ReadTemperature();
+	float ReadPressure();
+	float ReadHumidity();
 
-	/**
-	 * @brief	Read temperature
-	 *
-	 * @return	Temperature in degree C
-	 */
-	virtual float ReadTemperature() = 0;
+private:
 
-	/**
-	 * @brief	Read barometric pressure
-	 *
-	 * @return	Barometric pressure in Pascal
-	 */
-	virtual float ReadPressure() = 0;
+	void ReadPtProm();
 
-	/**
-	 * @brief	Read relative humidity
-	 *
-	 * @return	Relative humidity in %
-	 */
-	virtual float ReadHumidity() = 0;
-
-protected:
-	PTHSENSOR_OPMODE vOpMode;
-	uint32_t vSampFreq;			// Sampling frequency in Hz
+	int32_t vCurTemp;
+	int32_t vCurBarPres;
+	int32_t vCurRelHum;
+	uint16_t vPTProm[8];
+	int32_t vCurDT;
 };
 
 extern "C" {
@@ -151,4 +119,4 @@ extern "C" {
 
 #endif	// __cplusplus
 
-#endif	// __PTH_SENSOR_H__
+#endif	// __PTH_MS8607_H__
