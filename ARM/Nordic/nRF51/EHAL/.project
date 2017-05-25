@@ -436,6 +436,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/pth_bme280.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/sensors/pth_ms8607.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/pth_ms8607.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/ble_advertising</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>

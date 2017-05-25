@@ -129,6 +129,23 @@ public:
 	virtual void Disable();
 	virtual void Reset();
 	bool ReadPTH(PTHSENSOR_DATA &PthData);
+	float ReadTemperature() {
+		PTHSENSOR_DATA pthdata;
+		ReadPTH(pthdata);
+		return (float)pthdata.Temperature / 100.0;
+	}
+
+	float ReadPressure() {
+		PTHSENSOR_DATA pthdata;
+		ReadPTH(pthdata);
+		return (float)pthdata.Pressure / 100.0;
+	}
+
+	float ReadHumidity() {
+		PTHSENSOR_DATA pthdata;
+		ReadPTH(pthdata);
+		return (float)pthdata.Humidity / 100.0;
+	}
 
 private:
 
