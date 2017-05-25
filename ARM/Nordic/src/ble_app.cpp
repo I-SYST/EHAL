@@ -302,7 +302,7 @@ static void BleAppGapParamInit(const BLEAPP_CFG *pBleAppCfg)
 */
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
 
-    if (pBleAppCfg->SecType != BLEAPP_SECTYPE_NONE)
+    if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
     {
 		gap_conn_params.min_conn_interval = pBleAppCfg->ConnIntervalMin;// MIN_CONN_INTERVAL;
 		gap_conn_params.max_conn_interval = pBleAppCfg->ConnIntervalMax;//MAX_CONN_INTERVAL;
