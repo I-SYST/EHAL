@@ -102,7 +102,8 @@ void BleSrvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt)
 
 				for (int i = 0; i < pSrvc->NbChar; i++)
 				{
-					if (p_evt_write->handle == 0)
+				    if (p_evt_write->op == BLE_GATTS_OP_EXEC_WRITE_REQ_NOW)
+					//if (p_evt_write->handle == 0)
 					{
 						printf("Long Write\r\n");
 						GATLWRHDR *hdr = (GATLWRHDR *)pSrvc->pLongWrBuff;
@@ -161,6 +162,25 @@ void BleSrvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt)
         		}
         	}
         	break;
+
+#if (NRF_SD_BLE_API_VERSION > 3)
+        case BLE_GATTS_EVT_HVN_TX_COMPLETE:
+            if (pSrvc->ConnHdl == pBleEvt->evt.gatts_evt.conn_handle)
+            {
+                for (int i = 0; i < pSrvc->NbChar; i++)
+                {
+                    if (pSrvc->pCharArray[i].TxCompleteCB)
+                    {
+                        pSrvc->pCharArray[i].TxCompleteCB(pSrvc, i);
+                    }
+                }
+            }
+            break;
+#else
+        case BLE_EVT_TX_COMPLETE:
+            break;
+
+#endif
 
         default:
             break;

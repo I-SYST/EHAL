@@ -40,7 +40,7 @@ Modified by          Date              Description
 #include "ble_app.h"
 
 #define NRFBLEINTRF_PACKET_SIZE		NRF_BLE_MAX_MTU_SIZE
-#define NRFBLEINTRF_CFIFO_SIZE		CFIFO_TOTAL_MEMSIZE(NRFBLEINTRF_PACKET_SIZE << 1, 1)
+#define NRFBLEINTRF_CFIFO_SIZE		CFIFO_TOTAL_MEMSIZE(2, NRFBLEINTRF_PACKET_SIZE + sizeof(BLEINTRF_PKT) - 1)
 
 static uint8_t s_nRFBleRxFifoMem[NRFBLEINTRF_CFIFO_SIZE];
 static uint8_t s_nRFBleTxFifoMem[NRFBLEINTRF_CFIFO_SIZE];
@@ -132,32 +132,31 @@ bool BleIntrfStartRx(DEVINTRF *pDevIntrf, int DevAddr)
 }
 
 /**
- * @brief - RxData
+ * @brief - RxData : retrieve 1 packet of received data
  * 		Receive data into pBuff passed in parameter.  Assuming StartRx was
- * called prior calling this function to get the actual data
+ * called prior calling this function to get the actual data. BufferLen
+ * to receive data must be at least 1 packet in size.  Otherwise remaining
+ * bytes are dropped.
  *
  * @param
  * 		pDevIntrf : Pointer to an instance of the Device Interface
  * 		pBuff 	  : Pointer to memory area to receive data.
- * 		BuffLen   : Length of buffer memory in bytes
+ * 		BuffLen   : Length of buffer memory in bytes. Must be at least 1 packet
+ * 		            in size.  Otherwise remaining bytes are dropped.
  *
  * @return	Number of bytes read
  */
 int BleIntrfRxData(DEVINTRF *pDevIntrf, uint8_t *pBuff, int BuffLen)
 {
 	BLEINTRF *intrf = (BLEINTRF*)pDevIntrf->pDevData;
+	BLEINTRF_PKT *pkt;
 	int cnt = 0;
 
-	while (BuffLen > 0)
+	pkt = (BLEINTRF_PKT *)CFifoGet(intrf->hRxFifo);
+	if (pkt != NULL)
 	{
-		int l = BuffLen;
-		uint8_t *p = CFifoGetMultiple(intrf->hRxFifo, &l);
-		if (p == NULL)
-			break;
-		memcpy(pBuff, p, l);
-		BuffLen -= l;
-		pBuff += l;
-		cnt += l;
+	    cnt = min(BuffLen, pkt->Len);
+		memcpy(pBuff, pkt->Data, cnt);
 	}
 
 	return cnt;
@@ -213,15 +212,18 @@ bool BleIntrfStartTx(DEVINTRF *pDevIntrf, int DevAddr)
 int BleIntrfTxData(DEVINTRF *pDevIntrf, uint8_t *pData, int DataLen)
 {
 	BLEINTRF *intrf = (BLEINTRF*)pDevIntrf->pDevData;
+    BLEINTRF_PKT *pkt;
+    int maxlen = intrf->hTxFifo->BlkSize - sizeof(pkt->Len);
 	int cnt = 0;
 
 	while (DataLen > 0)
 	{
-		int l = DataLen;
-		uint8_t *p = CFifoPutMultiple(intrf->hTxFifo, &l);
-		if (p == NULL)
+		pkt = (BLEINTRF_PKT *)CFifoPut(intrf->hTxFifo);
+		if (pkt == NULL)
 			break;
-		memcpy(p, pData, l);
+        int l = min(DataLen, maxlen);
+		memcpy(pkt->Data, pData, l);
+		pkt->Len = l;
 		DataLen -= l;
 		pData += l;
 		cnt += l;
@@ -229,12 +231,11 @@ int BleIntrfTxData(DEVINTRF *pDevIntrf, uint8_t *pData, int DataLen)
 
 	if (s_bBleIntrfTxReady == true)
 	{
-		s_bBleIntrfTxReady = false;
-		int l = NRFBLEINTRF_PACKET_SIZE;
-		uint8_t *p = CFifoGetMultiple(intrf->hTxFifo, &l);
-		if (p != NULL)
+		pkt = (BLEINTRF_PKT *)CFifoGet(intrf->hTxFifo);
+		if (pkt != NULL)
 		{
-			uint32_t res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, p, l);
+	        s_bBleIntrfTxReady = false;
+			uint32_t res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, pkt->Data, pkt->Len);
 #if (NRF_SD_BLE_API_VERSION <= 3)
 			if (res != BLE_ERROR_NO_TX_PACKETS)
 #else
@@ -280,20 +281,48 @@ void BleIntrfReset(DEVINTRF *pDevIntrf)
 
 }
 
+/**
+ *
+ *
+ */
+void BleIntrfTxComplete(BLESRVC *pBleSvc, int CharIdx)
+{
+    BLEINTRF *intrf = (BLEINTRF*)pBleSvc->pContext;
+    BLEINTRF_PKT *pkt;
+
+    s_bBleIntrfTxReady = true;
+    pkt = (BLEINTRF_PKT *)CFifoGet(intrf->hTxFifo);
+    if (pkt != NULL)
+    {
+        s_bBleIntrfTxReady = false;
+        uint32_t res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, pkt->Data, pkt->Len);
+#if (NRF_SD_BLE_API_VERSION <= 3)
+        if (res != BLE_ERROR_NO_TX_PACKETS)
+#else
+        if (res != NRF_ERROR_RESOURCES)
+#endif
+        {
+            s_bBleIntrfTxReady = true;
+        }
+    }
+}
+
 void BleIntrfRxWrCB(BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len)
 {
 	BLEINTRF *intrf = (BLEINTRF*)pBleSvc->pContext;
+    BLEINTRF_PKT *pkt;
+    int maxlen = intrf->hTxFifo->BlkSize - sizeof(pkt->Len);
 
-	do {
-		int l = Len;
-		uint8_t *p = CFifoPutMultiple(intrf->hRxFifo, &l);
-		if (p == NULL)
+	while (Len > 0) {
+		pkt = (BLEINTRF_PKT *)CFifoPut(intrf->hRxFifo);
+		if (pkt == NULL)
 			break;
-		//int l = min(intrf->PacketSize, Len);
-		memcpy(p, pData, l);
+		int l = min(intrf->PacketSize, Len);
+		memcpy(pkt->Data, pData, l);
+		pkt->Len = l;
 		Len -= l;
 		pData += l;
-	} while (Len > 0);
+	}
 
 	if (CFifoUsed(intrf->hRxFifo) > 0 && intrf->DevIntrf.EvtCB != NULL)
 	{

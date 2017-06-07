@@ -69,6 +69,14 @@ typedef void (*BLESRVC_WRCB) (BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, i
  */
 typedef void (*BLESRVC_SETNOTCB)(BLESRVC *pBlueIOSvc, bool bEnable);
 
+/**
+ * Callback when transmission is completed
+ *
+ * @param pBlueIOSvc
+ * @param CharIdx
+ */
+typedef void (*BLESRVC_TXCOMPLETE)(BLESRVC *pBlueIOSvc, int CharIdx);
+
 // Service connection security types
 typedef enum {
 	BLESRVC_SECTYPE_NONE,				// open, no security
@@ -86,12 +94,13 @@ typedef struct __BLE_Service_Char_Data {
     int MaxDataLen;                         // char max data length
     uint32_t Property;                      // char properties define by BLUEIOSVC_CHAR_PROP_...
     const char *pDesc;                      // char UTF-8 description string
-    BLESRVC_WRCB WrCB;                   // Callback for write char, set to NULL for read char
+    BLESRVC_WRCB WrCB;                      // Callback for write char, set to NULL for read char
     bool bNotify;                           // Notify flag for read characteristic
     BLESRVC_SETNOTCB SetNotifCB;			// Callback on set notification
     uint8_t *pDefValue;						// pointer to char default values
     uint16_t ValueLen;						// Default value length in bytes
     ble_gatts_char_handles_t Hdl;           // char handle
+    BLESRVC_TXCOMPLETE  TxCompleteCB;       // Callback when TX is completed
 } BLESRVC_CHAR;
 
 /*

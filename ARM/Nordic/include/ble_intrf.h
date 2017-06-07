@@ -41,6 +41,26 @@ Modified by          Date              Description
 #include "device_intrf.h"
 #include "cfifo.h"
 
+/**
+ * Calculate require mem
+ */
+#define BLEINTRF_CFIFO_TOTAL_MEMSIZE(NbBlk, BlkSize)    CFIFO_TOTAL_MEMSIZE(NbBlk, BlkSize + 2)
+
+/**
+ * This structure define the CFIFO data packet
+ * It is a variable length structure defined by user
+ *
+ * NOTE : Data element can be more than 1 byte. DO NOT use sizeof() to calculate
+ * the size of this structure.  It should be mapped to appropriate buffer memory
+ */
+#pragma pack(push, 1)
+typedef struct __BleDeviceInterfPacket {
+    uint16_t    Len;    // Valid data length
+    uint8_t     Data[1];// Data container array
+} BLEINTRF_PKT;
+#pragma pack(pop)
+
+#pragma pack(push, 4)
 typedef struct __BleDeviceInterfConfig {
     BLESRVC	*pBleSrv;		// BLE Service
     int		RxCharIdx;		// Write characteristic index (From BLE)
@@ -63,6 +83,7 @@ typedef struct __BleDeviceInterf {
     HCFIFO		hRxFifo;
     HCFIFO		hTxFifo;
 } BLEINTRF;
+#pragma pack(pop)
 
 #ifdef __cplusplus
 
