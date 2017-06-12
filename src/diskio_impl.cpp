@@ -100,12 +100,12 @@ int	DiskIO::GetCacheSect(uint32_t SectNo, bool bLock)
 
 		    // Flush cache is dirty
 		    if (vpCacheSect[vLastIdx].UseCnt & DISKIO_CACHE_DIRTY_BIT)
-		        SectWrite(vpCacheSect[vLastIdx].SectNo, vpCacheSect[vLastIdx].SectData);
+		        SectWrite(vpCacheSect[vLastIdx].SectNo, vpCacheSect[vLastIdx].pSectData);
 
 	        vpCacheSect[vLastIdx].UseCnt = 1;
 
 	        // Fill cache
-			SectRead(SectNo, vpCacheSect[vLastIdx].SectData);
+			SectRead(SectNo, vpCacheSect[vLastIdx].pSectData);
 
 			vpCacheSect[vLastIdx].SectNo = SectNo;
 			return vLastIdx;
@@ -135,7 +135,7 @@ int DiskIO::Read(uint32_t SectNo, uint32_t SectOffset, uint8_t *pBuff, uint32_t 
 	else
 	{
 	    // Get it from cache
-	    memcpy(pBuff, vpCacheSect[idx].SectData + SectOffset, l);
+	    memcpy(pBuff, vpCacheSect[idx].pSectData + SectOffset, l);
 
 	    // Done with cache sector, release it
 	    vpCacheSect[idx].UseCnt--;
@@ -185,7 +185,7 @@ int DiskIO::Write(uint32_t SectNo, uint32_t SectOffset, uint8_t *pData, uint32_t
 	else
 	{
 	    // Write to cache
-        memcpy(vpCacheSect[idx].SectData + SectOffset, pData, l);
+        memcpy(vpCacheSect[idx].pSectData + SectOffset, pData, l);
 
         // Done with cache sector, release it
         vpCacheSect[idx].UseCnt |= DISKIO_CACHE_DIRTY_BIT;
@@ -223,7 +223,7 @@ void DiskIO::Flush()
     {
         if (vpCacheSect[i].UseCnt & DISKIO_CACHE_DIRTY_BIT)
         {
-            SectWrite(vpCacheSect[i].SectNo, vpCacheSect[i].SectData);
+            SectWrite(vpCacheSect[i].SectNo, vpCacheSect[i].pSectData);
             vpCacheSect[i].UseCnt &= ~DISKIO_CACHE_DIRTY_BIT;
         }
     }

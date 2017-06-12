@@ -39,6 +39,7 @@ Modified by          Date              Description
 #include <string.h>
 
 #include "dirent.h"
+#include "diskio.h"
 
 // FAT type
 typedef enum {
@@ -66,6 +67,12 @@ typedef enum {
 #ifndef MAX_FILE
 #define MAX_FILE					OPEN_MAX
 #endif
+
+#define FATFS_TOTAL_SECTOR(DiskSizeBytes)					(DiskSizeBytes / FATFS_SECTOR_SIZE)
+#define FATFS_TOTAL_CLUSTER(TotalSectors, SectPerCluster)	(TotalSectors / SectPerCluster)
+#define FATFS_FAT12_SECTOR_COUNT(TotalClusters)				((TotalClusters * 12) / (FATFS_SECTOR_SIZE * 8))
+#define FATFS_FAT16_SECTOR_COUNT(TotalClusters)				((TotalClusters * 16) / (FATFS_SECTOR_SIZE * 8))
+#define FATFS_FAT32_SECTOR_COUNT(TotalClusters)				((TotalClusters * 32) / (FATFS_SECTOR_SIZE * 8))
 
 #pragma pack(push, 1)
 
@@ -156,7 +163,7 @@ typedef struct _FATFS_BootSector_BPB {
 										// NOTE: This string is informational only and does not
 										// determine the FAT type.
 		} Bpb32;
-	};
+	} BPB;
 	uint8_t	Blank[420];
 	uint8_t	Signature_word[2];			// Set to 0x55 (at byte offset 510) and 0xAA (at byte offset 511)
 } FATFS_BSBPB;
@@ -248,22 +255,28 @@ typedef union _FATFS_DirEntry {
 typedef struct {
 	char 		VolName[12];	// Volume name
 	int 		SectSize;		// Sector size in bytes
-	//uint32_t 	DataSize;
 	uint32_t 	VolumeSize;		// Disk size in bytes
-	const FATFS_DIR *pRootDir;	// Pointer to Root direct
-	const uint16_t *pFat1;		// Pointer to File Allocation Table
+	const MBR 	*pMbrSect;
+	const FATFS_BSBPB 	*pBootSect; // Pointer to predefined BSBPB sector
+	const FATFS_DIR 	*pRootDir;	// Pointer to Root direct
+	const uint16_t 		*pFat1;		// Pointer to File Allocation Table
+	const FATFS_FSINFO 	*pFat32Info;
 } FATFS_VDISKCFG;
 
 typedef struct {
 	FATFS_TYPE	FatType;
-	uint32_t	TotalSectors;
-	uint32_t	RootDirSect;
-	uint32_t	DataStartSector;
-	uint32_t	Fat1Sector;
-	FATFS_BSBPB BootSect;
-	FATFS_FSINFO Fat32Info;
-	const FATFS_DIR *pRootDir;
-	const uint16_t *pFat1;
+	uint32_t	TotalSectors;	// Disk number of sectors
+	uint32_t	PartStartSectNo;// FATFS partition start sector number
+	uint32_t	RootDirSectNo;	// FATFS root dir start sector number
+	uint32_t	DataStartSectNo;// FATFS data start sector number
+	uint32_t	Fat1SectNo;		// FATFS FAT1 start sector number
+	uint32_t	Fat2SectNo;
+	FATFS_BSBPB *pBootSect;// pointer to FATFS BSBPB sector
+	//FATFS_BSBPB BootSect;
+	const FATFS_FSINFO *pFat32Info;		// extra FAT32 data
+	const MBR 	*pMbrSect;		// pointer to Master Boot Record sector
+	const FATFS_DIR *pRootDir;	// pointer to Root dir sector
+	const uint16_t *pFat1;		// pointer to FAT1 sector
 } FATFS_VDISK;
 
 // File descriptor
@@ -327,7 +340,7 @@ int FATFSWrite(void *pDevObj, int Fd, uint8_t *pBuff, size_t Len);
 
 // Virtual Disk functions
 uint32_t FATFSVDiskGetClusterSector(FATFS_VDISK *pVDisk, uint32_t ClusterNo);
-uint8_t *FATFSVDiskGetSectorData(FATFS_VDISK *pVDisk, uint32_t SectNo);
+uint8_t *FATFSVDiskGetSectorData(FATFS_VDISK *pVDisk, uint32_t SectNo, uint32_t SectOff, int Len);
 bool FATFSVDiskInit(FATFS_VDISK *pVDisk, const FATFS_VDISKCFG *pCfg);
 
 #ifdef __cplusplus

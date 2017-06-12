@@ -39,6 +39,8 @@ Modified by          Date              Description
 #include "device_intrf.h"
 #include "diskio.h"
 
+#define SDCARD_CACHE_MAX		2
+
 #pragma pack(push, 4)
 
 // CSD register
@@ -78,6 +80,7 @@ public:
 	SDCard();
 	virtual ~SDCard();
 
+	virtual bool Init(DeviceIntrf *pDevInterf, uint8_t *pCacheMem = NULL, int CacheMemSize = 0);
 	virtual bool Init(DeviceIntrf *pDevInterf, DISKIO_CACHE_DESC *pCacheBlk = NULL, int NbCacheBlk = 0);
 	int Cmd(uint8_t Cmd, uint32_t param);
 	int GetResponse(uint8_t *pBuff, int BuffLen);
@@ -102,6 +105,8 @@ private:
 	//std::shared_ptr<SerialIntrf> vpInterf;
 	DeviceIntrf *vpInterf;
 	SDDEV vDev;
+	int NbCacheBlk;
+	DISKIO_CACHE_DESC vCacheDesc[SDCARD_CACHE_MAX];
 };
 
 extern "C" {

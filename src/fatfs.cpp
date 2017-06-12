@@ -79,7 +79,8 @@ bool FatFS::Init(DiskIO *pDiskIO)
 	if (!res)
 		return false;
 
-	if (*((uint32_t*)sect) == 0)
+	uint32_t *p = (uint32_t*)sect;
+	if (*p == 0)
 	{
 		MBR *pmbr = (MBR*)sect;
 
@@ -96,10 +97,10 @@ bool FatFS::Init(DiskIO *pDiskIO)
 	if (fatbs->TotSec32 && fatbs->FATSz16 == 0)
 	{
 		// FAT32
-		vFatSize = fatbs->Bpb32.FATSz32;
+		vFatSize = fatbs->BPB.Bpb32.FATSz32;
 		vTotalSect = fatbs->TotSec32;
-		vDataStartSect = vFATStartSect + fatbs->NumFATs * fatbs->Bpb32.FATSz32;
-		vRootDirSect = vDataStartSect + (fatbs->Bpb32.RootClus - 2) * fatbs->SecPerClus;
+		vDataStartSect = vFATStartSect + fatbs->NumFATs * fatbs->BPB.Bpb32.FATSz32;
+		vRootDirSect = vDataStartSect + (fatbs->BPB.Bpb32.RootClus - 2) * fatbs->SecPerClus;
 	}
 	else
 	{
@@ -107,8 +108,8 @@ bool FatFS::Init(DiskIO *pDiskIO)
 		vFatSize = fatbs->FATSz16;
 		vTotalSect = fatbs->TotSec16;
 		vRootDirSect = vFATStartSect + fatbs->NumFATs * fatbs->FATSz16;
-		vDataStartSect = vFATStartSect + fatbs->NumFATs * fatbs->FATSz16 +
-						vRootDirSect + fatbs->RootEntCnt * 32;
+		vDataStartSect = /*vFATStartSect + fatbs->NumFATs * fatbs->FATSz16 +*/
+						vRootDirSect + fatbs->RootEntCnt * 32 / 512;
 	}
 
 	//res = vDiskIO->SectRead(vDataStartSect, sect);
@@ -275,9 +276,11 @@ bool FatFS::Find(char *pPathName, DIR *pDir)
 					}
 					*p = 0;
 				}
+//				printf("Name : %s\r\n", name);
 				if (strcasecmp((const char*)pname, (const char*)name) == 0)
 				{
 					// Found a matching entry
+					//printf("Match filename\r\n");
 					found = true;
 					diridx = i;
 					// Previous matched is the parent directory
@@ -294,21 +297,21 @@ bool FatFS::Find(char *pPathName, DIR *pDir)
 					{
 						pDir->d_dirent.d_type = DT_REG;
 					}
-						pDir->d_dirent.FirstClus = (dir.ShortName.FstClusHI << 16L) | dir.ShortName.FstClusLO;
-						pDir->d_dirent.EntrySect = sectno;
-						pDir->d_dirent.EntryIdx = diridx;
-						if (dir.ShortName.Attr & FATFS_DIRATTR_HIDDEN)
-							pDir->d_dirent.d_att |= DA_HIDDEN;
-						if (dir.ShortName.Attr & FATFS_DIRATTR_SYSTEM)
-							pDir->d_dirent.d_att |= DA_SYSTEM;
-						if (dir.ShortName.Attr & FATFS_DIRATTR_READ_ONLY)
-							pDir->d_dirent.d_att |= DA_READONLY;
+					pDir->d_dirent.FirstClus = (dir.ShortName.FstClusHI << 16L) | dir.ShortName.FstClusLO;
+					pDir->d_dirent.EntrySect = sectno;
+					pDir->d_dirent.EntryIdx = diridx;
+					if (dir.ShortName.Attr & FATFS_DIRATTR_HIDDEN)
+						pDir->d_dirent.d_att |= DA_HIDDEN;
+					if (dir.ShortName.Attr & FATFS_DIRATTR_SYSTEM)
+						pDir->d_dirent.d_att |= DA_SYSTEM;
+					if (dir.ShortName.Attr & FATFS_DIRATTR_READ_ONLY)
+						pDir->d_dirent.d_att |= DA_READONLY;
 
 
-						strcpy(pDir->d_dirent.d_name, name);
-						pDir->d_dirent.d_namelen = strlen(name);
-						pDir->d_dirent.d_size = dir.ShortName.FileSize;
-						pDir->d_dirent.d_offset = 0;
+					strcpy(pDir->d_dirent.d_name, name);
+					pDir->d_dirent.d_namelen = strlen(name);
+					pDir->d_dirent.d_size = dir.ShortName.FileSize;
+					pDir->d_dirent.d_offset = 0;
 					break;
 				}
 				off += sizeof(FATFS_DIR);
@@ -338,7 +341,7 @@ bool FatFS::Find(char *pPathName, DIR *pDir)
 		if (pname && nsect <= 0)
 			return false;
 	}
-
+//printf("Found = %x\r\n", found);
 	return found;
 }
 
@@ -361,7 +364,7 @@ int FatFS::Open(char *pPathName, int FLags, int Mode)
 
 	if (fatfd == NULL)
 	{
-		printf("NO FD available to Open File\n\r");
+		//printf("NO FD available to Open File\n\r");
 		return -1;
 	}
 
@@ -369,6 +372,7 @@ int FatFS::Open(char *pPathName, int FLags, int Mode)
 
 	if (Find(pPathName, &fatfd->DirEntry))
 	{
+		//printf("Found file\r\n");
 		if (fatfd->DirEntry.d_dirent.d_type == DT_DIR)
 			return -1;
 		fatfd->pFs = (void*)this;
@@ -421,12 +425,12 @@ int FatFS::Read(int Fd, uint8_t *pBuff, size_t Len)
 	if (fatfd->pFs == this)
 	{
 		sectno = ClusToSect(fatfd->CurClus) + fatfd->SectIdx;
-
+//printf("sectno %d %d\r\n", sectno, fatfd->CurClus);
 		while (Len > 0)
 		{
 			uint32_t c = std::min(FATFS_SECTOR_SIZE - fatfd->SectOff, (uint32_t)Len);
 			c = std::min(c, pdir->d_dirent.d_size - pdir->d_dirent.d_offset);
-
+//printf("read len %d, %d\r\n", Len, c);
 			if (c > 0)
 			{
 				uint64_t off = (uint64_t)sectno * FATFS_SECTOR_SIZE + fatfd->SectOff;
