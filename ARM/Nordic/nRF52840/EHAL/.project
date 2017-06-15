@@ -241,11 +241,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app_handler.c</locationURI>
 		</link>
 		<link>
-			<name>src/ble_interf.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/ble_interf.cpp</locationURI>
-		</link>
-		<link>
 			<name>src/ble_service.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ble_service.cpp</locationURI>
