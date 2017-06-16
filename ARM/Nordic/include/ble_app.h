@@ -56,9 +56,6 @@ Modified by          Date              Description
 
 #endif
 
-
-#define APP_TIMER_PRESCALER             	0   /**< Value of the RTC1 PRESCALER register. */
-
 typedef enum _BleAppMode {
 	BLEAPP_MODE_LOOP,		// just main loop, No scheduler, no RTOS
 	BLEAPP_MODE_APPSCHED,	// use app_cheduler

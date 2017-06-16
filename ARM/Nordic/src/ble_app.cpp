@@ -114,10 +114,15 @@ extern "C" {
 
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
+// ORable application role
+#define BLEAPP_ROLE_PERIPHERAL			1
+#define BLEAPP_ROLE_CENTRAL				2
+
 #pragma pack(push, 4)
 
 typedef struct _BleAppData {
 	BLEAPP_MODE AppMode;
+	int AppRole;
 	uint16_t ConnHdl;	// BLE connection handle
 	int ConnLedPort;
 	int ConnLedPin;
@@ -128,7 +133,7 @@ typedef struct _BleAppData {
 static ble_gap_adv_params_t s_AdvParams;                                 /**< Parameters to be passed to the stack when starting advertising. */
 
 BLEAPP_DATA g_BleAppData = {
-	BLEAPP_MODE_LOOP, BLE_CONN_HANDLE_INVALID, -1, -1
+	BLEAPP_MODE_LOOP, 0, BLE_CONN_HANDLE_INVALID, -1, -1
 };
 
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
@@ -1143,6 +1148,16 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
      ble_cfg.gap_cfg.role_count_cfg.central_role_count = pBleAppCfg->CentLinkCount;//CENTRAL_LINK_COUNT;
      ble_cfg.gap_cfg.role_count_cfg.central_sec_count  = 0;
      err_code = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, ram_start);
+
+     if (pBleAppCfg->PeriLinkCount > 0 && pBleAppCfg->AdvInterval > 0)
+     {
+    	 g_BleAppData.AppRole |= BLEAPP_ROLE_PERIPHERAL;
+     }
+     if (pBleAppCfg->CentLinkCount > 0)
+     {
+    	 g_BleAppData.AppRole |= BLEAPP_ROLE_CENTRAL;
+     }
+
      APP_ERROR_CHECK(err_code);
 
      // Configure the maximum ATT MTU.
@@ -1206,8 +1221,11 @@ void BleAppRun()
 	}
 	else
 	{
-		uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
-		APP_ERROR_CHECK(err_code);
+		if (g_BleAppData.AppRole & BLEAPP_ROLE_PERIPHERAL)
+		{
+			uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
+			APP_ERROR_CHECK(err_code);
+		}
 	}
 
     while (1)
