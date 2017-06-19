@@ -61,8 +61,15 @@ __ALIGN(4) const uint8_t g_lesc_private_key[32] = {
 	0x66, 0x4f, 0xf8, 0x80, 0x1b, 0xe9, 0x56, 0x1d, 0xa3, 0x72, 0x82, 0x55, 0xb7, 0x4f, 0x47, 0xd0
 };
 */
+
+uint8_t g_AdvDataBuff[sizeof(PTHSENSOR_DATA) + 1] = {
+	BLEAPP_ADV_MANDATA_TYPE_PTH,
+};
+
+BLEAPP_ADV_MANDATA &g_AdvData = *(BLEAPP_ADV_MANDATA*)g_AdvDataBuff;
+
 // Evironmental Sensor Data to advertise
-PTHSENSOR_DATA g_PTHData;
+//PTHSENSOR_DATA &g_PTHData = *(PTHSENSOR_DATA *)g_AdvData.Data;
 
 const BLEAPP_CFG s_BleAppCfg = {
 	{ // Clock config nrf_clock_lf_cfg_t
@@ -84,8 +91,8 @@ const BLEAPP_CFG s_BleAppCfg = {
 	0,						// Pnp prod version
 	false,					// Enable device information service (DIS)
 	NULL,
-	(uint8_t*)&g_PTHData,              // Manufacture specific data to advertise
-	sizeof(g_PTHData),      // Length of manufacture specific data
+	(uint8_t*)&g_AdvDataBuff,   // Manufacture specific data to advertise
+	sizeof(g_AdvDataBuff),      // Length of manufacture specific data
 	BLEAPP_SECTYPE_NONE,    // Secure connection type
 	BLEAPP_SECEXCHG_NONE,   // Security key exchange
 	NULL,      				// Service uuids to advertise
@@ -148,7 +155,14 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
     	// Update environmental sensor data everytime advertisement timeout
     	// for re-advertisement
     	g_I2c.Enable();
-    	g_PthSensor.ReadPTH(g_PTHData);
+
+    	PTHSENSOR_DATA pthdata;
+    	g_PthSensor.ReadPTH(pthdata);
+
+    	// Do memcpy to adv data. Due to byte alignment, cannot read directly into
+    	// adv data
+    	memcpy(g_AdvData.Data, &pthdata, sizeof(PTHSENSOR_DATA));
+
     	g_I2c.Disable();
     }
 }
@@ -163,7 +177,12 @@ void HardwareInit()
     g_PthSensor.Init(s_PthSensorCfg, &g_I2c);
 
     // Update sensor data
-	g_PthSensor.ReadPTH(g_PTHData);
+    PTHSENSOR_DATA pthdata;
+	g_PthSensor.ReadPTH(pthdata);
+
+	// Do memcpy to adv data. Due to byte alignment, cannot read directly into
+	// adv data
+	memcpy(g_AdvData.Data, &pthdata, sizeof(PTHSENSOR_DATA));
 
 	g_I2c.Disable();
 }
