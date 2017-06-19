@@ -100,6 +100,9 @@ extern "C" {
 #define CONN_SUP_TIMEOUT                MSEC_TO_UNITS(4000, UNIT_10_MS)             /**< Connection supervisory timeout (4 seconds), Supervision Timeout uses 10 ms units. */
 
 #if (NRF_SD_BLE_API_VERSION <= 3)
+
+#define APP_TIMER_PRESCALER				0
+
 #define FIRST_CONN_PARAMS_UPDATE_DELAY  APP_TIMER_TICKS(5000, APP_TIMER_PRESCALER)  /**< Time from initiating event (connect or start of notification) to first time sd_ble_gap_conn_param_update is called (5 seconds). */
 #define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000, APP_TIMER_PRESCALER) /**< Time between each call to sd_ble_gap_conn_param_update after the first call (30 seconds). */
 #else
@@ -424,7 +427,8 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
         case BLE_GAP_EVT_DISCONNECTED:
         	BleConnLedOff();
         	g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
-        	ble_advertising_start(BLE_ADV_MODE_FAST);
+        	err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
+            APP_ERROR_CHECK(err_code);
         	break;
 
         case BLE_GAP_EVT_PASSKEY_DISPLAY:
@@ -449,7 +453,10 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
             {
             	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
-            		ble_advertising_start(BLE_ADV_MODE_SLOW);
+            	{
+            		err_code = ble_advertising_start(BLE_ADV_MODE_SLOW);
+                    APP_ERROR_CHECK(err_code);
+            	}
             }
             break;
 
@@ -950,14 +957,14 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 			options.ble_adv_slow_interval = pCfg->AdvSlowInterval;
 			options.ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
 		}
-
-		err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
-		APP_ERROR_CHECK(err_code);
+    }
+	err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
+	APP_ERROR_CHECK(err_code);
 
 #if (NRF_SD_BLE_API_VERSION > 3)
-		ble_advertising_conn_cfg_tag_set(CONN_CFG_TAG);
+	ble_advertising_conn_cfg_tag_set(CONN_CFG_TAG);
 #endif
-    }
+
 }
 
 void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
