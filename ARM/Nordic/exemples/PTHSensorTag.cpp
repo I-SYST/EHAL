@@ -68,6 +68,7 @@ uint8_t g_AdvDataBuff[sizeof(PTHSENSOR_DATA) + 1] = {
 
 BLEAPP_ADV_MANDATA &g_AdvData = *(BLEAPP_ADV_MANDATA*)g_AdvDataBuff;
 
+
 // Evironmental Sensor Data to advertise
 //PTHSENSOR_DATA &g_PTHData = *(PTHSENSOR_DATA *)g_AdvData.Data;
 
@@ -112,7 +113,9 @@ const BLEAPP_CFG s_BleAppCfg = {
 static const I2CCFG s_I2cCfg = {
 	0,			// I2C device number
 	{
+
 #ifdef PTH_BME280
+
 		{BLUEIO_TAG_BME280_I2C_SDA_PORT, BLUEIO_TAG_BME280_I2C_SDA_PIN, BLUEIO_TAG_BME280_I2C_SDA_PINOP, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
 		{BLUEIO_TAG_BME280_I2C_SCL_PORT, BLUEIO_TAG_BME280_I2C_SCL_PIN, BLUEIO_TAG_BME280_I2C_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
 #else
@@ -141,6 +144,7 @@ static PTHSENSOR_CFG s_PthSensorCfg = {
 // Environmental sensor instance
 PthBme280 g_Bme280Sensor;
 PthMS8607 g_MS8607Sensor;
+
 
 #ifdef PTH_BME280
 PTHSensor &g_PthSensor = g_Bme280Sensor;
