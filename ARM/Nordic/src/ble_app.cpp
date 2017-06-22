@@ -427,8 +427,8 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
         case BLE_GAP_EVT_DISCONNECTED:
         	BleConnLedOff();
         	g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
-        	err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
-            APP_ERROR_CHECK(err_code);
+        	//err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
+           // APP_ERROR_CHECK(err_code);
         	break;
 
         case BLE_GAP_EVT_PASSKEY_DISPLAY:
