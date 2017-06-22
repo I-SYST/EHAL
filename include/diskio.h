@@ -66,10 +66,13 @@ typedef struct _MasterBootRecord {
 typedef struct _Cache_Desc {
 	volatile int UseCnt;		                // semaphore
 	uint32_t    SectNo;			                // sector number of this cache
-	uint8_t     SectData[DISKIO_SECT_SIZE];		// sector data
+	//uint8_t     SectData[DISKIO_SECT_SIZE];		// sector data
+	uint8_t		*pSectData;		// Pointer to sector cache memory. Must be 1 sector size
 } DISKIO_CACHE_DESC;
 
 #pragma pack(pop)
+
+#ifdef __cplusplus
 
 class DiskIO {
 public:
@@ -121,7 +124,6 @@ private:
 	DISKIO_CACHE_DESC *vpCacheSect;
 };
 
-#ifdef __cplusplus
 extern "C" {
 #endif
 

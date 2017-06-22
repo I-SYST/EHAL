@@ -203,5 +203,7 @@ void __WEAK GPIOTE_IRQHandler(void)
 		}
 	}
 	NRF_GPIOTE->EVENTS_PORT = 0;
+
+	NVIC_ClearPendingIRQ(GPIOTE_IRQn);
 }
 

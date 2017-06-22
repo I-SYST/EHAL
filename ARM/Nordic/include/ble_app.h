@@ -56,8 +56,18 @@ Modified by          Date              Description
 
 #endif
 
+#define BLEAPP_ADV_MANDATA_TYPE_SN		0xFF	// Device Serial Number (8 bytes)
+#define BLEAPP_ADV_MANDATA_TYPE_PTH		1		// PTH Environmental sensor data
+#define BLEAPP_ADV_MANDATA_TYPE_MOTION	2		// Motion sensor data Accel, Gyro, Mag
 
-#define APP_TIMER_PRESCALER             	0   /**< Value of the RTC1 PRESCALER register. */
+#pragma pack(push, 1)
+// I-SYST Manufacture specific data format in advertisement
+typedef struct _BleAppAdvManData {
+	uint8_t Type;		// Data types (see defined code
+	uint8_t Data[1];	// type specific data follows can be more than 1 bytes
+} BLEAPP_ADV_MANDATA;
+
+#pragma pack(pop)
 
 typedef enum _BleAppMode {
 	BLEAPP_MODE_LOOP,		// just main loop, No scheduler, no RTOS

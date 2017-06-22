@@ -100,6 +100,9 @@ extern "C" {
 #define CONN_SUP_TIMEOUT                MSEC_TO_UNITS(4000, UNIT_10_MS)             /**< Connection supervisory timeout (4 seconds), Supervision Timeout uses 10 ms units. */
 
 #if (NRF_SD_BLE_API_VERSION <= 3)
+
+#define APP_TIMER_PRESCALER				0
+
 #define FIRST_CONN_PARAMS_UPDATE_DELAY  APP_TIMER_TICKS(5000, APP_TIMER_PRESCALER)  /**< Time from initiating event (connect or start of notification) to first time sd_ble_gap_conn_param_update is called (5 seconds). */
 #define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000, APP_TIMER_PRESCALER) /**< Time between each call to sd_ble_gap_conn_param_update after the first call (30 seconds). */
 #else
@@ -114,10 +117,15 @@ extern "C" {
 
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
+// ORable application role
+#define BLEAPP_ROLE_PERIPHERAL			1
+#define BLEAPP_ROLE_CENTRAL				2
+
 #pragma pack(push, 4)
 
 typedef struct _BleAppData {
 	BLEAPP_MODE AppMode;
+	int AppRole;
 	uint16_t ConnHdl;	// BLE connection handle
 	int ConnLedPort;
 	int ConnLedPin;
@@ -128,7 +136,7 @@ typedef struct _BleAppData {
 static ble_gap_adv_params_t s_AdvParams;                                 /**< Parameters to be passed to the stack when starting advertising. */
 
 BLEAPP_DATA g_BleAppData = {
-	BLEAPP_MODE_LOOP, BLE_CONN_HANDLE_INVALID, -1, -1
+	BLEAPP_MODE_LOOP, 0, BLE_CONN_HANDLE_INVALID, -1, -1
 };
 
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
@@ -419,7 +427,8 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
         case BLE_GAP_EVT_DISCONNECTED:
         	BleConnLedOff();
         	g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
-        	ble_advertising_start(BLE_ADV_MODE_FAST);
+        	//err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
+           // APP_ERROR_CHECK(err_code);
         	break;
 
         case BLE_GAP_EVT_PASSKEY_DISPLAY:
@@ -444,7 +453,10 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
             {
             	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
-            		ble_advertising_start(BLE_ADV_MODE_SLOW);
+            	{
+            		err_code = ble_advertising_start(BLE_ADV_MODE_SLOW);
+                    APP_ERROR_CHECK(err_code);
+            	}
             }
             break;
 
@@ -945,14 +957,14 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 			options.ble_adv_slow_interval = pCfg->AdvSlowInterval;
 			options.ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
 		}
-
-		err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
-		APP_ERROR_CHECK(err_code);
+    }
+	err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
+	APP_ERROR_CHECK(err_code);
 
 #if (NRF_SD_BLE_API_VERSION > 3)
-		ble_advertising_conn_cfg_tag_set(CONN_CFG_TAG);
+	ble_advertising_conn_cfg_tag_set(CONN_CFG_TAG);
 #endif
-    }
+
 }
 
 void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
@@ -1143,6 +1155,16 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
      ble_cfg.gap_cfg.role_count_cfg.central_role_count = pBleAppCfg->CentLinkCount;//CENTRAL_LINK_COUNT;
      ble_cfg.gap_cfg.role_count_cfg.central_sec_count  = 0;
      err_code = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, ram_start);
+
+     if (pBleAppCfg->PeriLinkCount > 0 && pBleAppCfg->AdvInterval > 0)
+     {
+    	 g_BleAppData.AppRole |= BLEAPP_ROLE_PERIPHERAL;
+     }
+     if (pBleAppCfg->CentLinkCount > 0)
+     {
+    	 g_BleAppData.AppRole |= BLEAPP_ROLE_CENTRAL;
+     }
+
      APP_ERROR_CHECK(err_code);
 
      // Configure the maximum ATT MTU.
@@ -1206,8 +1228,11 @@ void BleAppRun()
 	}
 	else
 	{
-		uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
-		APP_ERROR_CHECK(err_code);
+		if (g_BleAppData.AppRole & BLEAPP_ROLE_PERIPHERAL)
+		{
+			uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
+			APP_ERROR_CHECK(err_code);
+		}
 	}
 
     while (1)

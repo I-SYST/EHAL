@@ -50,16 +50,27 @@ Modified by          Date              Description
 
 #define DEVICE_NAME                     "PTHSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
+#define PTH_BME280
+
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(1000, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      60                                         /**< The advertising timeout (in units of seconds). */
+
 /*
 __ALIGN(4) const uint8_t g_lesc_private_key[32] = {
 	0x9a, 0x58, 0xc0, 0xff, 0xeb, 0x7f, 0x4b, 0x89, 0x41, 0xc2, 0x05, 0xfc, 0x9c, 0xca, 0x3e, 0xe5,
 	0x66, 0x4f, 0xf8, 0x80, 0x1b, 0xe9, 0x56, 0x1d, 0xa3, 0x72, 0x82, 0x55, 0xb7, 0x4f, 0x47, 0xd0
 };
 */
+
+uint8_t g_AdvDataBuff[sizeof(PTHSENSOR_DATA) + 1] = {
+	BLEAPP_ADV_MANDATA_TYPE_PTH,
+};
+
+BLEAPP_ADV_MANDATA &g_AdvData = *(BLEAPP_ADV_MANDATA*)g_AdvDataBuff;
+
+
 // Evironmental Sensor Data to advertise
-PTHSENSOR_DATA g_PTHData;
+//PTHSENSOR_DATA &g_PTHData = *(PTHSENSOR_DATA *)g_AdvData.Data;
 
 const BLEAPP_CFG s_BleAppCfg = {
 	{ // Clock config nrf_clock_lf_cfg_t
@@ -81,15 +92,15 @@ const BLEAPP_CFG s_BleAppCfg = {
 	0,						// Pnp prod version
 	false,					// Enable device information service (DIS)
 	NULL,
-	(uint8_t*)&g_PTHData,              // Manufacture specific data to advertise
-	sizeof(g_PTHData),      // Length of manufacture specific data
+	(uint8_t*)&g_AdvDataBuff,   // Manufacture specific data to advertise
+	sizeof(g_AdvDataBuff),      // Length of manufacture specific data
 	BLEAPP_SECTYPE_NONE,    // Secure connection type
 	BLEAPP_SECEXCHG_NONE,   // Security key exchange
 	NULL,      				// Service uuids to advertise
 	0, 						// Total number of uuids
 	APP_ADV_INTERVAL,       // Advertising interval in msec
 	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
-	0,                          // Slow advertising interval, if > 0, fallback to
+	1000,                          // Slow advertising interval, if > 0, fallback to
 								// slow interval on adv timeout and advertise until connected
 	0,
 	0,
@@ -102,7 +113,9 @@ const BLEAPP_CFG s_BleAppCfg = {
 static const I2CCFG s_I2cCfg = {
 	0,			// I2C device number
 	{
-#if 0
+
+#ifdef PTH_BME280
+
 		{BLUEIO_TAG_BME280_I2C_SDA_PORT, BLUEIO_TAG_BME280_I2C_SDA_PIN, BLUEIO_TAG_BME280_I2C_SDA_PINOP, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
 		{BLUEIO_TAG_BME280_I2C_SCL_PORT, BLUEIO_TAG_BME280_I2C_SCL_PIN, BLUEIO_TAG_BME280_I2C_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
 #else
@@ -132,7 +145,12 @@ static PTHSENSOR_CFG s_PthSensorCfg = {
 PthBme280 g_Bme280Sensor;
 PthMS8607 g_MS8607Sensor;
 
+
+#ifdef PTH_BME280
+PTHSensor &g_PthSensor = g_Bme280Sensor;
+#else
 PTHSensor &g_PthSensor = g_MS8607Sensor;
+#endif
 
 void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 {
@@ -141,7 +159,14 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
     	// Update environmental sensor data everytime advertisement timeout
     	// for re-advertisement
     	g_I2c.Enable();
-    	g_PthSensor.ReadPTH(g_PTHData);
+
+    	PTHSENSOR_DATA pthdata;
+    	g_PthSensor.ReadPTH(pthdata);
+
+    	// Do memcpy to adv data. Due to byte alignment, cannot read directly into
+    	// adv data
+    	memcpy(g_AdvData.Data, &pthdata, sizeof(PTHSENSOR_DATA));
+
     	g_I2c.Disable();
     }
 }
@@ -156,7 +181,12 @@ void HardwareInit()
     g_PthSensor.Init(s_PthSensorCfg, &g_I2c);
 
     // Update sensor data
-	g_PthSensor.ReadPTH(g_PTHData);
+    PTHSENSOR_DATA pthdata;
+	g_PthSensor.ReadPTH(pthdata);
+
+	// Do memcpy to adv data. Due to byte alignment, cannot read directly into
+	// adv data
+	memcpy(g_AdvData.Data, &pthdata, sizeof(PTHSENSOR_DATA));
 
 	g_I2c.Disable();
 }

@@ -41,12 +41,38 @@ Modified by          Date              Description
 
 SDCard::SDCard()
 {
-
+	memset(vCacheDesc, 0, sizeof(vCacheDesc));
 }
 
 SDCard::~SDCard()
 {
+}
 
+bool SDCard::Init(DeviceIntrf *pDevInterf, uint8_t *pCacheMem, int CacheMemSize)
+{
+	int nbcache = CacheMemSize / DISKIO_SECT_SIZE;
+	DISKIO_CACHE_DESC *cachedesc = NULL;
+
+	if (pCacheMem)
+	{
+		if (nbcache > SDCARD_CACHE_MAX)
+			nbcache = SDCARD_CACHE_MAX;
+
+		NbCacheBlk = nbcache;
+
+		if (nbcache > 0)
+		{
+			for (int i = 0; i < nbcache; i++)
+			{
+				vCacheDesc[i].pSectData = pCacheMem;
+				pCacheMem += DISKIO_SECT_SIZE;
+			}
+
+			cachedesc = vCacheDesc;
+		}
+	}
+
+	return Init(pDevInterf, cachedesc, nbcache);
 }
 
 bool SDCard::Init(DeviceIntrf *pDevInterf, DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk)
