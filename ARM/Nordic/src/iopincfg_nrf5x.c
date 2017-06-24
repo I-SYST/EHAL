@@ -37,14 +37,6 @@ Modified by          Date              Description
 
 #include "nrf.h"
 
-/*#ifdef NRF51
-#include "nrf51.h"
-#include "nrf51_bitfields.h"
-#else
-#include "nrf52.h"
-#include "nrf52_bitfields.h"
-#define NRF_GPIO		NRF_P0
-#endif*/
 #include "nrf_gpiote.h"
 
 #include "iopincfg.h"
@@ -59,18 +51,27 @@ typedef struct {
 IOPINSENS_EVTHOOK s_GpIOSenseEvt[IOPIN_MAX_INT] = { {0, NULL}, };
 
 /**
- * Configure individual I/O pin. nRF51 only have 1 port so PortNo is not used
+ * @brief Configure individual I/O pin. nRF51 only have 1 port so PortNo is not used
  *
  * @Param 	PortNo	: Port number
  * 			PinNo  	: Pin number
  * 			PinOp	: Pin function index from 0. MCU dependent
  * 			Dir     : I/O direction
- *			Resistor : Resistor config
+ *			Resistor: Resistor configuration
  *			Type	: I/O type
  */
 void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resistor, IOPINTYPE Type)
 {
 	uint32_t cnf = 0;
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
 
 	if (PortNo == -1 || PinNo == -1)
 		return;
@@ -100,7 +101,7 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 			break;
 	}
 
-	NRF_GPIO->PIN_CNF[PinNo] = cnf;
+	reg->PIN_CNF[PinNo] = cnf;
 }
 
 /**
@@ -152,6 +153,16 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
 	if (IntNo < 0 || IntNo >= IOPIN_MAX_INT)
 		return false;
 
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
 	//NRF_GPIOTE->CONFIG[IntNo] &= ~(GPIOTE_CONFIG_PORT_PIN_Msk | GPIOTE_CONFIG_POLARITY_Msk);
 	switch (Sense)
 	{
@@ -159,19 +170,19 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
 			NRF_GPIOTE->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_HiToLo << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
 					                    | ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
 					                    | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
-			NRF_GPIO->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
+			reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
 			break;
 		case IOPINSENSE_HIGH_TRANSITION:
 			NRF_GPIOTE->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_LoToHi << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
 					                    | ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
 					                    | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
-			NRF_GPIO->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_High << GPIO_PIN_CNF_SENSE_Pos);
+			reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_High << GPIO_PIN_CNF_SENSE_Pos);
 			break;
 		case IOPINSENSE_TOGGLE:
 			NRF_GPIOTE->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_Toggle << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
 					                    | ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
 					                    | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
-			NRF_GPIO->PIN_CNF[PinNo] |= (3 << GPIO_PIN_CNF_SENSE_Pos);
+			reg->PIN_CNF[PinNo] |= (3 << GPIO_PIN_CNF_SENSE_Pos);
 			break;
 	}
 
@@ -191,6 +202,77 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
     return true;
 }
 
+/**
+ * @brief Set I/O pin sensing option
+ *
+ * Some hardware allow pin sensing to wake up or active other subsystem without
+ * requiring enabling interrupts. This requires the I/O already configured
+ *
+ * @param	PortNo : Port number (up to 32 ports)
+ * 			PinNo   : Pin number (up to 32 pins)
+ * 			Sense   : Sense type of event on the I/O pin
+ */
+void IOPinSetSense(int PortNo, int PinNo, IOPINSENSE Sense)
+{
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
+	// Clear sense
+	reg->PIN_CNF[PinNo] &= ~(GPIO_PIN_CNF_SENSE_Msk << GPIO_PIN_CNF_SENSE_Pos);
+	switch (Sense)
+	{
+		case IOPINSENSE_LOW_DISABLE:	// Disable pin sense
+			// Already done above
+			break;
+		case IOPINSENSE_LOW_TRANSITION:	// Event on falling edge
+			reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
+			break;
+		case IOPINSENSE_HIGH_TRANSITION:// Event on raising edge
+			reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_High << GPIO_PIN_CNF_SENSE_Pos);
+			break;
+		case IOPINSENSE_TOGGLE:			// Event on state change
+			// Not supported, use sense low for now
+			reg->PIN_CNF[PinNo] |= (3 << GPIO_PIN_CNF_SENSE_Pos);
+			break;
+	}
+}
+
+/**
+ * @brief Set I/O pin drive strength option
+ *
+ * Some hardware allow setting pin drive strength. This requires the I/O already configured
+ *
+ * @param	PortNo 	: Port number (up to 32 ports)
+ * 			PinNo  	: Pin number (up to 32 pins)
+ * 			Strength: Pin drive strength
+ */
+void IOPinSetStrength(int PortNo, int PinNo, IOPINSTRENGTH Strength)
+{
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
+	reg->PIN_CNF[PinNo] &= ~(GPIO_PIN_CNF_DRIVE_Msk << GPIO_PIN_CNF_DRIVE_Pos);
+	if (Strength == IOPINSTRENGTH_STRONG)
+	{
+		// Stronger drive strength
+		reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_DRIVE_H0H1 << GPIO_PIN_CNF_DRIVE_Pos);
+	}
+}
+
 void __WEAK GPIOTE_IRQHandler(void)
 {
 	for (int i = 0; i < IOPIN_MAX_INT; i++)
@@ -206,4 +288,5 @@ void __WEAK GPIOTE_IRQHandler(void)
 
 	NVIC_ClearPendingIRQ(GPIOTE_IRQn);
 }
+
 

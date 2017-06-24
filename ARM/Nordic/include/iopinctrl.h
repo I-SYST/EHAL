@@ -6,7 +6,7 @@ Author : Hoang Nguyen Hoan          June. 2, 2014
 Desc   : General I/O pin control implementation specific 
 		 This file must be named iopinctrl.h no matter which target
 
-		 This is nRF52 implementation
+		 This is nRF51 implementation
 
 Copyright (c) 2014, I-SYST inc., all rights reserved
 
@@ -38,45 +38,164 @@ Modified by          Date              Description
 #define __IOPINCTRL_H__
 
 #include <stdint.h>
-#include "nrf52.h"
+#include "nrf.h"
 #include "iopincfg.h"
 
+/**
+ * @brief	Set gpio pin direction
+ *
+ * 	change pin direction only without changing any other settings
+ * 	for fast switching between In & Out
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ * 			Dir     : I/O direction
+ */
 static inline void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
 {
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
 	if (Dir == IOPINDIR_OUTPUT)
-		NRF_P0->DIRSET = (1 << PinNo);
+		reg->DIRSET = (1 << PinNo);
 	else if (Dir == IOPINDIR_INPUT)
-		NRF_P0->DIRCLR = (1 << PinNo);
+		reg->DIRCLR = (1 << PinNo);
 }
 
+/**
+ * @brief	Read pin state
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ *
+ * @return	Pin state 1 or 0
+ */
 static inline int IOPinRead(int PortNo, int PinNo)
 {
-	return (NRF_P0->IN >> PinNo) & 1;
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
+	return (reg->IN >> PinNo) & 1;
 }
 
+/**
+ * @brief	Set pin to high (1 logic)
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ */
 static inline void IOPinSet(int PortNo, int PinNo)
 {
-	NRF_P0->OUTSET = (1 << PinNo);
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
+	reg->OUTSET = (1 << PinNo);
 }
 
+/**
+ * @brief	Set pin to low (0 logic)
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ */
 static inline void IOPinClear(int PortNo, int PinNo)
 {
-	NRF_P0->OUTCLR = (1 << PinNo);
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
+	reg->OUTCLR = (1 << PinNo);
 }
 
+/**
+ * @brief	Toggle pin state (invert pin state)
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ */
 static inline void IOPinToggle(int PortNo, int PinNo)
 {
-	NRF_P0->OUT = NRF_P0->OUT ^ (1 << PinNo);
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
+	reg->OUT = NRF_GPIO->OUT ^ (1 << PinNo);
 }
 
+/**
+ * @brief	Read all pins on port
+ *
+ * @Param 	PortNo	: Port number
+ *
+ * @return	Bit field pin states
+ */
 static inline uint32_t IOPinReadPort(int PortNo)
 {
-	return NRF_P0->IN;
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
+	return reg->IN;
 }
 
+/**
+ * @brief	Write state to all pin on port
+ *
+ * @Param 	PortNo	: Port number
+ * 			Data	: Bit field state of all pins on port
+ */
 static inline void IOPinWritePort(int PortNo, uint32_t Data)
 {
-	NRF_P0->OUT = Data;
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
+	reg->OUT = Data;
 }
 
 #endif	// __IOPINCTRL_H__

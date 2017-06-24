@@ -59,11 +59,19 @@ typedef enum __iopin_type {
 	IOPINTYPE_OPENDRAIN = 1
 } IOPINTYPE;
 
+// I/O pin sense type
 typedef enum __iopin_sense {
+	IOPINSENSE_LOW_DISABLE,			// Disable pin sense
 	IOPINSENSE_LOW_TRANSITION,		// Event on falling edge
 	IOPINSENSE_HIGH_TRANSITION,		// Event on raising edge
 	IOPINSENSE_TOGGLE,				// Event on state change
 } IOPINSENSE;
+
+// I/O pin drive strength
+typedef enum __iopin_drive_strength {
+	IOPINSTRENGTH_REGULAR,			// Regular driver strength (normal default)
+	IOPINSTRENGTH_STRONG,			// Stronger drive strength
+} IOPINSTRENGTH;
 
 #pragma pack(push,4)
 
@@ -151,6 +159,29 @@ void IOPinDisbleInterrupt(int IntNo);
  * 			pEvtCB	: Pointer to callback function when event occurs
  */
 bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSENSE Sense, IOPINEVT_CB pEvtCB);
+
+/**
+ * @brief Set I/O pin sensing option
+ *
+ * Some hardware allow pin sensing to wake up or active other subsystem without
+ * requiring enabling interrupts. This requires the I/O already configured
+ *
+ * @param	PortNo : Port number (up to 32 ports)
+ * 			PinNo   : Pin number (up to 32 pins)
+ * 			Sense   : Sense type of event on the I/O pin
+ */
+void IOPinSetSense(int PortNo, int PinNo, IOPINSENSE Sense);
+
+/**
+ * @brief Set I/O pin drive strength option
+ *
+ * Some hardware allow setting pin drive strength. This requires the I/O already configured
+ *
+ * @param	PortNo 	: Port number (up to 32 ports)
+ * 			PinNo  	: Pin number (up to 32 pins)
+ * 			Strength: Pin drive strength
+ */
+void IOPinSetStrength(int PortNo, int PinNo, IOPINSTRENGTH Strength);
 
 #ifdef __cplusplus
 }
