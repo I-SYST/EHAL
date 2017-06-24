@@ -41,6 +41,16 @@ Modified by          Date              Description
 #include "nrf.h"
 #include "iopincfg.h"
 
+/**
+ * @brief	Set gpio pin direction
+ *
+ * 	change pin direction only without changing any other settings
+ * 	for fast switching between In & Out
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ * 			Dir     : I/O direction
+ */
 static inline void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
 {
 	NRF_GPIO_Type *reg = NRF_GPIO;
@@ -59,6 +69,14 @@ static inline void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
 		reg->DIRCLR = (1 << PinNo);
 }
 
+/**
+ * @brief	Read pin state
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ *
+ * @return	Pin state 1 or 0
+ */
 static inline int IOPinRead(int PortNo, int PinNo)
 {
 	NRF_GPIO_Type *reg = NRF_GPIO;
@@ -74,6 +92,12 @@ static inline int IOPinRead(int PortNo, int PinNo)
 	return (reg->IN >> PinNo) & 1;
 }
 
+/**
+ * @brief	Set pin to high (1 logic)
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ */
 static inline void IOPinSet(int PortNo, int PinNo)
 {
 	NRF_GPIO_Type *reg = NRF_GPIO;
@@ -89,6 +113,12 @@ static inline void IOPinSet(int PortNo, int PinNo)
 	reg->OUTSET = (1 << PinNo);
 }
 
+/**
+ * @brief	Set pin to low (0 logic)
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ */
 static inline void IOPinClear(int PortNo, int PinNo)
 {
 	NRF_GPIO_Type *reg = NRF_GPIO;
@@ -104,6 +134,12 @@ static inline void IOPinClear(int PortNo, int PinNo)
 	reg->OUTCLR = (1 << PinNo);
 }
 
+/**
+ * @brief	Toggle pin state (invert pin state)
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ */
 static inline void IOPinToggle(int PortNo, int PinNo)
 {
 	NRF_GPIO_Type *reg = NRF_GPIO;
@@ -119,6 +155,13 @@ static inline void IOPinToggle(int PortNo, int PinNo)
 	reg->OUT = NRF_GPIO->OUT ^ (1 << PinNo);
 }
 
+/**
+ * @brief	Read all pins on port
+ *
+ * @Param 	PortNo	: Port number
+ *
+ * @return	Bit field pin states
+ */
 static inline uint32_t IOPinReadPort(int PortNo)
 {
 	NRF_GPIO_Type *reg = NRF_GPIO;
@@ -134,6 +177,12 @@ static inline uint32_t IOPinReadPort(int PortNo)
 	return reg->IN;
 }
 
+/**
+ * @brief	Write state to all pin on port
+ *
+ * @Param 	PortNo	: Port number
+ * 			Data	: Bit field state of all pins on port
+ */
 static inline void IOPinWritePort(int PortNo, uint32_t Data)
 {
 	NRF_GPIO_Type *reg = NRF_GPIO;

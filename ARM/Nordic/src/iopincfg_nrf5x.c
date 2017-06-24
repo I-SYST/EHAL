@@ -51,13 +51,13 @@ typedef struct {
 IOPINSENS_EVTHOOK s_GpIOSenseEvt[IOPIN_MAX_INT] = { {0, NULL}, };
 
 /**
- * Configure individual I/O pin. nRF51 only have 1 port so PortNo is not used
+ * @brief Configure individual I/O pin. nRF51 only have 1 port so PortNo is not used
  *
  * @Param 	PortNo	: Port number
  * 			PinNo  	: Pin number
  * 			PinOp	: Pin function index from 0. MCU dependent
  * 			Dir     : I/O direction
- *			Resistor : Resistor config
+ *			Resistor: Resistor configuration
  *			Type	: I/O type
  */
 void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resistor, IOPINTYPE Type)
