@@ -40,6 +40,16 @@ Modified by          Date              Description
 #include <stdint.h>
 #include "LPC11Uxx.h"
 
+/**
+ * @brief	Set gpio pin direction
+ *
+ * 	change pin direction only without changing any other settings
+ * 	for fast switching between In & Out
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ * 			Dir     : I/O direction
+ */
 static inline void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
 {
 	if (Dir == IOPINDIR_OUTPUT)
@@ -48,29 +58,73 @@ static inline void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
 		LPC_GPIO->DIR[PortNo] &= ~(1 << PinNo);
 }
 
+/**
+ * @brief	Read pin state
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ *
+ * @return	Pin state 1 or 0
+ */
 static inline int IOPinRead(int PortNo, int PinNo)
 {
 	return ((LPC_GPIO->PIN[PortNo] >> PinNo ) & 1);
 }
 
+/**
+ * @brief	Set pin to high (1 logic)
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ */
 static inline void IOPinSet(int PortNo, int PinNo)
 {
 	LPC_GPIO->SET[PortNo] = (1 << PinNo);
 }
 
+/**
+ * @brief	Set pin to low (0 logic)
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ */
 static inline void IOPinClear(int PortNo, int PinNo)
 {
 	LPC_GPIO->CLR[PortNo] = (1 << PinNo);
 }
 
+/**
+ * @brief	Toggle pin state (invert pin state)
+ *
+ * @Param 	PortNo	: Port number
+ * 			PinNo  	: Pin number
+ */
 static inline void IOPinToggle(int PortNo, int PinNo)
 {
 	LPC_GPIO->NOT[PortNo] = (1 << PinNo);
 }
 
+/**
+ * @brief	Read all pins on port
+ *
+ * @Param 	PortNo	: Port number
+ *
+ * @return	Bit field pin states
+ */
 static inline uint32_t IOPinReadPort(int PortNo)
 {
 	return LPC_GPIO->PIN[PortNo];
+}
+
+/**
+ * @brief	Write state to all pin on port
+ *
+ * @Param 	PortNo	: Port number
+ * 			Data	: Bit field state of all pins on port
+ */
+static inline void IOPinWritePort(int PortNo, uint32_t Data)
+{
+	LPC_GPIO->W[PortNo] = Data;
 }
 
 static inline void IOPinWrite8Port(int PortNo, uint8_t Data)
