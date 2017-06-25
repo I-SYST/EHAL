@@ -161,7 +161,7 @@ bool LpcUARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	}
 
 	if (pCfg->Rate)
-		pDev->Rate = LpcUARTSetRate(&pDev->SerIntrf, pCfg->Rate);
+		pDev->Rate = LpcUARTSetRate(&pDev->DevIntrf, pCfg->Rate);
 	else
 	{
 		// Auto baudrate
@@ -197,20 +197,20 @@ bool LpcUARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
 	if (pCfg->pRxMem && pCfg->RxMemSize > 0)
 	{
-		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1, pCfg->bAutoDrop);
+		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1, pCfg->bFifoBlocking);
 	}
 	else
 	{
-		pDev->hRxFifo = CFifoInit(s_UARTRxFifoMem, UART_RX_CFIFO_MEM_SIZE, 1, pCfg->bAutoDrop);
+		pDev->hRxFifo = CFifoInit(s_UARTRxFifoMem, UART_RX_CFIFO_MEM_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	if (pCfg->pTxMem && pCfg->TxMemSize > 0)
 	{
-		pDev->hTxFifo = CFifoInit(pCfg->pTxMem, pCfg->TxMemSize, 1, pCfg->bAutoDrop);
+		pDev->hTxFifo = CFifoInit(pCfg->pTxMem, pCfg->TxMemSize, 1, pCfg->bFifoBlocking);
 	}
 	else
 	{
-		pDev->hTxFifo = CFifoInit(s_UARTTxFifoMem, UART_TX_CFIFO_MEM_SIZE, 1, pCfg->bAutoDrop);
+		pDev->hTxFifo = CFifoInit(s_UARTTxFifoMem, UART_TX_CFIFO_MEM_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	// Start tx
@@ -225,18 +225,18 @@ bool LpcUARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->bIrDAMode = pCfg->bIrDAMode;
 	pDev->IrDAPulseDiv = pCfg->IrDAPulseDiv;
 	pDev->Parity = pCfg->Parity;
-	pDev->SerIntrf.Disable = LpcUARTDisable;
-	pDev->SerIntrf.Enable = LpcUARTEnable;
-	pDev->SerIntrf.GetRate = LpcUARTGetRate;
-	pDev->SerIntrf.SetRate = LpcUARTSetRate;
-	pDev->SerIntrf.StartRx = LpcUARTStartRx;
-	pDev->SerIntrf.RxData = LpcUARTRxData;
-	pDev->SerIntrf.StopRx = LpcUARTStopRx;
-	pDev->SerIntrf.StartTx = LpcUARTStartTx;
-	pDev->SerIntrf.TxData = LpcUARTTxData;
-	pDev->SerIntrf.StopTx = LpcUARTStopTx;
+	pDev->DevIntrf.Disable = LpcUARTDisable;
+	pDev->DevIntrf.Enable = LpcUARTEnable;
+	pDev->DevIntrf.GetRate = LpcUARTGetRate;
+	pDev->DevIntrf.SetRate = LpcUARTSetRate;
+	pDev->DevIntrf.StartRx = LpcUARTStartRx;
+	pDev->DevIntrf.RxData = LpcUARTRxData;
+	pDev->DevIntrf.StopRx = LpcUARTStopRx;
+	pDev->DevIntrf.StartTx = LpcUARTStartTx;
+	pDev->DevIntrf.TxData = LpcUARTTxData;
+	pDev->DevIntrf.StopTx = LpcUARTStopTx;
 	pDev->EvtCallback = pCfg->EvtCallback;
-	pDev->SerIntrf.Busy = false;
+	pDev->DevIntrf.Busy = false;
 
 	g_LpcUartDev[pCfg->DevNo].bTxReady = true;
 

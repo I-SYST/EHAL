@@ -35,75 +35,14 @@ Modified by          Date              Description
 #include <stdio.h>
 #include <string.h>
 
-#include "lpci2c.h"
+#include "system_LPC17xx.h"
+
+#include "i2c_lpcxx.h"
 #include "iopincfg.h"
+#include "iopinctrl.h"
 
 static LPCI2CDEV g_LpcI2CDev[LPCI2C_MAX_INTRF];
 
-bool I2CInit(I2CDEV *pDev, I2CCFG *pCfgData)
-{
-
-	uint32_t clk = (SystemCoreClock >> 2) / pCfgData->Rate;
-
-	// Note : contrary to the user guide.  Pullup resistor is required
-	// for I2C to function properly
-	// Pin selection for SCL
-	IOPinConfig(pCfgData->SclPortNo, pCfgData->SclPinNo, pCfgData->SclPinOp, IOPINDIR_OUTPUT,
-				IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN);
-
-	// Pin selection for SDA
-	IOPinConfig(pCfgData->SdaPortNo, pCfgData->SdaPinNo, pCfgData->SdaPinOp, IOPINDIR_BI,
-				IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN);
-
-	switch (pCfgData->I2CNo)
-	{
-		case 0:
-			LPC_SC->PCONP |= LPC_PCONP_I2C0;
-			LPC_SC->PCLKSEL0 &= ~LPC_PCLKSEL0_I2C0_MASK; // CCLK / 4
-			g_LpcI2CDev[pCfgData->I2CNo].pI2CReg = LPC_I2C0;
-			//NVIC_DisableIRQ(I2C0_IRQn);
-			break;
-		case 1:
-			LPC_SC->PCONP |= LPC_PCONP_I2C1;
-			LPC_SC->PCLKSEL1 &= ~LPC_PCLKSEL1_I2C1_MASK; // CCLK / 4
-			g_LpcI2CDev[pCfgData->I2CNo].pI2CReg = LPC_I2C1;
-			//NVIC_DisableIRQ(I2C1_IRQn);
-			break;
-		case 2:
-			LPC_SC->PCONP |= LPC_PCONP_I2C2;
-			LPC_SC->PCLKSEL1 &= ~LPC_PCLKSEL1_I2C2_MASK; // CCLK / 4
-			g_LpcI2CDev[pCfgData->I2CNo].pI2CReg = LPC_I2C2;
-			//NVIC_DisableIRQ(I2C2_IRQn);
-			break;
-	}
-	g_LpcI2CDev[pCfgData->I2CNo].I2CNo = pCfgData->I2CNo;
-	g_LpcI2CDev[pCfgData->I2CNo].pI2CReg->I2SCLH = clk >> 1;
-	g_LpcI2CDev[pCfgData->I2CNo].pI2CReg->I2SCLL = clk - g_LpcI2CDev[pCfgData->I2CNo].pI2CReg->I2SCLH;
-
-	g_LpcI2CDev[pCfgData->I2CNo].pI2CReg->I2CONCLR = LPCI2C_I2CONCLR_AAC | LPCI2C_I2CONCLR_STAC |
-						 	 	 	 	 	 	 	 LPCI2C_I2CONCLR_STOC | LPCI2C_I2CONCLR_I2ENC;
-	g_LpcI2CDev[pCfgData->I2CNo].pI2cDev = pDev;
-
-	pDev->Mode = pCfgData->Mode;
-	pDev->Rate = pCfgData->Rate;
-	pDev->SlaveAddr = pCfgData->SlaveAddr;
-	pDev->MaxRetry = pCfgData->MaxRetry;
-
-	pDev->SerIntrf.pDevData = (void*)&g_LpcI2CDev[pCfgData->I2CNo];
-
-	pDev->SerIntrf.Disable = LpcI2CDisable;
-	pDev->SerIntrf.Enable = LpcI2CEnable;
-	pDev->SerIntrf.GetRate = LpcI2CGetRate;
-	pDev->SerIntrf.SetRate = LpcI2CSetRate;
-	pDev->SerIntrf.StartRx = LpcI2CStartRx;
-	pDev->SerIntrf.RxData = LpcI2CRxData;
-	pDev->SerIntrf.StopRx = LpcI2CStopRx;
-	pDev->SerIntrf.StartTx = LpcI2CStartTx;
-	pDev->SerIntrf.TxData = LpcI2CTxData;
-	pDev->SerIntrf.StopTx = LpcI2CStopTx;
-
-	return true;
-}
 
 bool LpcI2CWaitInt(LPCI2CDEV *pDev, int Timeout)
 {
@@ -162,19 +101,19 @@ void LpcI2CStopCond(LPCI2CDEV *pDev)
 }
 
 
-void LpcI2CDisable(SERINTRFDEV *pDev)
+void LpcI2CDisable(DEVINTRF *pDev)
 {
 	if (pDev && pDev->pDevData)
 		((LPCI2CDEV*)pDev->pDevData)->pI2CReg->I2CONCLR = LPCI2C_I2CONCLR_I2ENC;
 }
 
-void LpcI2CEnable(SERINTRFDEV *pDev)
+void LpcI2CEnable(DEVINTRF *pDev)
 {
 	if (pDev && pDev->pDevData)
 		((LPCI2CDEV*)pDev->pDevData)->pI2CReg->I2CONSET |= LPCI2C_I2CONSET_I2EN;
 }
 
-int LpcI2CGetRate(SERINTRFDEV *pDev)
+int LpcI2CGetRate(DEVINTRF *pDev)
 {
 	int rate = 0;
 
@@ -184,7 +123,7 @@ int LpcI2CGetRate(SERINTRFDEV *pDev)
 	return rate;
 }
 
-int LpcI2CSetRate(SERINTRFDEV *pDev, int RateHz)
+int LpcI2CSetRate(DEVINTRF *pDev, int RateHz)
 {
 	if (pDev == NULL || pDev->pDevData == NULL)
 		return 0;
@@ -201,7 +140,7 @@ int LpcI2CSetRate(SERINTRFDEV *pDev, int RateHz)
 	return RateHz;
 }
 
-bool LpcI2CStartRx(SERINTRFDEV *pDev, int DevAddr)
+bool LpcI2CStartRx(DEVINTRF *pDev, int DevAddr)
 {
 	if (pDev == NULL || pDev->pDevData == NULL)
 		return false;
@@ -222,7 +161,7 @@ bool LpcI2CStartRx(SERINTRFDEV *pDev, int DevAddr)
 }
 
 // Receive Data only, no Start/Stop condition
-int LpcI2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
+int LpcI2CRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
 {
 	I2CSTATUS status;
 	int rcount = 0;
@@ -250,7 +189,7 @@ int LpcI2CRxData(SERINTRFDEV *pDev, uint8_t *pBuff, int BuffLen)
 }
 
 // Send Data only, no Start/Stop condition
-int LpcI2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
+int LpcI2CTxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
 {
 	I2CSTATUS status;
 	int tcount = 0;
@@ -273,12 +212,12 @@ int LpcI2CTxData(SERINTRFDEV *pDev, uint8_t *pData, int DataLen)
 	return tcount;
 }
 
-void LpcI2CStopRx(SERINTRFDEV *pDev)
+void LpcI2CStopRx(DEVINTRF *pDev)
 {
 	LpcI2CStopCond((LPCI2CDEV *)pDev->pDevData);
 }
 
-bool LpcI2CStartTx(SERINTRFDEV *pDev, int DevAddr)
+bool LpcI2CStartTx(DEVINTRF *pDev, int DevAddr)
 {
 	if (pDev == NULL || pDev->pDevData == NULL)
 		return false;
@@ -302,8 +241,82 @@ bool LpcI2CStartTx(SERINTRFDEV *pDev, int DevAddr)
 	return false;
 }
 
-void LpcI2CStopTx(SERINTRFDEV *pDev)
+void LpcI2CStopTx(DEVINTRF *pDev)
 {
 	LpcI2CStopCond((LPCI2CDEV *)pDev->pDevData);
+}
+
+bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
+{
+
+	uint32_t clk = (SystemCoreClock >> 2) / pCfgData->Rate;
+
+	// Note : contrary to the user guide.  Pullup resistor is required
+	// for I2C to function properly
+	// Pin selection for SCL
+//	IOPinConfig(pCfgData->SclPortNo, pCfgData->SclPinNo, pCfgData->SclPinOp, IOPINDIR_OUTPUT,
+//				IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN);
+
+	// Pin selection for SDA
+//	IOPinConfig(pCfgData->SdaPortNo, pCfgData->SdaPinNo, pCfgData->SdaPinOp, IOPINDIR_BI,
+//				IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN);
+	// Configure I/O pins
+	IOPinCfg(pCfgData->IOPinMap, I2C_MAX_NB_IOPIN);
+    IOPinSet(pCfgData->IOPinMap[I2C_SCL_IOPIN_IDX].PortNo, pCfgData->IOPinMap[I2C_SCL_IOPIN_IDX].PinNo);
+    IOPinSet(pCfgData->IOPinMap[I2C_SDA_IOPIN_IDX].PortNo, pCfgData->IOPinMap[I2C_SDA_IOPIN_IDX].PinNo);
+
+	switch (pCfgData->DevNo)
+	{
+		case 0:
+			LPC_SC->PCONP |= LPC_PCONP_I2C0;
+			LPC_SC->PCLKSEL0 &= ~LPC_PCLKSEL0_I2C0_MASK; // CCLK / 4
+			g_LpcI2CDev[pCfgData->DevNo].pI2CReg = LPC_I2C0;
+			//NVIC_DisableIRQ(I2C0_IRQn);
+			break;
+		case 1:
+			LPC_SC->PCONP |= LPC_PCONP_I2C1;
+			LPC_SC->PCLKSEL1 &= ~LPC_PCLKSEL1_I2C1_MASK; // CCLK / 4
+			g_LpcI2CDev[pCfgData->DevNo].pI2CReg = LPC_I2C1;
+			//NVIC_DisableIRQ(I2C1_IRQn);
+			break;
+		case 2:
+			LPC_SC->PCONP |= LPC_PCONP_I2C2;
+			LPC_SC->PCLKSEL1 &= ~LPC_PCLKSEL1_I2C2_MASK; // CCLK / 4
+			g_LpcI2CDev[pCfgData->DevNo].pI2CReg = LPC_I2C2;
+			//NVIC_DisableIRQ(I2C2_IRQn);
+			break;
+	}
+	g_LpcI2CDev[pCfgData->DevNo].I2CNo = pCfgData->DevNo;
+	g_LpcI2CDev[pCfgData->DevNo].pI2CReg->I2SCLH = clk >> 1;
+	g_LpcI2CDev[pCfgData->DevNo].pI2CReg->I2SCLL = clk - g_LpcI2CDev[pCfgData->DevNo].pI2CReg->I2SCLH;
+
+	g_LpcI2CDev[pCfgData->DevNo].pI2CReg->I2CONCLR = LPCI2C_I2CONCLR_AAC | LPCI2C_I2CONCLR_STAC |
+						 	 	 	 	 	 	 	 LPCI2C_I2CONCLR_STOC | LPCI2C_I2CONCLR_I2ENC;
+	g_LpcI2CDev[pCfgData->DevNo].pI2cDev = pDev;
+
+	pDev->Mode = pCfgData->Mode;
+	pDev->Rate = pCfgData->Rate;
+	pDev->SlaveAddr = pCfgData->SlaveAddr;
+//	pDev->MaxRetry = pCfgData->MaxRetry;
+
+	pDev->DevIntrf.pDevData = (void*)&g_LpcI2CDev[pCfgData->DevNo];
+
+	pDev->DevIntrf.Disable = LpcI2CDisable;
+	pDev->DevIntrf.Enable = LpcI2CEnable;
+	pDev->DevIntrf.GetRate = LpcI2CGetRate;
+	pDev->DevIntrf.SetRate = LpcI2CSetRate;
+	pDev->DevIntrf.StartRx = LpcI2CStartRx;
+	pDev->DevIntrf.RxData = LpcI2CRxData;
+	pDev->DevIntrf.StopRx = LpcI2CStopRx;
+	pDev->DevIntrf.StartTx = LpcI2CStartTx;
+	pDev->DevIntrf.TxData = LpcI2CTxData;
+	pDev->DevIntrf.StopTx = LpcI2CStopTx;
+	pDev->DevIntrf.Reset = NULL;
+	pDev->DevIntrf.IntPrio = pCfgData->IntPrio;
+	pDev->DevIntrf.EvtCB = pCfgData->EvtCB;
+	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
+
+	return true;
 }
 
