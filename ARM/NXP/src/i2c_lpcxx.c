@@ -35,6 +35,8 @@ Modified by          Date              Description
 #include <stdio.h>
 #include <string.h>
 
+#include "system_LPC17xx.h"
+
 #include "i2c_lpcxx.h"
 #include "iopincfg.h"
 /*
@@ -88,7 +90,7 @@ bool LpcI2CInit(I2CDEV *pDev, I2CCFG *pCfgData)
 	return true;
 }
 */
-void LpcI2CDisable(SERINTRFDEV *pDev)
+void LpcI2CDisable(DEVINTRF *pDev)
 {
 	LPCI2CDEV *dev = (LPCI2CDEV*)pDev->pDevData;
 
@@ -98,7 +100,7 @@ void LpcI2CDisable(SERINTRFDEV *pDev)
 	}
 
 }
-void LpcI2CEnable(SERINTRFDEV *pDev)
+void LpcI2CEnable(DEVINTRF *pDev)
 {
 	LPCI2CDEV *dev = (LPCI2CDEV*)pDev->pDevData;
 
@@ -106,12 +108,14 @@ void LpcI2CEnable(SERINTRFDEV *pDev)
 		dev->pI2CReg->I2CONSET |= LPCI2C_I2CONSET_I2EN;
 }
 
-int LpcI2CGetRate(SERINTRFDEV *pDev)
+int LpcI2CGetRate(DEVINTRF *pDev)
 {
-	return pDev->Rate;
+	LPCI2CDEV *dev = (LPCI2CDEV*)pDev->pDevData;
+
+	return dev->pI2cDev->Rate;
 }
 
-int LpcI2CSetRate(SERINTRFDEV *pDev, int RateHz)
+int LpcI2CSetRate(DEVINTRF *pDev, int RateHz)
 {
 	LPCI2CDEV *dev = (LPCI2CDEV*)pDev->pDevData;
 
@@ -121,7 +125,7 @@ int LpcI2CSetRate(SERINTRFDEV *pDev, int RateHz)
 	// our default clock setting PCLK div 4
 	uint32_t clk = (SystemCoreClock >> 2) / RateHz;
 
-	pDev->Rate = RateHz;
+	dev->pI2cDev->Rate = RateHz;
 	dev->pI2CReg->I2SCLH = clk >> 1;
 	dev->pI2CReg->I2SCLL = clk - pDev->pI2CReg->I2SCLH;
 

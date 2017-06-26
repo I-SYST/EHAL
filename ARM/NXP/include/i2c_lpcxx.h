@@ -86,7 +86,7 @@ Modified by          Date              Description
 #define LPCI2C_I2CONCLR_STAC		0x20		// START flag
 #define LPCI2C_I2CONCLR_I2ENC		0x40		// I2C interface enable
 
-#define LPCI2C_MAX_INTRF			3			// Max number of I2C interface
+//#define LPCI2C_MAX_INTRF			3			// Max number of I2C interface
 
 typedef struct {
 	volatile uint32_t I2CONSET;
@@ -118,18 +118,6 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif	// __cplusplus
-
-// Require implementation by SERINTRFDEV
-void LpcI2CDisable(SERINTRFDEV *pDev);
-void LpcI2CEnable(SERINTRFDEV *pDev);
-int LpcI2CGetRate(SERINTRFDEV *pDev);
-int LpcI2CSetRate(SERINTRFDEV *pSerDev, int Rate);
-bool LpcI2CStartRx(SERINTRFDEV *pSerDev, int DevAddr);
-int LpcI2CRxData(SERINTRFDEV *pSerDev, uint8_t *pData, int DataLen);
-void LpcI2CStopRx(SERINTRFDEV *pSerDev);
-bool LpcI2CStartTx(SERINTRFDEV *pSerDev, int DevAddr);
-int LpcI2CTxData(SERINTRFDEV *pSerDev, uint8_t *pData, int DataLen);
-void LpcI2CStopTx(SERINTRFDEV *pSerDev);
 
 #ifdef __cplusplus
 }

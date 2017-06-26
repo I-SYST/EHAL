@@ -38,109 +38,60 @@ Modified by          Date              Description
 #define __IOPINCTRL_H__
 
 #include <stdint.h>
-#include "LPC11Uxx.h"
+#include "LPC17xx.h"
 
-/**
- * @brief	Set gpio pin direction
- *
- * 	change pin direction only without changing any other settings
- * 	for fast switching between In & Out
- *
- * @Param 	PortNo	: Port number
- * 			PinNo  	: Pin number
- * 			Dir     : I/O direction
- */
 static inline void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
 {
 	if (Dir == IOPINDIR_OUTPUT)
-		LPC_GPIO->DIR[PortNo] |= 1 << PinNo;
+		LPC_GPIO0[PortNo].FIODIR |= 1L << PinNo;
 	else if (Dir == IOPINDIR_INPUT)
-		LPC_GPIO->DIR[PortNo] &= ~(1 << PinNo);
+		LPC_GPIO0[PortNo].FIODIR &= ~(1L << PinNo);
 }
 
-/**
- * @brief	Read pin state
- *
- * @Param 	PortNo	: Port number
- * 			PinNo  	: Pin number
- *
- * @return	Pin state 1 or 0
- */
 static inline int IOPinRead(int PortNo, int PinNo)
 {
-	return ((LPC_GPIO->PIN[PortNo] >> PinNo ) & 1);
+
+	return ((LPC_GPIO0[PortNo].FIOPIN >> PinNo ) & 1);
 }
 
-/**
- * @brief	Set pin to high (1 logic)
- *
- * @Param 	PortNo	: Port number
- * 			PinNo  	: Pin number
- */
 static inline void IOPinSet(int PortNo, int PinNo)
 {
-	LPC_GPIO->SET[PortNo] = (1 << PinNo);
+	LPC_GPIO0[PortNo].FIOSET = (1 << PinNo);
 }
 
-/**
- * @brief	Set pin to low (0 logic)
- *
- * @Param 	PortNo	: Port number
- * 			PinNo  	: Pin number
- */
 static inline void IOPinClear(int PortNo, int PinNo)
 {
-	LPC_GPIO->CLR[PortNo] = (1 << PinNo);
+	LPC_GPIO0[PortNo].FIOCLR = (1 << PinNo);
 }
 
-/**
- * @brief	Toggle pin state (invert pin state)
- *
- * @Param 	PortNo	: Port number
- * 			PinNo  	: Pin number
- */
 static inline void IOPinToggle(int PortNo, int PinNo)
 {
-	LPC_GPIO->NOT[PortNo] = (1 << PinNo);
+	LPC_GPIO0[PortNo].FIOPIN = LPC_GPIO0[PortNo].FIOPIN ^ (1 << PinNo);
 }
 
-/**
- * @brief	Read all pins on port
- *
- * @Param 	PortNo	: Port number
- *
- * @return	Bit field pin states
- */
 static inline uint32_t IOPinReadPort(int PortNo)
 {
-	return LPC_GPIO->PIN[PortNo];
+	return LPC_GPIO0[PortNo].FIOPIN;
 }
 
-/**
- * @brief	Write state to all pin on port
- *
- * @Param 	PortNo	: Port number
- * 			Data	: Bit field state of all pins on port
- */
 static inline void IOPinWritePort(int PortNo, uint32_t Data)
 {
-	LPC_GPIO->W[PortNo] = Data;
+	LPC_GPIO0[PortNo].FIOPIN = Data;
 }
 
 static inline void IOPinWrite8Port(int PortNo, uint8_t Data)
 {
-	LPC_GPIO->B[PortNo] = Data;
+	LPC_GPIO0[PortNo].FIOPIN0 = Data;
 }
 
 static inline void IOPinWrite16Port(int PortNo, uint16_t Data)
 {
-	LPC_GPIO->B[PortNo] = Data & 0xFF;
-	LPC_GPIO->B[PortNo + 1] = (Data >> 8) & 0xFF;
+	LPC_GPIO0[PortNo].FIOPINL = Data & 0xFF;
 }
 
 static inline void IOPinWrite32Port(int PortNo, uint32_t Data)
 {
-	LPC_GPIO->W[PortNo] = Data;
+	LPC_GPIO0[PortNo].FIOPIN = Data;
 }
 
 #endif	// __IOPINCTRL_H__
