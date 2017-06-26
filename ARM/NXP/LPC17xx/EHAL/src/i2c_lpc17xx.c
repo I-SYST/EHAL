@@ -41,6 +41,8 @@ Modified by          Date              Description
 #include "iopincfg.h"
 #include "iopinctrl.h"
 
+#define LPCI2C_MAX_INTRF			3			// Max number of I2C interface
+
 static LPCI2CDEV g_LpcI2CDev[LPCI2C_MAX_INTRF];
 
 
@@ -270,19 +272,19 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 		case 0:
 			LPC_SC->PCONP |= LPC_PCONP_I2C0;
 			LPC_SC->PCLKSEL0 &= ~LPC_PCLKSEL0_I2C0_MASK; // CCLK / 4
-			g_LpcI2CDev[pCfgData->DevNo].pI2CReg = LPC_I2C0;
+			g_LpcI2CDev[pCfgData->DevNo].pI2CReg = (LPCI2CREG *)LPC_I2C0;
 			//NVIC_DisableIRQ(I2C0_IRQn);
 			break;
 		case 1:
 			LPC_SC->PCONP |= LPC_PCONP_I2C1;
 			LPC_SC->PCLKSEL1 &= ~LPC_PCLKSEL1_I2C1_MASK; // CCLK / 4
-			g_LpcI2CDev[pCfgData->DevNo].pI2CReg = LPC_I2C1;
+			g_LpcI2CDev[pCfgData->DevNo].pI2CReg = (LPCI2CREG *)LPC_I2C1;
 			//NVIC_DisableIRQ(I2C1_IRQn);
 			break;
 		case 2:
 			LPC_SC->PCONP |= LPC_PCONP_I2C2;
 			LPC_SC->PCLKSEL1 &= ~LPC_PCLKSEL1_I2C2_MASK; // CCLK / 4
-			g_LpcI2CDev[pCfgData->DevNo].pI2CReg = LPC_I2C2;
+			g_LpcI2CDev[pCfgData->DevNo].pI2CReg = (LPCI2CREG *)LPC_I2C2;
 			//NVIC_DisableIRQ(I2C2_IRQn);
 			break;
 	}
