@@ -101,6 +101,11 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 			break;
 	}
 
+	if (Type == IOPINTYPE_OPENDRAIN)
+	{
+		cnf |= (GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos);
+	}
+
 	reg->PIN_CNF[PinNo] = cnf;
 }
 
@@ -184,6 +189,8 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
 					                    | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
 			reg->PIN_CNF[PinNo] |= (3 << GPIO_PIN_CNF_SENSE_Pos);
 			break;
+		default:
+			;
 	}
 
 	s_GpIOSenseEvt[IntNo].SensEvtCB = pEvtCB;
@@ -228,7 +235,7 @@ void IOPinSetSense(int PortNo, int PinNo, IOPINSENSE Sense)
 	reg->PIN_CNF[PinNo] &= ~(GPIO_PIN_CNF_SENSE_Msk << GPIO_PIN_CNF_SENSE_Pos);
 	switch (Sense)
 	{
-		case IOPINSENSE_LOW_DISABLE:	// Disable pin sense
+		case IOPINSENSE_DISABLE:	// Disable pin sense
 			// Already done above
 			break;
 		case IOPINSENSE_LOW_TRANSITION:	// Event on falling edge
@@ -265,12 +272,15 @@ void IOPinSetStrength(int PortNo, int PinNo, IOPINSTRENGTH Strength)
 
 #endif
 
+	uint32_t val = ((reg->PIN_CNF[PinNo] >> GPIO_PIN_CNF_DRIVE_Pos) & GPIO_PIN_CNF_DRIVE_Msk) & 6;
 	reg->PIN_CNF[PinNo] &= ~(GPIO_PIN_CNF_DRIVE_Msk << GPIO_PIN_CNF_DRIVE_Pos);
 	if (Strength == IOPINSTRENGTH_STRONG)
 	{
 		// Stronger drive strength
-		reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_DRIVE_H0H1 << GPIO_PIN_CNF_DRIVE_Pos);
+		val++;
 	}
+
+	reg->PIN_CNF[PinNo] |= (val << GPIO_PIN_CNF_DRIVE_Pos);
 }
 
 void __WEAK GPIOTE_IRQHandler(void)
