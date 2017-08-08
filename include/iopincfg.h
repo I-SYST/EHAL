@@ -61,7 +61,7 @@ typedef enum __iopin_type {
 
 // I/O pin sense type
 typedef enum __iopin_sense {
-	IOPINSENSE_LOW_DISABLE,			// Disable pin sense
+	IOPINSENSE_DISABLE,				// Disable pin sense
 	IOPINSENSE_LOW_TRANSITION,		// Event on falling edge
 	IOPINSENSE_HIGH_TRANSITION,		// Event on raising edge
 	IOPINSENSE_TOGGLE,				// Event on state change
