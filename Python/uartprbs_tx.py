@@ -15,7 +15,7 @@ class CommUART(object):
         self.sc = None
         while self.sc is None:
             try:
-                self.sc = serial.Serial(port=self.address, baudrate=1000000, rtscts=True)
+                self.sc = serial.Serial(port=self.address, baudrate=3000000, rtscts=False)
             except serial.serialutil.SerialException as se:
                 if 'Device or resource busy:' in se.__str__():
                     logging.info('Opening COM port is taking a little while, please stand by...')
@@ -44,6 +44,9 @@ class CommUART(object):
                 received += 1
                 packet += serialByte
         return packet
+    
+    def send(self, data):
+        self.sc.write(bytes([data]))
 
     def prbs8(self, curval):
         newbit = (((curval >> 6) ^ (curval >> 5)) & 1)
@@ -53,31 +56,34 @@ class CommUART(object):
 def main():
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(message)s')
 
-    #comm = CommUART("/dev/cu.usbserial-A8UKQC7S")
-    comm = CommUART("/dev/cu.usbmodem142122")
+    #comm = CommUART("/dev/cu.usbserial-FT0NCE8B")
+    #comm = CommUART("/dev/cu.usbmodem143422")
+    comm = CommUART("/dev/cu.usbmodem143132")
     comm.connect()
 
     curval = 0
-    packet = comm.receivedPacket(1)
-    curval = int.from_bytes(packet, byteorder = 'little')
-    val = comm.prbs8(curval)
+    #packet = comm.receivedPacket(1)
+    #curval = int.from_bytes(packet, byteorder = 'little')
+    val = comm.prbs8(0xff)
     byteCount = 0
     dropcnt = 0
     deltatime = 0
     drop = False
     while True:
         try:
+            comm.send(val)
             startTime = time.time()
-            packet = comm.receivedPacket(1)
+#            packet = comm1.receivedPacket(1)
             endTime = time.time()
             deltatime += endTime - startTime
-            curval = int.from_bytes(packet, byteorder = 'little')
-            if curval != val:
-                dropcnt += 1
-            val = comm.prbs8(curval)
+ #           curval = int.from_bytes(packet, byteorder = 'little')
+ #           if curval != val:
+ #               dropcnt += 1
+            val = comm.prbs8(val)
             byteCount += 1
 
-            bytesPerSec = byteCount / deltatime #(endTime - startTime)
+            if deltatime > 0:
+                bytesPerSec = byteCount / deltatime #(endTime - startTime)
 
             #print("Bytes : {0}".format(bytes))
             #if drop:
@@ -90,7 +96,7 @@ def main():
             break
 
     comm.disconnect()
-
+ #   comm1.disconnect()
 ###################################################################################
 
 
