@@ -63,6 +63,8 @@ bool LpcUARTWaitForTxFifo(LPCUARTDEV *pDev, uint32_t Timeout);
 uint8_t s_UARTRxFifoMem[UART_RX_CFIFO_MEM_SIZE];
 uint8_t s_UARTTxFifoMem[UART_TX_CFIFO_MEM_SIZE];
 
+static int32_t s_RxFifoPeak = 0;
+
 void UART_IRQHandler(void)
 {
 	uint32_t iir = LPC_USART->IIR;
@@ -72,14 +74,16 @@ void UART_IRQHandler(void)
 
 	if ((iir & LPCUART_IIR_STATUS) == 0)
 	{
-		switch (iid)//r & LPCUART_IIR_ID_MASK)
+		switch (iid)
 		{
 			case LPCUART_IIR_ID_MS:
-//				data = LPC_USART->MCR;
-//				break;
 			case LPCUART_IIR_ID_RLS:	// Line status
 				{
 					uint32_t r = LPC_USART->LSR;
+					if (r & LPCUART_LSR_OE)
+					{
+						g_LpcUartDev->pUartDev->RxOECnt++;
+					}
 					if (g_LpcUartDev->pUartDev->EvtCallback)
 					{
 						data = (r & LPCUART_LSR_OE) ? UART_LINESTATE_OVR : 0;
@@ -104,39 +108,30 @@ void UART_IRQHandler(void)
 
 						data |= (r << 24L);
 
-						g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_LINESTATE, (uint8_t*)&data, 1);
+						g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_LINESTATE, (uint8_t*)&data, 4);
 					}
 				}
-				//break;
+				break;
 
 			case LPCUART_IIR_ID_CTIMOUT:
-				//flushrx = true;
-				//break;
 			case LPCUART_IIR_ID_RDA:
-			//case LPCUART_IIR_ID_THRE:
-			{
 				cnt = 0;
-				//uint32_t state = DisableInterrupt();
-				while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 8) {
-				//while (LpcUARTWaitForRxFifo(&g_LpcUartDev, 10) && cnt < 8) {
-				//do {
+				// TRG4 & 14 : works well at 1 Mbaud
+				while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 14)
+				{
 					uint8_t *p = CFifoPut(g_LpcUartDev->pUartDev->hRxFifo);
 					if (p)
 					{
-					//d[cnt++] = g_LpcUartDev->pUartReg->RBR;
 						*p = g_LpcUartDev->pUartReg->RBR;
 						cnt++;
 					}
-					else
-					{
-						//printf("drop2\r\n");
-						break;
-					}
 				}
-				//while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 14);
+
 				cnt = CFifoUsed(g_LpcUartDev->pUartDev->hRxFifo);
-				//EnableInterrupt(state);
-				//data = LPC_USART->RBR;
+				if (cnt > s_RxFifoPeak)
+				{
+					s_RxFifoPeak = cnt;
+				}
 				if (g_LpcUartDev->pUartDev->EvtCallback)
 				{
 					if (iid == LPCUART_IIR_ID_CTIMOUT)
@@ -144,11 +139,9 @@ void UART_IRQHandler(void)
 					else //if (cnt > 8)
 						g_LpcUartDev->pUartDev->EvtCallback(g_LpcUartDev->pUartDev, UART_EVT_RXDATA, NULL, cnt);
 				}
-			}
 				break;
 
 			case LPCUART_IIR_ID_THRE:
-				//data = LPC_USART->LSR;
 			{
 				cnt = 0;
 				uint32_t state = DisableInterrupt();
@@ -162,8 +155,7 @@ void UART_IRQHandler(void)
 					}
 					LPC_USART->THR = *p;
 					cnt++;
-				} //while (LpcUARTWaitForTxFifo(&g_LpcUartDev, 10) && cnt < 14);
-				  while (g_LpcUartDev->pUartReg->LSR & (LPCUART_LSR_TEMT | LPCUART_LSR_THRE) && cnt < 14);
+				} while ((g_LpcUartDev->pUartReg->LSR & (LPCUART_LSR_TEMT | LPCUART_LSR_THRE)) && cnt < 14);
 				EnableInterrupt(state);
 
 				if (g_LpcUartDev->pUartDev->EvtCallback)
@@ -257,8 +249,10 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
 	pDev->DevIntrf.pDevData = (void*)&g_LpcUartDev[pCfg->DevNo];
 
-	if (pCfg->Rate)
+	if (pCfg->Rate > 0)
+	{
 		pDev->Rate = LpcUARTSetRate(&pDev->DevIntrf, pCfg->Rate);
+	}
 	else
 	{
 		// Auto baudrate
@@ -276,7 +270,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	}
 
 	reg->FCR = LPCUART_FCR_FIFOEN | LPCUART_FCR_RST_RXFIFO | LPCUART_FCR_RST_TXFIFO |
-			   LPCUART_FCR_RX_TRIG8;
+			   LPCUART_FCR_RX_TRIG4;
 
 	uint32_t val;
 
@@ -308,10 +302,12 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 		pDev->hTxFifo = CFifoInit(s_UARTTxFifoMem, UART_TX_CFIFO_MEM_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
+	s_RxFifoPeak = 0;
+
 	// Start tx
 	LPC_USART->TER = LPCUART_TER_TXEN;
 
-
+	pDev->RxOECnt = 0;
 	pDev->DataBits = pCfg->DataBits;
 	pDev->FlowControl = pCfg->FlowControl;
 	pDev->StopBits = pCfg->StopBits;
