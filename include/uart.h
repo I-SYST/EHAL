@@ -169,6 +169,7 @@ struct __Uart_Dev {
 	uint32_t LineState;			// Line state
 	int hStdIn;					// Handle to retarget stdin
 	int hStdOut;				// Handle to retarget stdout
+	uint32_t RxOECnt;			// Rx overrun error count
 };
 
 #pragma pack(pop)
