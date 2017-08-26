@@ -84,7 +84,7 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 	else
 	{
 		cnf |= (GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos)
-				| (GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos);
+			   | (GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos);
 	}
 
 	switch (Resistor)
@@ -121,7 +121,20 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
  */
 void IOPinDisable(int PortNo, int PinNo)
 {
-	// TODO : Implement disconnect pin
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
+	if (PortNo == -1 || PinNo == -1)
+		return;
+
+	reg->PIN_CNF[PinNo] = (GPIO_PIN_CNF_INPUT_Disconnect << GPIO_PIN_CNF_INPUT_Pos);
 }
 
 /**
