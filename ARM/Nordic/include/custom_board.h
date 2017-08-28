@@ -71,7 +71,7 @@ Modified by          Date              Description
 
 #define BSP_BUTTON_0   BUTTON_1
 #define BSP_BUTTON_1   BUTTON_2
-#define BSP_BUTTON_3   BUTTON_1		// Remap for Nordic DFU
+#define BSP_BUTTON_3   BUTTON_2		// Remap for Nordic DFU
 
 #define RX_PIN_NUMBER		BLUEIO_UART_RX_PIN
 #define TX_PIN_NUMBER		BLUEIO_UART_TX_PIN

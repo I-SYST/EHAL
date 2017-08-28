@@ -85,8 +85,10 @@ extern "C" {
 
 #define APP_FEATURE_NOT_SUPPORTED       BLE_GATT_STATUS_ATTERR_APP_BEGIN + 2        /**< Reply when unsupported features are requested. */
 
-#define BLEAPP_OBSERVER_PRIO           1                                           /**< Application's BLE observer priority. You shouldn't need to modify this value. */
-#define BLEAPP_CONN_CFG_TAG            1                                           /**< A tag identifying the SoftDevice BLE configuration. */
+#define CONN_CFG_TAG                     1                                          /**< A tag that refers to the BLE stack configuration we set with @ref sd_ble_cfg_set. Default tag is @ref BLE_CONN_CFG_TAG_DEFAULT. */
+
+//#define CENTRAL_LINK_COUNT              0                                           /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
+//#define PERIPHERAL_LINK_COUNT           1                                           /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
 
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(64, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      180                                         /**< The advertising timeout (in units of seconds). */
@@ -142,13 +144,7 @@ typedef struct _BleAppData {
 
 #pragma pack(pop)
 
-//BLE_ADVERTISING_DEF(g_AdvInstance);             /**< Advertising module instance. */
-#if NRF_SD_BLE_API_VERSION > 4
-static ble_advertising_t g_AdvInstance;                     /**< Advertising module instance. */
-NRF_SDH_BLE_OBSERVER(g_BleAdvBleObserver, BLEAPP_OBSERVER_PRIO, ble_advertising_on_ble_evt, &g_AdvInstance);
-NRF_SDH_SOC_OBSERVER(g_BleAdvSysObserver, BLEAPP_OBSERVER_PRIO, ble_advertising_on_sys_evt, &g_AdvInstance);
-#endif
-
+//BLE_ADVERTISING_DEF(g_AdvertInstance);             /**< Advertising module instance. */
 static ble_gap_adv_params_t s_AdvParams;                                 /**< Parameters to be passed to the stack when starting advertising. */
 
 BLEAPP_DATA g_BleAppData = {
@@ -245,7 +241,7 @@ static inline void BleConnLedOn() {
 	IOPinClear(g_BleAppData.ConnLedPort, g_BleAppData.ConnLedPin);
 }
 
-#if NRF_SD_BLE_API_VERSION > 4
+#ifdef NRF52
 void BleAppDfuCallback(nrf_fstorage_evt_t *pEvt)
 {
     if (pEvt->result == FDS_SUCCESS)
@@ -263,11 +259,7 @@ void BleAppEnterDfu()
 {
     uint32_t err_code = nrf_dfu_flash_init(true);
 
-#if NRF_SD_BLE_API_VERSION > 4
-    nrf_dfu_settings_init(true);
-#else
     nrf_dfu_settings_init();
-#endif
 
     s_dfu_settings.enter_buttonless_dfu = true;
 
@@ -292,16 +284,6 @@ void BleAppEnterDfu()
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 {
     app_error_handler(DEAD_BEEF, line_num, p_file_name);
-}
-
-void BleAppGapDeviceNameSet( const char* ppDeviceName )
-{
-    uint32_t                err_code;
-
-    err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
-                                          (const uint8_t *)ppDeviceName,
-                                          strlen( ppDeviceName ));
-    APP_ERROR_CHECK(err_code);
 }
 
 /**@brief Function for the GAP initialization.
@@ -357,6 +339,16 @@ static void BleAppGapParamInit(const BLEAPP_CFG *pBleAppCfg)
 		err_code = sd_ble_gap_ppcp_set(&gap_conn_params);
 		APP_ERROR_CHECK(err_code);
     }
+}
+
+void gap_device_name_set( const char* ppDeviceName )
+{
+    uint32_t                err_code;
+
+    err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
+                                          (const uint8_t *)ppDeviceName,
+                                          strlen( ppDeviceName ));
+    APP_ERROR_CHECK(err_code);
 }
 
 /**@brief Function for handling an event from the Connection Parameters Module.
@@ -440,7 +432,7 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
  *
  * @param[in] p_ble_evt SoftDevice event.
  */
-static void on_ble_evt(ble_evt_t const * p_ble_evt)
+static void on_ble_evt(ble_evt_t * p_ble_evt)
 {
     uint32_t                         err_code;
 
@@ -489,12 +481,8 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             {
             	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
             	{
-#if NRF_SD_BLE_API_VERSION > 4
-            		err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_SLOW);
-#else
             		err_code = ble_advertising_start(BLE_ADV_MODE_SLOW);
-#endif
-            		APP_ERROR_CHECK(err_code);
+                    APP_ERROR_CHECK(err_code);
             	}
             }
             break;
@@ -682,12 +670,8 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
 
         case PM_EVT_PEERS_DELETE_SUCCEEDED:
         {
-#if NRF_SD_BLE_API_VERSION > 4
-        	ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
-#else
         	ble_advertising_start(BLE_ADV_MODE_FAST);
-#endif
-        	} break;
+        } break;
 
         case PM_EVT_LOCAL_DB_CACHE_APPLY_FAILED:
         {
@@ -806,39 +790,45 @@ static void BleAppDBDiscoveryHandler(ble_db_discovery_evt_t * p_evt)
  *
  * @param[in] p_ble_evt  SoftDevice event.
  */
-#if NRF_SD_BLE_API_VERSION < 4
 static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
-#else
-static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
-#endif
 {
     uint16_t role = ble_conn_state_role(p_ble_evt->evt.gap_evt.conn_handle);
 
-#if NRF_SD_BLE_API_VERSION < 4
-    ble_conn_state_on_ble_evt((ble_evt_t*)p_ble_evt);
-#endif
+    ble_conn_state_on_ble_evt(p_ble_evt);
+
     if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT) || g_BleAppData.AppRole & BLEAPP_ROLE_CENTRAL)
     {
-        BleCentralEvtUserHandler((ble_evt_t *)p_ble_evt);
+        BleCentralEvtUserHandler(p_ble_evt);
+#if 0
+    	/** on_ble_central_evt will update the connection handles, so we want to execute it
+         * after dispatching to the central applications upon disconnection. */
+        if (p_ble_evt->header.evt_id != BLE_GAP_EVT_DISCONNECTED)
+        {
+            on_ble_central_evt(p_ble_evt);
+        }
+
+        if (conn_handle < NRF_BLE_LINK_COUNT)
+        {
+            ble_db_discovery_on_ble_evt(&m_ble_db_discovery[conn_handle], p_ble_evt);
+        }
+        ble_hrs_c_on_ble_evt(&m_ble_hrs_c, p_ble_evt);
+
+        // If the peer disconnected, we update the connection handles last.
+        if (p_ble_evt->header.evt_id == BLE_GAP_EVT_DISCONNECTED)
+        {
+            on_ble_central_evt(p_ble_evt);
+        }
+#endif
     }
     else
     {
-#if NRF_SD_BLE_API_VERSION < 4
-        pm_on_ble_evt((ble_evt_t*)p_ble_evt);
-        ble_advertising_on_ble_evt((ble_evt_t*)p_ble_evt);
-        ble_conn_params_on_ble_evt((ble_evt_t*)p_ble_evt);
-#else
-        ble_conn_params_on_ble_evt(p_ble_evt, p_context);
-#endif
-        BlePeriphEvtUserHandler((ble_evt_t *)p_ble_evt);
+        pm_on_ble_evt(p_ble_evt);
+        ble_advertising_on_ble_evt(p_ble_evt);
+        ble_conn_params_on_ble_evt(p_ble_evt);
+        BlePeriphEvtUserHandler(p_ble_evt);
     }
     on_ble_evt(p_ble_evt);
-
-#if NRF_SD_BLE_API_VERSION > 4
-    ble_db_discovery_on_ble_evt(p_ble_evt, p_context);
-#else
     ble_db_discovery_on_ble_evt(&s_DbDiscovery, p_ble_evt);
-#endif
 }
 
 /**@brief Function for dispatching a system event to interested modules.
@@ -848,13 +838,8 @@ static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
  *
  * @param[in] sys_evt  System stack event.
  */
-#if NRF_SD_BLE_API_VERSION < 4
 static void sys_evt_dispatch(uint32_t sys_evt)
-#else
-static void sys_evt_dispatch(uint32_t sys_evt, void *pContext)
-#endif
 {
-#if NRF_SD_BLE_API_VERSION < 4
     // Dispatch the system event to the fstorage module, where it will be
     // dispatched to the Flash Data Storage (FDS) module.
     fs_sys_event_handler(sys_evt);
@@ -863,7 +848,6 @@ static void sys_evt_dispatch(uint32_t sys_evt, void *pContext)
     // pending flash operations in fstorage. Let fstorage process system events first,
     // so that it can report correctly to the Advertising module.
     ble_advertising_on_sys_evt(sys_evt);
-#endif
 }
 
 
@@ -979,66 +963,53 @@ static void sec_req_timeout_handler(void * p_context)
 __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 {
     uint32_t               err_code;
-    ble_advdata_manuf_data_t mdata;
-
-#if NRF_SD_BLE_API_VERSION > 4
-    ble_advertising_init_t	initdata;
-    ble_advdata_t 			*padvdata = &initdata.advdata;
-    ble_advdata_t 			*psrdata = &initdata.srdata;
-    ble_adv_modes_config_t	*pconfig = &initdata.config;
-
-    memset(&initdata, 0, sizeof(ble_advertising_init_t));
-#else
     ble_advdata_t          advdata;
     ble_advdata_t          scanrsp;
     ble_adv_modes_config_t options;
-    ble_advdata_t          *padvdata = &advdata;
-    ble_advdata_t          *psrdata = &scanrsp;
-    ble_adv_modes_config_t *pconfig = &options;
-
-    memset(&advdata, 0, sizeof(advdata));
-    memset(&scanrsp, 0, sizeof(scanrsp));
-#endif
-
+    ble_advdata_manuf_data_t mdata;
 
     mdata.company_identifier = pCfg->VendorID;
     mdata.data.p_data = (uint8_t*)pCfg->pManData;
     mdata.data.size = pCfg->ManDataLen;
 
-    padvdata->include_appearance = false;
-    padvdata->flags              = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+    // Build advertising data struct to pass into @ref ble_advertising_init.
+    memset(&advdata, 0, sizeof(advdata));
+    memset(&scanrsp, 0, sizeof(scanrsp));
+
+    advdata.include_appearance = false;
+    advdata.flags              = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
 
     if (pCfg->pDevName != NULL)
     {
     	if (strlen(pCfg->pDevName) < 14)
     	{
-    		padvdata->name_type      = BLE_ADVDATA_SHORT_NAME;
-    		padvdata->short_name_len = strlen(pCfg->pDevName);
+    	    advdata.name_type      = BLE_ADVDATA_SHORT_NAME;
+    	    advdata.short_name_len = strlen(pCfg->pDevName);
     	}
     	else
-    		padvdata->name_type = BLE_ADVDATA_FULL_NAME;
+    		advdata.name_type          = BLE_ADVDATA_FULL_NAME;
     }
     else
     {
-    	padvdata->name_type = BLE_ADVDATA_NO_NAME;
+    	advdata.name_type          = BLE_ADVDATA_NO_NAME;
     }
 
-    if (padvdata->name_type == BLE_ADVDATA_NO_NAME)
+    if (advdata.name_type == BLE_ADVDATA_NO_NAME)
     {
         if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
         {
-        	padvdata->uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-        	padvdata->uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+            advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+            advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
 			if (pCfg->pManData != NULL)
 			{
-				psrdata->p_manuf_specific_data = &mdata;
+				scanrsp.p_manuf_specific_data = &mdata;
 			}
         }
         else
         {
 			if (pCfg->pManData != NULL)
 			{
-				padvdata->p_manuf_specific_data = &mdata;
+				advdata.p_manuf_specific_data = &mdata;
 			}
         }
     }
@@ -1046,18 +1017,18 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     {
         if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
         {
-        	psrdata->uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-        	psrdata->uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+            scanrsp.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+            scanrsp.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
         }
         if (pCfg->pManData != NULL)
         {
-        	padvdata->p_manuf_specific_data = &mdata;
+            advdata.p_manuf_specific_data = &mdata;
         }
     }
 
-    if (pCfg->AppMode == BLEAPP_MODE_NOCONNECT || pCfg->AppMode == BLEAPP_MODE_IBEACON)
+    if (pCfg->AppMode == BLEAPP_MODE_NOCONNECT)
     {
-        err_code = ble_advdata_set(padvdata, psrdata);
+        err_code = ble_advdata_set(&advdata, &scanrsp);
         APP_ERROR_CHECK(err_code);
 
         // Initialize advertising parameters (used when starting advertising).
@@ -1071,28 +1042,25 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     }
     else
     {
-		memset(pconfig, 0, sizeof(options));
-    	pconfig->ble_adv_fast_enabled  = true;
-    	pconfig->ble_adv_fast_interval = pCfg->AdvInterval;
-    	pconfig->ble_adv_fast_timeout  = pCfg->AdvTimeout;
+		memset(&options, 0, sizeof(options));
+		options.ble_adv_fast_enabled  = true;
+		options.ble_adv_fast_interval = pCfg->AdvInterval;
+		options.ble_adv_fast_timeout  = pCfg->AdvTimeout;
 
 		if (pCfg->AdvSlowInterval > 0)
 		{
-			pconfig->ble_adv_slow_enabled  = true;
-			pconfig->ble_adv_slow_interval = pCfg->AdvSlowInterval;
-			pconfig->ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
+			options.ble_adv_slow_enabled  = true;
+			options.ble_adv_slow_interval = pCfg->AdvSlowInterval;
+			options.ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
 		}
     }
-#if NRF_SD_BLE_API_VERSION > 4
-    initdata.evt_handler = on_adv_evt;
-	err_code = ble_advertising_init(&g_AdvInstance, &initdata);
+	err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
 	APP_ERROR_CHECK(err_code);
 
-	ble_advertising_conn_cfg_tag_set(&g_AdvInstance, BLEAPP_CONN_CFG_TAG);
-#else
-	err_code = ble_advertising_init(padvdata, psrdata, pconfig, on_adv_evt, NULL);
-	APP_ERROR_CHECK(err_code);
+#if (NRF_SD_BLE_API_VERSION > 3)
+	ble_advertising_conn_cfg_tag_set(CONN_CFG_TAG);
 #endif
+
 }
 
 void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
@@ -1165,6 +1133,8 @@ bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
 
+    nrf_crypto_init();
+
 #if NRF_SD_BLE_API_VERSION <= 3
 
     err_code = nrf_crypto_public_key_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &m_crypto_key_pk);
@@ -1194,83 +1164,11 @@ bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     if (pBleAppCfg->bEnDevInfoService)
     	BleAppDisInit(pBleAppCfg);
 
-
     if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
     	conn_params_init();
 
     return true;
 }
-
-/**@brief Function for handling BLE events.
- *
- * @param[in]   p_ble_evt   Bluetooth stack event.
- * @param[in]   p_context   Unused.
- */
-/*static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
-{
-    uint16_t conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
-    uint16_t role        = ble_conn_state_role(conn_handle);
-
-    if (    (p_ble_evt->header.evt_id == BLE_GAP_EVT_CONNECTED)
-        &&  (is_already_connected(&p_ble_evt->evt.gap_evt.params.connected.peer_addr)))
-    {
-        NRF_LOG_INFO("%s: Already connected to this device as %s (handle: %d), disconnecting.",
-                     (role == BLE_GAP_ROLE_PERIPH) ? "PERIPHERAL" : "CENTRAL",
-                     (role == BLE_GAP_ROLE_PERIPH) ? "CENTRAL"    : "PERIPHERAL",
-                     conn_handle);
-
-        (void)sd_ble_gap_disconnect(conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-
-        // Do not process the event further.
-        return;
-    }
-
-    on_ble_evt(p_ble_evt);
-
-    if (role == BLE_GAP_ROLE_PERIPH)
-    {
-        // Manages peripheral LEDs.
-        on_ble_peripheral_evt(p_ble_evt);
-    }
-    else if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT))
-    {
-        on_ble_central_evt(p_ble_evt);
-    }
-}
-*/
-/*
-void sys_event_handler(uint32_t sys_evt, void * p_context)
-{
-    if (m_state != STATE_IDLE && m_state != STATE_ERROR)
-    {
-        switch (sys_evt)
-        {
-            case NRF_EVT_FLASH_OPERATION_SUCCESS:
-                flash_operation_success_run();
-                break;
-
-            case NRF_EVT_FLASH_OPERATION_ERROR:
-                if (!(m_flags & MASK_FLASH_API_ERR_BUSY))
-                {
-                    flash_operation_failure_run();
-                }
-                else
-                {
-                    // As our last flash operation request was rejected by the flash API reissue the
-                    // request by doing same code execution path as for flash operation sucess
-                    // event. This will promote code reuse in the implementation.
-                    flash_operation_success_run();
-                }
-                break;
-
-            default:
-                // No implementation needed.
-                break;
-        }
-
-    }
-}
-*/
 
 /**
  * @brief Function for the SoftDevice initialization.
@@ -1279,7 +1177,7 @@ void sys_event_handler(uint32_t sys_evt, void * p_context)
  */
 bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 {
-	ret_code_t err_code;
+    uint32_t err_code;
 
 	g_BleAppData.ConnLedPort = pBleAppCfg->ConnLedPort;
 	g_BleAppData.ConnLedPin = pBleAppCfg->ConnLedPin;
@@ -1290,21 +1188,6 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     				IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
     }
 
-	// initializing the cryptography module
-    nrf_crypto_init();
-
-#if (NRF_SD_BLE_API_VERSION > 4)
-    // Initialize SoftDevice.
-    err_code = nrf_sdh_enable_request();
-    APP_ERROR_CHECK(err_code);
-
-    // Configure the BLE stack using the default settings.
-    // Fetch the start address of the application RAM.
-    uint32_t ram_start = 0;
-    err_code = nrf_sdh_ble_default_cfg_set(BLEAPP_CONN_CFG_TAG, &ram_start);
-    APP_ERROR_CHECK(err_code);
-#endif
-
     g_BleAppData.AppMode = pBleAppCfg->AppMode;
     g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
 
@@ -1312,35 +1195,33 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     {
     	case BLEAPP_MODE_LOOP:
     	case BLEAPP_MODE_NOCONNECT:
-#if (NRF_SD_BLE_API_VERSION > 4)
-			app_timer_init();
+#if (NRF_SD_BLE_API_VERSION > 3)
+    	        app_timer_init();
 #else
     		APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
+#endif
 //        	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
             SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, NULL);
-#endif
     		break;
     	case BLEAPP_MODE_APPSCHED:
-#if (NRF_SD_BLE_API_VERSION > 4)
-			app_timer_init();
-    		APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+#if (NRF_SD_BLE_API_VERSION > 3)
+                app_timer_init();
 #else
     		APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
+#endif
     		APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
             SOFTDEVICE_HANDLER_APPSH_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, true);
-#endif
     		break;
     	case BLEAPP_MODE_RTOS:
     		if (pBleAppCfg->SDEvtHandler == NULL)
     			return false;
-#if (NRF_SD_BLE_API_VERSION < 4)
             SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, pBleAppCfg->SDEvtHandler);
-#endif
     		break;
     }
 
+    // Initialize SoftDevice.
 
-#if (NRF_SD_BLE_API_VERSION < 4)
+#if (NRF_SD_BLE_API_VERSION <= 3)
     ble_enable_params_t ble_enable_params;
     err_code = softdevice_enable_get_default_config(pBleAppCfg->CentLinkCount,
                                                     pBleAppCfg->PeriLinkCount,
@@ -1351,12 +1232,6 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     CHECK_RAM_START_ADDR(pBleAppCfg->CentLinkCount, pBleAppCfg->PeriLinkCount);//CENTRAL_LINK_COUNT,PERIPHERAL_LINK_COUNT);
 
     err_code = softdevice_enable(&ble_enable_params);
-    APP_ERROR_CHECK(err_code);
-    // Subscribe for BLE events.
-    err_code = softdevice_ble_evt_handler_set(ble_evt_dispatch);
-    APP_ERROR_CHECK(err_code);
-
-    err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
     APP_ERROR_CHECK(err_code);
 #else
     // Fetch the start address of the application RAM.
@@ -1374,55 +1249,66 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     APP_ERROR_CHECK(err_code);
 
     // Configure the maximum number of connections.
-	memset(&ble_cfg, 0, sizeof(ble_cfg));
-	ble_cfg.conn_cfg.conn_cfg_tag                        = BLEAPP_CONN_CFG_TAG;
-	ble_cfg.gap_cfg.role_count_cfg.periph_role_count  = pBleAppCfg->PeriLinkCount;//PERIPHERAL_LINK_COUNT;//BLE_GAP_ROLE_COUNT_PERIPH_DEFAULT;
-	ble_cfg.gap_cfg.role_count_cfg.central_role_count = pBleAppCfg->CentLinkCount;//CENTRAL_LINK_COUNT;
-	ble_cfg.gap_cfg.role_count_cfg.central_sec_count  = 0;
-	err_code = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, ram_start);
-	APP_ERROR_CHECK(err_code);
+     memset(&ble_cfg, 0, sizeof(ble_cfg));
+     ble_cfg.gap_cfg.role_count_cfg.periph_role_count  = pBleAppCfg->PeriLinkCount;//PERIPHERAL_LINK_COUNT;//BLE_GAP_ROLE_COUNT_PERIPH_DEFAULT;
+     ble_cfg.gap_cfg.role_count_cfg.central_role_count = pBleAppCfg->CentLinkCount;//CENTRAL_LINK_COUNT;
+     ble_cfg.gap_cfg.role_count_cfg.central_sec_count  = 0;
+     err_code = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, ram_start);
 
-	// Configure the maximum ATT MTU.
-	memset(&ble_cfg, 0x00, sizeof(ble_cfg));
-	ble_cfg.conn_cfg.conn_cfg_tag                 = BLEAPP_CONN_CFG_TAG;
-	ble_cfg.conn_cfg.params.gatt_conn_cfg.att_mtu = NRF_BLE_MAX_MTU_SIZE;//NRF_BLE_GATT_MAX_MTU_SIZE;
-	err_code = sd_ble_cfg_set(BLE_CONN_CFG_GATT, &ble_cfg, ram_start);
-	APP_ERROR_CHECK(err_code);
+     APP_ERROR_CHECK(err_code);
 
-	// Configure the maximum event length.
-	memset(&ble_cfg, 0x00, sizeof(ble_cfg));
-	ble_cfg.conn_cfg.conn_cfg_tag                     = BLEAPP_CONN_CFG_TAG;
-	ble_cfg.conn_cfg.params.gap_conn_cfg.event_length = 320;
-	ble_cfg.conn_cfg.params.gap_conn_cfg.conn_count   = BLE_GAP_CONN_COUNT_DEFAULT;
-	err_code = sd_ble_cfg_set(BLE_CONN_CFG_GAP, &ble_cfg, ram_start);
-	APP_ERROR_CHECK(err_code);
+     // Configure the maximum ATT MTU.
+     memset(&ble_cfg, 0x00, sizeof(ble_cfg));
+     ble_cfg.conn_cfg.conn_cfg_tag                 = CONN_CFG_TAG;
+     ble_cfg.conn_cfg.params.gatt_conn_cfg.att_mtu = NRF_BLE_GATT_MAX_MTU_SIZE;
+     err_code = sd_ble_cfg_set(BLE_CONN_CFG_GATT, &ble_cfg, ram_start);
+     APP_ERROR_CHECK(err_code);
 
-    // Enable BLE stack.
-    err_code = nrf_sdh_ble_enable(&ram_start);
-	APP_ERROR_CHECK(err_code);
+     // Configure the maximum event length.
+     memset(&ble_cfg, 0x00, sizeof(ble_cfg));
+     ble_cfg.conn_cfg.conn_cfg_tag                     = CONN_CFG_TAG;
+     ble_cfg.conn_cfg.params.gap_conn_cfg.event_length = 320;
+     ble_cfg.conn_cfg.params.gap_conn_cfg.conn_count   = BLE_GAP_CONN_COUNT_DEFAULT;
+     err_code = sd_ble_cfg_set(BLE_CONN_CFG_GAP, &ble_cfg, ram_start);
+     APP_ERROR_CHECK(err_code);
+
      // Enable BLE stack.
     err_code = softdevice_enable(&ram_start);
     APP_ERROR_CHECK(err_code);
 #endif
+
     if (pBleAppCfg->PeriLinkCount > 0 && pBleAppCfg->AdvInterval > 0)
     {
     	g_BleAppData.AppRole |= BLEAPP_ROLE_PERIPHERAL;
     }
     if (pBleAppCfg->CentLinkCount > 0)
     {
-		g_BleAppData.AppRole |= BLEAPP_ROLE_CENTRAL;
-		ret_code_t err_code = ble_db_discovery_init(BleAppDBDiscoveryHandler);
-		APP_ERROR_CHECK(err_code);
+    	g_BleAppData.AppRole |= BLEAPP_ROLE_CENTRAL;
+    }
+
+    // Subscribe for BLE events.
+    err_code = softdevice_ble_evt_handler_set(ble_evt_dispatch);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
+    APP_ERROR_CHECK(err_code);
+
+/*    if (pBleAppCfg->PeriLinkCount)
+    {
+    	g_BleAppData.AppRole |= BLEAPP_ROLE_PERIPHERAL;
+    }
+*/
+    if (pBleAppCfg->CentLinkCount)
+    {
+//    	g_BleAppData.AppRole |= BLEAPP_ROLE_CENTRAL;
+		 ret_code_t err_code = ble_db_discovery_init(BleAppDBDiscoveryHandler);
+		 APP_ERROR_CHECK(err_code);
     }
 
     if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
     {
     	BleAppConnectable(pBleAppCfg, bEraseBond);
     }
-
-#if (NRF_SD_BLE_API_VERSION > 4)
-    NRF_SDH_SOC_OBSERVER(g_SocObserver, BLEAPP_OBSERVER_PRIO, sys_evt_dispatch, NULL);
-#endif
 
     BleAppInitUserData();
 
@@ -1444,10 +1330,10 @@ void BleAppRun()
 
 	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
 	{
-#if (NRF_SD_BLE_API_VERSION > 4)
-		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams, BLEAPP_CONN_CFG_TAG);
-#else
+#if (NRF_SD_BLE_API_VERSION <= 3)
 		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams);
+#else
+		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams, CONN_CFG_TAG);//BLE_CONN_CFG_TAG_DEFAULT);
 #endif
 		APP_ERROR_CHECK(err_code);
 	}
@@ -1455,11 +1341,7 @@ void BleAppRun()
 	{
 		if (g_BleAppData.AppRole & BLEAPP_ROLE_PERIPHERAL)
 		{
-#if (NRF_SD_BLE_API_VERSION > 4)
-			uint32_t err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
-#else
 			uint32_t err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
-#endif
 			APP_ERROR_CHECK(err_code);
 		}
 	}
@@ -1469,9 +1351,7 @@ void BleAppRun()
 		if (g_BleAppData.AppMode == BLEAPP_MODE_RTOS)
 		{
 			BleAppRtosWaitEvt();
-#if (NRF_SD_BLE_API_VERSION < 4)
 			intern_softdevice_events_execute();
-#endif
 		}
 		else
 		{

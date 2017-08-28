@@ -38,6 +38,7 @@ Modified by          Date              Description
 
 #include "ble.h"
 #include "nrf_sdm.h"
+#include "ble_db_discovery.h"
 
 /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
 #if (NRF_SD_BLE_API_VERSION <= 3)
@@ -57,8 +58,11 @@ Modified by          Date              Description
 #endif
 
 #define BLEAPP_ADV_MANDATA_TYPE_SN		0xFF	// Device Serial Number (8 bytes)
-#define BLEAPP_ADV_MANDATA_TYPE_PTH		1		// PTH Environmental sensor data
+#define BLEAPP_ADV_MANDATA_TYPE_PTH		1		// Environmental sensor data (Pressure, Temperature, Humidity)
 #define BLEAPP_ADV_MANDATA_TYPE_MOTION	2		// Motion sensor data Accel, Gyro, Mag
+#define BLEAPP_ADV_MANDATA_TYPE_GAS		3		// Gas sensor data
+#define BLEAPP_ADV_MANDATA_TYPE_PROXY	4		// Proximity sensor data
+#define BLEAPP_ADV_MANDATA_TYPE_ANALOG	5		// Analog measurement data
 
 #pragma pack(push, 1)
 // I-SYST Manufacture specific data format in advertisement
@@ -70,10 +74,11 @@ typedef struct _BleAppAdvManData {
 #pragma pack(pop)
 
 typedef enum _BleAppMode {
-	BLEAPP_MODE_LOOP,		// just main loop, No scheduler, no RTOS
+	BLEAPP_MODE_LOOP,		// just main loop (event mode), No scheduler, no RTOS
 	BLEAPP_MODE_APPSCHED,	// use app_cheduler
 	BLEAPP_MODE_RTOS,		// use RTOS
-	BLEAPP_MODE_NOCONNECT	// Connectionless beacon type of app.
+	BLEAPP_MODE_NOCONNECT,	// Connectionless beacon type of app.
+	BLEAPP_MODE_IBEACON		// Apple iBeacon
 } BLEAPP_MODE;
 
 // Service connection security types
@@ -99,6 +104,12 @@ typedef void (*BLEEVTHANDLER)(ble_evt_t *pEvt);
 
 #pragma pack(push, 4)
 
+typedef struct _BleAppPeripheral {
+	uint16_t ConnHdl;	// Connection handle
+    uint8_t SrvcCnt;	// Number of services
+    ble_gatt_db_srv_t Srvc[BLE_DB_DISCOVERY_MAX_SRV];  // service data
+} BLEAPP_PERIPH;
+
 typedef struct _BleAppDevInfo {
 	const char ModelName[BLEAPP_INFOSTR_MAX_SIZE];	// Model name
 	const char ManufName[BLEAPP_INFOSTR_MAX_SIZE];	// Manufacturer name
@@ -113,8 +124,8 @@ typedef struct _BleAppConfig {
 	int	PeriLinkCount;			// Number of peripheral link
 	BLEAPP_MODE AppMode;		// App use scheduler, rtos
 	const char *pDevName;		// Device name
-	uint16_t VendorID;			// PnP Bluetooth/USB vendor id
-	uint16_t ProductId;			// PnP product ID
+	uint16_t VendorID;			// PnP Bluetooth/USB vendor id. iBeacon mode, this is Major value
+	uint16_t ProductId;			// PnP product ID. iBeacon mode, this is Minor value
 	uint16_t ProductVer;		// PnP product version
 	bool bEnDevInfoService;		// Enable device information service (DIS)
 	const BLEAPP_DEVDESC *pDevDesc;	// Pointer device info descriptor
@@ -133,6 +144,8 @@ typedef struct _BleAppConfig {
 	int ConnLedPort;			// Connection LED port & pin number
 	int ConnLedPin;
 	uint32_t (*SDEvtHandler)(void) ;// Require for BLEAPP_MODE_RTOS
+	int PeriphDevCnt;			// Max number of peripheral connection
+	BLEAPP_PERIPH *pPeriphDev;	// Connected peripheral data table
 } BLEAPP_CFG;
 
 #pragma pack(pop)

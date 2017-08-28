@@ -52,7 +52,7 @@ Modified by          Date              Description
 
 #define PTH_BME280
 
-#define APP_ADV_INTERVAL                MSEC_TO_UNITS(1000, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
+#define APP_ADV_INTERVAL                MSEC_TO_UNITS(40, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      60                                         /**< The advertising timeout (in units of seconds). */
 
 /*
@@ -79,7 +79,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 		1, 1, 0
 #else
 		NRF_CLOCK_LF_SRC_XTAL,	// Source 32KHz XTAL
-		0, 0, NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM
+		0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM// NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM
 #endif
 
 	},
