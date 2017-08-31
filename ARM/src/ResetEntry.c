@@ -35,6 +35,8 @@ Modified by          Date              Description
 #include <string.h>
 #include <stdio.h>
 
+#include "system_core_factor.h"
+
 extern unsigned long __etext;	// Begin of data in FLASH location
 extern unsigned long __data_loc__;
 extern unsigned long __data_start__;	// RAM data start
@@ -58,8 +60,8 @@ extern	void (* const g_Vectors[])(void);
 __attribute__ ((used)) static uint32_t s_StackPtr = (uint32_t)g_Vectors;
 
 // Nop count for usDelay base on ARM NOP instruction timing on 16MHz clock
-uint32_t SystemMicroSecNopCnt = 1;
-
+uint32_t SystemMicroSecLoopCnt = 1;
+uint32_t SystemNanoSecGranul = 295;
 /**
  *	This is entry point after reset
  */
@@ -96,7 +98,8 @@ void ResetEntry (void)
 	SystemCoreClockUpdate();
 
 	// Update count for usDelay
-	SystemMicroSecNopCnt = (SystemCoreClock / 16000000);
+	SystemMicroSecLoopCnt = (SystemCoreClock / 16000000);
+	SystemNanoSecGranul = SYSTEM_NSDELAY_CORE_FACTOR / SystemCoreClock;
 
 	/*
 	 * We are ready to enter main application
