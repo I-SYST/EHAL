@@ -35,7 +35,7 @@ Modified by          Date              Description
 #include <string.h>
 #include <stdio.h>
 
-#include "system_core_factor.h"
+#include <system_core_clock.h>
 
 extern unsigned long __etext;	// Begin of data in FLASH location
 extern unsigned long __data_loc__;
@@ -61,7 +61,7 @@ __attribute__ ((used)) static uint32_t s_StackPtr = (uint32_t)g_Vectors;
 
 // Nop count for usDelay base on ARM NOP instruction timing on 16MHz clock
 uint32_t SystemMicroSecLoopCnt = 1;
-uint32_t SystemNanoSecGranul = 295;
+
 /**
  *	This is entry point after reset
  */
@@ -99,7 +99,6 @@ void ResetEntry (void)
 
 	// Update count for usDelay
 	SystemMicroSecLoopCnt = (SystemCoreClock / 16000000);
-	SystemNanoSecGranul = SYSTEM_NSDELAY_CORE_FACTOR / SystemCoreClock;
 
 	/*
 	 * We are ready to enter main application

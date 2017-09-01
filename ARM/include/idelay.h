@@ -36,9 +36,9 @@ Modified by         Date            Description
 #ifndef __IDELAY_H__
 #define __IDELAY_H__
 #include <stdint.h>
+#include "system_core_clock.h"
 
 extern uint32_t SystemMicroSecLoopCnt;
-extern uint32_t SystemNanoSecGranul;
 
 /**
  * Microsecond delay. This function is based on a 16MHz clock. For higher clock
@@ -82,15 +82,15 @@ static inline __attribute__((always_inline)) void usDelay(uint32_t cnt) {
 static inline __attribute__((always_inline)) void nsDelay(uint32_t cnt) {
 	asm volatile (
 		".syntax unified\n"
-			"MOVS r0, %[ucnt]\n"
+			"MOVS r1, %[ucnt]\n"
 		"1:\n"
-			" SUBS r0, #1\n"
+			" SUBS r1, #1\n"
 			" BGT 1b\n"
 		"2:\n"
 		".syntax divided\n"
 		:
-		: [ucnt] "r" ((cnt + (SystemNanoSecGranul >> 1)) / SystemNanoSecGranul)
-		:"r0"
+		: [ucnt] "r" ((cnt + (SYSTEM_NSDELAY_CORE_FACTOR >> 1)) / SYSTEM_NSDELAY_CORE_FACTOR)
+		:"r1"
 		 );
 }
 
