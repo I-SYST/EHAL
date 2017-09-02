@@ -36,8 +36,8 @@ Modified by          Date              Description
 #include <stdarg.h>
 
 #include "istddef.h"
-#include "ledmx.h"
-#include "ledmxfont.h"
+#include "miscdev/ledmx.h"
+#include "miscdev/ledmxfont.h"
 
 extern char s_Buffer[];	// defined in sbuffer.c
 extern int s_BufferSize;
@@ -182,27 +182,29 @@ void LedMxPrintScrollRight(LEDMXDEV *pDev, const char *pStr)
 
 void LedMxvPrintf(LEDMXDEV *pDev, LEDMXPRTMODE Mode, const char *pFormat, va_list vl)
 {
-    vsnprintf(s_Buffer, s_BufferSize, pFormat, vl);
-    s_Buffer[s_BufferSize - 1] = '\0';
+	char buff[80];
+
+    vsnprintf(buff, 80, pFormat, vl);
+    s_Buffer[80 - 1] = '\0';
 
     switch (Mode)
     {
     case LEDMXPRTMODE_JCENTER:
-    	LedMxPrintCenter(pDev, s_Buffer);
+    	LedMxPrintCenter(pDev, buff);
     	break;
 
     case LEDMXPRTMODE_JRIGHT:
-    	LedMxPrintRight(pDev, s_Buffer);
+    	LedMxPrintRight(pDev, buff);
     	break;
     case LEDMXPRTMODE_SCROLLLEFT:
-    	LedMxPrintScrollLeft(pDev, s_Buffer);
+    	LedMxPrintScrollLeft(pDev, buff);
     	break;
     case LEDMXPRTMODE_SCROLLRIGHT:
-    	LedMxPrintScrollRight(pDev, s_Buffer);
+    	LedMxPrintScrollRight(pDev, buff);
     	break;
     case LEDMXPRTMODE_JLEFT:
     default:
-    	LedMxPrintLeft(pDev, s_Buffer);
+    	LedMxPrintLeft(pDev, buff);
     	break;
     }
 }
