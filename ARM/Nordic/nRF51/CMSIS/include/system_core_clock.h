@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
-File   : system_core_factor.h
+File   : system_core_clock.h
 
 Author : Hoang Nguyen Hoan          Aug. 30, 2017
 
-Desc   : Contains core specific factor clock values for calculating
-		 delay loops
+Desc   : Contains core specific default clock and related clock factors
+		 for calculating delay loops, etc...
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -33,11 +33,11 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
-#ifndef __SYSTEM_CORE_FACTOR_H__
-#define __SYSTEM_CORE_FACTOR_H__
+#ifndef __SYSTEM_CORE_CLOCK_H__
+#define __SYSTEM_CORE_CLOCK_H__
 
 #define SYSTEM_CORE_CLOCK				16000000UL			// nRF51 has fixed core frequency
-#define SYSTEM_NSDELAY_CORE_FACTOR		(56UL * 100000000UL)
+#define SYSTEM_NSDELAY_CORE_FACTOR		(250UL)				// Factor for nanosec delay loop
 
 
-#endif // __SYSTEM_CORE_FACTOR_H__
+#endif // __SYSTEM_CORE_CLOCK_H__
