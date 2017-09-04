@@ -36,7 +36,7 @@ Modified by          Date              Description
 #ifndef __LEDMXIO_H__
 #define __LEDMXIO_H__
 
-#include "ledmx.h"
+#include "miscdev/ledmx.h"
 
 // LED matrix controller Breakout board pin mapping
 #define LMXBRK_CSTYPE               LEDMX_CSTYPE_BIN
