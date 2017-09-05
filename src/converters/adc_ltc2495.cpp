@@ -33,7 +33,17 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #include "converters/adc_ltc2495.h"
 
-bool AdcLtc2495::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
+/**
+ * @brief	Execute auto calibration
+ *
+ * @return	true - success
+ */
+bool ADCLTC2495::Calibrate()
+{
+	return true;
+}
+
+bool ADCLTC2495::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 {
 	SetInterface(pIntrf);
 	SetDeviceAddess(Cfg.DevAddr);
@@ -41,24 +51,47 @@ bool AdcLtc2495::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 	if (Cfg.NbRefVolt < 1 || Cfg.pRefVolt == NULL)
 		return false;
 
-	vRefVoltage = Cfg.pRefVolt->Voltage;
+	SetRefVoltage(Cfg.pRefVolt, Cfg.NbRefVolt);
+
+	vResolution = Cfg.Resolution;
+	vRate = Cfg.Rate;
+	vMode = Cfg.Mode;
+	vbInterrupt = false; // Interrupt not available
+	SetEvtHandler(NULL);
 
 	return true;
 }
 
-bool AdcLtc2495::ChannelCfg(const ADC_CHAN_CFG *pChanCfg, int NbChan)
+bool ADCLTC2495::OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan)
 {
-	if (pChanCfg->Type == ADC_CHAN_TYPE_DIFFERENTIAL)
-	{
+	uint8_t d[2];
 
-	}
-	else
-	{
+	d[0] = 0xA0;
+	d[1] = 0x80;
 
+	for (int i = 0; i < NbChan; i++)
+	{
+		if (pChanCfg->Type == ADC_CHAN_TYPE_DIFFERENTIAL)
+		{
+			d[0] |= 0x40 | pChanCfg[i].Chan;
+		}
+		else
+		{
+			d[0] |= pChanCfg[i].Chan;
+		}
+
+		uint32_t gain = pChanCfg[i].Gain >> 8;	// Fractional gain not available
+
+		d[1] |= 0x80 | ((31 - __builtin_clzl(gain)) & 0xFF);
 	}
 }
 
-bool AdcLtc2495::StartConvert()
+void ADCLTC2495::CloseChannel(int Chan)
+{
+
+}
+
+bool ADCLTC2495::StartConversion()
 {
 	uint8_t d[4];
 /*
@@ -114,7 +147,7 @@ int AdcLtc2495::Read(float *pBuff, int Len)
 	return 0;
 }
 */
-int Read(ADC_DATA *pBuff, int Len)
+int ADCLTC2495::Read(ADC_DATA *pBuff, int Len)
 {
 
 }

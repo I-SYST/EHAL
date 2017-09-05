@@ -87,15 +87,87 @@ Modified by          Date              Description
 #define LTC2495_CONVERT_CFG_GAIN128			0x86
 #define LTC2495_CONVERT_CFG_GAIN256			0x87
 
-class AdcLtc2495 : public ADCDevice {
+class ADCLTC2495 : public ADCDevice {
 public:
+	/**
+	 * @brief	ADC device initialization
+	 *
+	 * @param	Cfg 	: Configuration data
+	 * 			pIntrf	: Pointer to device interface instance
+	 * 					  NULL, if self interface or internal SoC
+	 * 					  such as MCU ADC pins
+	 *
+	 * @return	True - Success
+	 */
 	virtual bool Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf);
-	virtual bool ChannelCfg(const ADC_CHAN_CFG *pChanCfg, int NbChan);
-	virtual bool StartConvert();
-	virtual void StopConvert();
-//	virtual float Read(int Chan);
-//	virtual int Read(float *pBuff, int Len);
+
+	/**
+	 * @brief	Set conversion rate for continuous mode only
+	 *
+	 * @param 	Val : Rate value in Hz
+	 *
+	 * @return	Real rate value set in Hz
+	 */
+	virtual uint32_t Rate(uint32_t Val);
+
+	/**
+	 * @brief	Set conversion resolution
+	 *
+	 * @param 	Val : Resolution value in bits
+	 *
+	 * @return	Real resolution value set in bits
+	 */
+	virtual uint16_t Resolution(uint16_t Val);
+
+	/**
+	 * @brief	Configure channel for ADC conversion
+	 *
+	 * @param	pChanCfg : Array of channels to configure
+	 * 			NbChan	 : Number of channels (array size)
+	 *
+	 * @return	True - Success
+	 */
+	virtual bool OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan);
+
+	/**
+	 * @brief	Close ADC channel
+	 *
+	 * @param 	Chan : Channel number
+	 */
+	virtual void CloseChannel(int Chan);
+
+	/**
+	 * @brief	Start ADC conversion process
+	 *
+	 * @return	True - Success
+	 */
+	virtual bool StartConversion();
+
+	/**
+	 * @brief	Stop ADC conversion
+	 */
+	virtual void StopConversion();
+
+	/**
+	 * @brief	Read converted data
+	 *
+	 * @param	pBuff : Buffer to receive converted data
+	 * 			Len	  : Size of buffer array (total number of elements)
+	 *
+	 * @return	Number of ADC data in array.
+	 */
 	virtual int Read(ADC_DATA *pBuff, int Len);
+
+	/**
+	 * @brief	Execute auto calibration
+	 *
+	 * @return	true - success
+	 */
+	virtual bool Calibrate();
+
+	virtual bool Enable();
+	virtual void Disable();
+	virtual void Reset();
 
 private:
 	float vVFullScale;

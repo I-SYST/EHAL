@@ -88,26 +88,26 @@ public:
 	 *
 	 * @return	True - Success
 	 */
-	virtual bool ChannelCfg(const ADC_CHAN_CFG *pChanCfg, int NbChan);
+	virtual bool OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan);
 
 	/**
 	 * @brief	Close ADC channel
 	 *
 	 * @param 	Chan : Channel number
 	 */
-	virtual void ChannelClose(int Chan);
+	virtual void CloseChannel(int Chan);
 
 	/**
 	 * @brief	Start ADC conversion process
 	 *
 	 * @return	True - Success
 	 */
-	virtual bool StartConvert();
+	virtual bool StartConversion();
 
 	/**
 	 * @brief	Stop ADC conversion
 	 */
-	virtual void StopConvert();
+	virtual void StopConversion();
 
 	/**
 	 * @brief	Read converted data
@@ -118,6 +118,13 @@ public:
 	 * @return	Number of ADC data in array.
 	 */
 	virtual int Read(ADC_DATA *pBuff, int Len);
+
+	/**
+	 * @brief	Execute auto calibration
+	 *
+	 * @return	true - success
+	 */
+	virtual bool Calibrate();
 
 	virtual bool Enable();
 	virtual void Disable();

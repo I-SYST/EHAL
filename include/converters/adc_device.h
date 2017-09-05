@@ -189,26 +189,26 @@ public:
 	 *
 	 * @return	True - Success
 	 */
-	virtual bool ChannelCfg(const ADC_CHAN_CFG *pChanCfg, int NbChan) = 0;
+	virtual bool OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan) = 0;
 
 	/**
 	 * @brief	Close ADC channel
 	 *
 	 * @param 	Chan : Channel number
 	 */
-	virtual void ChannelClose(int Chan) = 0;
+	virtual void CloseChannel(int Chan) = 0;
 
 	/**
 	 * @brief	Start ADC conversion process
 	 *
 	 * @return	True - Success
 	 */
-	virtual bool StartConvert() = 0;
+	virtual bool StartConversion() = 0;
 
 	/**
 	 * @brief	Stop ADC conversion
 	 */
-	virtual void StopConvert() = 0;
+	virtual void StopConversion() = 0;
 
 	/**
 	 * @brief	Read converted data
@@ -219,6 +219,13 @@ public:
 	 * @return	Number of ADC data in array.
 	 */
 	virtual int Read(ADC_DATA *pBuff, int Len) = 0;
+
+	/**
+	 * @brief	Execute auto calibration
+	 *
+	 * @return	true - success
+	 */
+	virtual bool Calibrate() = 0;
 
 protected:
 	void SetEvtHandler(ADC_EVTCB EvtHandler) { vEvtHandler = EvtHandler; }
@@ -238,6 +245,7 @@ protected:
 	uint32_t vRate;					// Sampling rate in Hz
 	ADC_CONV_MODE vMode;			// Conversion mode single/continuous
 	bool vbInterrupt;				// Interrupt enable flag
+	uint32_t vIntPrio;				// Interrupt priority
 
 private:
 	ADC_EVTCB vEvtHandler;

@@ -106,7 +106,13 @@ extern "C" void SAADC_IRQHandler()
 					if (p == NULL)
 						break;
 
+
 					p->Chan = i;
+					//
+					// *** Factor calculation
+					// Vin = ADCresult * Reference / (Resolution * Gain)
+					// => GainFactor = Reference / (Resolution * Gain)
+					// => Vin = ADCresult * GainFactor
 					p->Data = (float)s_AdcnRF52DevData.ResData[cnt] * s_AdcnRF52DevData.GainFactor[i];
 					p->Timestamp = s_AdcnRF52DevData.TimeCnt;
 					cnt++;
@@ -147,7 +153,7 @@ bool nRF52ADCWaitForStop(int32_t Timeout)
 	do {
 		if (NRF_SAADC->EVENTS_STOPPED == 1)
 		{
-			NRF_SAADC->EVENTS_STOPPED = 1;
+			NRF_SAADC->EVENTS_STOPPED = 0;
 
 			return true;
 		}
@@ -165,6 +171,27 @@ ADCnRF52::ADCnRF52()
 ADCnRF52::~ADCnRF52()
 {
 	s_AdcnRF52DevData.pDevObj = NULL;
+}
+
+/**
+ * @brief	Execute auto calibration
+ *
+ * @return	true - success
+ */
+bool ADCnRF52::Calibrate()
+{
+	NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
+
+	NRF_SAADC->TASKS_CALIBRATEOFFSET = 1;
+
+	int32_t timeout = 100000;
+
+	do {
+		if (NRF_SAADC->EVENTS_CALIBRATEDONE != 0)
+			return true;
+	} while (timeout-- > 0);
+
+	return false;
 }
 
 bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
@@ -260,6 +287,8 @@ bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 
 	if (Cfg.bInterrupt == true)
 	{
+		vIntPrio = Cfg.IntPrio;
+
 		NRF_SAADC->INTENSET = (1 << SAADC_INTENSET_RESULTDONE_Pos)
 							  | (1 << SAADC_INTENSET_END_Pos)
 							  | (1 << SAADC_INTENSET_DONE_Pos)
@@ -270,6 +299,8 @@ bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 
 	NRF_SAADC->ENABLE = (SAADC_ENABLE_ENABLE_Enabled << SAADC_ENABLE_ENABLE_Pos);
 
+	Calibrate();
+
 	return true;
 }
 
@@ -278,6 +309,19 @@ bool ADCnRF52::Enable()
 	NRF_SAADC->EVENTS_END = 0;
 	NRF_SAADC->EVENTS_STARTED = 0;
 	NRF_SAADC->EVENTS_STOPPED = 0;
+
+	NVIC_ClearPendingIRQ(SAADC_IRQn);
+
+	if (vbInterrupt == true)
+	{
+		NRF_SAADC->INTENSET = (1 << SAADC_INTENSET_RESULTDONE_Pos)
+							  | (1 << SAADC_INTENSET_END_Pos)
+							  | (1 << SAADC_INTENSET_DONE_Pos)
+							  | (1 << SAADC_INTENSET_CALIBRATEDONE_Pos);
+		NVIC_SetPriority(SAADC_IRQn, vIntPrio);
+		NVIC_EnableIRQ(SAADC_IRQn);
+	}
+
 	NRF_SAADC->ENABLE = (SAADC_ENABLE_ENABLE_Enabled << SAADC_ENABLE_ENABLE_Pos);
 
 	return true;
@@ -298,11 +342,16 @@ void ADCnRF52::Disable()
 
 	NRF_SAADC->ENABLE = 0;
 	NRF_SAADC->INTENCLR = 0x3FFFFF;
+	NVIC_ClearPendingIRQ(SAADC_IRQn);
+	NVIC_DisableIRQ(SAADC_IRQn);
 }
 
 void ADCnRF52::Reset()
 {
+	StopConversion();
 
+	Disable();
+	Enable();
 }
 
 uint32_t ADCnRF52::Rate(uint32_t Val)
@@ -357,11 +406,12 @@ uint16_t ADCnRF52::Resolution(uint16_t Val)
 	return vResolution;
 }
 
-bool ADCnRF52::ChannelCfg(const ADC_CHAN_CFG *pChanCfg, int NbChan)
+bool ADCnRF52::OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan)
 {
 	if (pChanCfg == NULL || NbChan == 0)
 		return false;
 
+	NRF_SAADC->ENABLE = 0;
 
 	for (int i = 0; i < NbChan; i++)
 	{
@@ -387,7 +437,7 @@ bool ADCnRF52::ChannelCfg(const ADC_CHAN_CFG *pChanCfg, int NbChan)
 
 		if (pChanCfg[i].Type == ADC_CHAN_TYPE_DIFFERENTIAL)
 		{
-			resdiv = 1 << (vResolution - 2);
+			resdiv = 1 << (vResolution - 1);
 			NRF_SAADC->CH[pChanCfg[i].Chan].PSELN = pChanCfg[i].PinN.PinNo + 1;
 
 			// In case of differential, Negative channel is kept
@@ -411,20 +461,40 @@ bool ADCnRF52::ChannelCfg(const ADC_CHAN_CFG *pChanCfg, int NbChan)
 		else
 		{
 			// Single ended
-			resdiv = 1 << (vResolution - 1);
+			resdiv = 1 << vResolution;
 			NRF_SAADC->CH[pChanCfg[i].Chan].PSELN = 0;
+		}
+
+		//
+		// *** Factor calculation
+		// Vin = ADCresult * Reference / (Resolution * Gain)
+		// => GainFactor = Reference / (Resolution * Gain)
+		//
+
+		// Reference voltage
+		s_AdcnRF52DevData.RefVoltIdx[pChanCfg[i].Chan] = pChanCfg[i].RefVoltIdx;
+
+		if (vpRefVolt[pChanCfg[i].RefVoltIdx].Type == ADC_REFVOLT_TYPE_INTERNAL)
+		{
+			chconfig |= SAADC_CH_CONFIG_REFSEL_Internal << SAADC_CH_CONFIG_REFSEL_Pos;
+			s_AdcnRF52DevData.GainFactor[pChanCfg[i].Chan] = 0.6;
+		}
+		else
+		{
+			chconfig |= SAADC_CH_CONFIG_REFSEL_VDD1_4 << SAADC_CH_CONFIG_REFSEL_Pos;
+			s_AdcnRF52DevData.GainFactor[pChanCfg[i].Chan] = vpRefVolt[s_AdcnRF52DevData.RefVoltIdx[pChanCfg[i].Chan]].Voltage;
 		}
 
 		if (pChanCfg[i].Gain & 0xFF)
 		{
 			// Factional gain
-			s_AdcnRF52DevData.GainFactor[pChanCfg[i].Chan] = 1.0 / (float)(pChanCfg[i].Gain & 0xFF);
+			s_AdcnRF52DevData.GainFactor[pChanCfg[i].Chan] /= (float)resdiv / (float)(pChanCfg[i].Gain & 0xFF);
 			chconfig |= ((6 - (pChanCfg[i].Gain & 0xFF)) << SAADC_CH_CONFIG_GAIN_Pos) & SAADC_CH_CONFIG_GAIN_Msk;
 		}
 		else
 		{
-			s_AdcnRF52DevData.GainFactor[pChanCfg[i].Chan] = (float)((pChanCfg[i].Gain >> 8)& 0xFF);
-			chconfig |= ((4 + (pChanCfg[i].Gain >> 8)) << SAADC_CH_CONFIG_GAIN_Pos) & SAADC_CH_CONFIG_GAIN_Msk;
+			s_AdcnRF52DevData.GainFactor[pChanCfg[i].Chan] /= (float)resdiv * (float)((pChanCfg[i].Gain >> 8)& 0xFF);
+			chconfig |= ((5 + (31 - __builtin_clzl(pChanCfg[i].Gain >> 8))) << SAADC_CH_CONFIG_GAIN_Pos) & SAADC_CH_CONFIG_GAIN_Msk;
 		}
 
 		if (pChanCfg[i].AcqTime < 5)
@@ -461,26 +531,13 @@ bool ADCnRF52::ChannelCfg(const ADC_CHAN_CFG *pChanCfg, int NbChan)
 			chconfig |= SAADC_CH_CONFIG_BURST_Enabled << SAADC_CH_CONFIG_BURST_Pos;
 		}
 
-		// Reference voltage
-		s_AdcnRF52DevData.RefVoltIdx[pChanCfg[i].Chan] = pChanCfg[i].RefVoltIdx;
-
-		if (vpRefVolt[pChanCfg[i].RefVoltIdx].Type == ADC_REFVOLT_TYPE_INTERNAL)
-		{
-			chconfig |= SAADC_CH_CONFIG_REFSEL_Internal << SAADC_CH_CONFIG_REFSEL_Pos;
-			s_AdcnRF52DevData.GainFactor[pChanCfg[i].Chan] /= 0.6	* (float)resdiv;
-		}
-		else
-		{
-			chconfig |= SAADC_CH_CONFIG_REFSEL_VDD1_4 << SAADC_CH_CONFIG_REFSEL_Pos;
-			s_AdcnRF52DevData.GainFactor[pChanCfg[i].Chan] /= vpRefVolt[s_AdcnRF52DevData.RefVoltIdx[pChanCfg[i].Chan]].Voltage
-														* (float)resdiv;
-		}
-
 		NRF_SAADC->CH[pChanCfg[i].Chan].CONFIG = chconfig;
 
 	}
 
 	s_AdcnRF52DevData.NbChanAct = NbChan;
+
+	NRF_SAADC->ENABLE = (SAADC_ENABLE_ENABLE_Enabled << SAADC_ENABLE_ENABLE_Pos);
 
 	return true;
 }
@@ -489,7 +546,7 @@ bool ADCnRF52::ChannelCfg(const ADC_CHAN_CFG *pChanCfg, int NbChan)
  * @brief	Close ADC channel
  * @param 	Chan : Channel number
  */
-void ADCnRF52::ChannelClose(int Chan)
+void ADCnRF52::CloseChannel(int Chan)
 {
 	NRF_SAADC->CH[Chan].PSELP = 0;
 	NRF_SAADC->CH[Chan].PSELN = 0;
@@ -499,7 +556,7 @@ void ADCnRF52::ChannelClose(int Chan)
 }
 
 
-bool ADCnRF52::StartConvert()
+bool ADCnRF52::StartConversion()
 {
 //	if (nRF52ADCWaitBusy(10000) == false)
 //		return false;
@@ -513,14 +570,13 @@ bool ADCnRF52::StartConvert()
 	return true;
 }
 
-void ADCnRF52::StopConvert()
+void ADCnRF52::StopConversion()
 {
 	NRF_SAADC->TASKS_STOP = 1;
 
 	nRF52ADCWaitForStop(1000);
 
 	NRF_SAADC->RESULT.MAXCNT = 0;
-
 }
 
 int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
@@ -544,9 +600,9 @@ int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
 	}
 	else
 	{
-		if (nRF52ADCWaitForResult(10000))
+		if (nRF52ADCWaitForResult(100000))
 		{
-			int timeout = 1000;
+			int timeout = 10000;
 			while (NRF_SAADC->RESULT.AMOUNT == 0 && timeout-- > 0);
 
 			NRF_SAADC->EVENTS_DONE = 0;
@@ -559,6 +615,11 @@ int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
 				{
 
 					pBuff->Chan = i;
+					//
+					// *** Factor calculation
+					// Vin = ADCresult * Reference / (Resolution * Gain)
+					// => GainFactor = Reference / (Resolution * Gain)
+					// => Vin = ADCresult * GainFactor
 					pBuff->Data = (float)s_AdcnRF52DevData.ResData[cnt] * s_AdcnRF52DevData.GainFactor[i];
 					pBuff->Timestamp = 0;
 					pBuff++;

@@ -52,7 +52,7 @@ UART g_Uart;
 // Define available voltage sources
 static const ADC_REFVOLT s_RefVolt[] = {
 	{.Type = ADC_REFVOLT_TYPE_INTERNAL, .Voltage = 0.6 },
-	{.Type = ADC_REFVOLT_TYPE_SUPPLY, .Voltage = 3.3 / 4},
+	{.Type = ADC_REFVOLT_TYPE_SUPPLY, .Voltage = 3.3 / 4.0},
 };
 
 static const int s_NbRefVolt = sizeof(s_RefVolt) / sizeof(ADC_REFVOLT);
@@ -83,21 +83,21 @@ ADCnRF52 g_Adc;
 static const ADC_CHAN_CFG s_ChanCfg[] = {
 	{
 		.Chan = 0,
-		.RefVoltIdx = 0,
+		.RefVoltIdx = 1,
 		.Type = ADC_CHAN_TYPE_SINGLE_ENDED,
-		.Gain = 1 << 8,
+		.Gain = 4,//1 << 8,
 		.AcqTime = 0,
 		.BurstMode = false,
 		.PinP = { .PinNo = 0, .Conn = ADC_PIN_CONN_PULLUP },
 	},
 	{
 		.Chan = 1,
-		.RefVoltIdx = 0,
+		.RefVoltIdx = 1,
 		.Type = ADC_CHAN_TYPE_SINGLE_ENDED,
-		.Gain = 1 << 8,
+		.Gain = 4,//1 << 8,
 		.AcqTime = 0,
 		.BurstMode = false,
-		.PinP = { .PinNo = 1, .Conn = ADC_PIN_CONN_PULLDOWN },
+		.PinP = { .PinNo = 8, .Conn = ADC_PIN_CONN_NONE },
 	}
 };
 
@@ -152,8 +152,7 @@ void HardwareInit()
 	printf("Init ADC\r\n");
 
 	g_Adc.Init(s_AdcCfg, NULL);
-	g_Adc.ChannelCfg(s_ChanCfg, s_NbChan);
-	g_Adc.StartConvert();
+	g_Adc.OpenChannel(s_ChanCfg, s_NbChan);
 }
 //
 // Print a greeting message on standard output and exit.
@@ -171,6 +170,7 @@ void HardwareInit()
 int main()
 {
 	HardwareInit();
+	g_Adc.StartConversion();
 
 	while (1)
 	{
@@ -188,7 +188,7 @@ int main()
 				if (cnt > 0)
 					g_Uart.printf("%d ADC[0] = %.2f V, ADC[1] = %.2f V\r\n", df[0].Timestamp, df[0].Data, df[1].Data);
 			} while (cnt > 0);
-			g_Adc.StartConvert();
+			g_Adc.StartConversion();
 #endif
 		}
 	}
