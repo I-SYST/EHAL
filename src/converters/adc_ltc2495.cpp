@@ -1,11 +1,11 @@
 /*--------------------------------------------------------------------------
-File   : base64.c
+File   : adc_ltc2495.cpp
 
-Author : Hoang Nguyen Hoan          Nov. 3, 2012
+Author : Hoang Nguyen Hoan          June 16, 2017
 
-Desc   : Base64 encode/decode. It is the Base64 binary to ASCII encode/decode
+Desc   : ADC implementation for LTC2495
 
-Copyright (c) 2012, I-SYST inc., all rights reserved
+Copyright (c) 2017, I-SYST inc., all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -31,65 +31,90 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#include <stdint.h>
+#include "converters/adc_ltc2495.h"
 
-#include "istddef.h"
-#include "base64.h"
-
-/*
- * Base64 Encode binary to ASCII
- *
- * @param 	pSrc : Pointer to source binary data
- * 			SrcLen	: Source data length in bytes
- * 			pDest	: Pointer to ASCII destination buffer
- * 			DstLen	: Destination buffer length in bytes
- *
- * 	@return	Number of bytes encoded
- */
-int Base64Encode(uint8_t *pSrc, int SrcLen, char *pDest, int DstLen)
+bool AdcLtc2495::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 {
-	int idx = 0;
-	uint32_t d = 0;
-	uint8_t *p = (uint8_t *)&d;
-	int len;
-	int cnt = 0;
+	SetInterface(pIntrf);
+	SetDeviceAddess(Cfg.DevAddr);
 
-	while (SrcLen > 0)
-	{
-		d = 0;
-		len = min(SrcLen - 1, 2);
-		for (int i = 2; i >= 0 && SrcLen > 0; i--)
-		{
-			p[i] = *pSrc;
-			pSrc++;
-			SrcLen--;
-		}
-		len += 1 + idx;
-		for (int i = idx + 3; i >= idx && cnt < DstLen - 1; i--)
-		{
-			if (i > len)
-				pDest[i] = '=';
-			else {
-				pDest[i] = d & 0x3f;
-				if (pDest[i] < 26)
-					pDest[i] += 'A';
-				else if (pDest[i] < 52)
-					pDest[i] += 'a' - 26;
-				else if (pDest[i] < 62)
-					pDest[i] += '0' - 52;
-				else if (pDest[i] == 63)
-					pDest[i] = '/';
-				else
-					pDest[i] = '+';
-			}
-			d >>= 6;
-			cnt++;
-		}
-		idx += 4;
-	}
+	if (Cfg.NbRefVolt < 1 || Cfg.pRefVolt == NULL)
+		return false;
 
-	pDest[cnt] = '\0';
+	vRefVoltage = Cfg.pRefVolt->Voltage;
 
-	return cnt;
+	return true;
 }
 
+bool AdcLtc2495::ChannelCfg(const ADC_CHAN_CFG *pChanCfg, int NbChan)
+{
+	if (pChanCfg->Type == ADC_CHAN_TYPE_DIFFERENTIAL)
+	{
+
+	}
+	else
+	{
+
+	}
+}
+
+bool AdcLtc2495::StartConvert()
+{
+	uint8_t d[4];
+/*
+	d[0] = Chan;
+	d[1] = Gain;
+
+	Write(&d[0], 1, &d[1], 1);
+
+	int gain = (Gain & 0x7) << 2;
+
+	vVFullScale = 0.5 * vRefVoltage;
+	if (gain > 0)
+		vVFullScale /= gain;
+*/
+	return true;
+}
+/*
+float AdcLtc2495::Read(int Chan)
+{
+	uint8_t d[4];
+	int val;
+	uint8_t status;
+
+	d[0] = 0;
+	d[1] = 0;
+	d[2] = 0;
+	d[3] = 0;
+
+	Device::Read((uint8_t*)&Chan, 1, (uint8_t*)d, 3);
+
+	val = (d[2] | ((int32_t)d[1] << 8) | ((int32_t)(d[0] & 0x3f) << 16)) >> 6;
+	status = d[0] >> 6;
+
+	if (status == 0 || status == 3)
+	{
+		return 0.0;
+	}
+	if (status == 1)
+	{
+		// negative, make complement 2
+		val |= 0xFFFF0000;
+	}
+
+	float V = val * vVFullScale / 0xFFFF;
+
+	//V /= Divider;
+
+	return V;
+}
+
+int AdcLtc2495::Read(float *pBuff, int Len)
+{
+	return 0;
+}
+*/
+int Read(ADC_DATA *pBuff, int Len)
+{
+
+}

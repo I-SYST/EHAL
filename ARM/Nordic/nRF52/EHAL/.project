@@ -146,16 +146,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/istddef.h</locationURI>
 		</link>
 		<link>
-			<name>include/ledmx.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/ledmx.h</locationURI>
-		</link>
-		<link>
-			<name>include/ledmxfont.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/ledmxfont.h</locationURI>
-		</link>
-		<link>
 			<name>include/ledmxio.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/ledmxio.h</locationURI>
@@ -164,6 +154,11 @@
 			<name>include/md5.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/md5.h</locationURI>
+		</link>
+		<link>
+			<name>include/miscdev</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>include/prbs.h</name>
@@ -321,19 +316,14 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/isha256.c</locationURI>
 		</link>
 		<link>
-			<name>src/ledmx.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/ledmx.c</locationURI>
-		</link>
-		<link>
-			<name>src/ledmxfont.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/ledmxfont.c</locationURI>
-		</link>
-		<link>
 			<name>src/ledmxio_nrf5x.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ledmxio_nrf5x.c</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK</name>
@@ -416,6 +406,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/converters/dac_device.h</locationURI>
 		</link>
 		<link>
+			<name>include/miscdev/ledmx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmx.h</locationURI>
+		</link>
+		<link>
+			<name>include/miscdev/ledmxfont.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmxfont.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/pth_bme280.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pth_bme280.h</locationURI>
@@ -439,6 +439,16 @@
 			<name>src/converters/adc_ltc2495.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/converters/adc_ltc2495.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/ledmx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmx.c</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/ledmxfont.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmxfont.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble</name>
@@ -549,6 +559,11 @@
 			<name>src/nRF5_SDK/fprintf/nrf_fprintf_format.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/external/fprintf/nrf_fprintf_format.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/bootloader</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crc32</name>
@@ -766,6 +781,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/rng/nrf_drv_rng.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/bootloader/dfu</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/crc32/crc32.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crc32/crc32.c</locationURI>
@@ -939,6 +959,11 @@
 			<name>src/nRF5_SDK/softdevice/common/nrf_sdh_soc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh_soc.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/softdevice/common/softdevice_handler</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/ble_services/ble_dis/ble_dis.c</name>
