@@ -3,7 +3,16 @@ File   : adc_nrf52.cpp
 
 Author : Hoang Nguyen Hoan          June 16, 2017
 
-Desc   : ADC implementation for Nordic nRF52 
+Desc   : ADC implementation for Nordic nRF52.
+         Nordic SCAN mode does work with timer.
+         Nordic Continuous mode work with timer but only 1 channel
+         Therefore this implementation doesn't use Nordic continous mode
+         Single mode is without interrupt, start conversion must be called
+         at each conversion
+         if interrupt is use, continuous sample is used.  Result is queued
+         in a CFIFO
+
+         Currently sample count is return as time stamp.
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -37,13 +46,13 @@ Modified by          Date              Description
 
 typedef struct __ADC_nRF52_Data {
 	ADCnRF52 *pDevObj;
+    int NbChanAct;
+    int SampleCnt;
 	uint16_t ChanState[SAADC_NRF52_MAX_CHAN];
 	uint8_t	RefVoltIdx[SAADC_NRF52_MAX_CHAN];
 	float GainFactor[SAADC_NRF52_MAX_CHAN];		// Pre-calculated factor
-	uint32_t TimeCnt;
 	uint32_t Period;
     uint16_t ResData[SAADC_NRF52_MAX_CHAN];
-    int NbChanAct;
 } ADCNRF52_DATA;
 
 static ADCNRF52_DATA s_AdcnRF52DevData = {
@@ -58,46 +67,26 @@ extern "C" void SAADC_IRQHandler()
 {
 	ADC_EVT evt = ADC_EVT_UNKNOWN;
 
-	if (NRF_SAADC->EVENTS_END)
-	{
-		NRF_SAADC->EVENTS_END = 0;
-	}
 	if (NRF_SAADC->EVENTS_STARTED)
 	{
 		NRF_SAADC->EVENTS_STARTED = 0;
 	}
-	if (NRF_SAADC->EVENTS_CALIBRATEDONE)
-	{
-		NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
-	}
-	if (NRF_SAADC->EVENTS_STOPPED)
-	{
-		NRF_SAADC->EVENTS_STOPPED = 0;
-	}
-	if (NRF_SAADC->EVENTS_DONE)
-	{
-		NRF_SAADC->EVENTS_DONE = 0;
-	}
-	if (NRF_SAADC->EVENTS_RESULTDONE)
+	if (NRF_SAADC->EVENTS_END)
 	{
 		NRF_SAADC->EVENTS_RESULTDONE = 0;
+		NRF_SAADC->EVENTS_DONE = 0;
+		NRF_SAADC->EVENTS_END = 0;
+		NRF_SAADC->EVENTS_STARTED = 0;
 
-		s_AdcnRF52DevData.TimeCnt += s_AdcnRF52DevData.Period;
+		s_AdcnRF52DevData.SampleCnt++;
 
-		evt = ADC_EVT_DATA_READY;
 		if (s_AdcnRF52DevData.pDevObj)
 		{
 			int cnt = 0;
-			int timeout = 1000;
-			while (NRF_SAADC->RESULT.AMOUNT == 0 && timeout-- > 0);
+			int timeout = 100000;
 
-			NRF_SAADC->EVENTS_DONE = 0;
-			NRF_SAADC->EVENTS_END = 0;
+			while (NRF_SAADC->RESULT.AMOUNT < NRF_SAADC->RESULT.MAXCNT && timeout-- > 0);
 
-			if (timeout <= 0)
-			{
-				printf("Bad\r\n");
-			}
 			for (int i = 0; i < SAADC_NRF52_MAX_CHAN && cnt < NRF_SAADC->RESULT.AMOUNT; i++)
 			{
 				if (s_AdcnRF52DevData.ChanState[i] != 0)
@@ -106,7 +95,6 @@ extern "C" void SAADC_IRQHandler()
 					if (p == NULL)
 						break;
 
-
 					p->Chan = i;
 					//
 					// *** Factor calculation
@@ -114,13 +102,18 @@ extern "C" void SAADC_IRQHandler()
 					// => GainFactor = Reference / (Resolution * Gain)
 					// => Vin = ADCresult * GainFactor
 					p->Data = (float)s_AdcnRF52DevData.ResData[cnt] * s_AdcnRF52DevData.GainFactor[i];
-					p->Timestamp = s_AdcnRF52DevData.TimeCnt;
+					p->Timestamp = s_AdcnRF52DevData.SampleCnt;
 					cnt++;
 				}
 			}
 			NRF_SAADC->RESULT.AMOUNT = 0;
+
+			evt = ADC_EVT_DATA_READY;
+
 			s_AdcnRF52DevData.pDevObj->EvtHandler(evt);
 		}
+		NRF_SAADC->TASKS_START = 1;
+		NRF_SAADC->TASKS_SAMPLE = 1;
 	}
 	NVIC_ClearPendingIRQ(SAADC_IRQn);
 }
@@ -128,9 +121,9 @@ extern "C" void SAADC_IRQHandler()
 bool nRF52ADCWaitForResult(int32_t Timeout)
 {
 	do {
-		if (NRF_SAADC->EVENTS_RESULTDONE != 0)
+		if (NRF_SAADC->EVENTS_END != 0)
 		{
-			NRF_SAADC->EVENTS_RESULTDONE = 0;
+			NRF_SAADC->EVENTS_END = 0;
 			return true;
 		}
 	} while (--Timeout > 0);
@@ -201,10 +194,22 @@ bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 
 	memset(&s_AdcnRF52DevData, 0, sizeof(s_AdcnRF52DevData));
 
-	NRF_SAADC->INTENCLR = 0xFFFFFFFF;
+	// Stop current process
+    NRF_SAADC->TASKS_STOP = 1;
+    nRF52ADCWaitForStop(10000);
+
+    // Flush all interrupt
+    NRF_SAADC->INTENCLR = 0xFFFFFFFF;
+    NVIC_ClearPendingIRQ(SAADC_IRQn);
+
+    // Clear all events
+    NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
+    NRF_SAADC->EVENTS_DONE = 0;
+    NRF_SAADC->EVENTS_RESULTDONE = 0;
 	NRF_SAADC->EVENTS_END = 0;
 	NRF_SAADC->EVENTS_STARTED = 0;
 	NRF_SAADC->EVENTS_STOPPED = 0;
+
 
 	if (Cfg.pFifoMem != NULL && Cfg.FifoMemSize > CFIFO_TOTAL_MEMSIZE(2, sizeof(ADC_DATA)))
 	{
@@ -217,61 +222,26 @@ bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 
 	Resolution(Cfg.Resolution);
 
-	if (Cfg.OvrSample < 2)
+	int ov = 31 - __builtin_clzl(Cfg.OvrSample);
+
+	if (ov > 0)
+	{
+	    NRF_SAADC->OVERSAMPLE = (ov << SAADC_OVERSAMPLE_OVERSAMPLE_Pos) & SAADC_OVERSAMPLE_OVERSAMPLE_Msk;
+	}
+	else
 	{
 		// none
 		NRF_SAADC->OVERSAMPLE = SAADC_OVERSAMPLE_OVERSAMPLE_Bypass << SAADC_OVERSAMPLE_OVERSAMPLE_Pos;
 	}
-	else if (Cfg.OvrSample < 4)
-	{
-		// 2x
-		NRF_SAADC->OVERSAMPLE = SAADC_OVERSAMPLE_OVERSAMPLE_Over2x << SAADC_OVERSAMPLE_OVERSAMPLE_Pos;
-	}
-	else if (Cfg.OvrSample < 8)
-	{
-		// 4x
-		NRF_SAADC->OVERSAMPLE = SAADC_OVERSAMPLE_OVERSAMPLE_Over4x << SAADC_OVERSAMPLE_OVERSAMPLE_Pos;
-	}
-	else if (Cfg.OvrSample < 16)
-	{
-		// 8x
-		NRF_SAADC->OVERSAMPLE = SAADC_OVERSAMPLE_OVERSAMPLE_Over8x << SAADC_OVERSAMPLE_OVERSAMPLE_Pos;
-	}
-	else if (Cfg.OvrSample < 32)
-	{
-		// 16x
-		NRF_SAADC->OVERSAMPLE = SAADC_OVERSAMPLE_OVERSAMPLE_Over16x << SAADC_OVERSAMPLE_OVERSAMPLE_Pos;
-	}
-	else if (Cfg.OvrSample < 64)
-	{
-		// 32x
-		NRF_SAADC->OVERSAMPLE = SAADC_OVERSAMPLE_OVERSAMPLE_Over32x << SAADC_OVERSAMPLE_OVERSAMPLE_Pos;
-	}
-	else if (Cfg.OvrSample < 128)
-	{
-		// 64x
-		NRF_SAADC->OVERSAMPLE = SAADC_OVERSAMPLE_OVERSAMPLE_Over64x << SAADC_OVERSAMPLE_OVERSAMPLE_Pos;
-	}
-	else if (Cfg.OvrSample < 256)
-	{
-		// 128x
-		NRF_SAADC->OVERSAMPLE = SAADC_OVERSAMPLE_OVERSAMPLE_Over128x << SAADC_OVERSAMPLE_OVERSAMPLE_Pos;
-	}
-	else
-	{
-		// 256x
-		NRF_SAADC->OVERSAMPLE = SAADC_OVERSAMPLE_OVERSAMPLE_Over256x << SAADC_OVERSAMPLE_OVERSAMPLE_Pos;
-	}
 
 	vMode = Cfg.Mode;
-	if (Cfg.Mode == ADC_CONV_MODE_CONTINUOUS)
+	//if (Cfg.Mode == ADC_CONV_MODE_CONTINUOUS)
 	{
-		Rate(Cfg.Rate);
+		//Rate(Cfg.Rate);
 	}
-	else
+	//else
 	{
 		vRate = 0;
-		s_AdcnRF52DevData.TimeCnt = 0;
 		s_AdcnRF52DevData.Period = 0;
 		NRF_SAADC->SAMPLERATE = (SAADC_SAMPLERATE_MODE_Task << SAADC_SAMPLERATE_MODE_Pos);
 	}
@@ -289,24 +259,26 @@ bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 	{
 		vIntPrio = Cfg.IntPrio;
 
-		NRF_SAADC->INTENSET = (1 << SAADC_INTENSET_RESULTDONE_Pos)
-							  | (1 << SAADC_INTENSET_END_Pos)
+		NRF_SAADC->INTENSET = (1 << SAADC_INTENSET_END_Pos)
 							  | (1 << SAADC_INTENSET_DONE_Pos)
-							  | (1 << SAADC_INTENSET_CALIBRATEDONE_Pos);
+							  | (1 << SAADC_INTENSET_STARTED_Pos);
+
 		NVIC_SetPriority(SAADC_IRQn, Cfg.IntPrio);
 		NVIC_EnableIRQ(SAADC_IRQn);
 	}
 
 	NRF_SAADC->ENABLE = (SAADC_ENABLE_ENABLE_Enabled << SAADC_ENABLE_ENABLE_Pos);
 
-	Calibrate();
+	//Calibrate();
 
 	return true;
 }
 
 bool ADCnRF52::Enable()
 {
-	NRF_SAADC->EVENTS_END = 0;
+    NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
+    NRF_SAADC->EVENTS_RESULTDONE = 0;
+    NRF_SAADC->EVENTS_END = 0;
 	NRF_SAADC->EVENTS_STARTED = 0;
 	NRF_SAADC->EVENTS_STOPPED = 0;
 
@@ -314,14 +286,15 @@ bool ADCnRF52::Enable()
 
 	if (vbInterrupt == true)
 	{
-		NRF_SAADC->INTENSET = (1 << SAADC_INTENSET_RESULTDONE_Pos)
-							  | (1 << SAADC_INTENSET_END_Pos)
+		NRF_SAADC->INTENSET = (1 << SAADC_INTENSET_END_Pos)
 							  | (1 << SAADC_INTENSET_DONE_Pos)
-							  | (1 << SAADC_INTENSET_CALIBRATEDONE_Pos);
+							  | (1 << SAADC_INTENSET_STARTED_Pos);
+
 		NVIC_SetPriority(SAADC_IRQn, vIntPrio);
 		NVIC_EnableIRQ(SAADC_IRQn);
 	}
 
+	s_AdcnRF52DevData.SampleCnt = 0;
 	NRF_SAADC->ENABLE = (SAADC_ENABLE_ENABLE_Enabled << SAADC_ENABLE_ENABLE_Pos);
 
 	return true;
@@ -358,6 +331,7 @@ uint32_t ADCnRF52::Rate(uint32_t Val)
 {
 	if (vMode == ADC_CONV_MODE_CONTINUOUS)
 	{
+	    // TODO: this has no effect.  Need real clock.
 		int cc = 2047;
 		if (Val > 0)
 			cc = (16000000 / Val);
@@ -366,10 +340,10 @@ uint32_t ADCnRF52::Rate(uint32_t Val)
 		if (cc < 80)
 			cc = 80;
 		vRate = 16000000 / cc;
-		s_AdcnRF52DevData.TimeCnt = 0;
+
 		s_AdcnRF52DevData.Period = (1000000 + (vRate >> 1))/ vRate;
 
-		NRF_SAADC->SAMPLERATE = (SAADC_SAMPLERATE_MODE_Timers << SAADC_SAMPLERATE_MODE_Pos)
+		NRF_SAADC->SAMPLERATE = (SAADC_SAMPLERATE_MODE_Task << SAADC_SAMPLERATE_MODE_Pos)
 								| ((cc  << SAADC_SAMPLERATE_CC_Pos) & SAADC_SAMPLERATE_CC_Msk);
 	}
 
@@ -558,11 +532,10 @@ void ADCnRF52::CloseChannel(int Chan)
 
 bool ADCnRF52::StartConversion()
 {
-//	if (nRF52ADCWaitBusy(10000) == false)
-//		return false;
+	if (nRF52ADCWaitBusy(10000) == false)
+		return false;
 
-	NRF_SAADC->RESULT.PTR = (uint32_t)&s_AdcnRF52DevData.ResData;
-
+	NRF_SAADC->RESULT.PTR = (uint32_t)s_AdcnRF52DevData.ResData;
 	NRF_SAADC->RESULT.MAXCNT = s_AdcnRF52DevData.NbChanAct;
 	NRF_SAADC->TASKS_START = 1;
 	NRF_SAADC->TASKS_SAMPLE = 1;
@@ -574,7 +547,7 @@ void ADCnRF52::StopConversion()
 {
 	NRF_SAADC->TASKS_STOP = 1;
 
-	nRF52ADCWaitForStop(1000);
+	nRF52ADCWaitForStop(10000);
 
 	NRF_SAADC->RESULT.MAXCNT = 0;
 }
@@ -583,7 +556,7 @@ int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
 {
 	int cnt = 0;
 
-	if (vMode == ADC_CONV_MODE_CONTINUOUS && vbInterrupt)
+	if (vbInterrupt)
 	{
 		while (Len > 0)
 		{
@@ -609,6 +582,8 @@ int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
 			NRF_SAADC->EVENTS_STARTED = 0;
 			NRF_SAADC->EVENTS_END = 0;
 
+			s_AdcnRF52DevData.SampleCnt++;
+
 			for (int i = 0; i < SAADC_NRF52_MAX_CHAN && cnt < NRF_SAADC->RESULT.AMOUNT && cnt < Len; i++)
 			{
 				if (s_AdcnRF52DevData.ChanState[i] != 0)
@@ -621,7 +596,7 @@ int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
 					// => GainFactor = Reference / (Resolution * Gain)
 					// => Vin = ADCresult * GainFactor
 					pBuff->Data = (float)s_AdcnRF52DevData.ResData[cnt] * s_AdcnRF52DevData.GainFactor[i];
-					pBuff->Timestamp = 0;
+					pBuff->Timestamp = s_AdcnRF52DevData.SampleCnt;
 					pBuff++;
 					cnt++;
 				}
