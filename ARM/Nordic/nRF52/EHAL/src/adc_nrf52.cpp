@@ -71,6 +71,12 @@ extern "C" void SAADC_IRQHandler()
 	{
 		NRF_SAADC->EVENTS_STARTED = 0;
 	}
+	if (NRF_SAADC->EVENTS_CALIBRATEDONE)
+	{
+	    NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
+	    NRF_SAADC->EVENTS_RESULTDONE = 0;
+	    NRF_SAADC->EVENTS_DONE = 0;
+	}
 	if (NRF_SAADC->EVENTS_END)
 	{
 		NRF_SAADC->EVENTS_RESULTDONE = 0;
@@ -179,10 +185,19 @@ bool ADCnRF52::Calibrate()
 
 	int32_t timeout = 100000;
 
-	do {
-		if (NRF_SAADC->EVENTS_CALIBRATEDONE != 0)
-			return true;
-	} while (timeout-- > 0);
+	if (vbInterrupt == false)
+	{
+	    do {
+            if (NRF_SAADC->EVENTS_CALIBRATEDONE != 0)
+            {
+                NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
+                NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
+                NRF_SAADC->EVENTS_RESULTDONE = 0;
+                NRF_SAADC->EVENTS_DONE = 0;
+                return true;
+            }
+        } while (timeout-- > 0);
+	}
 
 	return false;
 }
@@ -269,7 +284,7 @@ bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 
 	NRF_SAADC->ENABLE = (SAADC_ENABLE_ENABLE_Enabled << SAADC_ENABLE_ENABLE_Pos);
 
-	//Calibrate();
+	Calibrate();
 
 	return true;
 }
