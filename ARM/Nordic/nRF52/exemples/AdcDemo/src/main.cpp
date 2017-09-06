@@ -13,6 +13,9 @@
 // This include contain i/o definition the board in use
 #include "board.h"
 
+//#define ADC_DEMO_SINGLE_SHOT
+#define ADC_DEMO_INTERRUPT_ENABLE
+
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 void ADVEventHandler(ADCDevice *pDevObj, ADC_EVT Evt);
 
@@ -63,14 +66,22 @@ static uint8_t s_AdcFifoMem[ADC_CFIFO_SIZE];
 
 // Define ADC device
 static const ADC_CFG s_AdcCfg = {
+#ifdef ADC_DEMO_SINGLE_SHOT
 	.Mode = ADC_CONV_MODE_SINGLE,
+#else
+	.Mode = ADC_CONV_MODE_CONTINUOUS,
+#endif
 	.pRefVolt = s_RefVolt,
 	.NbRefVolt = s_NbRefVolt,
 	.DevAddr = 0,
 	.Resolution = 10,
 	.Rate = 8000,
 	.OvrSample = 0,
+#ifdef ADC_DEMO_INTERRUPT_ENABLE
+	.bInterrupt = true,
+#else
 	.bInterrupt = false,
+#endif
 	.IntPrio = 6,
 	.EvtHandler = ADVEventHandler,
 	ADC_CFIFO_SIZE,
@@ -88,7 +99,7 @@ static const ADC_CHAN_CFG s_ChanCfg[] = {
 		.Gain = 4,//1 << 8,
 		.AcqTime = 0,
 		.BurstMode = false,
-		.PinP = { .PinNo = 0, .Conn = ADC_PIN_CONN_PULLUP },
+		.PinP = { .PinNo = 0, .Conn = ADC_PIN_CONN_VDD },
 	},
 	{
 		.Chan = 1,
@@ -97,7 +108,7 @@ static const ADC_CHAN_CFG s_ChanCfg[] = {
 		.Gain = 4,//1 << 8,
 		.AcqTime = 0,
 		.BurstMode = false,
-		.PinP = { .PinNo = 8, .Conn = ADC_PIN_CONN_NONE },
+		.PinP = { .PinNo = 1, .Conn = ADC_PIN_CONN_NONE },
 	}
 };
 
@@ -110,7 +121,7 @@ void ADVEventHandler(ADCDevice *pAdcDev, ADC_EVT Evt)
 	if (Evt == ADC_EVT_DATA_READY)
 	{
 		g_bDataReady = true;
-#if 0
+#if 0 //def ADC_DEMO_INTERRUPT_ENABLE
 		int cnt = 0;
 
 		do {
@@ -119,6 +130,9 @@ void ADVEventHandler(ADCDevice *pAdcDev, ADC_EVT Evt)
 			if (cnt > 0)
 				g_Uart.printf("%d ADC[0] = %.2f V, ADC[1] = %.2f V\r\n", df[0].Timestamp, df[0].Data, df[1].Data);
 		} while (cnt > 0);
+#ifdef ADC_DEMO_SINGLE_SHOT
+			g_Adc.StartConversion();
+#endif
 #endif
 	}
 }
@@ -175,10 +189,10 @@ int main()
 	while (1)
 	{
 		__WFE();
-		//if (g_bDataReady == true)
+//		if (g_bDataReady == true)
 		{
-			g_bDataReady = false;
-#if 1
+//			g_bDataReady = false;
+#if 1// !defined(ADC_DEMO_INTERRUPT_ENABLE)
 			int cnt = 0;
 
 			do {
@@ -188,7 +202,9 @@ int main()
 				if (cnt > 0)
 					g_Uart.printf("%d ADC[0] = %.2f V, ADC[1] = %.2f V\r\n", df[0].Timestamp, df[0].Data, df[1].Data);
 			} while (cnt > 0);
+#ifdef ADC_DEMO_SINGLE_SHOT
 			g_Adc.StartConversion();
+#endif
 #endif
 		}
 	}
