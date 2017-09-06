@@ -70,6 +70,7 @@ extern "C" void SAADC_IRQHandler()
 	if (NRF_SAADC->EVENTS_STARTED)
 	{
 		NRF_SAADC->EVENTS_STARTED = 0;
+		NRF_SAADC->TASKS_SAMPLE = 1;
 	}
 	if (NRF_SAADC->EVENTS_CALIBRATEDONE)
 	{
@@ -79,16 +80,12 @@ extern "C" void SAADC_IRQHandler()
 	}
 	if (NRF_SAADC->EVENTS_DONE)
 	{
+	    //NRF_SAADC->TASKS_SAMPLE = 1;
 	    NRF_SAADC->EVENTS_DONE = 0;
         NRF_SAADC->EVENTS_RESULTDONE = 0;
 	}
 	if (NRF_SAADC->EVENTS_END)
 	{
-		NRF_SAADC->EVENTS_RESULTDONE = 0;
-		NRF_SAADC->EVENTS_DONE = 0;
-		NRF_SAADC->EVENTS_END = 0;
-		NRF_SAADC->EVENTS_STARTED = 0;
-
 		s_AdcnRF52DevData.SampleCnt++;
 
 		if (s_AdcnRF52DevData.pDevObj)
@@ -96,7 +93,7 @@ extern "C" void SAADC_IRQHandler()
 			int cnt = 0;
 			int timeout = 100000;
 
-			while (NRF_SAADC->RESULT.AMOUNT < NRF_SAADC->RESULT.MAXCNT && timeout-- > 0);
+			//while (NRF_SAADC->RESULT.AMOUNT == 0 && timeout-- > 0);
 
 			for (int i = 0; i < SAADC_NRF52_MAX_CHAN && cnt < NRF_SAADC->RESULT.AMOUNT; i++)
 			{
@@ -118,13 +115,18 @@ extern "C" void SAADC_IRQHandler()
 				}
 			}
 			NRF_SAADC->RESULT.AMOUNT = 0;
+	        NRF_SAADC->EVENTS_RESULTDONE = 0;
+	        NRF_SAADC->EVENTS_DONE = 0;
+	        NRF_SAADC->EVENTS_END = 0;
+	        NRF_SAADC->EVENTS_STARTED = 0;
+
 
 			evt = ADC_EVT_DATA_READY;
 
 			s_AdcnRF52DevData.pDevObj->EvtHandler(evt);
 		}
 		NRF_SAADC->TASKS_START = 1;
-		NRF_SAADC->TASKS_SAMPLE = 1;
+		//NRF_SAADC->TASKS_SAMPLE = 1;
 	}
 	NVIC_ClearPendingIRQ(SAADC_IRQn);
 }
@@ -255,11 +257,11 @@ bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 	}
 
 	vMode = Cfg.Mode;
-	//if (Cfg.Mode == ADC_CONV_MODE_CONTINUOUS)
+	if (Cfg.Mode == ADC_CONV_MODE_CONTINUOUS)
 	{
-		//Rate(Cfg.Rate);
+		Rate(Cfg.Rate);
 	}
-	//else
+	else
 	{
 		vRate = 0;
 		s_AdcnRF52DevData.Period = 0;
@@ -558,7 +560,12 @@ bool ADCnRF52::StartConversion()
 	NRF_SAADC->RESULT.PTR = (uint32_t)s_AdcnRF52DevData.ResData;
 	NRF_SAADC->RESULT.MAXCNT = s_AdcnRF52DevData.NbChanAct;
 	NRF_SAADC->TASKS_START = 1;
-	NRF_SAADC->TASKS_SAMPLE = 1;
+	if (vbInterrupt == false)
+	{
+	    while (NRF_SAADC->EVENTS_STARTED == 0);
+	    NRF_SAADC->TASKS_SAMPLE = 1;
+	    NRF_SAADC->EVENTS_STARTED = 0;
+	}
 
 	return true;
 }
