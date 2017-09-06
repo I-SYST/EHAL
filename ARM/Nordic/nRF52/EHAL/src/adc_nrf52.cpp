@@ -52,7 +52,7 @@ typedef struct __ADC_nRF52_Data {
 	uint8_t	RefVoltIdx[SAADC_NRF52_MAX_CHAN];
 	float GainFactor[SAADC_NRF52_MAX_CHAN];		// Pre-calculated factor
 	uint32_t Period;
-    uint16_t ResData[SAADC_NRF52_MAX_CHAN];
+    int16_t ResData[SAADC_NRF52_MAX_CHAN];
 } ADCNRF52_DATA;
 
 static ADCNRF52_DATA s_AdcnRF52DevData = {
