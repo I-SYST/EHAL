@@ -1,9 +1,9 @@
 /*--------------------------------------------------------------------------
-File   : adc_nrf52.h
+File   : adc_nrf52_saadc.h
 
 Author : Hoang Nguyen Hoan          June 16, 2017
 
-Desc   : ADC implementation for Nordic nRF52 
+Desc   : ADC implementation for Nordic nRF52 SAADC
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 

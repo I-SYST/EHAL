@@ -1,9 +1,9 @@
 /*--------------------------------------------------------------------------
-File   : adc_nrf52.cpp
+File   : adc_nrf52_saadc.cpp
 
 Author : Hoang Nguyen Hoan          June 16, 2017
 
-Desc   : ADC implementation for Nordic nRF52.
+Desc   : ADC implementation for Nordic nRF52 SAADC.
          Nordic SCAN mode does work with timer.
          Nordic Continuous mode work with timer but only 1 channel
          Therefore this implementation doesn't use Nordic continous mode
@@ -42,7 +42,7 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #include <stdint.h>
 
-#include "adc_nrf52.h"
+#include "adc_nrf52_saadc.h"
 
 typedef struct __ADC_nRF52_Data {
 	ADCnRF52 *pDevObj;
@@ -77,11 +77,7 @@ extern "C" void SAADC_IRQHandler()
 	    NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
 	    NRF_SAADC->EVENTS_RESULTDONE = 0;
 	    NRF_SAADC->EVENTS_DONE = 0;
-	}
-	if (NRF_SAADC->EVENTS_DONE)
-	{
-	    NRF_SAADC->EVENTS_DONE = 0;
-        NRF_SAADC->EVENTS_RESULTDONE = 0;
+	    NRF_SAADC->EVENTS_END = 0;
 	}
 	if (NRF_SAADC->EVENTS_END)
 	{
@@ -126,10 +122,15 @@ extern "C" void SAADC_IRQHandler()
 
 		NRF_SAADC->TASKS_START = 1;
 	}
+	if (NRF_SAADC->EVENTS_DONE)
+	{
+	    NRF_SAADC->EVENTS_DONE = 0;
+        NRF_SAADC->EVENTS_RESULTDONE = 0;
+	}
 	NVIC_ClearPendingIRQ(SAADC_IRQn);
 }
 
-bool nRF52ADCWaitForResult(int32_t Timeout)
+bool nRF52ADCWaitForEnd(int32_t Timeout)
 {
 	do {
 		if (NRF_SAADC->EVENTS_END != 0)
@@ -184,21 +185,35 @@ ADCnRF52::~ADCnRF52()
  */
 bool ADCnRF52::Calibrate()
 {
+	nRF52ADCWaitBusy(1000000);
+
+	NRF_SAADC->TASKS_STOP = 1;
+
+	nRF52ADCWaitForStop(100000);
+
+	NRF_SAADC->RESULT.PTR = 0;
+	NRF_SAADC->RESULT.MAXCNT = 0;
+	NRF_SAADC->RESULT.AMOUNT = 0;
+
 	NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
-
 	NRF_SAADC->TASKS_CALIBRATEOFFSET = 1;
-
-	int32_t timeout = 100000;
 
 	if (vbInterrupt == false)
 	{
+		int32_t timeout = 1000000;
+
 	    do {
             if (NRF_SAADC->EVENTS_CALIBRATEDONE != 0)
             {
                 NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
-                NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
                 NRF_SAADC->EVENTS_RESULTDONE = 0;
                 NRF_SAADC->EVENTS_DONE = 0;
+                NRF_SAADC->EVENTS_END = 0;
+                NRF_SAADC->EVENTS_STARTED = 0;
+                NRF_SAADC->RESULT.PTR = 0;
+            	NRF_SAADC->RESULT.MAXCNT = 0;
+            	NRF_SAADC->RESULT.AMOUNT = 0;
+
                 return true;
             }
         } while (timeout-- > 0);
@@ -221,6 +236,10 @@ bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
     // Flush all interrupt
     NRF_SAADC->INTENCLR = 0xFFFFFFFF;
     NVIC_ClearPendingIRQ(SAADC_IRQn);
+
+    NRF_SAADC->RESULT.PTR = 0;
+    NRF_SAADC->RESULT.MAXCNT = 0;
+    NRF_SAADC->RESULT.AMOUNT = 0;
 
     // Clear all events
     NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
@@ -289,13 +308,17 @@ bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 
 	NRF_SAADC->ENABLE = (SAADC_ENABLE_ENABLE_Enabled << SAADC_ENABLE_ENABLE_Pos);
 
-	Calibrate();
+	//Calibrate();
 
 	return true;
 }
 
 bool ADCnRF52::Enable()
 {
+    NRF_SAADC->RESULT.PTR = 0;
+    NRF_SAADC->RESULT.MAXCNT = 0;
+    NRF_SAADC->RESULT.AMOUNT = 0;
+
     NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
     NRF_SAADC->EVENTS_RESULTDONE = 0;
     NRF_SAADC->EVENTS_END = 0;
@@ -322,6 +345,22 @@ bool ADCnRF52::Enable()
 
 void ADCnRF52::Disable()
 {
+    NRF_SAADC->TASKS_STOP = 1;
+    nRF52ADCWaitForStop(10000);
+
+    // Flush all interrupt
+    NRF_SAADC->INTENCLR = 0xFFFFFFFF;
+    NVIC_ClearPendingIRQ(SAADC_IRQn);
+	NVIC_DisableIRQ(SAADC_IRQn);
+
+    NRF_SAADC->RESULT.PTR = 0;
+    NRF_SAADC->RESULT.MAXCNT = 0;
+    NRF_SAADC->RESULT.AMOUNT = 0;
+
+    // Clear all events
+    NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
+    NRF_SAADC->EVENTS_DONE = 0;
+    NRF_SAADC->EVENTS_RESULTDONE = 0;
 	NRF_SAADC->EVENTS_END = 0;
 	NRF_SAADC->EVENTS_STARTED = 0;
 	NRF_SAADC->EVENTS_STOPPED = 0;
@@ -334,9 +373,6 @@ void ADCnRF52::Disable()
 	}
 
 	NRF_SAADC->ENABLE = 0;
-	NRF_SAADC->INTENCLR = 0x3FFFFF;
-	NVIC_ClearPendingIRQ(SAADC_IRQn);
-	NVIC_DisableIRQ(SAADC_IRQn);
 }
 
 void ADCnRF52::Reset()
@@ -600,14 +636,10 @@ int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
 	}
 	else
 	{
-		if (nRF52ADCWaitForResult(100000))
+		if (nRF52ADCWaitForEnd(100000))
 		{
 			int timeout = 10000;
-			while (NRF_SAADC->RESULT.AMOUNT == 0 && timeout-- > 0);
-
-			NRF_SAADC->EVENTS_DONE = 0;
-			NRF_SAADC->EVENTS_STARTED = 0;
-			NRF_SAADC->EVENTS_END = 0;
+			while (NRF_SAADC->RESULT.AMOUNT <  NRF_SAADC->RESULT.MAXCNT && timeout-- > 0);
 
 			s_AdcnRF52DevData.SampleCnt++;
 
@@ -629,6 +661,8 @@ int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
 				}
 			}
 			NRF_SAADC->RESULT.AMOUNT = 0;
+			NRF_SAADC->EVENTS_DONE = 0;
+			NRF_SAADC->EVENTS_RESULTDONE = 0;
 		}
 	}
 	return cnt;

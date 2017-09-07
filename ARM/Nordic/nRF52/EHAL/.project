@@ -401,6 +401,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/converters/adc_ltc2495.h</locationURI>
 		</link>
 		<link>
+			<name>include/converters/adc_nrf52_saadc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/adc_nrf52_saadc.h</locationURI>
+		</link>
+		<link>
 			<name>include/converters/dac_device.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/converters/dac_device.h</locationURI>
@@ -439,6 +444,11 @@
 			<name>src/converters/adc_ltc2495.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/converters/adc_ltc2495.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/converters/adc_nrf52_saadc.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/adc_nrf52_saadc.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/miscdev/ledmx.c</name>

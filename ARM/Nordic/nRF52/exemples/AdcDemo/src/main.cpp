@@ -1,19 +1,44 @@
-//============================================================================
-// Name        : main.cpp
-// Author      : Nguyen Hoan Hoang
-// Version     :
-// Copyright   : Copyright (c) 2017, I-SYST
-// Description : Hello World in C++
-//============================================================================
+/*--------------------------------------------------------------------------
+File   : main.cpp
 
-#include "adc_nrf52.h"
+Author : Hoang Nguyen Hoan          June 16, 2017
+
+Desc   : ADC example
+
+Copyright (c) 2017, I-SYST inc., all rights reserved
+
+Permission to use, copy, modify, and distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright
+notice and this permission notice appear in all copies, and none of the
+names : I-SYST or its contributors may be used to endorse or
+promote products derived from this software without specific prior written
+permission.
+
+For info or contributing contact : hnhoan at i-syst dot com
+
+THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+----------------------------------------------------------------------------
+Modified by          Date              Description
+
+----------------------------------------------------------------------------*/
+
+#include "adc_nrf52_saadc.h"
 #include "uart.h"
 #include "stddev.h"
 
 // This include contain i/o definition the board in use
 #include "board.h"
 
-//#define ADC_DEMO_SINGLE_SHOT
 #define ADC_DEMO_INTERRUPT_ENABLE
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
@@ -121,7 +146,7 @@ void ADVEventHandler(ADCDevice *pAdcDev, ADC_EVT Evt)
 	if (Evt == ADC_EVT_DATA_READY)
 	{
 		g_bDataReady = true;
-#if 0 //def ADC_DEMO_INTERRUPT_ENABLE
+#ifdef ADC_DEMO_INTERRUPT_ENABLE
 		int cnt = 0;
 
 		do {
@@ -130,9 +155,6 @@ void ADVEventHandler(ADCDevice *pAdcDev, ADC_EVT Evt)
 			if (cnt > 0)
 				g_Uart.printf("%d ADC[0] = %.2f V, ADC[1] = %.2f V\r\n", df[0].Timestamp, df[0].Data, df[1].Data);
 		} while (cnt > 0);
-#ifdef ADC_DEMO_SINGLE_SHOT
-			g_Adc.StartConversion();
-#endif
 #endif
 	}
 }
@@ -189,24 +211,23 @@ int main()
 	while (1)
 	{
 		__WFE();
-//		if (g_bDataReady == true)
+#ifdef ADC_DEMO_INTERRUPT_ENABLE
+		if (g_bDataReady == true)
 		{
-//			g_bDataReady = false;
-#if 1// !defined(ADC_DEMO_INTERRUPT_ENABLE)
-			int cnt = 0;
-
-			do {
-				ADC_DATA df[2];
-				memset(df, 0, sizeof(df));
-				cnt = g_Adc.Read(df, 2);
-				if (cnt > 0)
-					g_Uart.printf("%d ADC[0] = %.2f V, ADC[1] = %.2f V\r\n", df[0].Timestamp, df[0].Data, df[1].Data);
-			} while (cnt > 0);
-#ifdef ADC_DEMO_SINGLE_SHOT
-			g_Adc.StartConversion();
-#endif
-#endif
+			g_bDataReady = false;
 		}
+#else
+		int cnt = 0;
+
+		do {
+			ADC_DATA df[2];
+			memset(df, 0, sizeof(df));
+			cnt = g_Adc.Read(df, 2);
+			if (cnt > 0)
+				g_Uart.printf("%d ADC[0] = %.2f V, ADC[1] = %.2f V\r\n", df[0].Timestamp, df[0].Data, df[1].Data);
+		} while (cnt > 0);
+		g_Adc.StartConversion();
+#endif
 	}
 
 	return 0;
