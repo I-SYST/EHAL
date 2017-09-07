@@ -1,9 +1,9 @@
 /*--------------------------------------------------------------------------
-File   : main.cpp
+File   : ADCDemo.cpp
 
 Author : Hoang Nguyen Hoan          June 16, 2017
 
-Desc   : ADC example
+Desc   : ADC example for nRF52
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
