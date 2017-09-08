@@ -46,9 +46,10 @@ Modified by          Date              Description
 typedef struct {
 	IOPINSENSE Sense;
 	IOPINEVT_CB SensEvtCB;
+    uint16_t PortPinNo;
 } IOPINSENS_EVTHOOK;
 
-IOPINSENS_EVTHOOK s_GpIOSenseEvt[IOPIN_MAX_INT] = { {0, NULL}, };
+IOPINSENS_EVTHOOK s_GpIOSenseEvt[IOPIN_MAX_INT + 1] = { {0, NULL}, };
 
 /**
  * @brief Configure individual I/O pin. nRF51 only have 1 port so PortNo is not used
@@ -144,11 +145,45 @@ void IOPinDisable(int PortNo, int PinNo)
  */
 void IOPinDisbleInterrupt(int IntNo)
 {
-	if (IntNo >= 0 && IntNo < 8)
-	{
-		NRF_GPIOTE->CONFIG[IntNo] = 0;
-		s_GpIOSenseEvt[IntNo].SensEvtCB = NULL;
-	}
+    if (IntNo >= IOPIN_MAX_INT)
+        return;
+
+    if (IntNo < 0)
+    {
+        IntNo = IOPIN_MAX_INT;
+        NRF_GPIOTE->INTENCLR = GPIOTE_INTENSET_PORT_Msk;
+        NRF_GPIOTE->EVENTS_PORT = 0;
+    }
+    else
+    {
+        NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+        if ((s_GpIOSenseEvt[IntNo].PortPinNo >> 8) == 1)
+        {
+            reg = NRF_P1;
+        }
+
+#endif
+
+        NRF_GPIOTE->INTENCLR = (1 << IntNo);
+        NRF_GPIOTE->CONFIG[IntNo] = 0;
+        reg->PIN_CNF[s_GpIOSenseEvt[IntNo].PortPinNo & 0xFF] &= ~GPIO_PIN_CNF_SENSE_Msk;
+    }
+
+    s_GpIOSenseEvt[IntNo].PortPinNo = -1;
+    s_GpIOSenseEvt[IntNo].Sense = IOPINSENSE_DISABLE;
+    s_GpIOSenseEvt[IntNo].SensEvtCB = NULL;
+
+    for (int i = 0; i <= IOPIN_MAX_INT; i++)
+    {
+        if (s_GpIOSenseEvt[i].SensEvtCB != NULL)
+            return;
+    }
+
+    NRF_GPIOTE->INTENCLR = 0xFFFFFFFF;
+    NVIC_ClearPendingIRQ(GPIOTE_IRQn);
+    NVIC_DisableIRQ(GPIOTE_IRQn);
 }
 
 /**
@@ -168,56 +203,62 @@ void IOPinDisbleInterrupt(int IntNo)
  */
 bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSENSE Sense, IOPINEVT_CB pEvtCB)
 {
-	if (IntNo < 0 || IntNo >= IOPIN_MAX_INT)
+    if (IntNo >= IOPIN_MAX_INT)
 		return false;
 
-	NRF_GPIO_Type *reg = NRF_GPIO;
+    if (IntNo < 0)
+    {
+        IntNo = IOPIN_MAX_INT;
+        NRF_GPIOTE->EVENTS_PORT = 0;
+        NRF_GPIOTE->INTENSET = GPIOTE_INTENSET_PORT_Msk;
+    }
+    else
+    {
+        NRF_GPIO_Type *reg = NRF_GPIO;
 
 #ifdef NRF52840_XXAA
-	if (PortNo == 1)
-	{
-		reg = NRF_P1;
-	}
+        if (PortNo == 1)
+        {
+            reg = NRF_P1;
+        }
 
 #endif
 
-	//NRF_GPIOTE->CONFIG[IntNo] &= ~(GPIOTE_CONFIG_PORT_PIN_Msk | GPIOTE_CONFIG_POLARITY_Msk);
-	switch (Sense)
-	{
-		case IOPINSENSE_LOW_TRANSITION:
-			NRF_GPIOTE->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_HiToLo << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
-					                    | ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
-					                    | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
-			reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
-			break;
-		case IOPINSENSE_HIGH_TRANSITION:
-			NRF_GPIOTE->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_LoToHi << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
-					                    | ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
-					                    | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
-			reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_High << GPIO_PIN_CNF_SENSE_Pos);
-			break;
-		case IOPINSENSE_TOGGLE:
-			NRF_GPIOTE->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_Toggle << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
-					                    | ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
-					                    | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
-			reg->PIN_CNF[PinNo] |= (3 << GPIO_PIN_CNF_SENSE_Pos);
-			break;
-		default:
-			;
-	}
+        //NRF_GPIOTE->CONFIG[IntNo] &= ~(GPIOTE_CONFIG_PORT_PIN_Msk | GPIOTE_CONFIG_POLARITY_Msk);
+        switch (Sense)
+        {
+            case IOPINSENSE_LOW_TRANSITION:
+                NRF_GPIOTE->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_HiToLo << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
+                                            | ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
+                                            | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
+                reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
+                break;
+            case IOPINSENSE_HIGH_TRANSITION:
+                NRF_GPIOTE->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_LoToHi << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
+                                            | ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
+                                            | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
+                reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_High << GPIO_PIN_CNF_SENSE_Pos);
+                break;
+            case IOPINSENSE_TOGGLE:
+                NRF_GPIOTE->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_Toggle << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
+                                            | ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
+                                            | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
+                reg->PIN_CNF[PinNo] |= (3 << GPIO_PIN_CNF_SENSE_Pos);
+                break;
+            default:
+                ;
+        }
+        NRF_GPIOTE->INTENSET = (1 << IntNo);
+    }
 
+    s_GpIOSenseEvt[IntNo].Sense = Sense;
+	s_GpIOSenseEvt[IntNo].PortPinNo = (PortNo << 8) | PinNo; // For use when disable interrupt
 	s_GpIOSenseEvt[IntNo].SensEvtCB = pEvtCB;
-
-	NRF_GPIOTE->INTENCLR = 0xFFFFFFFF;
 
     NVIC_ClearPendingIRQ(GPIOTE_IRQn);
     NVIC_SetPriority(GPIOTE_IRQn, IntPrio);
     NVIC_EnableIRQ(GPIOTE_IRQn);
 
-    NRF_GPIOTE->EVENTS_PORT = 0;
-
-    NRF_GPIOTE->INTENSET |= (1 << IntNo);
-    NRF_GPIOTE->INTENSET |= GPIOTE_INTENSET_PORT_Msk;
 
     return true;
 }
@@ -300,15 +341,19 @@ void __WEAK GPIOTE_IRQHandler(void)
 {
 	for (int i = 0; i < IOPIN_MAX_INT; i++)
 	{
-		if (NRF_GPIOTE->EVENTS_IN[i] || NRF_GPIOTE->EVENTS_PORT)
+		if (NRF_GPIOTE->EVENTS_IN[i])
 		{
 			if (s_GpIOSenseEvt[i].SensEvtCB)
 				s_GpIOSenseEvt[i].SensEvtCB(i);
 			NRF_GPIOTE->EVENTS_IN[i] = 0;
 		}
 	}
-	NRF_GPIOTE->EVENTS_PORT = 0;
-
+	if (NRF_GPIOTE->EVENTS_PORT)
+	{
+        if (s_GpIOSenseEvt[IOPIN_MAX_INT].SensEvtCB)
+            s_GpIOSenseEvt[IOPIN_MAX_INT].SensEvtCB(-1);
+	    NRF_GPIOTE->EVENTS_PORT = 0;
+	}
 	NVIC_ClearPendingIRQ(GPIOTE_IRQn);
 }
 
