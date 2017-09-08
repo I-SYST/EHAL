@@ -120,11 +120,12 @@ static const ADC_CHAN_CFG s_ChanCfg[] = {
 	{
 		.Chan = 0,
 		.RefVoltIdx = 1,
-		.Type = ADC_CHAN_TYPE_SINGLE_ENDED,
+		.Type = ADC_CHAN_TYPE_DIFFERENTIAL,
 		.Gain = 4,//1 << 8,
 		.AcqTime = 0,
 		.BurstMode = false,
-		.PinP = { .PinNo = 0, .Conn = ADC_PIN_CONN_VDD },
+		.PinP = { .PinNo = 8, .Conn = ADC_PIN_CONN_NONE },
+		.PinN = { .PinNo = 0, .Conn = ADC_PIN_CONN_PULLUP },
 	},
 	{
 		.Chan = 1,
@@ -133,7 +134,25 @@ static const ADC_CHAN_CFG s_ChanCfg[] = {
 		.Gain = 4,//1 << 8,
 		.AcqTime = 0,
 		.BurstMode = false,
-		.PinP = { .PinNo = 1, .Conn = ADC_PIN_CONN_NONE },
+		.PinP = { .PinNo = 1, .Conn = ADC_PIN_CONN_VDD },
+	},
+	{
+		.Chan = 2,
+		.RefVoltIdx = 0,
+		.Type = ADC_CHAN_TYPE_SINGLE_ENDED,
+		.Gain = 6,//1 << 8,
+		.AcqTime = 0,
+		.BurstMode = false,
+		.PinP = { .PinNo = 2, .Conn = ADC_PIN_CONN_PULLDOWN },
+	},
+	{
+		.Chan = 3,
+		.RefVoltIdx = 0,
+		.Type = ADC_CHAN_TYPE_SINGLE_ENDED,
+		.Gain = 6,//1 << 8,
+		.AcqTime = 0,
+		.BurstMode = false,
+		.PinP = { .PinNo = 3, .Conn = ADC_PIN_CONN_VDD },
 	}
 };
 
@@ -150,10 +169,13 @@ void ADVEventHandler(ADCDevice *pAdcDev, ADC_EVT Evt)
 		int cnt = 0;
 
 		do {
-			ADC_DATA df[2];
-			cnt = g_Adc.Read(df, 2);
+			ADC_DATA df[s_NbChan];
+			cnt = g_Adc.Read(df, s_NbChan);
 			if (cnt > 0)
-				g_Uart.printf("%d ADC[0] = %.2f V, ADC[1] = %.2f V\r\n", df[0].Timestamp, df[0].Data, df[1].Data);
+			{
+				g_Uart.printf("%d ADC[0] = %.2fV, ADC[1] = %.2fV, ADC[2] = %.2fV, ADC[3] = %.2fV\r\n",
+						df[0].Timestamp, df[0].Data, df[1].Data, df[2].Data, df[3].Data);
+			}
 		} while (cnt > 0);
 #endif
 	}
@@ -220,11 +242,14 @@ int main()
 		int cnt = 0;
 
 		do {
-			ADC_DATA df[2];
+			ADC_DATA df[s_NbChan];
 			memset(df, 0, sizeof(df));
-			cnt = g_Adc.Read(df, 2);
+			cnt = g_Adc.Read(df, s_NbChan);
 			if (cnt > 0)
-				g_Uart.printf("%d ADC[0] = %.2f V, ADC[1] = %.2f V\r\n", df[0].Timestamp, df[0].Data, df[1].Data);
+			{
+				g_Uart.printf("%d ADC[0] = %.2fV, ADC[1] = %.2fV, ADC[2] = %.2fV, ADC[3] = %.2fV\r\n",
+						df[0].Timestamp, df[0].Data, df[1].Data, df[2].Data, df[3].Data);
+			}
 		} while (cnt > 0);
 		g_Adc.StartConversion();
 #endif
