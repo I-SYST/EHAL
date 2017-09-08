@@ -129,16 +129,20 @@ int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 	dev->pUartReg->FCR = LPCUART_FCR_FIFOEN | LPCUART_FCR_RST_RXFIFO | LPCUART_FCR_RST_TXFIFO |
 			   LPCUART_FCR_RX_TRIG4;
 
+
 	int tout = 10000;
 
 	do {
-
+		__NOP();
 	} while ((dev->pUartReg->LSR & LPCUART_LSR_THRE) == 0 && tout-- > 0);
 
+	dev->bTxReady = true;
+
 	tout = 10000;
+	uint32_t lcr = dev->pUartReg->LCR & ~LPCUART_LCR_DLAB;
 
 	do {
-		dev->pUartReg->LCR |= LPCUART_LCR_DLAB; 	// Enable Divisor Access
+		dev->pUartReg->LCR = lcr | LPCUART_LCR_DLAB; 	// Enable Divisor Access
 	} while ((dev->pUartReg->LCR & LPCUART_LCR_DLAB) == 0 && tout-- > 0);
 
 	dev->pUartReg->DLL = dl & 0xff;
@@ -147,12 +151,11 @@ int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 
 	tout = 10000;
 	do {
-		dev->pUartReg->LCR &= ~LPCUART_LCR_DLAB;	// Disable Divisor Access
+		dev->pUartReg->LCR = lcr;	// Disable Divisor Access
 	} while ((dev->pUartReg->LCR & LPCUART_LCR_DLAB) && tout-- > 0);
 
 	usDelay(10000);
 
-	dev->pUartReg->TER = LPCUART_TER_TXEN;
 
 	// Recalculate actual rate
 	dl <<= 4;	// Mul by 16
@@ -162,7 +165,9 @@ int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 
 	//uint32_t diff = dev->pUartDev->Rate - Rate;
 	//float err = (float)diff * 100.0 / Rate;
-	//printf("%d Rate : %d, %d\r\n", pclk, dev->pUartDev->Rate, Rate);
+	//printf("calc Rate : %d\r\n", dev->pUartDev->Rate);
+
+	dev->pUartReg->TER = LPCUART_TER_TXEN;
 
 	return dev->pUartDev->Rate;
 }

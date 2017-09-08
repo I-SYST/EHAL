@@ -36,7 +36,7 @@ Modified by          Date              Description
 #ifndef __SYSTEM_CORE_CLOCK_H__
 #define __SYSTEM_CORE_CLOCK_H__
 
-#define SYSTEM_CORE_CLOCK				16000000UL		// TODO: Adjust value for CPU with fixed core frequency
+#define SYSTEM_CORE_CLOCK				48000000UL		// TODO: Adjust value for CPU with fixed core frequency
 #define SYSTEM_NSDELAY_CORE_FACTOR		(30UL)			// TODO: Adjustment value
 
 #endif // __SYSTEM_CORE_CLOCK_H__

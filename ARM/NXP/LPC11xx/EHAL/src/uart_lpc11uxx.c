@@ -120,11 +120,10 @@ void UART_IRQHandler(void)
 				while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 14)
 				{
 					uint8_t *p = CFifoPut(g_LpcUartDev->pUartDev->hRxFifo);
-					if (p)
-					{
-						*p = g_LpcUartDev->pUartReg->RBR;
-						cnt++;
-					}
+					if (p == NULL)
+						break;
+					*p = g_LpcUartDev->pUartReg->RBR;
+					cnt++;
 				}
 
 				cnt = CFifoUsed(g_LpcUartDev->pUartDev->hRxFifo);
@@ -196,6 +195,14 @@ uint32_t LpcGetUartClk()
 	return SystemMainClkFreq / LPC_SYSCON->UARTCLKDIV;
 }
 
+inline void LpcUARTDisable(DEVINTRF *pDev)
+{
+}
+
+void LpcUARTEnable(DEVINTRF *pDev)
+{
+}
+
 bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 {
 	LPCUARTREG *reg = NULL;
@@ -249,16 +256,6 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 
 	pDev->DevIntrf.pDevData = (void*)&g_LpcUartDev[pCfg->DevNo];
 
-	if (pCfg->Rate > 0)
-	{
-		pDev->Rate = LpcUARTSetRate(&pDev->DevIntrf, pCfg->Rate);
-	}
-	else
-	{
-		// Auto baudrate
-		reg->ACR = 7;
-	}
-
 	if (pCfg->FlowControl == UART_FLWCTRL_HW)
 	{
 		reg->MCR |= (3 << 6);	// Auto CTS/RTS flow control
@@ -282,6 +279,15 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	val = LPC_USART->IIR;	// Clear interrupts
 	pDev->LineState = 0;
 
+	if (pCfg->Rate > 0)
+	{
+		pDev->Rate = LpcUARTSetRate(&pDev->DevIntrf, pCfg->Rate);
+	}
+	else
+	{
+		// Auto baudrate
+		reg->ACR = 7;
+	}
 	//LPC_USART->MCR |= (1<<4); // Loopback
 
 	if (pCfg->pRxMem && pCfg->RxMemSize > 0)
