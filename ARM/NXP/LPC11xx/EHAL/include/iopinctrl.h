@@ -50,7 +50,7 @@ Modified by          Date              Description
  * 			PinNo  	: Pin number
  * 			Dir     : I/O direction
  */
-static inline void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
+static inline __attribute__((always_inline)) void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
 {
 	if (Dir == IOPINDIR_OUTPUT)
 		LPC_GPIO->DIR[PortNo] |= 1 << PinNo;
@@ -66,7 +66,7 @@ static inline void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
  *
  * @return	Pin state 1 or 0
  */
-static inline int IOPinRead(int PortNo, int PinNo)
+static inline __attribute__((always_inline)) int IOPinRead(int PortNo, int PinNo)
 {
 	return ((LPC_GPIO->PIN[PortNo] >> PinNo ) & 1);
 }
@@ -77,7 +77,7 @@ static inline int IOPinRead(int PortNo, int PinNo)
  * @Param 	PortNo	: Port number
  * 			PinNo  	: Pin number
  */
-static inline void IOPinSet(int PortNo, int PinNo)
+static inline __attribute__((always_inline)) void IOPinSet(int PortNo, int PinNo)
 {
 	LPC_GPIO->SET[PortNo] = (1 << PinNo);
 }
@@ -88,7 +88,7 @@ static inline void IOPinSet(int PortNo, int PinNo)
  * @Param 	PortNo	: Port number
  * 			PinNo  	: Pin number
  */
-static inline void IOPinClear(int PortNo, int PinNo)
+static inline __attribute__((always_inline)) void IOPinClear(int PortNo, int PinNo)
 {
 	LPC_GPIO->CLR[PortNo] = (1 << PinNo);
 }
@@ -99,7 +99,7 @@ static inline void IOPinClear(int PortNo, int PinNo)
  * @Param 	PortNo	: Port number
  * 			PinNo  	: Pin number
  */
-static inline void IOPinToggle(int PortNo, int PinNo)
+static inline __attribute__((always_inline)) void IOPinToggle(int PortNo, int PinNo)
 {
 	LPC_GPIO->NOT[PortNo] = (1 << PinNo);
 }
@@ -111,7 +111,7 @@ static inline void IOPinToggle(int PortNo, int PinNo)
  *
  * @return	Bit field pin states
  */
-static inline uint32_t IOPinReadPort(int PortNo)
+static inline __attribute__((always_inline)) uint32_t IOPinReadPort(int PortNo)
 {
 	return LPC_GPIO->PIN[PortNo];
 }
@@ -122,23 +122,23 @@ static inline uint32_t IOPinReadPort(int PortNo)
  * @Param 	PortNo	: Port number
  * 			Data	: Bit field state of all pins on port
  */
-static inline void IOPinWritePort(int PortNo, uint32_t Data)
+static inline __attribute__((always_inline)) void IOPinWritePort(int PortNo, uint32_t Data)
 {
 	LPC_GPIO->W[PortNo] = Data;
 }
 
-static inline void IOPinWrite8Port(int PortNo, uint8_t Data)
+static inline __attribute__((always_inline)) void IOPinWrite8Port(int PortNo, uint8_t Data)
 {
 	LPC_GPIO->B[PortNo] = Data;
 }
 
-static inline void IOPinWrite16Port(int PortNo, uint16_t Data)
+static inline __attribute__((always_inline)) void IOPinWrite16Port(int PortNo, uint16_t Data)
 {
 	LPC_GPIO->B[PortNo] = Data & 0xFF;
 	LPC_GPIO->B[PortNo + 1] = (Data >> 8) & 0xFF;
 }
 
-static inline void IOPinWrite32Port(int PortNo, uint32_t Data)
+static inline __attribute__((always_inline)) void IOPinWrite32Port(int PortNo, uint32_t Data)
 {
 	LPC_GPIO->W[PortNo] = Data;
 }
