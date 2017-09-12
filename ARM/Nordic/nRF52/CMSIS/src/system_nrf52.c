@@ -41,6 +41,7 @@ static bool errata_37(void);
 static bool errata_57(void);
 static bool errata_66(void);
 static bool errata_108(void);
+static bool errata_136(void);
 
 
 #if defined ( __CC_ARM )
@@ -78,7 +79,7 @@ void SystemInit(void)
         NRF_P0->PIN_CNF[20] = (GPIO_PIN_CNF_DRIVE_H0H1 << GPIO_PIN_CNF_DRIVE_Pos) | (GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) | (GPIO_PIN_CNF_DIR_Output << GPIO_PIN_CNF_DIR_Pos);
     #endif
     
-    /* Workaround for Errata 12 "COMP: Reference ladder not correctly callibrated" found at the Errata document
+    /* Workaround for Errata 12 "COMP: Reference ladder not correctly calibrated" found at the Errata document
        for your device located at https://infocenter.nordicsemi.com/ */
     if (errata_12()){
         *(volatile uint32_t *)0x40013540 = (*(uint32_t *)0x10000324 & 0x00001F00) >> 8;
@@ -151,6 +152,14 @@ void SystemInit(void)
        for your device located at https://infocenter.nordicsemi.com/  */
     if (errata_108()){
         *(volatile uint32_t *)0x40000EE4 = *(volatile uint32_t *)0x10000258 & 0x0000004F;
+    }
+    
+    /* Workaround for Errata 136 "System: Bits in RESETREAS are set when they should not be" found at the Errata document
+       for your device located at https://infocenter.nordicsemi.com/  */
+    if (errata_136()){
+        if (NRF_POWER->RESETREAS & POWER_RESETREAS_RESETPIN_Msk){
+            NRF_POWER->RESETREAS =  ~POWER_RESETREAS_RESETPIN_Msk;
+        }
     }
     
     /* Enable the FPU if the compiler used floating point unit instructions. __FPU_USED is a MACRO defined by the
@@ -307,6 +316,24 @@ static bool errata_66(void)
 
 
 static bool errata_108(void)
+{
+    if ((((*(uint32_t *)0xF0000FE0) & 0x000000FF) == 0x6) && (((*(uint32_t *)0xF0000FE4) & 0x0000000F) == 0x0)){
+        if (((*(uint32_t *)0xF0000FE8) & 0x000000F0) == 0x30){
+            return true;
+        }
+        if (((*(uint32_t *)0xF0000FE8) & 0x000000F0) == 0x40){
+            return true;
+        }
+        if (((*(uint32_t *)0xF0000FE8) & 0x000000F0) == 0x50){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+static bool errata_136(void)
 {
     if ((((*(uint32_t *)0xF0000FE0) & 0x000000FF) == 0x6) && (((*(uint32_t *)0xF0000FE4) & 0x0000000F) == 0x0)){
         if (((*(uint32_t *)0xF0000FE8) & 0x000000F0) == 0x30){
