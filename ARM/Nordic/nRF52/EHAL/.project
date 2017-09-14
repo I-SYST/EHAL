@@ -206,6 +206,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sysstatusdef.h</locationURI>
 		</link>
 		<link>
+			<name>include/timer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/timer.h</locationURI>
+		</link>
+		<link>
 			<name>include/uart.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/uart.h</locationURI>
@@ -289,6 +294,11 @@
 			<name>src/diskio_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_impl.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/esb_intrf.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/esb_intrf.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/fatfs.cpp</name>
