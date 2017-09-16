@@ -54,13 +54,14 @@ public:
 	 * @brief	ADC device initialization
 	 *
 	 * @param	Cfg 	: Configuration data
+	 * 			pTimer	: Pointer to timer object for time stamping if available
 	 * 			pIntrf	: Pointer to device interface instance
 	 * 					  NULL, if self interface or internal SoC
 	 * 					  such as MCU ADC pins
 	 *
 	 * @return	True - Success
 	 */
-	virtual bool Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf);
+	virtual bool Init(const ADC_CFG &Cfg, Timer *pTimer = NULL, DeviceIntrf *pIntrf = NULL);
 
 	/**
 	 * @brief	Set conversion rate for continuous mode only
@@ -120,6 +121,16 @@ public:
 	virtual int Read(ADC_DATA *pBuff, int Len);
 
 	/**
+	 * @brief	Read ADC data of one channel
+	 *
+	 * @param 	Chan : Channel number
+	 *  		pBuff : Pointer to buffer for returning data
+	 *
+	 * @return	true - data available
+	 */
+	virtual bool Read(int Chan, ADC_DATA *pBuff);
+
+	/**
 	 * @brief	Execute auto calibration
 	 *
 	 * @return	true - success
@@ -131,9 +142,6 @@ public:
 	virtual void Reset();
 
 private:
-	HCFIFO	vhFifo;
-
-    friend void SAADC_IRQHandler();
 };
 
 #endif // __ADC_NRF52_H__

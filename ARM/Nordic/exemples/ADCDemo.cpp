@@ -39,7 +39,7 @@ Modified by          Date              Description
 // This include contain i/o definition the board in use
 #include "board.h"
 
-#define ADC_DEMO_INTERRUPT_ENABLE
+//#define ADC_DEMO_INTERRUPT_ENABLE
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 void ADVEventHandler(ADCDevice *pDevObj, ADC_EVT Evt);
@@ -108,9 +108,7 @@ static const ADC_CFG s_AdcCfg = {
 	.bInterrupt = false,
 #endif
 	.IntPrio = 6,
-	.EvtHandler = ADVEventHandler,
-	ADC_CFIFO_SIZE,
-	s_AdcFifoMem
+	.EvtHandler = ADVEventHandler
 };
 
 ADCnRF52 g_Adc;
@@ -119,19 +117,21 @@ ADCnRF52 g_Adc;
 static const ADC_CHAN_CFG s_ChanCfg[] = {
 	{
 		.Chan = 0,
-		.RefVoltIdx = 1,
+		.RefVoltIdx = 0,
 		.Type = ADC_CHAN_TYPE_DIFFERENTIAL,
-		.Gain = 4,//1 << 8,
-		.AcqTime = 0,
+		.Gain = 6,//1 << 8,
+		.AcqTime = 10,
 		.BurstMode = false,
 		.PinP = { .PinNo = 8, .Conn = ADC_PIN_CONN_NONE },
-		.PinN = { .PinNo = 0, .Conn = ADC_PIN_CONN_PULLUP },
+		.PinN = { .PinNo = 0, .Conn = ADC_PIN_CONN_PULLDOWN },
+		.FifoMemSize = ADC_CFIFO_SIZE,
+		.pFifoMem = s_AdcFifoMem,
 	},
 	{
 		.Chan = 1,
-		.RefVoltIdx = 1,
+		.RefVoltIdx = 0,
 		.Type = ADC_CHAN_TYPE_SINGLE_ENDED,
-		.Gain = 4,//1 << 8,
+		.Gain = 6,//1 << 8,
 		.AcqTime = 0,
 		.BurstMode = false,
 		.PinP = { .PinNo = 1, .Conn = ADC_PIN_CONN_VDD },
@@ -152,7 +152,7 @@ static const ADC_CHAN_CFG s_ChanCfg[] = {
 		.Gain = 6,//1 << 8,
 		.AcqTime = 0,
 		.BurstMode = false,
-		.PinP = { .PinNo = 3, .Conn = ADC_PIN_CONN_VDD },
+		.PinP = { .PinNo = 8, .Conn = ADC_PIN_CONN_NONE },
 	}
 };
 
@@ -168,15 +168,18 @@ void ADVEventHandler(ADCDevice *pAdcDev, ADC_EVT Evt)
 #ifdef ADC_DEMO_INTERRUPT_ENABLE
 		int cnt = 0;
 
-		do {
-			ADC_DATA df[s_NbChan];
-			cnt = g_Adc.Read(df, s_NbChan);
-			if (cnt > 0)
-			{
-				g_Uart.printf("%d ADC[0] = %.2fV, ADC[1] = %.2fV, ADC[2] = %.2fV, ADC[3] = %.2fV\r\n",
-						df[0].Timestamp, df[0].Data, df[1].Data, df[2].Data, df[3].Data);
-			}
-		} while (cnt > 0);
+		ADC_DATA df[s_NbChan];
+		cnt = g_Adc.Read(df, s_NbChan);
+		if (cnt > 0)
+		{
+			g_Uart.printf("%d ADC[0] = %.2fV, ADC[1] = %.2fV, ADC[2] = %.2fV, ADC[3] = %.2fV\r\n",
+					df[0].Timestamp, df[0].Data, df[1].Data, df[2].Data, df[3].Data);
+		}
+
+		if (g_Adc.Mode() == ADC_CONV_MODE_SINGLE)
+		{
+			g_Adc.StartConversion();
+		}
 #endif
 	}
 }
@@ -209,7 +212,7 @@ void HardwareInit()
 
 	printf("Init ADC\r\n");
 
-	g_Adc.Init(s_AdcCfg, NULL);
+	g_Adc.Init(s_AdcCfg);
 	g_Adc.OpenChannel(s_ChanCfg, s_NbChan);
 }
 //
@@ -241,16 +244,14 @@ int main()
 #else
 		int cnt = 0;
 
-		do {
-			ADC_DATA df[s_NbChan];
-			memset(df, 0, sizeof(df));
-			cnt = g_Adc.Read(df, s_NbChan);
-			if (cnt > 0)
-			{
-				g_Uart.printf("%d ADC[0] = %.2fV, ADC[1] = %.2fV, ADC[2] = %.2fV, ADC[3] = %.2fV\r\n",
-						df[0].Timestamp, df[0].Data, df[1].Data, df[2].Data, df[3].Data);
-			}
-		} while (cnt > 0);
+		ADC_DATA df[s_NbChan];
+		memset(df, 0, sizeof(df));
+		cnt = g_Adc.Read(df, s_NbChan);
+		if (cnt > 0)
+		{
+			g_Uart.printf("%d ADC[0] = %.2fV, ADC[1] = %.2fV, ADC[2] = %.2fV, ADC[3] = %.2fV\r\n",
+					df[0].Timestamp, df[0].Data, df[1].Data, df[2].Data, df[3].Data);
+		}
 		g_Adc.StartConversion();
 #endif
 	}

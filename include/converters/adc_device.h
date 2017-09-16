@@ -39,6 +39,7 @@ Modified by          Date              Description
 #include "cfifo.h"
 #include "device.h"
 #include "device_intrf.h"
+#include "timer.h"
 
 typedef enum __ADC_Reference_Voltage_Type {
 	ADC_REFVOLT_TYPE_INTERNAL,		// Internal fixed voltage specific to each IC
@@ -96,14 +97,16 @@ typedef struct __ADC_Pin_Config {
 } ADC_PIN_CFG;
 
 typedef struct __ADC_Channel_Config {
-	int Chan;				// Channel number
-	int RefVoltIdx;			// Index to which ADC reference voltage in the array to use.
-	ADC_CHAN_TYPE Type;		// ADC channel type
-	uint32_t Gain;			// Bit 0-7 : Fractional gain value (2 = 1/2, 3 = 1/3, ...)
-	int AcqTime;			// Acquisition time usec
-	bool BurstMode;			// Oversampling
-	ADC_PIN_CFG PinP;		// Pin positive
-	ADC_PIN_CFG PinN;		// Pin negative
+	int 			Chan;				// Channel number
+	int 			RefVoltIdx;			// Index to which ADC reference voltage in the array to use.
+	ADC_CHAN_TYPE	Type;				// ADC channel type
+	uint32_t 		Gain;				// Bit 0-7 : Fractional gain value (2 = 1/2, 3 = 1/3, ...)
+	int 			AcqTime;			// Acquisition time usec
+	bool 			BurstMode;			// Oversampling
+	ADC_PIN_CFG 	PinP;				// Pin positive
+	ADC_PIN_CFG 	PinN;				// Pin negative
+	int				FifoMemSize;		// Total memory size for CFIFO, CFIFO is used with interrupt enabled mode
+	uint8_t			*pFifoMem;			// pointer to memory for CFIFO
 } ADC_CHAN_CFG;
 
 class ADCDevice;	// Forward declare
@@ -122,8 +125,6 @@ typedef struct __ADC_Config {
 	bool		bInterrupt;		// Enable/Disable interrupt
 	int			IntPrio;		// Interrupt priority
 	ADC_EVTCB	EvtHandler;		// ADC event handler
-	int			FifoMemSize;	// Total memory size for CFIFO, CFIFO is used with interrupt enabled mode
-	uint8_t		*pFifoMem;		// pointer to memory for CFIFO
 } ADC_CFG;
 
 typedef struct __ADC_Data_Packet {
@@ -141,13 +142,14 @@ public:
 	 * @brief	ADC device initialization
 	 *
 	 * @param	Cfg 	: Configuration data
+	 * 			pTimer	: Pointer to timer object for time stamping if available
 	 * 			pIntrf	: Pointer to device interface instance
 	 * 					  NULL, if self interface or internal SoC
 	 * 					  such as MCU ADC pins
 	 *
 	 * @return	True - Success
 	 */
-	virtual bool Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf) = 0;
+	virtual bool Init(const ADC_CFG &Cfg, Timer *pTimer, DeviceIntrf *pIntrf) = 0;
 
 	/**
 	 * @brief	Set conversion rate for continuous mode only
@@ -211,7 +213,7 @@ public:
 	virtual void StopConversion() = 0;
 
 	/**
-	 * @brief	Read converted data
+	 * @brief	Read converted data multiple channels
 	 *
 	 * @param	pBuff : Buffer to receive converted data
 	 * 			Len	  : Size of buffer array (total number of elements)
@@ -221,11 +223,24 @@ public:
 	virtual int Read(ADC_DATA *pBuff, int Len) = 0;
 
 	/**
+	 * @brief	Read ADC data of one channel
+	 *
+	 * @param 	Chan : Channel number
+	 *  		pBuff : Pointer to buffer for returning data
+	 *
+	 * @return	true - data available
+	 */
+	virtual bool Read(int Chan, ADC_DATA *pBuff);
+
+	/**
 	 * @brief	Execute auto calibration
 	 *
 	 * @return	true - success
 	 */
 	virtual bool Calibrate() = 0;
+
+	virtual ADC_CONV_MODE Mode() { return vMode; }
+	virtual void Mode(ADC_CONV_MODE Mode) { vMode = Mode; }
 
 protected:
 	void SetEvtHandler(ADC_EVTCB EvtHandler) { vEvtHandler = EvtHandler; }

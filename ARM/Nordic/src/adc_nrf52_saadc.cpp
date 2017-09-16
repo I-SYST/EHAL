@@ -46,22 +46,25 @@ Modified by          Date              Description
 
 typedef struct __ADC_nRF52_Data {
 	ADCnRF52 *pDevObj;
-    int NbChanAct;
+	ADC_EVTCB EvtHandler;
+	int NbChanAct;
     int SampleCnt;
 	uint16_t ChanState[SAADC_NRF52_MAX_CHAN];
 	uint8_t	RefVoltIdx[SAADC_NRF52_MAX_CHAN];
 	float GainFactor[SAADC_NRF52_MAX_CHAN];		// Pre-calculated factor
 	uint32_t Period;
     int16_t ResData[SAADC_NRF52_MAX_CHAN];
+    HCFIFO	hFifo[SAADC_NRF52_MAX_CHAN];
+
 } ADCNRF52_DATA;
 
 static ADCNRF52_DATA s_AdcnRF52DevData = {
 	NULL
 };
 
-#define ADC_CFIFO_SIZE		CFIFO_TOTAL_MEMSIZE(SAADC_NRF52_MAX_CHAN, sizeof(ADC_DATA))
+//#define ADC_CFIFO_SIZE		CFIFO_TOTAL_MEMSIZE(SAADC_NRF52_MAX_CHAN, sizeof(ADC_DATA))
 
-static uint8_t s_ADCnRF52FifoMem[ADC_CFIFO_SIZE];
+//static uint8_t s_ADCnRF52FifoMem[ADC_CFIFO_SIZE];
 
 extern "C" void SAADC_IRQHandler()
 {
@@ -86,33 +89,36 @@ extern "C" void SAADC_IRQHandler()
 		if (s_AdcnRF52DevData.pDevObj)
 		{
 			int cnt = 0;
-			int timeout = 100000;
+			int timeout = 1000000;
 
-			//while (NRF_SAADC->RESULT.AMOUNT == 0 && timeout-- > 0);
+			while (NRF_SAADC->RESULT.AMOUNT == 0 && timeout-- > 0);
 
 			for (int i = 0; i < SAADC_NRF52_MAX_CHAN && cnt < NRF_SAADC->RESULT.AMOUNT; i++)
 			{
 				if (s_AdcnRF52DevData.ChanState[i] != 0)
 				{
-					ADC_DATA *p = (ADC_DATA*)CFifoPut(s_AdcnRF52DevData.pDevObj->vhFifo);
-					if (p == NULL)
-						break;
+					if (s_AdcnRF52DevData.hFifo[i] != NULL)
+					{
+						ADC_DATA *p = (ADC_DATA*)CFifoPut(s_AdcnRF52DevData.hFifo[i]);
+						if (p == NULL)
+							break;
 
-					p->Chan = i;
-					//
-					// *** Factor calculation
-					// Vin = ADCresult * Reference / (Resolution * Gain)
-					// => GainFactor = Reference / (Resolution * Gain)
-					// => Vin = ADCresult * GainFactor
-					p->Data = (float)s_AdcnRF52DevData.ResData[cnt] * s_AdcnRF52DevData.GainFactor[i];
-					p->Timestamp = s_AdcnRF52DevData.SampleCnt;
-					cnt++;
+						p->Chan = i;
+						//
+						// *** Factor calculation
+						// Vin = ADCresult * Reference / (Resolution * Gain)
+						// => GainFactor = Reference / (Resolution * Gain)
+						// => Vin = ADCresult * GainFactor
+						p->Data = (float)s_AdcnRF52DevData.ResData[i] * s_AdcnRF52DevData.GainFactor[i];
+						p->Timestamp = s_AdcnRF52DevData.SampleCnt;
+						cnt++;
+					}
 				}
 			}
 
 	        evt = ADC_EVT_DATA_READY;
 
-			s_AdcnRF52DevData.pDevObj->EvtHandler(evt);
+			s_AdcnRF52DevData.EvtHandler(s_AdcnRF52DevData.pDevObj, evt);
 		}
 
         NRF_SAADC->RESULT.AMOUNT = 0;
@@ -120,7 +126,8 @@ extern "C" void SAADC_IRQHandler()
         NRF_SAADC->EVENTS_DONE = 0;
         NRF_SAADC->EVENTS_END = 0;
 
-		NRF_SAADC->TASKS_START = 1;
+        if (s_AdcnRF52DevData.pDevObj->Mode() == ADC_CONV_MODE_CONTINUOUS)
+        	NRF_SAADC->TASKS_START = 1;
 	}
 	if (NRF_SAADC->EVENTS_DONE)
 	{
@@ -170,7 +177,6 @@ bool nRF52ADCWaitForStop(int32_t Timeout)
 ADCnRF52::ADCnRF52()
 {
 	memset(&s_AdcnRF52DevData, 0, sizeof(s_AdcnRF52DevData));
-	vhFifo = NULL;
 }
 
 ADCnRF52::~ADCnRF52()
@@ -222,7 +228,7 @@ bool ADCnRF52::Calibrate()
 	return false;
 }
 
-bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
+bool ADCnRF52::Init(const ADC_CFG &Cfg, Timer *pTimer, DeviceIntrf *pIntrf)
 {
 	if (s_AdcnRF52DevData.pDevObj != NULL && s_AdcnRF52DevData.pDevObj != this)
 		return false;
@@ -248,16 +254,6 @@ bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 	NRF_SAADC->EVENTS_END = 0;
 	NRF_SAADC->EVENTS_STARTED = 0;
 	NRF_SAADC->EVENTS_STOPPED = 0;
-
-
-	if (Cfg.pFifoMem != NULL && Cfg.FifoMemSize > CFIFO_TOTAL_MEMSIZE(2, sizeof(ADC_DATA)))
-	{
-		vhFifo = CFifoInit(Cfg.pFifoMem, Cfg.FifoMemSize, sizeof(ADC_DATA), false);
-	}
-	else
-	{
-		vhFifo = CFifoInit(s_ADCnRF52FifoMem, ADC_CFIFO_SIZE, sizeof(ADC_DATA), false);
-	}
 
 	Resolution(Cfg.Resolution);
 
@@ -291,6 +287,7 @@ bool ADCnRF52::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 
 	SetRefVoltage(Cfg.pRefVolt, Cfg.NbRefVolt);
 	SetEvtHandler(Cfg.EvtHandler);
+	s_AdcnRF52DevData.EvtHandler = Cfg.EvtHandler;
 
 	NVIC_ClearPendingIRQ(SAADC_IRQn);
 
@@ -447,6 +444,15 @@ bool ADCnRF52::OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan)
 	{
 		uint32_t chconfig = 0;	// CH[].CONFIG register value
 
+		if (pChanCfg[i].pFifoMem != NULL && pChanCfg[i].FifoMemSize > CFIFO_TOTAL_MEMSIZE(2, sizeof(ADC_DATA)))
+		{
+			s_AdcnRF52DevData.hFifo[i] = CFifoInit(pChanCfg[i].pFifoMem, pChanCfg[i].FifoMemSize, sizeof(ADC_DATA), false);
+		}
+		else
+		{
+			s_AdcnRF52DevData.hFifo[i] = NULL;
+		}
+
 		NRF_SAADC->CH[pChanCfg[i].Chan].PSELP = pChanCfg[i].PinP.PinNo + 1;
 		s_AdcnRF52DevData.ChanState[pChanCfg[i].Chan] = (pChanCfg[i].PinP.PinNo + 1) & 0xFF;
 
@@ -601,6 +607,7 @@ bool ADCnRF52::StartConversion()
 	    while (NRF_SAADC->EVENTS_STARTED == 0 && timeout-- > 0);
         NRF_SAADC->EVENTS_STARTED = 0;
 	    NRF_SAADC->TASKS_SAMPLE = 1;
+		s_AdcnRF52DevData.SampleCnt++;
 	}
 
 	return true;
@@ -621,17 +628,36 @@ int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
 
 	if (vbInterrupt)
 	{
-		while (Len > 0)
+		for (int i = 0; i < SAADC_NRF52_MAX_CHAN && Len > 0; i++)
 		{
-			int l = Len;
-			ADC_DATA *p = (ADC_DATA *)CFifoGetMultiple(vhFifo, &l);
-			if (p == NULL)
-				break;
-			memcpy(pBuff, p, l * sizeof(ADC_DATA));
-
-			pBuff += l;
-			cnt += l;
-			Len -= l;
+			if (s_AdcnRF52DevData.ChanState[i] != 0)
+			{
+				if (s_AdcnRF52DevData.hFifo[i])
+				{
+					ADC_DATA *p = (ADC_DATA *)CFifoGet(s_AdcnRF52DevData.hFifo[i]);
+					if (p != NULL)
+					{
+						memcpy(pBuff, p, sizeof(ADC_DATA));
+						pBuff++;
+						cnt ++;
+						Len--;
+					}
+				}
+				else
+				{
+					pBuff->Chan = i;
+					//
+					// *** Factor calculation
+					// Vin = ADCresult * Reference / (Resolution * Gain)
+					// => GainFactor = Reference / (Resolution * Gain)
+					// => Vin = ADCresult * GainFactor
+					pBuff->Data = (float)s_AdcnRF52DevData.ResData[i] * s_AdcnRF52DevData.GainFactor[i];
+					pBuff->Timestamp = s_AdcnRF52DevData.SampleCnt;
+					pBuff++;
+					cnt++;
+					Len--;
+				}
+			}
 		}
 	}
 	else
@@ -641,7 +667,7 @@ int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
 			int timeout = 10000;
 			while (NRF_SAADC->RESULT.AMOUNT <  NRF_SAADC->RESULT.MAXCNT && timeout-- > 0);
 
-			s_AdcnRF52DevData.SampleCnt++;
+//			s_AdcnRF52DevData.SampleCnt++;
 
 			for (int i = 0; i < SAADC_NRF52_MAX_CHAN && cnt < NRF_SAADC->RESULT.AMOUNT && cnt < Len; i++)
 			{
@@ -654,7 +680,7 @@ int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
 					// Vin = ADCresult * Reference / (Resolution * Gain)
 					// => GainFactor = Reference / (Resolution * Gain)
 					// => Vin = ADCresult * GainFactor
-					pBuff->Data = (float)s_AdcnRF52DevData.ResData[cnt] * s_AdcnRF52DevData.GainFactor[i];
+					pBuff->Data = (float)s_AdcnRF52DevData.ResData[i] * s_AdcnRF52DevData.GainFactor[i];
 					pBuff->Timestamp = s_AdcnRF52DevData.SampleCnt;
 					pBuff++;
 					cnt++;
@@ -666,5 +692,52 @@ int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
 		}
 	}
 	return cnt;
+}
+
+/**
+ * @brief	Read ADC data of one channel
+ *
+ * @param 	Chan : Channel number
+ *  		pBuff : Pointer to buffer for returning data
+ *
+ * @return	true - data available
+ */
+bool ADCnRF52::Read(int Chan, ADC_DATA *pBuff)
+{
+	if (pBuff == NULL || Chan < 0 || Chan >= SAADC_NRF52_MAX_CHAN)
+		return false;
+
+	if (vbInterrupt)
+	{
+		ADC_DATA *p = (ADC_DATA *)CFifoGet(s_AdcnRF52DevData.hFifo[Chan]);
+		if (p == NULL)
+		{
+			pBuff->Chan = -1;
+			return false;
+		}
+		memcpy(pBuff, p, sizeof(ADC_DATA));
+	}
+	else if (nRF52ADCWaitForEnd(100000))
+	{
+		int timeout = 100000;
+		while (NRF_SAADC->RESULT.AMOUNT <  NRF_SAADC->RESULT.MAXCNT && timeout-- > 0);
+
+//		s_AdcnRF52DevData.SampleCnt++;
+
+		pBuff->Chan = Chan;
+		//
+		// *** Factor calculation
+		// Vin = ADCresult * Reference / (Resolution * Gain)
+		// => GainFactor = Reference / (Resolution * Gain)
+		// => Vin = ADCresult * GainFactor
+		pBuff->Data = (float)s_AdcnRF52DevData.ResData[Chan] * s_AdcnRF52DevData.GainFactor[Chan];
+		pBuff->Timestamp = s_AdcnRF52DevData.SampleCnt;
+
+		NRF_SAADC->RESULT.AMOUNT = 0;
+		NRF_SAADC->EVENTS_DONE = 0;
+		NRF_SAADC->EVENTS_RESULTDONE = 0;
+	}
+
+	return true;
 }
 

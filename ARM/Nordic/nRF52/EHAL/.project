@@ -211,6 +211,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/timer.h</locationURI>
 		</link>
 		<link>
+			<name>include/timer_nrf5x.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/timer_nrf5x.h</locationURI>
+		</link>
+		<link>
 			<name>include/uart.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/uart.h</locationURI>
