@@ -257,6 +257,7 @@ int EsbIntrfTxData(DEVINTRF *pDevIntrf, uint8_t *pData, int DataLen)
         memset(payload, 0, sizeof(nrf_esb_payload_t));
         memcpy(payload->data, pData, l);
         payload->length = l;
+        payload->noack = false;
 
         DataLen -= l;
         pData += l;
@@ -324,6 +325,8 @@ void nRFEsbEventHandler(nrf_esb_evt_t const * p_event)
     {
         case NRF_ESB_EVENT_TX_FAILED:
             nrf_esb_flush_tx();
+            nrf_esb_start_tx();
+            break;
         case NRF_ESB_EVENT_TX_SUCCESS:
             payload = (nrf_esb_payload_t*)CFifoGet(esbintrf->hTxFifo);
             if (payload)
@@ -396,6 +399,7 @@ bool EsbIntrfInit(ESBINTRF *pEsbIntrf, const ESBINTRF_CFG *pCfg)
     esbcfg.payload_length = pCfg->PacketSize;
     esbcfg.retransmit_count = pCfg->NbRetry;
     esbcfg.event_handler = nRFEsbEventHandler;
+    esbcfg.selective_auto_ack = true;
 
     err_code = nrf_esb_init(&esbcfg);
     VERIFY_SUCCESS(err_code);
