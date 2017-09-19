@@ -460,11 +460,33 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
 
         	//g_Uart.printf("Passkey: %s\r\n", passkey);
         } break; // BLE_GAP_EVT_PASSKEY_DISPLAY
+#if defined(S132)
+        case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
+        {
+            //NRF_LOG_DEBUG("PHY update request.");
+            ble_gap_phys_t const phys =
+            {
+                /*.tx_phys =*/ BLE_GAP_PHY_AUTO,
+                /*.rx_phys =*/ BLE_GAP_PHY_AUTO,
+            };
+            err_code = sd_ble_gap_phy_update(p_ble_evt->evt.gap_evt.conn_handle, &phys);
+            APP_ERROR_CHECK(err_code);
+        } break;
+#endif
+        case BLE_GAP_EVT_DATA_LENGTH_UPDATE_REQUEST:
+       {
+           ble_gap_data_length_params_t dl_params;
+
+           // Clearing the struct will effectivly set members to @ref BLE_GAP_DATA_LENGTH_AUTO
+           memset(&dl_params, 0, sizeof(ble_gap_data_length_params_t));
+           err_code = sd_ble_gap_data_length_update(p_ble_evt->evt.gap_evt.conn_handle, &dl_params, NULL);
+           APP_ERROR_CHECK(err_code);
+       } break;
 
         case BLE_GATTS_EVT_SYS_ATTR_MISSING:
             // No system attributes have been stored.
-            //err_code = sd_ble_gatts_sys_attr_set(g_ConnHdl, NULL, 0, 0);
-            //APP_ERROR_CHECK(err_code);
+            err_code = sd_ble_gatts_sys_attr_set(g_BleAppData.ConnHdl, NULL, 0, 0);
+            APP_ERROR_CHECK(err_code);
             break; // BLE_GATTS_EVT_SYS_ATTR_MISSING
 
         case BLE_GAP_EVT_TIMEOUT:
@@ -1104,12 +1126,12 @@ void gatt_evt_handler(nrf_ble_gatt_t * p_gatt, const nrf_ble_gatt_evt_t * p_evt)
 void gatt_evt_handler(nrf_ble_gatt_t * p_gatt, nrf_ble_gatt_evt_t * p_evt)
 #endif
 {
- /*   if ((g_BleAppData.ConnHdl == p_evt->conn_handle) && (p_evt->evt_id == NRF_BLE_GATT_EVT_ATT_MTU_UPDATED))
+    if ((g_BleAppData.ConnHdl == p_evt->conn_handle) && (p_evt->evt_id == NRF_BLE_GATT_EVT_ATT_MTU_UPDATED))
     {
        // m_ble_nus_max_data_len = p_evt->params.att_mtu_effective - OPCODE_LENGTH - HANDLE_LENGTH;
         //NRF_LOG_INFO("Data len is set to 0x%X(%d)\r\n", m_ble_nus_max_data_len, m_ble_nus_max_data_len);
-    }*/
-   // NRF_LOG_DEBUG("ATT MTU exchange completed. central 0x%x peripheral 0x%x\r\n", p_gatt->att_mtu_desired_central, p_gatt->att_mtu_desired_periph);
+    }
+    printf("ATT MTU exchange completed. central 0x%x peripheral 0x%x\r\n", p_gatt->att_mtu_desired_central, p_gatt->att_mtu_desired_periph);
 }
 
 /**@brief Function for initializing the GATT library. */
