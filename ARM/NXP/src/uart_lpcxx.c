@@ -126,10 +126,6 @@ int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 
 	dev->pUartReg->TER = 0;
 
-	dev->pUartReg->FCR = LPCUART_FCR_FIFOEN | LPCUART_FCR_RST_RXFIFO | LPCUART_FCR_RST_TXFIFO |
-			   LPCUART_FCR_RX_TRIG4;
-
-
 	int tout = 10000;
 
 	do {

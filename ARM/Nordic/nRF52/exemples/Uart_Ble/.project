@@ -36,7 +36,17 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/boards</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/drivers_nrf</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/fprintf</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -66,9 +76,19 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/ble/nrf_ble_gatt</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/peer_manager</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/boards/boards.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/boards/boards.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/drivers_nrf/clock</name>
@@ -81,7 +101,52 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/drivers_nrf/gpiote</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/drivers_nrf/uart</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/fprintf/nrf_fprintf.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/external/fprintf/nrf_fprintf.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/fprintf/nrf_fprintf_format.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/external/fprintf/nrf_fprintf_format.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/balloc</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/bsp</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/button</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/experimental_log</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/experimental_memobj</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/experimental_section_vars</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -97,6 +162,11 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/fstorage</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/strerror</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -156,6 +226,11 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_srv_common.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/ble/nrf_ble_gatt/nrf_ble_gatt.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/nrf_ble_gatt/nrf_ble_gatt.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/gatt_cache_manager.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/gatt_cache_manager.c</locationURI>
@@ -171,14 +246,14 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/id_manager.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/ble/peer_manager/peer_data.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_data.c</locationURI>
-		</link>
-		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/peer_data_storage.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_data_storage.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/peer_database.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_database.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/peer_id.c</name>
@@ -216,9 +291,49 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/common/nrf_drv_common.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/drivers_nrf/gpiote/nrf_drv_gpiote.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/gpiote/nrf_drv_gpiote.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/drivers_nrf/uart/nrf_drv_uart.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/uart/nrf_drv_uart.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/balloc/nrf_balloc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/balloc/nrf_balloc.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/bsp/bsp.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bsp/bsp.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/bsp/bsp_btn_ble.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bsp/bsp_btn_ble.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/button/app_button.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/button/app_button.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/experimental_log/src</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/experimental_memobj/nrf_memobj.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/experimental_memobj/nrf_memobj.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/experimental_section_vars/nrf_section_iter.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/experimental_section_vars/nrf_section_iter.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/fds/fds.c</name>
@@ -233,7 +348,12 @@
 		<link>
 			<name>src/nRF5_SDK/libraries/fstorage/fstorage.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/fstorage/fstorage.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/fstorage/nrf_fstorage.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/strerror/nrf_strerror.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/strerror/nrf_strerror.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/timer/app_timer.c</name>
@@ -266,9 +386,14 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/util/sdk_mapped_flags.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/softdevice/common/softdevice_handler</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
+			<name>src/nRF5_SDK/softdevice/common/nrf_sdh.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/softdevice/common/nrf_sdh_ble.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh_ble.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/ble_services/ble_bas/ble_bas.c</name>
@@ -281,9 +406,29 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_nus/ble_nus.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/softdevice/common/softdevice_handler/softdevice_handler.c</name>
+			<name>src/nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_serial.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/softdevice_handler/softdevice_handler.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/experimental_log/src/nrf_log_backend_serial.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/experimental_log/src/nrf_log_backend_uart.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/experimental_log/src/nrf_log_default_backends.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/experimental_log/src/nrf_log_default_backends.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/experimental_log/src/nrf_log_frontend.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/experimental_log/src/nrf_log_frontend.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/experimental_log/src/nrf_log_str_formatter.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/experimental_log/src/nrf_log_str_formatter.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
