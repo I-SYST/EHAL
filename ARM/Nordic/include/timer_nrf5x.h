@@ -42,18 +42,29 @@ Modified by          Date              Description
 #define TIMER_RTC_NRF5X_XTAL_32K_FREQ   32768
 #define TIMER_RTC_MAX                   3           // 3 RTC available
 
+#define TIMER_RTC_MAX_TIMER_TRIGGER     4           // Counter compare
+
+//
+// nRF5x Real Time Counter using fixed 32768 Hz frequency
+//
 class TimerRTCnRF5x : public Timer {
 public:
     TimerRTCnRF5x();
     virtual ~TimerRTCnRF5x();
 
-	virtual bool Init(TIMER_CFG &Cfg);
-	virtual uint32_t TickCount();
-	virtual uint32_t uSecond();
-	virtual uint32_t nSecond();
+	virtual bool Init(const TIMER_CFG &Cfg);
+	virtual bool Enable();
+	virtual void Disable();
+	virtual void Reset();
+	virtual bool Frequency(uint32_t Freq);
+	virtual uint64_t TickCount();
+    int MaxTriggerTimer() { return TIMER_RTC_MAX_TIMER_TRIGGER; }
+    virtual bool EnableTimerTrigger(int TimerNo, uint32_t Freq, TIMER_TRIG_TYPE Type);
+    virtual void DisableTimerTrigger(int TimerNo);
 
 protected:
 private:
+    NRF_RTC_Type *vpReg;
 };
 
 

@@ -43,38 +43,116 @@ typedef enum __Timer_Clock_Src {
     TIMER_CLKSRC_HFXTAL
 } TIMER_CLKSRC;
 
-typedef enum __Timer_Event {
-    TIMER_EVT_TICK,
-    TIMER_EVT_COUNTER_OVR,      // Timer overflow
-    TIMER_EVT_COMPARATOR
-} TIMER_EVT;
+typedef enum __Timer_Interrupt_Enable {
+	TIMER_INTEN_NONE,
+	TIMER_INTEN_TICK,		// Enable tick count interrupt
+	TIMER_INTEN_OVR			// Enable tick count overflow interrupt
+} TIMER_INTEN;
+
+typedef enum __Timer_Trigger_Type {
+    TIMER_TRIG_TYPE_SINGLE,
+    TIMER_TRIG_TYPE_CONTINUOUS
+} TIMER_TRIG_TYPE;
+
+#define TIMER_EVT_TICK                          (1<<0)   // Timer tick counter event
+#define TIMER_EVT_COUNTER_OVR                   (1<<1)   // Timer overflow event
+#define TIMER_EVT_TIMER_TRIGGER0                (1<<2)   // Periodic timer event start at this bit
+
+#define TIMER_EVT_TIMER_TRIGGER(n)              (1<<(n+2))
 
 class Timer;
 
-typedef void (*TIMER_EVTCB)(Timer *pTimer, TIMER_EVT Evt, uint32_t CompNo);
+typedef void (*TIMER_EVTCB)(Timer *pTimer, uint32_t Evt);
 
 #pragma pack(push, 4)
 
+//
+// NOTE : Interrupt priority should be as high as possible
+// Timing precision would be lost if other interrupt preempt
+// the timer interrupt.  Adjust IntPrio base on requirement
+//
 typedef struct __Timer_Config {
     int             DevNo;      // Device number
     TIMER_CLKSRC    ClkSrc;     // Clock source
     uint32_t        Freq;       // Frequency in Hz
-    TIMER_EVTCB     EvtHandler;
+    int             IntPrio;    // Interrupt priority
+    TIMER_EVTCB     EvtHandler; // Interrupt handler
 } TIMER_CFG;
 
 #pragma pack(pop)
 
-class Timer : public Device {
+class Timer {
 public:
 
-	virtual uint32_t TickCount() = 0;
-	virtual uint32_t uSecond() = 0;
-	virtual uint32_t nSecond() = 0;
+    /**
+     * @brief   Timer initialization
+     *      This is specific to each architecture.
+     */
+    virtual bool Init(const TIMER_CFG &Cfg) = 0;
+
+    /**
+     * @brief   Enable timer
+     *      This is used to re-enable timer after it was disabled for power
+     * saving.  It normally does not go through full initialization sequence
+     */
+    virtual bool Enable() = 0;
+
+    /**
+     * @brief   Disable timer
+     *      This is used to disable timer for power saving. Call Enable() to
+     * re-enable timer instead of full initialization sequence
+     */
+    virtual void Disable() = 0;
+
+    /**
+     * @brief   Reset timer
+     */
+    virtual void Reset() = 0;
+
+    /**
+     * @brief   Get
+     */
+	virtual uint64_t TickCount() = 0;
+
+	/**
+	 * @brief	Set timer main frequency
+	 *
+	 * @param 	Freq : Frequency in Hz
+	 *
+	 * @return
+	 */
+	virtual bool Frequency(uint32_t Freq) = 0;
+
+	/**
+	 * @brief	Get maximum available timer trigger event for the timer
+	 *
+	 * @return	count
+	 */
+	virtual int MaxTriggerTimer() = 0;
+
+	/**
+	 * @brief	Enable timer trigger event
+	 *
+	 * @param TimerNo
+	 * @param nsPeriod
+	 * @param Type
+	 * @return
+	 */
+	virtual bool EnableTimerTrigger(int TimerNo, uint32_t nsPeriod, TIMER_TRIG_TYPE Type) = 0;
+    virtual void DisableTimerTrigger(int TimerNo) = 0;
+
+	virtual uint32_t uSecond() { return TickCount() * vusPeriod; }
+	virtual uint32_t uSecond(uint64_t Count) { return Count * vusPeriod; }
+	virtual uint32_t nSecond() { return TickCount() * vnsPeriod; }
+	virtual uint32_t nSecond(uint64_t Count) { return Count * vnsPeriod; }
+	virtual uint32_t Frequency() { return vFreq; }
 
 protected:
 
+    int      vDevNo;
 	uint32_t vFreq;			// Frequency in Hz
-	uint32_t vPeriod;		// Period in nsec
+	uint32_t vnsPeriod;		// Period in nsec
+    uint32_t vusPeriod;     // Period in usec
 	uint32_t vOvrCnt;       // Overflow counter
 
 private:
