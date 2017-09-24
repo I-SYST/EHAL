@@ -57,7 +57,6 @@ static TimerLFnRF5x *s_pnRF5xRTC[TIMER_NRF5X_RTC_MAX] = {
 void TimerLFnRF5x::IRQHandler()
 {
     uint32_t evt = 0;
-    uint32_t dummy;
     uint32_t count = vpReg->COUNTER;
 
     if (vpReg->EVENTS_TICK)
@@ -105,12 +104,13 @@ void RTC1_IRQHandler()
 	if (s_pnRF5xRTC[1])
 		s_pnRF5xRTC[1]->IRQHandler();
 }
-
+#ifdef NRF52
 void RTC2_IRQHandler()
 {
 	if (s_pnRF5xRTC[2])
 		s_pnRF5xRTC[2]->IRQHandler();
 }
+#endif
 
 }   // extern "C"
 
@@ -139,10 +139,12 @@ bool TimerLFnRF5x::Init(const TIMER_CFG &Cfg)
         	s_pnRF5xRTC[1] = this;
         	vpReg = NRF_RTC1;
             break;
+#ifdef NRF52
         case 2:
         	s_pnRF5xRTC[2] = this;
         	vpReg = NRF_RTC2;
             break;
+#endif
     }
 
     vpReg->TASKS_STOP = 1;
@@ -196,11 +198,13 @@ bool TimerLFnRF5x::Init(const TIMER_CFG &Cfg)
                 NVIC_SetPriority(RTC1_IRQn, Cfg.IntPrio);
                 NVIC_EnableIRQ(RTC1_IRQn);
                 break;
+#ifdef NRF52
             case 2:
                 NVIC_ClearPendingIRQ(RTC2_IRQn);
                 NVIC_SetPriority(RTC2_IRQn, Cfg.IntPrio);
                 NVIC_EnableIRQ(RTC2_IRQn);
                 break;
+#endif
         }
 
         // Enable tick & overflow interrupt
@@ -229,10 +233,12 @@ bool TimerLFnRF5x::Enable()
             NVIC_ClearPendingIRQ(RTC1_IRQn);
             NVIC_EnableIRQ(RTC1_IRQn);
             break;
+#ifdef NRF52
         case 2:
             NVIC_ClearPendingIRQ(RTC2_IRQn);
             NVIC_EnableIRQ(RTC2_IRQn);
             break;
+#endif
     }
 
     vpReg->TASKS_START = 1;
@@ -252,12 +258,14 @@ void TimerLFnRF5x::Disable()
             break;
         case 1:
             NVIC_ClearPendingIRQ(RTC1_IRQn);
-            NVIC_EnableIRQ(RTC1_IRQn);
+            NVIC_DisableIRQ(RTC1_IRQn);
             break;
+#ifdef NRF52
         case 2:
             NVIC_ClearPendingIRQ(RTC2_IRQn);
-            NVIC_EnableIRQ(RTC2_IRQn);
+            NVIC_DisableIRQ(RTC2_IRQn);
             break;
+#endif
     }
 
     NRF_CLOCK->TASKS_LFCLKSTOP = 1;

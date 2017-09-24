@@ -100,6 +100,7 @@ void TIMER2_IRQHandler()
 		s_pnRF5xTimer[2]->IRQHandler();
 }
 
+#ifdef NRF52
 void TIMER3_IRQHandler()
 {
 	if (s_pnRF5xTimer[3])
@@ -111,6 +112,7 @@ void TIMER4_IRQHandler()
 	if (s_pnRF5xTimer[4])
 		s_pnRF5xTimer[4]->IRQHandler();
 }
+#endif
 
 }   // extern "C"
 
@@ -127,9 +129,11 @@ TimerHFnRF5x::~TimerHFnRF5x()
 bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
 {
     if (Cfg.DevNo < 0 || Cfg.DevNo >= TIMER_NRF5X_HF_MAX)
+    {
         return false;
+    }
 
-	vMaxNbTrigEvt = TIMER_NRF5X_HF_MAX_TRIGGER_EVT - 2;
+	vMaxNbTrigEvt = TIMER_NRF5X_HF_MAX_TRIGGER_EVT;
     switch (Cfg.DevNo)
     {
     	case 0:
@@ -144,16 +148,18 @@ bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
     		s_pnRF5xTimer[2] = this;
     		vpReg = NRF_TIMER2;
     		break;
+#ifdef NRF52
     	case 3:
     		s_pnRF5xTimer[3] = this;
     		vpReg = NRF_TIMER3;
-    		vMaxNbTrigEvt = TIMER_NRF5X_HF_MAX_TRIGGER_EVT;
+    		vMaxNbTrigEvt = TIMER_NRF5X_HF_MAX_TRIGGER_EVT + 2;
     		break;
     	case 4:
     		s_pnRF5xTimer[4] = this;
     		vpReg = NRF_TIMER4;
-    		vMaxNbTrigEvt = TIMER_NRF5X_HF_MAX_TRIGGER_EVT;
+    		vMaxNbTrigEvt = TIMER_NRF5X_HF_MAX_TRIGGER_EVT + 2;
     		break;
+#endif
     }
 
     vpReg->TASKS_STOP = 1;
@@ -188,6 +194,7 @@ bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
                 NVIC_SetPriority(TIMER2_IRQn, Cfg.IntPrio);
                 NVIC_EnableIRQ(TIMER2_IRQn);
                 break;
+#ifdef NRF52
             case 3:
                 NVIC_ClearPendingIRQ(TIMER3_IRQn);
                 NVIC_SetPriority(TIMER3_IRQn, Cfg.IntPrio);
@@ -198,6 +205,7 @@ bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
                 NVIC_SetPriority(TIMER4_IRQn, Cfg.IntPrio);
                 NVIC_EnableIRQ(TIMER4_IRQn);
                 break;
+#endif
         }
 
     }
@@ -264,6 +272,7 @@ bool TimerHFnRF5x::Enable()
                 NVIC_ClearPendingIRQ(TIMER2_IRQn);
                 NVIC_EnableIRQ(TIMER2_IRQn);
                 break;
+#ifdef NRF52
             case 3:
                 NVIC_ClearPendingIRQ(TIMER3_IRQn);
                 NVIC_EnableIRQ(TIMER3_IRQn);
@@ -272,6 +281,7 @@ bool TimerHFnRF5x::Enable()
                 NVIC_ClearPendingIRQ(TIMER4_IRQn);
                 NVIC_EnableIRQ(TIMER4_IRQn);
                 break;
+#endif
         }
 
     }
@@ -290,19 +300,26 @@ void TimerHFnRF5x::Disable()
     {
         case 0:
             NVIC_ClearPendingIRQ(TIMER0_IRQn);
+            NVIC_DisableIRQ(TIMER0_IRQn);
             break;
         case 1:
             NVIC_ClearPendingIRQ(TIMER1_IRQn);
+            NVIC_DisableIRQ(TIMER1_IRQn);
             break;
         case 2:
             NVIC_ClearPendingIRQ(TIMER2_IRQn);
+            NVIC_DisableIRQ(TIMER2_IRQn);
             break;
+#ifdef NRF52
         case 3:
             NVIC_ClearPendingIRQ(TIMER3_IRQn);
+            NVIC_DisableIRQ(TIMER3_IRQn);
             break;
         case 4:
             NVIC_ClearPendingIRQ(TIMER4_IRQn);
+            NVIC_DisableIRQ(TIMER4_IRQn);
             break;
+#endif
     }
 
     vpReg->INTENSET = 0;

@@ -201,6 +201,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sysstatusdef.h</locationURI>
 		</link>
 		<link>
+			<name>include/timer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/timer.h</locationURI>
+		</link>
+		<link>
+			<name>include/timer_nrf5x.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/timer_nrf5x.h</locationURI>
+		</link>
+		<link>
 			<name>include/uart.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/uart.h</locationURI>
@@ -301,19 +311,14 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/isha256.c</locationURI>
 		</link>
 		<link>
-			<name>src/ledmx.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/ledmx.c</locationURI>
-		</link>
-		<link>
-			<name>src/ledmxfont.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/ledmxfont.c</locationURI>
-		</link>
-		<link>
 			<name>src/ledmxio_nrf5x.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ledmxio_nrf5x.c</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK</name>
@@ -364,6 +369,16 @@
 			<name>src/sysstatus.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sysstatus.c</locationURI>
+		</link>
+		<link>
+			<name>src/timer_hf_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_hf_nrf5x.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/timer_lf_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_lf_nrf5x.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/uart.c</name>
@@ -424,6 +439,16 @@
 			<name>include/sys/dirent.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sys/dirent.h</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/ledmx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmx.c</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/ledmxfont.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmxfont.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble</name>

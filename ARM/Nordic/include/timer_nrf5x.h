@@ -42,8 +42,11 @@ Modified by          Date              Description
 // Low frequency timer using Real Time Counter (RTC) 32768 Hz clock source
 //
 #define TIMER_NRF5X_RTC_BASE_FREQ   		32768
-#define TIMER_NRF5X_RTC_MAX                 3           // 3 RTC available
-
+#ifdef NRF52
+#define TIMER_NRF5X_RTC_MAX                 3           // 3 RTC available on nRF52
+#else
+#define TIMER_NRF5X_RTC_MAX                 2           // 2 RTC available on nRF51
+#endif
 #define TIMER_NRF5X_RTC_MAX_TRIGGER_EVT     4           // Max number of supported counter trigger event
 
 class TimerLFnRF5x : public Timer {
@@ -77,9 +80,13 @@ private:
 // High frequency timer using Timer 16MHz clock source
 //
 #define TIMER_NRF5X_HF_BASE_FREQ   			16000000
-#define TIMER_NRF5X_HF_MAX              	5           // 5 high frequency timer available
+#ifdef NRF52
+#define TIMER_NRF5X_HF_MAX              	5           // 5 high frequency timer available on nRF52
+#else
+#define TIMER_NRF5X_HF_MAX              	3           // 3 high frequency timer available on nRF51
+#endif
 
-#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	6           // Max number of supported counter trigger event
+#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	4           // Max number of supported counter trigger event
 
 class TimerHFnRF5x : public Timer {
 public:
