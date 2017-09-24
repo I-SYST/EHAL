@@ -56,9 +56,9 @@ typedef enum __Timer_Trigger_Type {
 
 #define TIMER_EVT_TICK                          (1<<0)   // Timer tick counter event
 #define TIMER_EVT_COUNTER_OVR                   (1<<1)   // Timer overflow event
-#define TIMER_EVT_TIMER_TRIGGER0                (1<<2)   // Periodic timer event start at this bit
+#define TIMER_EVT_TRIGGER0                		(1<<2)   // Periodic timer event start at this bit
 
-#define TIMER_EVT_TIMER_TRIGGER(n)              (1<<(n+2))
+#define TIMER_EVT_TRIGGER(n)              		(1<<(n+2))
 
 class Timer;
 

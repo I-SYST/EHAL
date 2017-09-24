@@ -136,7 +136,7 @@ TimerLFnRF5x g_Timer;
 
 void TimerHandler(Timer *pTimer, uint32_t Evt)
 {
-    if (Evt & TIMER_EVT_TIMER_TRIGGER(0))
+    if (Evt & TIMER_EVT_TRIGGER(0))
     {
     	// Flip GPIO for oscilloscope measurement
     	IOPinToggle(0, 22);
@@ -173,7 +173,7 @@ int main(void)
     err_code = nrf_drv_timer_init(&TIMER_LED, &timer_cfg, timer_led_event_handler);
     APP_ERROR_CHECK(err_code);
 
-    time_ticks = nrf_drv_timer_ms_to_ticks(&TIMER_LED, 10000UL);
+    time_ticks = nrf_drv_timer_ms_to_ticks(&TIMER_LED, 500UL);
 
     nrf_drv_timer_extended_compare(
          &TIMER_LED, NRF_TIMER_CC_CHANNEL0, time_ticks, NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
@@ -181,7 +181,7 @@ int main(void)
     nrf_drv_timer_enable(&TIMER_LED);
 #else
     g_Timer.Init(s_TimerCfg);
-	uint64_t period = g_Timer.EnableTimerTrigger(0, 100000000ULL, TIMER_TRIG_TYPE_CONTINUOUS);
+	uint64_t period = g_Timer.EnableTimerTrigger(0, 500000000ULL, TIMER_TRIG_TYPE_CONTINUOUS);
 
 	printf("Period = %u\r\n", (uint32_t)period);
 #endif
