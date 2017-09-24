@@ -162,14 +162,14 @@ bool TimerLFnRF5x::Init(const TIMER_CFG &Cfg)
 
     vDevNo = Cfg.DevNo;
 
-    uint32_t prescaler = 32768;
+    uint32_t prescaler = 1;
 
     if (Cfg.Freq > 0)
-        prescaler /= Cfg.Freq;
+        prescaler = TIMER_NRF5X_RTC_BASE_FREQ / Cfg.Freq;
 
     vpReg->PRESCALER = prescaler - 1;
 
-    vFreq = 32768 / prescaler;
+    vFreq = TIMER_NRF5X_RTC_BASE_FREQ / prescaler;
 
     // Pre-calculate periods for faster timer counter to time conversion use later
     vnsPeriod = 1000000000 / vFreq;     // Period in nsec
@@ -262,14 +262,14 @@ uint32_t TimerLFnRF5x::Frequency(uint32_t Freq)
 {
     vpReg->TASKS_STOP = 1;
 
-    uint32_t prescaler = 32768;
+    uint32_t prescaler = 1;
 
     if (Freq > 0)
-        prescaler /= Freq;
+        prescaler = TIMER_NRF5X_RTC_BASE_FREQ / Freq;
 
     vpReg->PRESCALER = prescaler - 1;
 
-    vFreq = 32768 / prescaler;
+    vFreq = TIMER_NRF5X_RTC_BASE_FREQ / prescaler;
 
     // Pre-calculate periods for faster timer counter to time conversion use later
     vnsPeriod = 1000000000 / vFreq;     // Period in nsec
@@ -284,12 +284,12 @@ uint64_t TimerLFnRF5x::TickCount()
 	return (uint64_t)vpReg->COUNTER + s_nRF5xRTCData[vDevNo].OvrCnt;
 }
 
-uint32_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_TRIG_TYPE Type)
+uint64_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type)
 {
     if (TrigNo < 0 || TrigNo >= TIMER_NRF5X_RTC_MAX_TRIGGER_EVT)
         return 0;
 
-    uint32_t cc = nsPeriod / vnsPeriod;
+    uint32_t cc = (nsPeriod + (vnsPeriod >> 1))/ vnsPeriod;
 
     if (cc <= 0)
     {
@@ -298,7 +298,7 @@ uint32_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_T
 
     s_nRF5xRTCData[vDevNo].TrigType[TrigNo] = Type;
     s_nRF5xRTCData[vDevNo].CC[TrigNo] = cc;
-    vpReg->EVTENSET = 1 << (TrigNo + RTC_INTENSET_COMPARE0_Pos);
+    vpReg->EVTENSET = RTC_INTENSET_COMPARE0_Msk << TrigNo;// + RTC_INTENSET_COMPARE0_Pos);
 
     if (s_nRF5xRTCData[vDevNo].EvtHandler)
     {
@@ -307,7 +307,7 @@ uint32_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_T
 
     vpReg->CC[TrigNo] = s_nRF5xRTCData[vDevNo].CC[TrigNo] + vpReg->COUNTER;
 
-    return vnsPeriod * cc; // Return real period in nsec
+    return vnsPeriod * (uint64_t)cc; // Return real period in nsec
 }
 
 void TimerLFnRF5x::DisableTimerTrigger(int TrigNo)
