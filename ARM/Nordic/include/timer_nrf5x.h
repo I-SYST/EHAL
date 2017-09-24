@@ -38,34 +38,66 @@ Modified by          Date              Description
 #include <stdint.h>
 #include "timer.h"
 
-#define TIMER_RTC_NRF5X_RC_FREQ         4000000
-#define TIMER_RTC_NRF5X_XTAL_32K_FREQ   32768
-#define TIMER_RTC_MAX                   3           // 3 RTC available
-
-#define TIMER_RTC_MAX_TIMER_TRIGGER     4           // Counter compare
-
+// *****
+// Low frequency timer using Real Time Counter (RTC) 32768 Hz clock source
 //
-// nRF5x Real Time Counter using fixed 32768 Hz frequency
-//
-class TimerRTCnRF5x : public Timer {
+#define TIMER_NRF5X_RTC_MAX                 3           // 3 RTC available
+
+#define TIMER_NRF5X_RTC_MAX_TRIGGER_EVT     4           // Max number of supported counter trigger event
+
+class TimerLFnRF5x : public Timer {
 public:
-    TimerRTCnRF5x();
-    virtual ~TimerRTCnRF5x();
+	TimerLFnRF5x();
+    virtual ~TimerLFnRF5x();
 
 	virtual bool Init(const TIMER_CFG &Cfg);
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
-	virtual bool Frequency(uint32_t Freq);
+	virtual uint32_t Frequency(uint32_t Freq);
+	virtual uint32_t Frequency(void) { return vFreq; }
 	virtual uint64_t TickCount();
-    int MaxTriggerTimer() { return TIMER_RTC_MAX_TIMER_TRIGGER; }
-    virtual bool EnableTimerTrigger(int TimerNo, uint32_t Freq, TIMER_TRIG_TYPE Type);
-    virtual void DisableTimerTrigger(int TimerNo);
+    int MaxTriggerTimer() { return TIMER_NRF5X_RTC_MAX_TRIGGER_EVT; }
+    virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_TRIG_TYPE Type);
+    virtual void DisableTimerTrigger(int TrigNo);
 
 protected:
 private:
     NRF_RTC_Type *vpReg;
 };
 
+// *****
+// High frequency timer using Timer 16MHz clock source
+//
+#define TIMER_NRF5X_HF_PCLK1M_FREQ      1000000
+#define TIMER_NRF5X_HF_XTAL_FREQ        16000000
+#define TIMER_NRF5X_HF_MAX              5           // 5 high frequency timer available
+
+#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  6           // Max number of supported counter trigger event
+
+class TimerHFnRF5x : public Timer {
+public:
+    TimerHFnRF5x();
+    virtual ~TimerHFnRF5x();
+
+    virtual bool Init(const TIMER_CFG &Cfg);
+    virtual bool Enable();
+    virtual void Disable();
+    virtual void Reset();
+    virtual uint32_t Frequency(uint32_t Freq);
+    virtual uint64_t TickCount();
+    int MaxTriggerTimer() { return TIMER_NRF5X_HF_MAX_TRIGGER_EVT; }
+    virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_TRIG_TYPE Type);
+    virtual void DisableTimerTrigger(int TrigNo);
+
+    void IRQHandler();
+protected:
+private:
+
+    NRF_TIMER_Type *vpReg;
+    int vMaxNbTrigEvt;
+    uint32_t vCC[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
+    TIMER_TRIG_TYPE vTrigType[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
+};
 
 #endif // __TIMER_NRF5x_H__

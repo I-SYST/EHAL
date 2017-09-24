@@ -74,7 +74,7 @@ typedef void (*TIMER_EVTCB)(Timer *pTimer, uint32_t Evt);
 typedef struct __Timer_Config {
     int             DevNo;      // Device number
     TIMER_CLKSRC    ClkSrc;     // Clock source
-    uint32_t        Freq;       // Frequency in Hz
+    uint32_t        Freq;       // Frequency in Hz, 0 - to auto select max timer frequency
     int             IntPrio;    // Interrupt priority
     TIMER_EVTCB     EvtHandler; // Interrupt handler
 } TIMER_CFG;
@@ -110,18 +110,23 @@ public:
     virtual void Reset() = 0;
 
     /**
-     * @brief   Get
+     * @brief   Get the current tick count.
+     * This function read the tick count with compensated overflow roll over
+     *
+     * @return  Total tick count since last reset
      */
 	virtual uint64_t TickCount() = 0;
 
 	/**
 	 * @brief	Set timer main frequency
+	 * This function allows dynamically changing the timer frequency.  Timer
+	 * will be reset and restarted with new frequency
 	 *
 	 * @param 	Freq : Frequency in Hz
 	 *
-	 * @return
+	 * @return  Real frequency
 	 */
-	virtual bool Frequency(uint32_t Freq) = 0;
+	virtual uint32_t Frequency(uint32_t Freq) = 0;
 
 	/**
 	 * @brief	Get maximum available timer trigger event for the timer
@@ -133,28 +138,71 @@ public:
 	/**
 	 * @brief	Enable timer trigger event
 	 *
-	 * @param TimerNo
-	 * @param nsPeriod
-	 * @param Type
-	 * @return
+	 * @param   TrigNo : Trigger number to enable
+	 * @param   nsPeriod : Trigger period in nsec.
+	 * @param   Type     : Trigger type single shot or continuous
+	 *
+	 * @return  real period in nsec based on clock calculation
 	 */
-	virtual bool EnableTimerTrigger(int TimerNo, uint32_t nsPeriod, TIMER_TRIG_TYPE Type) = 0;
-    virtual void DisableTimerTrigger(int TimerNo) = 0;
+	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_TRIG_TYPE Type) = 0;
 
-	virtual uint32_t uSecond() { return TickCount() * vusPeriod; }
-	virtual uint32_t uSecond(uint64_t Count) { return Count * vusPeriod; }
+	/**
+	 * @brief   Disable timer trigger event
+	 *
+	 * @param   TrigNo : Trigger number to disable
+	 */
+    virtual void DisableTimerTrigger(int TrigNo) = 0;
+
+    /**
+     * @brief   Get current timer counter in usec
+     * This function return the current timer in usec since last reset.
+     *
+     * @return  Counter in usec
+     */
+	virtual uint32_t uSecond() { return TickCount() * vnsPeriod / 1000; }
+
+	/**
+	 * @brief   Convert tick count to usec
+	 *
+	 * @param   Count : Timer tick count value
+	 *
+	 * @return  Converted count in usec
+	 */
+	virtual uint32_t uSecond(uint64_t Count) { return Count * vnsPeriod / 1000; }
+
+	/**
+     * @brief   Get current timer counter in nsec
+     * This function return the current timer in nsec since last reset.
+     *
+     * @return  Counter in nsec
+     */
 	virtual uint32_t nSecond() { return TickCount() * vnsPeriod; }
+
+	/**
+     * @brief   Convert tick count to usec
+     *
+     * @param   Count : Timer tick count value
+     *
+     * @return  Converted count in usec
+     */
 	virtual uint32_t nSecond(uint64_t Count) { return Count * vnsPeriod; }
-	virtual uint32_t Frequency() { return vFreq; }
+
+	/**
+	 * @brief   Get current timer frequency
+	 *
+	 * @return  Timer frequency in Hz
+	 */
+	virtual uint32_t Frequency(void) { return vFreq; }
 
 protected:
+
+	TIMER_EVTCB vEvtHandler;
 
     int      vDevNo;
 	uint32_t vFreq;			// Frequency in Hz
 	uint32_t vnsPeriod;		// Period in nsec
-    uint32_t vusPeriod;     // Period in usec
-	uint32_t vOvrCnt;       // Overflow counter
-
+	uint64_t vRollover;     // Rollover counter adjustment
+	uint32_t vLastCount;	// Last counter read value
 private:
 };
 

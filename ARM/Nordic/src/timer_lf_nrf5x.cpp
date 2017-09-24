@@ -37,20 +37,20 @@ Modified by          Date              Description
 
 typedef struct {
     NRF_RTC_Type *pReg;
-    TimerRTCnRF5x *pDevObj;
+    TimerLFnRF5x *pDevObj;
     uint64_t OvrCnt;
     TIMER_EVTCB EvtHandler;
-    uint32_t CC[TIMER_RTC_MAX_TIMER_TRIGGER];
-    TIMER_TRIG_TYPE TrigType[TIMER_RTC_MAX_TIMER_TRIGGER];
+    uint32_t CC[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
+    TIMER_TRIG_TYPE TrigType[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
 } NRF5X_RTC_DATA;
 
-static NRF5X_RTC_DATA s_nRF5xRTCData[TIMER_RTC_MAX] = {
+static NRF5X_RTC_DATA s_nRF5xRTCData[TIMER_NRF5X_RTC_MAX] = {
     { NRF_RTC0, },
     { NRF_RTC1, },
     { NRF_RTC2, }
 };
 
-static void RTCnRF5xInterrupt(int TimerNo)
+static void nRF5xRTCIRQ(int TimerNo)
 {
     NRF_RTC_Type *reg = s_nRF5xRTCData[TimerNo].pReg;
     uint32_t evt = 0;
@@ -70,7 +70,7 @@ static void RTCnRF5xInterrupt(int TimerNo)
         reg->EVENTS_OVRFLW = 0;
     }
 
-    for (int i = 0; i < TIMER_RTC_MAX_TIMER_TRIGGER; i++)
+    for (int i = 0; i < TIMER_NRF5X_RTC_MAX_TRIGGER_EVT; i++)
     {
         if (reg->EVENTS_COMPARE[i])
         {
@@ -93,45 +93,41 @@ extern "C" {
 
 void RTC0_IRQHandler()
 {
-	RTCnRF5xInterrupt(0);
+	nRF5xRTCIRQ(0);
 }
 
 void RTC1_IRQHandler()
 {
-	RTCnRF5xInterrupt(1);
+	nRF5xRTCIRQ(1);
 }
 
 void RTC2_IRQHandler()
 {
-	RTCnRF5xInterrupt(2);
+	nRF5xRTCIRQ(2);
 }
 
-}
+}   // extern "C"
 
-TimerRTCnRF5x::TimerRTCnRF5x()
+TimerLFnRF5x::TimerLFnRF5x()
 {
 
 }
 
-TimerRTCnRF5x::~TimerRTCnRF5x()
+TimerLFnRF5x::~TimerLFnRF5x()
 {
 
 }
 
-bool TimerRTCnRF5x::Init(const TIMER_CFG &Cfg)
+bool TimerLFnRF5x::Init(const TIMER_CFG &Cfg)
 {
-    if (Cfg.DevNo < 0 || Cfg.DevNo >= TIMER_RTC_MAX)
+    if (Cfg.DevNo < 0 || Cfg.DevNo >= TIMER_NRF5X_RTC_MAX)
         return false;
 
     vpReg = s_nRF5xRTCData[Cfg.DevNo].pReg;
 
     vpReg->TASKS_STOP = 1;
     vpReg->TASKS_CLEAR = 1;
-
-    s_nRF5xRTCData[Cfg.DevNo].pDevObj = this;
-    s_nRF5xRTCData[Cfg.DevNo].EvtHandler = Cfg.EvtHandler;
-
-    vDevNo = Cfg.DevNo;
+    NRF_CLOCK->TASKS_LFCLKSTOP = 1;
 
     switch (Cfg.ClkSrc)
     {
@@ -147,15 +143,36 @@ bool TimerRTCnRF5x::Init(const TIMER_CFG &Cfg)
     }
     NRF_CLOCK->TASKS_LFCLKSTART = 1;
 
+    int timout = 1000000;
 
-    uint32_t prescaler = 32768 / Cfg.Freq - 1;
-    vpReg->PRESCALER = prescaler;
+    do
+    {
+        if ((NRF_CLOCK->LFCLKSTAT & CLOCK_LFCLKSTAT_STATE_Msk) || NRF_CLOCK->EVENTS_LFCLKSTARTED)
+            break;
 
-    vFreq = 32768 / (prescaler + 1);
+    } while (timout-- > 0);
+
+    if (timout <= 0)
+        return false;
+
+    NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
+
+    s_nRF5xRTCData[Cfg.DevNo].pDevObj = this;
+    s_nRF5xRTCData[Cfg.DevNo].EvtHandler = Cfg.EvtHandler;
+
+    vDevNo = Cfg.DevNo;
+
+    uint32_t prescaler = 32768;
+
+    if (Cfg.Freq > 0)
+        prescaler /= Cfg.Freq;
+
+    vpReg->PRESCALER = prescaler - 1;
+
+    vFreq = 32768 / prescaler;
 
     // Pre-calculate periods for faster timer counter to time conversion use later
     vnsPeriod = 1000000000 / vFreq;     // Period in nsec
-    vusPeriod = 1000000 / vFreq;        // Period in usec
 
     if (Cfg.EvtHandler)
     {
@@ -188,68 +205,120 @@ bool TimerRTCnRF5x::Init(const TIMER_CFG &Cfg)
     return true;
 }
 
-bool TimerRTCnRF5x::Enable()
+bool TimerLFnRF5x::Enable()
 {
+    NRF_CLOCK->TASKS_LFCLKSTART = 1;
+
+    switch (vDevNo)
+    {
+        case 0:
+            NVIC_ClearPendingIRQ(RTC0_IRQn);
+            NVIC_EnableIRQ(RTC0_IRQn);
+            break;
+        case 1:
+            NVIC_ClearPendingIRQ(RTC1_IRQn);
+            NVIC_EnableIRQ(RTC1_IRQn);
+            break;
+        case 2:
+            NVIC_ClearPendingIRQ(RTC2_IRQn);
+            NVIC_EnableIRQ(RTC2_IRQn);
+            break;
+    }
+
+    vpReg->TASKS_START = 1;
+
     return true;
 }
 
-void TimerRTCnRF5x::Disable()
+void TimerLFnRF5x::Disable()
 {
+    vpReg->TASKS_STOP = 1;
 
+    switch (vDevNo)
+    {
+        case 0:
+            NVIC_ClearPendingIRQ(RTC0_IRQn);
+            NVIC_DisableIRQ(RTC0_IRQn);
+            break;
+        case 1:
+            NVIC_ClearPendingIRQ(RTC1_IRQn);
+            NVIC_EnableIRQ(RTC1_IRQn);
+            break;
+        case 2:
+            NVIC_ClearPendingIRQ(RTC2_IRQn);
+            NVIC_EnableIRQ(RTC2_IRQn);
+            break;
+    }
+
+    NRF_CLOCK->TASKS_LFCLKSTOP = 1;
 }
 
-void TimerRTCnRF5x::Reset()
+void TimerLFnRF5x::Reset()
 {
     vpReg->TASKS_CLEAR = 1;
 }
 
-bool TimerRTCnRF5x::Frequency(uint32_t Freq)
+uint32_t TimerLFnRF5x::Frequency(uint32_t Freq)
 {
     vpReg->TASKS_STOP = 1;
 
-    uint32_t prescaler = 32768 / Freq - 1;
-    vpReg->PRESCALER = prescaler;
+    uint32_t prescaler = 32768;
 
-    vFreq = 32768 / (prescaler + 1);
+    if (Freq > 0)
+        prescaler /= Freq;
+
+    vpReg->PRESCALER = prescaler - 1;
+
+    vFreq = 32768 / prescaler;
 
     // Pre-calculate periods for faster timer counter to time conversion use later
     vnsPeriod = 1000000000 / vFreq;     // Period in nsec
-    vusPeriod = 1000000 / vFreq;        // Period in usec
 
     vpReg->TASKS_START = 1;
+
+    return vFreq;
 }
 
-uint64_t TimerRTCnRF5x::TickCount()
+uint64_t TimerLFnRF5x::TickCount()
 {
 	return (uint64_t)vpReg->COUNTER + s_nRF5xRTCData[vDevNo].OvrCnt;
 }
 
-bool TimerRTCnRF5x::EnableTimerTrigger(int TimerNo, uint32_t Freq, TIMER_TRIG_TYPE Type)
+uint32_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_TRIG_TYPE Type)
 {
-    if (TimerNo < 0 || TimerNo >= TIMER_RTC_MAX_TIMER_TRIGGER)
-        return false;
+    if (TrigNo < 0 || TrigNo >= TIMER_NRF5X_RTC_MAX_TRIGGER_EVT)
+        return 0;
 
-    s_nRF5xRTCData[vDevNo].TrigType[TimerNo] = Type;
-    s_nRF5xRTCData[vDevNo].CC[TimerNo] = vFreq / Freq;
-    vpReg->CC[TimerNo] = s_nRF5xRTCData[vDevNo].CC[TimerNo] + vpReg->COUNTER;
-    vpReg->EVTENSET = 1 << (TimerNo + RTC_INTENSET_COMPARE0_Pos);
+    uint32_t cc = nsPeriod / vnsPeriod;
+
+    if (cc <= 0)
+    {
+        return 0;
+    }
+
+    s_nRF5xRTCData[vDevNo].TrigType[TrigNo] = Type;
+    s_nRF5xRTCData[vDevNo].CC[TrigNo] = cc;
+    vpReg->EVTENSET = 1 << (TrigNo + RTC_INTENSET_COMPARE0_Pos);
 
     if (s_nRF5xRTCData[vDevNo].EvtHandler)
     {
-        vpReg->INTENSET = 1 << (TimerNo + RTC_INTENSET_COMPARE0_Pos);
+        vpReg->INTENSET = 1 << (TrigNo + RTC_INTENSET_COMPARE0_Pos);
     }
 
-    return true;
+    vpReg->CC[TrigNo] = s_nRF5xRTCData[vDevNo].CC[TrigNo] + vpReg->COUNTER;
+
+    return vnsPeriod * cc; // Return real period in nsec
 }
 
-void TimerRTCnRF5x::DisableTimerTrigger(int TimerNo)
+void TimerLFnRF5x::DisableTimerTrigger(int TrigNo)
 {
-    if (TimerNo < 0 || TimerNo >= TIMER_RTC_MAX_TIMER_TRIGGER)
+    if (TrigNo < 0 || TrigNo >= TIMER_NRF5X_RTC_MAX_TRIGGER_EVT)
         return;
 
-    s_nRF5xRTCData[vDevNo].TrigType[TimerNo] = TIMER_TRIG_TYPE_SINGLE;
-    s_nRF5xRTCData[vDevNo].CC[TimerNo] = 0;
-    vpReg->CC[TimerNo] = 0;
-    vpReg->EVTENCLR = 1 << (TimerNo + RTC_INTENSET_COMPARE0_Pos);
-    vpReg->INTENCLR = 1 << (TimerNo + RTC_INTENSET_COMPARE0_Pos);
+    s_nRF5xRTCData[vDevNo].TrigType[TrigNo] = TIMER_TRIG_TYPE_SINGLE;
+    s_nRF5xRTCData[vDevNo].CC[TrigNo] = 0;
+    vpReg->CC[TrigNo] = 0;
+    vpReg->EVTENCLR = 1 << (TrigNo + RTC_INTENSET_COMPARE0_Pos);
+    vpReg->INTENCLR = 1 << (TrigNo + RTC_INTENSET_COMPARE0_Pos);
 }
+
