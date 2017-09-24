@@ -35,7 +35,6 @@ Modified by          Date              Description
 #include "nrf.h"
 
 #include "timer_nrf5x.h"
-#include "iopinctrl.h"
 
 #define	INTERRUPT_LATENCY		11
 

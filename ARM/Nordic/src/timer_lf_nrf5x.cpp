@@ -1,9 +1,10 @@
 /*--------------------------------------------------------------------------
-File   : timer_nrf5x.cpp
+File   : timer_lf_nrf5x.cpp
 
 Author : Hoang Nguyen Hoan          				Sep. 7, 2017
 
 Desc   : timer class implementation on Nordic nRF5x series
+		using the RTC (real time counter)
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -34,22 +35,7 @@ Modified by          Date              Description
 #include "nrf.h"
 
 #include "timer_nrf5x.h"
-/*
-typedef struct {
-    NRF_RTC_Type *pReg;
-    TimerLFnRF5x *pDevObj;
-    uint64_t OvrCnt;
-    TIMER_EVTCB EvtHandler;
-    uint32_t CC[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
-    TIMER_TRIG_TYPE TrigType[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
-} NRF5X_RTC_DATA;
 
-static NRF5X_RTC_DATA s_nRF5xRTCData[TIMER_NRF5X_RTC_MAX] = {
-    { NRF_RTC0, },
-    { NRF_RTC1, },
-    { NRF_RTC2, }
-};
-*/
 static TimerLFnRF5x *s_pnRF5xRTC[TIMER_NRF5X_RTC_MAX] = {
 	NULL,
 };
