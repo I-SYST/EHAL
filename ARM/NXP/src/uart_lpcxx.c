@@ -60,6 +60,71 @@ int LpcUARTGetRate(DEVINTRF *pDev)
 	return rate;
 }
 
+#if 0
+int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
+{
+	uint32_t pclk = LpcGetUartClk();//SystemClkFreq  / g_UartClkDiv;// >> 2;
+	uint32_t rate16 = Rate << 4;
+	uint32_t dval, mval;
+	uint32_t dl;
+	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
+
+	if (Rate <= 0)
+	{
+		dev->pUartReg->ACR = 7;	// Auto rate
+		return 0;
+	}
+
+	// The fractional is calculated as
+	// (PCLK  % (16 * Baudrate)) / (16 * Baudrate)
+	// Let's make it to be the ratio
+	// DivVal / MulVal
+	//
+	dval = pclk % rate16;
+	mval = rate16;
+	// The PCLK / (16 * Baudrate) is fractional
+	// => dval = pclk % rate16;
+	// mval = rate16;
+	// now mormalize the ratio
+	// dval / mval = 1 / new_mval;
+	// new_mval = mval / dval
+	// new_dval = 1
+	if (dval > 0)
+	{
+		mval = rate16 / dval;
+		dval = 1;
+
+		// in case mval still bigger then 4 bits
+		// no adjustment require
+		if (mval > 15)
+			dval = 0;
+	}
+	dval &= 0xf;
+	mval &= 0xf;
+
+	dl = pclk / (rate16 + rate16 * dval / mval);
+
+	//dl = pclk / rate16;
+
+	dev->pUartReg->LCR |= LPCUART_LCR_DLAB; 	// Enable Divisor Access
+	dev->pUartReg->DLL = dl & 0xff;
+	dev->pUartReg->DLM = (dl >> 8) & 0xff;
+	dev->pUartReg->LCR &= ~LPCUART_LCR_DLAB;	// Disable Divisor Access
+	dev->pUartReg->FDR = dval | (mval << 4);
+
+	// Recalculate actual rate
+	dl <<= 4;	// Mul by 16
+
+	// recalculate real data rate
+	dev->pUartDev->Rate = pclk / (dl + dl * dval / mval);
+
+	uint32_t diff = dev->pUartDev->Rate - Rate;
+	float err = (float)diff * 100.0 / Rate;
+
+	//printf("%d Rate : %d, %d\r\n", pclk, dev->pUartDev->Rate, Rate);
+	return dev->pUartDev->Rate;
+}
+#else
 int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 {
 	uint32_t pclk = LpcGetUartClk();
@@ -114,7 +179,8 @@ int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 	mval &= 0xf;
 
 	int div = (rate16 + rate16 * dval / mval);
-	dl = (pclk + (div >> 1)) / div;
+//	dl = (pclk + (div >> 1)) / div;
+	dl = pclk / div;
 
 	rate16 = dl << 4;
 	Rate = pclk / (rate16 + rate16 * dval / mval);
@@ -167,6 +233,7 @@ int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 
 	return dev->pUartDev->Rate;
 }
+#endif
 
 int LpcUARTRxData(DEVINTRF *pDev, uint8_t *pBuff, int Bufflen)
 {

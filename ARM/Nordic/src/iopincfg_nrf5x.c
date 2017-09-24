@@ -337,6 +337,77 @@ void IOPinSetStrength(int PortNo, int PinNo, IOPINSTRENGTH Strength)
 	reg->PIN_CNF[PinNo] |= (val << GPIO_PIN_CNF_DRIVE_Pos);
 }
 
+/**
+ * @brief Set I/O pin sensing option
+ *
+ * Some hardware allow pin sensing to wake up or active other subsystem without
+ * requiring enabling interrupts. This requires the I/O already configured
+ *
+ * @param	PortNo : Port number (up to 32 ports)
+ * 			PinNo   : Pin number (up to 32 pins)
+ * 			Sense   : Sense type of event on the I/O pin
+ */
+void IOPinSetSense(int PortNo, int PinNo, IOPINSENSE Sense)
+{
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
+	// Clear sense
+	reg->PIN_CNF[PinNo] &= ~(GPIO_PIN_CNF_SENSE_Msk << GPIO_PIN_CNF_SENSE_Pos);
+	switch (Sense)
+	{
+		case IOPINSENSE_LOW_DISABLE:	// Disable pin sense
+			// Already done above
+			break;
+		case IOPINSENSE_LOW_TRANSITION:	// Event on falling edge
+			reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
+			break;
+		case IOPINSENSE_HIGH_TRANSITION:// Event on raising edge
+			reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_High << GPIO_PIN_CNF_SENSE_Pos);
+			break;
+		case IOPINSENSE_TOGGLE:			// Event on state change
+			// Not supported, use sense low for now
+			reg->PIN_CNF[PinNo] |= (3 << GPIO_PIN_CNF_SENSE_Pos);
+			break;
+	}
+}
+
+/**
+ * @brief Set I/O pin drive strength option
+ *
+ * Some hardware allow setting pin drive strength. This requires the I/O already configured
+ *
+ * @param	PortNo 	: Port number (up to 32 ports)
+ * 			PinNo  	: Pin number (up to 32 pins)
+ * 			Strength: Pin drive strength
+ */
+void IOPinSetStrength(int PortNo, int PinNo, IOPINSTRENGTH Strength)
+{
+	NRF_GPIO_Type *reg = NRF_GPIO;
+
+#ifdef NRF52840_XXAA
+	if (PortNo == 1)
+	{
+		reg = NRF_P1;
+	}
+
+#endif
+
+	reg->PIN_CNF[PinNo] &= ~(GPIO_PIN_CNF_DRIVE_Msk << GPIO_PIN_CNF_DRIVE_Pos);
+	if (Strength == IOPINSTRENGTH_STRONG)
+	{
+		// Stronger drive strength
+		reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_DRIVE_H0H1 << GPIO_PIN_CNF_DRIVE_Pos);
+	}
+}
+
 void __WEAK GPIOTE_IRQHandler(void)
 {
 	for (int i = 0; i < IOPIN_MAX_INT; i++)
