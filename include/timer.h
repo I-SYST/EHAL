@@ -38,6 +38,7 @@ Modified by          Date              Description
 #include "device.h"
 
 typedef enum __Timer_Clock_Src {
+	TIMER_CLKSRC_DEFAULT,
     TIMER_CLKSRC_INTERNAL,
     TIMER_CLKSRC_LFXTAL,
     TIMER_CLKSRC_HFXTAL

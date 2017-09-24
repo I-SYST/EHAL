@@ -151,6 +151,7 @@ bool TimerLFnRF5x::Init(const TIMER_CFG &Cfg)
 
     switch (Cfg.ClkSrc)
     {
+    	case TIMER_CLKSRC_DEFAULT:
         case TIMER_CLKSRC_INTERNAL:
             NRF_CLOCK->LFCLKSRC = CLOCK_LFCLKSRC_SRC_RC << CLOCK_LFCLKSRC_SRC_Pos;
             break;
