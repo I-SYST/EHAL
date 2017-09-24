@@ -73,7 +73,7 @@ void TimerHFnRF5x::IRQHandler()
     }
 
     vLastCount = count;
-	IOPinToggle(0, 22);
+
     if (vEvtHandler)
     {
         vEvtHandler(this, evt);
