@@ -39,7 +39,7 @@ Modified by          Date              Description
 
 #define	INTERRUPT_LATENCY		11
 
-static TimerHFnRF5x *s_pDevObj[TIMER_NRF5X_HF_MAX] = {
+static TimerHFnRF5x *s_pnRF5xTimer[TIMER_NRF5X_HF_MAX] = {
 	NULL,
 };
 
@@ -84,32 +84,32 @@ extern "C" {
 
 void TIMER0_IRQHandler()
 {
-	if (s_pDevObj[0])
-		s_pDevObj[0]->IRQHandler();
+	if (s_pnRF5xTimer[0])
+		s_pnRF5xTimer[0]->IRQHandler();
 }
 
 void TIMER1_IRQHandler()
 {
-	if (s_pDevObj[1])
-		s_pDevObj[1]->IRQHandler();
+	if (s_pnRF5xTimer[1])
+		s_pnRF5xTimer[1]->IRQHandler();
 }
 
 void TIMER2_IRQHandler()
 {
-	if (s_pDevObj[2])
-		s_pDevObj[2]->IRQHandler();
+	if (s_pnRF5xTimer[2])
+		s_pnRF5xTimer[2]->IRQHandler();
 }
 
 void TIMER3_IRQHandler()
 {
-	if (s_pDevObj[3])
-		s_pDevObj[3]->IRQHandler();
+	if (s_pnRF5xTimer[3])
+		s_pnRF5xTimer[3]->IRQHandler();
 }
 
 void TIMER4_IRQHandler()
 {
-	if (s_pDevObj[4])
-		s_pDevObj[4]->IRQHandler();
+	if (s_pnRF5xTimer[4])
+		s_pnRF5xTimer[4]->IRQHandler();
 }
 
 }   // extern "C"
@@ -133,24 +133,24 @@ bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
     switch (Cfg.DevNo)
     {
     	case 0:
-    		s_pDevObj[0] = this;
+    		s_pnRF5xTimer[0] = this;
     		vpReg = NRF_TIMER0;
     		break;
     	case 1:
-    		s_pDevObj[1] = this;
+    		s_pnRF5xTimer[1] = this;
     		vpReg = NRF_TIMER1;
     		break;
     	case 2:
-    		s_pDevObj[2] = this;
+    		s_pnRF5xTimer[2] = this;
     		vpReg = NRF_TIMER2;
     		break;
     	case 3:
-    		s_pDevObj[3] = this;
+    		s_pnRF5xTimer[3] = this;
     		vpReg = NRF_TIMER3;
     		vMaxNbTrigEvt = TIMER_NRF5X_HF_MAX_TRIGGER_EVT;
     		break;
     	case 4:
-    		s_pDevObj[4] = this;
+    		s_pnRF5xTimer[4] = this;
     		vpReg = NRF_TIMER4;
     		vMaxNbTrigEvt = TIMER_NRF5X_HF_MAX_TRIGGER_EVT;
     		break;
@@ -168,28 +168,6 @@ bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
     // Only support timer mode, 32bits counter
     vpReg->MODE = TIMER_MODE_MODE_Timer;
     vpReg->BITMODE = TIMER_BITMODE_BITMODE_32Bit;
-
-
-    uint32_t prescaler = 0;
-
-    if (Cfg.Freq > 0)
-    {
-        uint32_t divisor = TIMER_NRF5X_HF_BASE_FREQ / Cfg.Freq;
-        prescaler = 31 - __builtin_clzl(divisor);
-        if (prescaler > 9)
-        {
-            prescaler = 9;
-        }
-    }
-
-
-    vpReg->PRESCALER = prescaler;
-
-    vFreq = TIMER_NRF5X_HF_BASE_FREQ / (1 << prescaler);
-
-    // Pre-calculate periods for faster timer counter to time conversion use later
-    // for precision this value is x10 (in 100 psec)
-    vnsPeriod = 10000000000ULL / vFreq;     // Period in x10 nsec
 
     if (Cfg.EvtHandler)
     {
@@ -242,8 +220,7 @@ bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
 
     NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
 
-
-    vpReg->TASKS_START = 1;
+    Frequency(Cfg.Freq);
 
     return true;
 }
@@ -338,7 +315,31 @@ void TimerHFnRF5x::Reset()
 
 uint32_t TimerHFnRF5x::Frequency(uint32_t Freq)
 {
+    vpReg->TASKS_STOP = 1;
 
+    uint32_t prescaler = 0;
+
+    if (Freq > 0)
+    {
+        uint32_t divisor = TIMER_NRF5X_HF_BASE_FREQ / Freq;
+        prescaler = 31 - __builtin_clzl(divisor);
+        if (prescaler > 9)
+        {
+            prescaler = 9;
+        }
+    }
+
+    vpReg->PRESCALER = prescaler;
+
+    vFreq = TIMER_NRF5X_HF_BASE_FREQ / (1 << prescaler);
+
+    // Pre-calculate periods for faster timer counter to time conversion use later
+    // for precision this value is x10 (in 100 psec)
+    vnsPeriod = 10000000000ULL / vFreq;     // Period in x10 nsec
+
+    vpReg->TASKS_START = 1;
+
+    return vFreq;
 }
 
 uint64_t TimerHFnRF5x::TickCount()
@@ -382,7 +383,7 @@ uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
 
     if (vEvtHandler)
     {
-        vpReg->INTENSET = 1 << (TrigNo + TIMER_INTENSET_COMPARE0_Pos);
+        vpReg->INTENSET = TIMER_INTENSET_COMPARE0_Msk << TrigNo;
     }
 
     vpReg->CC[TrigNo] = count + cc - INTERRUPT_LATENCY;
@@ -406,7 +407,7 @@ void TimerHFnRF5x::DisableTimerTrigger(int TrigNo)
     vTrigType[TrigNo] = TIMER_TRIG_TYPE_SINGLE;
     vCC[TrigNo] = 0;
     vpReg->CC[TrigNo] = 0;
-    vpReg->INTENCLR = 1 << (TrigNo + TIMER_INTENSET_COMPARE0_Pos);
+    vpReg->INTENCLR = TIMER_INTENSET_COMPARE0_Msk << TrigNo;
 }
 
 

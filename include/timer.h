@@ -62,6 +62,7 @@ typedef enum __Timer_Trigger_Type {
 
 class Timer;
 
+// Timer event handler callback
 typedef void (*TIMER_EVTCB)(Timer *pTimer, uint32_t Evt);
 
 #pragma pack(push, 4)
@@ -72,15 +73,19 @@ typedef void (*TIMER_EVTCB)(Timer *pTimer, uint32_t Evt);
 // the timer interrupt.  Adjust IntPrio base on requirement
 //
 typedef struct __Timer_Config {
-    int             DevNo;      // Device number
-    TIMER_CLKSRC    ClkSrc;     // Clock source
+    int             DevNo;      // Device number.  Usually is the timer number indexed at 0
+    TIMER_CLKSRC    ClkSrc;     // Clock source.  Not all timer allows user select clock source
     uint32_t        Freq;       // Frequency in Hz, 0 - to auto select max timer frequency
-    int             IntPrio;    // Interrupt priority
+    int             IntPrio;    // Interrupt priority. recommended to use highest
+    							// priority if precision timming is required
     TIMER_EVTCB     EvtHandler; // Interrupt handler
 } TIMER_CFG;
 
 #pragma pack(pop)
 
+// *****
+// Timer base class
+//
 class Timer {
 public:
 
@@ -138,18 +143,29 @@ public:
 	/**
 	 * @brief	Enable timer trigger event
 	 *
-	 * @param   TrigNo : Trigger number to enable
+	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
 	 * @param   nsPeriod : Trigger period in nsec.
 	 * @param   Type     : Trigger type single shot or continuous
 	 *
 	 * @return  real period in nsec based on clock calculation
 	 */
-	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_TRIG_TYPE Type) = 0;
+	virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type) = 0;
+
+	/**
+	 * @brief	Enable timer trigger event
+	 *
+	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
+	 * @param   msPeriod : Trigger period in msec.
+	 * @param   Type     : Trigger type single shot or continuous
+	 *
+	 * @return  real period in nsec based on clock calculation
+	 */
+	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type) = 0;
 
 	/**
 	 * @brief   Disable timer trigger event
 	 *
-	 * @param   TrigNo : Trigger number to disable
+	 * @param   TrigNo : Trigger number to disable. Index value starting at 0
 	 */
     virtual void DisableTimerTrigger(int TrigNo) = 0;
 
@@ -200,7 +216,7 @@ protected:
 
     int      vDevNo;
 	uint32_t vFreq;			// Frequency in Hz
-	uint32_t vnsPeriod;		// Period in nsec
+	uint64_t vnsPeriod;		// Period in nsec
 	uint64_t vRollover;     // Rollover counter adjustment
 	uint32_t vLastCount;	// Last counter read value
 private:

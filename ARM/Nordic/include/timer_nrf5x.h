@@ -41,6 +41,7 @@ Modified by          Date              Description
 // *****
 // Low frequency timer using Real Time Counter (RTC) 32768 Hz clock source
 //
+#define TIMER_NRF5X_RTC_BASE_FREQ   		32768
 #define TIMER_NRF5X_RTC_MAX                 3           // 3 RTC available
 
 #define TIMER_NRF5X_RTC_MAX_TRIGGER_EVT     4           // Max number of supported counter trigger event
@@ -58,22 +59,27 @@ public:
 	virtual uint32_t Frequency(void) { return vFreq; }
 	virtual uint64_t TickCount();
     int MaxTriggerTimer() { return TIMER_NRF5X_RTC_MAX_TRIGGER_EVT; }
-    virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_TRIG_TYPE Type);
+    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type);
+	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type) {
+		return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type) / 1000000ULL);
+	}
     virtual void DisableTimerTrigger(int TrigNo);
 
+    void IRQHandler();
 protected:
 private:
     NRF_RTC_Type *vpReg;
+    uint32_t vCC[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
+    TIMER_TRIG_TYPE vTrigType[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
 };
 
 // *****
 // High frequency timer using Timer 16MHz clock source
 //
-#define TIMER_NRF5X_HF_PCLK1M_FREQ      1000000
-#define TIMER_NRF5X_HF_XTAL_FREQ        16000000
-#define TIMER_NRF5X_HF_MAX              5           // 5 high frequency timer available
+#define TIMER_NRF5X_HF_BASE_FREQ   			16000000
+#define TIMER_NRF5X_HF_MAX              	5           // 5 high frequency timer available
 
-#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  6           // Max number of supported counter trigger event
+#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	6           // Max number of supported counter trigger event
 
 class TimerHFnRF5x : public Timer {
 public:
@@ -87,7 +93,10 @@ public:
     virtual uint32_t Frequency(uint32_t Freq);
     virtual uint64_t TickCount();
     int MaxTriggerTimer() { return TIMER_NRF5X_HF_MAX_TRIGGER_EVT; }
-    virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_TRIG_TYPE Type);
+    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type);
+	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type) {
+		return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type) / 1000000ULL);
+	}
     virtual void DisableTimerTrigger(int TrigNo);
 
     void IRQHandler();
@@ -95,7 +104,7 @@ protected:
 private:
 
     NRF_TIMER_Type *vpReg;
-    int vMaxNbTrigEvt;
+    int vMaxNbTrigEvt;		// Number of trigger is not the same for all timers.
     uint32_t vCC[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
     TIMER_TRIG_TYPE vTrigType[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
 };
