@@ -36,11 +36,11 @@ Modified by          Date              Description
 #include <stdbool.h>
 #include "istddef.h"
 #include "uart_lpcxx.h"
-#include "atomic.h"
+//#include "atomic.h"
+#include "idelay.h"
 
 extern uint32_t SystemCoreClock;
 extern uint32_t SystemClkFreq;
-//int g_UartClkDiv = 4;
 
 void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState)
 {
@@ -127,17 +127,15 @@ int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 #else
 int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 {
-	uint32_t pclk = LpcGetUartClk();//SystemClkFreq  / g_UartClkDiv;// >> 2;
+	uint32_t pclk = LpcGetUartClk();
 	uint32_t rate16 = Rate << 4;
 	uint32_t dval, mval;
 	uint32_t dl;
 	LPCUARTDEV *dev = (LPCUARTDEV*)pDev->pDevData;
 
-	if (Rate <= 0)
-	{
-		dev->pUartReg->ACR = 7;	// Auto rate
-		return 0;
-	}
+	// Return current rate if out of range
+	if (Rate < 110 || Rate > 3000000)
+		return dev->pUartDev->Rate;
 
 	// The fractional is calculated as
 	// (PCLK  % (16 * Baudrate)) / (16 * Baudrate)
@@ -166,7 +164,7 @@ int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 				x <<= 4;
 				// recalculate real data rate
 				div = (x + x * dv / mv);
-				int r = (pclk + (div >> 1))/ div;
+				int r = (pclk + (div >> 1)) / div;
 				int rd = Rate < r ? r - Rate : Rate - r;
 				if (rd < diff)
 				{
@@ -184,11 +182,42 @@ int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 //	dl = (pclk + (div >> 1)) / div;
 	dl = pclk / div;
 
-	dev->pUartReg->LCR |= LPCUART_LCR_DLAB; 	// Enable Divisor Access
+	rate16 = dl << 4;
+	Rate = pclk / (rate16 + rate16 * dval / mval);
+
+	if (Rate == dev->pUartDev->Rate)
+		return dev->pUartDev->Rate;
+
+//	printf("rate = %d\r\n", Rate);
+
+	dev->pUartReg->TER = 0;
+
+	int tout = 10000;
+
+	do {
+		__NOP();
+	} while ((dev->pUartReg->LSR & LPCUART_LSR_THRE) == 0 && tout-- > 0);
+
+	dev->bTxReady = true;
+
+	tout = 10000;
+	uint32_t lcr = dev->pUartReg->LCR & ~LPCUART_LCR_DLAB;
+
+	do {
+		dev->pUartReg->LCR = lcr | LPCUART_LCR_DLAB; 	// Enable Divisor Access
+	} while ((dev->pUartReg->LCR & LPCUART_LCR_DLAB) == 0 && tout-- > 0);
+
 	dev->pUartReg->DLL = dl & 0xff;
 	dev->pUartReg->DLM = (dl >> 8) & 0xff;
-	dev->pUartReg->LCR &= ~LPCUART_LCR_DLAB;	// Disable Divisor Access
 	dev->pUartReg->FDR = dval | (mval << 4);
+
+	tout = 10000;
+	do {
+		dev->pUartReg->LCR = lcr;	// Disable Divisor Access
+	} while ((dev->pUartReg->LCR & LPCUART_LCR_DLAB) && tout-- > 0);
+
+	usDelay(10000);
+
 
 	// Recalculate actual rate
 	dl <<= 4;	// Mul by 16
@@ -198,8 +227,10 @@ int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 
 	//uint32_t diff = dev->pUartDev->Rate - Rate;
 	//float err = (float)diff * 100.0 / Rate;
+	//printf("calc Rate : %d\r\n", dev->pUartDev->Rate);
 
-	//printf("%d Rate : %d, %d\r\n", pclk, dev->pUartDev->Rate, Rate);
+	dev->pUartReg->TER = LPCUART_TER_TXEN;
+
 	return dev->pUartDev->Rate;
 }
 #endif

@@ -44,11 +44,18 @@ Modified by          Date              Description
 #include "uart.h"
 #include "custom_board.h"
 #include "iopincfg.h"
+#include "iopinctrl.h"
 
 #define DEVICE_NAME                     "UARTDemo"                            /**< Name of device. Will be included in the advertising data. */
 
 #define MANUFACTURER_NAME               "I-SYST inc."                       /**< Manufacturer. Will be passed to Device Information Service. */
+
+#ifdef NRF52
+#define MODEL_NAME                      "IMM-NRF52x"                            /**< Model number. Will be passed to Device Information Service. */
+#else
 #define MODEL_NAME                      "IMM-NRF51x"                            /**< Model number. Will be passed to Device Information Service. */
+#endif
+
 #define MANUFACTURER_ID                 ISYST_BLUETOOTH_ID                               /**< Manufacturer ID, part of System ID. Will be passed to Device Information Service. */
 #define ORG_UNIQUE_ID                   ISYST_BLUETOOTH_ID                               /**< Organizational Unique ID, part of System ID. Will be passed to Device Information Service. */
 
@@ -130,7 +137,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 		1, 1, 0
 #else
 		NRF_CLOCK_LF_SRC_XTAL,	// Source 32KHz XTAL
-		0, 0, NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM
+		0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM
 #endif
 
 	},
@@ -165,8 +172,8 @@ int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buffe
 // UART configuration data
 
 static IOPINCFG s_UartPins[] = {
-	{BLUEIO_UART_RX_PORT, 6/*BLUEIO_UART_RX_PIN*/, BLUEIO_UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-	{BLUEIO_UART_TX_PORT, 5/*BLUEIO_UART_TX_PIN*/, BLUEIO_UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
+	{BLUEIO_UART_RX_PORT, BLUEIO_UART_RX_PIN, BLUEIO_UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
+	{BLUEIO_UART_TX_PORT, BLUEIO_UART_TX_PIN, BLUEIO_UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
 	{BLUEIO_UART_CTS_PORT, BLUEIO_UART_CTS_PIN, BLUEIO_UART_CTS_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// CTS
 	{BLUEIO_UART_RTS_PORT, BLUEIO_UART_RTS_PIN, BLUEIO_UART_RTS_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// RTS
 };
@@ -179,7 +186,7 @@ const UARTCFG g_UartCfg = {
 	8,
 	UART_PARITY_NONE,
 	1,	// Stop bit
-	UART_FLWCTRL_NONE,
+	UART_FLWCTRL_HW,
 	true,
 	APP_IRQ_PRIORITY_LOW,
 	nRFUartEvthandler,
@@ -188,6 +195,21 @@ const UARTCFG g_UartCfg = {
 
 // UART object instance
 UART g_Uart;
+
+static const IOPINCFG s_LedPins[] = {
+	{BLUEIO_LED_BLUE_PORT, BLUEIO_LED_BLUE_PIN, BLUEIO_LED_BLUE_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// LED1 (Blue)
+	{BLUEIO_LED_GREEN_PORT, BLUEIO_LED_GREEN_PIN, BLUEIO_LED_GREEN_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// LED2 (Green)
+	{BLUEIO_LED_RED_PORT, BLUEIO_LED_RED_PIN, BLUEIO_LED_RED_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// LED3 (Red)
+};
+
+static int s_NbLedPins = sizeof(s_LedPins) / sizeof(IOPINCFG);
+
+static const IOPINCFG s_ButPins[] = {
+	{BLUEIO_BUT1_PORT, BLUEIO_BUT1_PIN, BLUEIO_BUT1_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// LED1 (Blue)
+	{BLUEIO_BUT2_PORT, BLUEIO_BUT2_PIN, BLUEIO_BUT2_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// LED2 (Green)
+};
+
+static int s_NbButPins = sizeof(s_ButPins) / sizeof(IOPINCFG);
 
 int g_DelayCnt = 0;
 
@@ -212,6 +234,14 @@ void BleAppInitUserServices()
 void HardwareInit()
 {
 	g_Uart.Init(g_UartCfg);
+
+	IOPinCfg(s_LedPins, s_NbLedPins);
+	IOPinSet(BLUEIO_LED_BLUE_PORT, BLUEIO_LED_BLUE_PIN);
+	IOPinSet(BLUEIO_LED_GREEN_PORT, BLUEIO_LED_GREEN_PIN);
+	IOPinSet(BLUEIO_LED_RED_PORT, BLUEIO_LED_RED_PIN);
+
+	IOPinCfg(s_ButPins, s_NbButPins);
+
 }
 
 void BleAppInitUserData()

@@ -346,16 +346,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/isha256.c</locationURI>
 		</link>
 		<link>
-			<name>src/ledmx.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/ledmx.c</locationURI>
-		</link>
-		<link>
-			<name>src/ledmxfont.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/ledmxfont.c</locationURI>
-		</link>
-		<link>
 			<name>src/prbs.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/prbs.c</locationURI>

@@ -30,7 +30,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------------
 Modified by          Date              Description
 ----------------------------------------------------------------------------*/
-#include "ledmxfont.h"
+#include "miscdev/ledmxfont.h"
 
 const LEDMXFONT_BITMAP g_FontBitmap[256] PROGMEM = {
 	{0, {0,}},	// 0x00 (0)

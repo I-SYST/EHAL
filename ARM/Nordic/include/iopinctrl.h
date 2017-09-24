@@ -51,8 +51,7 @@ Modified by          Date              Description
  * 			PinNo  	: Pin number
  * 			Dir     : I/O direction
  */
-static inline void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
-{
+static inline __attribute__((always_inline)) void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir) {
 	NRF_GPIO_Type *reg = NRF_GPIO;
 
 #ifdef NRF52840_XXAA
@@ -77,8 +76,7 @@ static inline void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir)
  *
  * @return	Pin state 1 or 0
  */
-static inline int IOPinRead(int PortNo, int PinNo)
-{
+static inline __attribute__((always_inline)) int IOPinRead(int PortNo, int PinNo) {
 	NRF_GPIO_Type *reg = NRF_GPIO;
 
 #ifdef NRF52840_XXAA
@@ -98,8 +96,7 @@ static inline int IOPinRead(int PortNo, int PinNo)
  * @Param 	PortNo	: Port number
  * 			PinNo  	: Pin number
  */
-static inline void IOPinSet(int PortNo, int PinNo)
-{
+static inline __attribute__((always_inline)) void IOPinSet(int PortNo, int PinNo) {
 	NRF_GPIO_Type *reg = NRF_GPIO;
 
 #ifdef NRF52840_XXAA
@@ -119,8 +116,7 @@ static inline void IOPinSet(int PortNo, int PinNo)
  * @Param 	PortNo	: Port number
  * 			PinNo  	: Pin number
  */
-static inline void IOPinClear(int PortNo, int PinNo)
-{
+static inline __attribute__((always_inline)) void IOPinClear(int PortNo, int PinNo) {
 	NRF_GPIO_Type *reg = NRF_GPIO;
 
 #ifdef NRF52840_XXAA
@@ -140,8 +136,7 @@ static inline void IOPinClear(int PortNo, int PinNo)
  * @Param 	PortNo	: Port number
  * 			PinNo  	: Pin number
  */
-static inline void IOPinToggle(int PortNo, int PinNo)
-{
+static inline __attribute__((always_inline)) void IOPinToggle(int PortNo, int PinNo) {
 	NRF_GPIO_Type *reg = NRF_GPIO;
 
 #ifdef NRF52840_XXAA
@@ -162,8 +157,7 @@ static inline void IOPinToggle(int PortNo, int PinNo)
  *
  * @return	Bit field pin states
  */
-static inline uint32_t IOPinReadPort(int PortNo)
-{
+static inline __attribute__((always_inline)) uint32_t IOPinReadPort(int PortNo) {
 	NRF_GPIO_Type *reg = NRF_GPIO;
 
 #ifdef NRF52840_XXAA
@@ -183,8 +177,7 @@ static inline uint32_t IOPinReadPort(int PortNo)
  * @Param 	PortNo	: Port number
  * 			Data	: Bit field state of all pins on port
  */
-static inline void IOPinWritePort(int PortNo, uint32_t Data)
-{
+static inline __attribute__((always_inline)) void IOPinWritePort(int PortNo, uint32_t Data) {
 	NRF_GPIO_Type *reg = NRF_GPIO;
 
 #ifdef NRF52840_XXAA

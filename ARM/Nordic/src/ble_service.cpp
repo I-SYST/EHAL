@@ -260,23 +260,35 @@ static uint32_t BlueIOBleSrvcCharAdd(BLESRVC *pSrvc, BLESRVC_CHAR *pChar,
     {
     	char_md.char_props.read   = 1;
     	BleSrvcEncSec(&attr_md.read_perm, SecType);
-        BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.write_perm);
+       // BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.write_perm);
     }
-
-    if (pChar->Property & BLESVC_CHAR_PROP_WRITE)
+    else
     {
-    	char_md.char_props.write  = 1;
-    	BleSrvcEncSec(&attr_md.write_perm, SecType);
         BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.read_perm);
     }
 
+    if (pChar->Property & (BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_WRITEWORESP))
+    {
+        if (pChar->Property & BLESVC_CHAR_PROP_WRITE)
+            char_md.char_props.write  = 1;
+    	if (pChar->Property & BLESVC_CHAR_PROP_WRITEWORESP)
+            char_md.char_props.write_wo_resp = 1;
+
+    	BleSrvcEncSec(&attr_md.write_perm, SecType);
+        //BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.read_perm);
+    }
+    else
+    {
+        BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.write_perm);
+    }
+/*
     if (pChar->Property & BLESVC_CHAR_PROP_WRITEWORESP)
 	{
 		char_md.char_props.write_wo_resp = 1;
     	BleSrvcEncSec(&attr_md.write_perm, SecType);
 		BleSrvcEncSec(&attr_md.read_perm, SecType);
 	}
-
+*/
     ble_uuid.type = pSrvc->UuidType;
     ble_uuid.uuid = pChar->Uuid;
 

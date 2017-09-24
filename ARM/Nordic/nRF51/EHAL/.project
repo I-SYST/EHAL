@@ -61,6 +61,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/cfifo.h</locationURI>
 		</link>
 		<link>
+			<name>include/converters</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>include/convutil.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/convutil.h</locationURI>
@@ -196,6 +201,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sysstatusdef.h</locationURI>
 		</link>
 		<link>
+			<name>include/timer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/timer.h</locationURI>
+		</link>
+		<link>
+			<name>include/timer_nrf5x.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/timer_nrf5x.h</locationURI>
+		</link>
+		<link>
 			<name>include/uart.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/uart.h</locationURI>
@@ -296,19 +311,14 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/isha256.c</locationURI>
 		</link>
 		<link>
-			<name>src/ledmx.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/ledmx.c</locationURI>
-		</link>
-		<link>
-			<name>src/ledmxfont.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/ledmxfont.c</locationURI>
-		</link>
-		<link>
 			<name>src/ledmxio_nrf5x.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ledmxio_nrf5x.c</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK</name>
@@ -361,6 +371,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sysstatus.c</locationURI>
 		</link>
 		<link>
+			<name>src/timer_hf_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_hf_nrf5x.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/timer_lf_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_lf_nrf5x.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/uart.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/uart.c</locationURI>
@@ -386,6 +406,21 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/utf8cvt.cpp</locationURI>
 		</link>
 		<link>
+			<name>include/converters/adc_device.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/converters/adc_device.h</locationURI>
+		</link>
+		<link>
+			<name>include/converters/adc_ltc2495.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/converters/adc_ltc2495.h</locationURI>
+		</link>
+		<link>
+			<name>include/converters/dac_device.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/converters/dac_device.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/pth_bme280.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pth_bme280.h</locationURI>
@@ -406,6 +441,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sys/dirent.h</locationURI>
 		</link>
 		<link>
+			<name>src/miscdev/ledmx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmx.c</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/ledmxfont.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmxfont.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -417,6 +462,11 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/proprietary_rf</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -486,6 +536,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/drivers_nrf/timer</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/crc16</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -537,6 +592,11 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/util</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/proprietary_rf/esb</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -666,6 +726,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_12/components/drivers_nrf/rng/nrf_drv_rng.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/drivers_nrf/timer/nrf_drv_timer.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_12/components/drivers_nrf/timer/nrf_drv_timer.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/crc16/crc16.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_12/components/libraries/crc16/crc16.c</locationURI>
@@ -749,6 +814,11 @@
 			<name>src/nRF5_SDK/libraries/util/sdk_mapped_flags.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_12/components/libraries/util/sdk_mapped_flags.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/proprietary_rf/esb/nrf_esb.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_12/components/proprietary_rf/esb/nrf_esb.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/softdevice/common/softdevice_handler</name>

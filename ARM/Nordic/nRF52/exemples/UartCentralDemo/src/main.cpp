@@ -136,7 +136,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 		1, 1, 0
 #else
 		NRF_CLOCK_LF_SRC_XTAL,	// Source 32KHz XTAL
-		0, 0, NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM
+		0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM
 #endif
 
 	},

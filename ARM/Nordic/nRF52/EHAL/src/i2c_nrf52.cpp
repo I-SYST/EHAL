@@ -196,7 +196,7 @@ int nRF52I2CRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
 		dev->pReg->RXD.LIST = 0;
 		dev->pReg->TASKS_STARTRX = 1;
 
-		if (nRF52I2CWaitRxComplete(dev, 100000) == false)
+		if (nRF52I2CWaitRxComplete(dev, 1000000) == false)
 		    break;
 
 		BuffLen -= l;
@@ -301,6 +301,8 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 
 	// Configure I/O pins
 	IOPinCfg(pCfgData->IOPinMap, I2C_MAX_NB_IOPIN);
+    IOPinSet(pCfgData->IOPinMap[I2C_SDA_IOPIN_IDX].PortNo, pCfgData->IOPinMap[I2C_SDA_IOPIN_IDX].PinNo);
+    IOPinSet(pCfgData->IOPinMap[I2C_SCL_IOPIN_IDX].PortNo, pCfgData->IOPinMap[I2C_SCL_IOPIN_IDX].PinNo);
 
     reg->PSEL.SCL = pCfgData->IOPinMap[I2C_SCL_IOPIN_IDX].PinNo;
     reg->PSEL.SDA = pCfgData->IOPinMap[I2C_SDA_IOPIN_IDX].PinNo;
@@ -339,7 +341,7 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
         reg->TASKS_STOP = 1;
     }
 
-    nRF52I2CReset(&pDev->DevIntrf);
+    //nRF52I2CReset(&pDev->DevIntrf);
 
 	reg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 

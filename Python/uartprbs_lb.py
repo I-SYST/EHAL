@@ -15,7 +15,7 @@ class CommUART(object):
         self.sc = None
         while self.sc is None:
             try:
-                self.sc = serial.Serial(port=self.address, baudrate=576000, rtscts=True)
+                self.sc = serial.Serial(port=self.address, baudrate=1000000, rtscts=False)
             except serial.serialutil.SerialException as se:
                 if 'Device or resource busy:' in se.__str__():
                     logging.info('Opening COM port is taking a little while, please stand by...')
@@ -57,8 +57,11 @@ def main():
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(message)s')
 
     #comm = CommUART("/dev/cu.usbserial-A8UKQC7S")
-    comm = CommUART("/dev/cu.usbmodem1422")
+    comm = CommUART("/dev/cu.usbmodem143422")
     comm.connect()
+
+    comm1 = CommUART("/dev/cu.usbserial-FT0NCE8B")
+    comm1.connect()
 
     curval = 0
     #packet = comm.receivedPacket(1)
@@ -72,7 +75,7 @@ def main():
         try:
             comm.send(val)
             startTime = time.time()
-            packet = comm.receivedPacket(1)
+            packet = comm1.receivedPacket(1)
             endTime = time.time()
             deltatime += endTime - startTime
             curval = int.from_bytes(packet, byteorder = 'little')
@@ -94,7 +97,7 @@ def main():
             break
 
     comm.disconnect()
-
+    comm1.disconnect()
 ###################################################################################
 
 
