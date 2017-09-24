@@ -283,7 +283,7 @@ uint64_t TimerHFnRF5x::TickCount()
 		vLastCount = count;
     }
 
-	return vLastCount + vRollover;
+	return (uint64_t)vLastCount + vRollover;
 }
 
 uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type)
@@ -303,8 +303,6 @@ uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
     vpReg->TASKS_CAPTURE[TrigNo] = 1;
 
     uint32_t count = vpReg->CC[TrigNo];
-
-    vpReg->SHORTS |= TIMER_SHORTS_COMPARE0_CLEAR_Msk << TrigNo;
 
     if (vEvtHandler)
     {
