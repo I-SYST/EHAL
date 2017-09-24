@@ -35,6 +35,9 @@ Modified by          Date              Description
 #include "nrf.h"
 
 #include "timer_nrf5x.h"
+#include "iopinctrl.h"
+
+#define	INTERRUPT_LATENCY		11
 
 static TimerHFnRF5x *s_pDevObj[TIMER_NRF5X_HF_MAX] = {
 	NULL,
@@ -56,7 +59,7 @@ void TimerHFnRF5x::IRQHandler()
             vpReg->EVENTS_COMPARE[i] = 0;
             if (vTrigType[i] == TIMER_TRIG_TYPE_CONTINUOUS)
             {
-            	vpReg->CC[i] = count + vCC[i];
+            	vpReg->CC[i] = count + vCC[i] - INTERRUPT_LATENCY;
             }
         }
 
@@ -70,7 +73,7 @@ void TimerHFnRF5x::IRQHandler()
     }
 
     vLastCount = count;
-
+	IOPinToggle(0, 22);
     if (vEvtHandler)
     {
         vEvtHandler(this, evt);
@@ -185,7 +188,7 @@ bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
     vFreq = 16000000 / (1 << prescaler);
 
     // Pre-calculate periods for faster timer counter to time conversion use later
-    vnsPeriod = 1000000000 / vFreq;     // Period in nsec
+    vnsPeriod = 10000000000ULL / vFreq;     // Period in nsec
 
     if (Cfg.EvtHandler)
     {
@@ -283,12 +286,12 @@ uint64_t TimerHFnRF5x::TickCount()
 	return vLastCount + vRollover;
 }
 
-uint32_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_TRIG_TYPE Type)
+uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type)
 {
     if (TrigNo < 0 || TrigNo >= vMaxNbTrigEvt)
         return 0;
 
-    uint32_t cc = nsPeriod / vnsPeriod;
+    uint32_t cc = (nsPeriod * 10ULL + (vnsPeriod >> 1)) / vnsPeriod;
 
     if (cc <= 0)
     {
@@ -297,16 +300,18 @@ uint32_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_T
 
     vTrigType[TrigNo] = Type;
     vCC[TrigNo] = cc;
+    vpReg->TASKS_CAPTURE[TrigNo] = 1;
+
+    uint32_t count = vpReg->CC[TrigNo];
+
+    vpReg->SHORTS |= TIMER_SHORTS_COMPARE0_CLEAR_Msk << TrigNo;
 
     if (vEvtHandler)
     {
         vpReg->INTENSET = 1 << (TrigNo + TIMER_INTENSET_COMPARE0_Pos);
     }
 
-    vpReg->TASKS_CAPTURE[TrigNo] = 1;
-
-    uint32_t count = vpReg->CC[TrigNo];
-    vpReg->CC[TrigNo] += cc;
+    vpReg->CC[TrigNo] = count + cc - INTERRUPT_LATENCY;
 
     if (count < vLastCount)
     {
@@ -316,7 +321,7 @@ uint32_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint32_t nsPeriod, TIMER_T
 
     vLastCount = count;
 
-    return vnsPeriod * cc; // Return real period in nsec
+    return vnsPeriod * (uint64_t)cc / 10ULL; // Return real period in nsec
 }
 
 void TimerHFnRF5x::DisableTimerTrigger(int TrigNo)
