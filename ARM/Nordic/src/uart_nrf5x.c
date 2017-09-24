@@ -534,6 +534,9 @@ void nRFUARTEnable(DEVINTRF *pDev)
 	dev->pReg->PSELCTS = dev->CtsPin;
 	dev->pReg->PSELRTS = dev->RtsPin;
 
+	CFifoFlush(dev->pUartDev->hTxFifo);
+
+	dev->bTxReady = true;
 	dev->pReg->ENABLE  |= (UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
 	dev->pReg->TASKS_STARTRX = 1;
 	dev->pReg->TASKS_STARTTX = 1;
