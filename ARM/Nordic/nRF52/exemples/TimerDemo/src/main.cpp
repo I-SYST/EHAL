@@ -86,7 +86,7 @@ static const UARTCFG s_UartCfg = {
 	1,					// Stop bit
 	UART_FLWCTRL_NONE,
 	true,
-	1, 					// use APP_IRQ_PRIORITY_LOW with Softdevice
+	15, 					// use APP_IRQ_PRIORITY_LOW with Softdevice
 	NULL, //nRFUartEvthandler,
 	true,				// fifo blocking mode
 	0,
@@ -96,6 +96,10 @@ static const UARTCFG s_UartCfg = {
 };
 
 UART g_Uart;
+
+uint64_t g_TickCount = 0;
+uint32_t g_Diff = 0;
+
 
 #ifdef NORDIC_SDK
 const nrf_drv_timer_t TIMER_LED = NRF_DRV_TIMER_INSTANCE(0);
@@ -111,6 +115,7 @@ void timer_led_event_handler(nrf_timer_event_t event_type, void* p_context)
     switch (event_type)
     {
         case NRF_TIMER_EVENT_COMPARE0:
+        	// Flip GPIO for oscilloscope measurement
         	IOPinToggle(0, 22);
             break;
 
@@ -126,19 +131,19 @@ const static TIMER_CFG s_TimerCfg = {
     0, TIMER_CLKSRC_HFXTAL, 0, 7, TimerHandler
 };
 
-TimerHFnRF5x g_Timer;
-
-uint64_t g_TickCount = 0;
-uint32_t g_Diff = 0;
+//TimerHFnRF5x g_Timer;
+TimerLFnRF5x g_Timer;
 
 void TimerHandler(Timer *pTimer, uint32_t Evt)
 {
     if (Evt & TIMER_EVT_TIMER_TRIGGER(0))
     {
+    	// Flip GPIO for oscilloscope measurement
     	IOPinToggle(0, 22);
-    	//uint64_t c = pTimer->nSecond();
-    	//g_Diff = c - g_TickCount;
-    	//g_TickCount = c;
+//    	uint64_t c = pTimer->nSecond();
+//    	g_Diff = c - g_TickCount;
+//    	g_TickCount = c;
+//        printf("Count = %u, Diff = %u\r\n", (uint32_t)g_TickCount, g_Diff);
     }
 }
 
@@ -149,6 +154,11 @@ void TimerHandler(Timer *pTimer, uint32_t Evt)
  */
 int main(void)
 {
+    g_Uart.Init(s_UartCfg);
+
+    UARTRetargetEnable(g_Uart, STDIN_FILENO);
+	UARTRetargetEnable(g_Uart, STDOUT_FILENO);
+
 	IOPinConfig(0, 22, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
 
 #ifdef NORDIC_SDK
@@ -163,27 +173,24 @@ int main(void)
     err_code = nrf_drv_timer_init(&TIMER_LED, &timer_cfg, timer_led_event_handler);
     APP_ERROR_CHECK(err_code);
 
-    time_ticks = nrf_drv_timer_us_to_ticks(&TIMER_LED, 5);
+    time_ticks = nrf_drv_timer_ms_to_ticks(&TIMER_LED, 10000UL);
 
     nrf_drv_timer_extended_compare(
          &TIMER_LED, NRF_TIMER_CC_CHANNEL0, time_ticks, NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
 
     nrf_drv_timer_enable(&TIMER_LED);
 #else
-    g_Uart.Init(s_UartCfg);
-	UARTRetargetEnable(g_Uart, STDIN_FILENO);
-	UARTRetargetEnable(g_Uart, STDOUT_FILENO);
-
     g_Timer.Init(s_TimerCfg);
-	g_Timer.EnableTimerTrigger(0, 5000, TIMER_TRIG_TYPE_CONTINUOUS);
+	uint64_t period = g_Timer.EnableTimerTrigger(0, 100000000ULL, TIMER_TRIG_TYPE_CONTINUOUS);
 
+	printf("Period = %u\r\n", (uint32_t)period);
 #endif
     while (1)
     {
         __WFE();
-#ifndef NORDIC_SDK
-       // printf("Count = %u, Diff = %u\r\n", (uint32_t)g_TickCount, g_Diff);
-#endif
+//#ifndef NORDIC_SDK
+//        printf("Count = %u, Diff = %u\r\n", (uint32_t)g_TickCount, g_Diff);
+//#endif
     }
 }
 
