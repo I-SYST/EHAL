@@ -174,7 +174,7 @@ bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
 
     if (Cfg.Freq > 0)
     {
-        uint32_t divisor = 16000000 / Cfg.Freq;
+        uint32_t divisor = TIMER_NRF5X_HF_BASE_FREQ / Cfg.Freq;
         prescaler = 31 - __builtin_clzl(divisor);
         if (prescaler > 9)
         {
@@ -185,10 +185,11 @@ bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
 
     vpReg->PRESCALER = prescaler;
 
-    vFreq = 16000000 / (1 << prescaler);
+    vFreq = TIMER_NRF5X_HF_BASE_FREQ / (1 << prescaler);
 
     // Pre-calculate periods for faster timer counter to time conversion use later
-    vnsPeriod = 10000000000ULL / vFreq;     // Period in nsec
+    // for precision this value is x10 (in 100 psec)
+    vnsPeriod = 10000000000ULL / vFreq;     // Period in x10 nsec
 
     if (Cfg.EvtHandler)
     {
@@ -249,11 +250,85 @@ bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
 
 bool TimerHFnRF5x::Enable()
 {
+    // Clock source not available.  Only 64MHz XTAL
+
+    NRF_CLOCK->TASKS_HFCLKSTART = 1;
+
+    int timout = 1000000;
+
+    do
+    {
+        if ((NRF_CLOCK->HFCLKSTAT & CLOCK_HFCLKSTAT_STATE_Msk) || NRF_CLOCK->EVENTS_HFCLKSTARTED)
+            break;
+
+    } while (timout-- > 0);
+
+    if (timout <= 0)
+        return false;
+
+    NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
+
+
+    vpReg->TASKS_START = 1;
+
+    if (vEvtHandler)
+    {
+        switch (vDevNo)
+        {
+            case 0:
+                NVIC_ClearPendingIRQ(TIMER0_IRQn);
+                NVIC_EnableIRQ(TIMER0_IRQn);
+                break;
+            case 1:
+                NVIC_ClearPendingIRQ(TIMER1_IRQn);
+                NVIC_EnableIRQ(TIMER1_IRQn);
+                break;
+            case 2:
+                NVIC_ClearPendingIRQ(TIMER2_IRQn);
+                NVIC_EnableIRQ(TIMER2_IRQn);
+                break;
+            case 3:
+                NVIC_ClearPendingIRQ(TIMER3_IRQn);
+                NVIC_EnableIRQ(TIMER3_IRQn);
+                break;
+            case 4:
+                NVIC_ClearPendingIRQ(TIMER4_IRQn);
+                NVIC_EnableIRQ(TIMER4_IRQn);
+                break;
+        }
+
+    }
+
+    vpReg->TASKS_START = 1;
+
     return true;
 }
+
 void TimerHFnRF5x::Disable()
 {
+    vpReg->TASKS_STOP = 1;
+    NRF_CLOCK->TASKS_HFCLKSTOP = 1;
 
+    switch (vDevNo)
+    {
+        case 0:
+            NVIC_ClearPendingIRQ(TIMER0_IRQn);
+            break;
+        case 1:
+            NVIC_ClearPendingIRQ(TIMER1_IRQn);
+            break;
+        case 2:
+            NVIC_ClearPendingIRQ(TIMER2_IRQn);
+            break;
+        case 3:
+            NVIC_ClearPendingIRQ(TIMER3_IRQn);
+            break;
+        case 4:
+            NVIC_ClearPendingIRQ(TIMER4_IRQn);
+            break;
+    }
+
+    vpReg->INTENSET = 0;
 }
 
 void TimerHFnRF5x::Reset()
@@ -291,6 +366,7 @@ uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
     if (TrigNo < 0 || TrigNo >= vMaxNbTrigEvt)
         return 0;
 
+    // vnsPerios is x10 nsec (100 psec) => nsPeriod * 10ULL
     uint32_t cc = (nsPeriod * 10ULL + (vnsPeriod >> 1)) / vnsPeriod;
 
     if (cc <= 0)
