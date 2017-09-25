@@ -216,6 +216,7 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
     {
         NRF_GPIO_Type *reg = NRF_GPIO;
 
+
 #ifdef NRF52840_XXAA
         if (PortNo == 1)
         {
@@ -259,8 +260,7 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
     NVIC_SetPriority(GPIOTE_IRQn, IntPrio);
     NVIC_EnableIRQ(GPIOTE_IRQn);
 
-
-    return true;
+	reg->PIN_CNF[PinNo] |= (val << GPIO_PIN_CNF_DRIVE_Pos);
 }
 
 /**
