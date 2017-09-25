@@ -26,6 +26,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>src/TimerDemo.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/TimerDemo.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
