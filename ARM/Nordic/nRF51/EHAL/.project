@@ -131,6 +131,11 @@
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/iopincfg.h</locationURI>
 		</link>
 		<link>
+			<name>include/iopinctrl.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/iopinctrl.h</locationURI>
+		</link>
+		<link>
 			<name>include/isha1.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/isha1.h</locationURI>

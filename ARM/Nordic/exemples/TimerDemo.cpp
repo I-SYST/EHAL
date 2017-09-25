@@ -1,55 +1,41 @@
-/**
- * Copyright (c) 2014 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- */
-/** @file
- * @defgroup nrf_dev_timer_example_main main.c
- * @{
- * @ingroup nrf_dev_timer_example
- * @brief Timer Example Application main file.
- *
- * This file contains the source code for a sample application using Timer0.
- *
- */
+/*--------------------------------------------------------------------------
+File   : TimerDemo.cpp
+
+Author : Hoang Nguyen Hoan          				Sep. 7, 2017
+
+Desc   : Timer class usage demo
+
+Copyright (c) 2017, I-SYST inc., all rights reserved
+
+Permission to use, copy, modify, and distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright
+notice and this permission notice appear in all copies, and none of the
+names : I-SYST or its contributors may be used to endorse or
+promote products derived from this software without specific prior written
+permission.
+
+For info or contributing contact : hnhoan at i-syst dot com
+
+THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+----------------------------------------------------------------------------
+Modified by          Date              Description
+
+----------------------------------------------------------------------------*/
 
 #include <stdbool.h>
 #include <stdint.h>
 #include "nrf.h"
+
 #ifdef NORDIC_SDK
 #include "nrf_drv_timer.h"
 #include "bsp.h"
@@ -125,14 +111,24 @@ void timer_led_event_handler(nrf_timer_event_t event_type, void* p_context)
     }
 }
 #else
+
 void TimerHandler(Timer *pTimer, uint32_t Evt);
 
 const static TIMER_CFG s_TimerCfg = {
-    0, TIMER_CLKSRC_HFXTAL, 0, 7, TimerHandler
+    .DevNo = 0,
+	.ClkSrc = TIMER_CLKSRC_DEFAULT,
+	.Freq = 0,			// 0 => Default highest frequency
+	.IntPrio = 7,
+	.EvtHandler = TimerHandler
 };
 
-//TimerHFnRF5x g_Timer;
+#if 0
+// Using RTC
 TimerLFnRF5x g_Timer;
+#else
+// Using Timer
+TimerHFnRF5x g_Timer;
+#endif
 
 void TimerHandler(Timer *pTimer, uint32_t Evt)
 {
@@ -140,10 +136,11 @@ void TimerHandler(Timer *pTimer, uint32_t Evt)
     {
     	// Flip GPIO for oscilloscope measurement
     	IOPinToggle(0, 22);
-//    	uint64_t c = pTimer->nSecond();
-//    	g_Diff = c - g_TickCount;
-//    	g_TickCount = c;
-//        printf("Count = %u, Diff = %u\r\n", (uint32_t)g_TickCount, g_Diff);
+#if 0
+    	uint64_t c = pTimer->nSecond();
+    	g_Diff = c - g_TickCount;
+    	g_TickCount = c;
+#endif
     }
 }
 
@@ -183,15 +180,12 @@ int main(void)
     g_Timer.Init(s_TimerCfg);
 	uint64_t period = g_Timer.EnableTimerTrigger(0, 500000000ULL, TIMER_TRIG_TYPE_CONTINUOUS);
 
-	printf("Period = %u\r\n", (uint32_t)period);
+	//printf("Period = %u\r\n", (uint32_t)period);
 #endif
     while (1)
     {
         __WFE();
-//#ifndef NORDIC_SDK
 //        printf("Count = %u, Diff = %u\r\n", (uint32_t)g_TickCount, g_Diff);
-//#endif
     }
 }
-
 /** @} */
