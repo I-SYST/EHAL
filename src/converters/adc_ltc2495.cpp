@@ -83,6 +83,15 @@ bool ADCLTC2495::OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan)
 		uint32_t gain = pChanCfg[i].Gain >> 8;	// Fractional gain not available
 
 		d[1] |= 0x80 | ((31 - __builtin_clzl(gain)) & 0xFF);
+
+		Write(&d[0], 1, &d[1], 1);
+
+		gain = (gain & 0x7) << 2;
+
+		vVFullScale[pChanCfg[i].Chan] = 0.5 * vRefVoltage;
+		if (gain > 0)
+			vVFullScale[pChanCfg[i].Chan] /= gain;
+
 	}
 }
 
