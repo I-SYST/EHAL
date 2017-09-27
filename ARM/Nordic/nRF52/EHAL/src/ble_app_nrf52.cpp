@@ -129,6 +129,7 @@ typedef struct _BleAppData {
 	int ConnLedPin;
 	int PeriphDevCnt;
 	BLEAPP_PERIPH *pPeriphDev;
+	uint32_t (*SDEvtHandler)(void) ;
 } BLEAPP_DATA;
 
 #pragma pack(pop)
@@ -289,6 +290,7 @@ void BleAppGapDeviceNameSet( const char* ppDeviceName )
                                           (const uint8_t *)ppDeviceName,
                                           strlen( ppDeviceName ));
     APP_ERROR_CHECK(err_code);
+    ble_advertising_restart_without_whitelist(&g_AdvInstance);
 }
 
 /**@brief Function for the GAP initialization.
@@ -332,6 +334,9 @@ static void BleAppGapParamInit(const BLEAPP_CFG *pBleAppCfg)
     	APP_ERROR_CHECK(err_code);
     }
 */
+    err_code = sd_ble_gap_appearance_set(BLE_APPEARANCE_UNKNOWN);
+    APP_ERROR_CHECK(err_code);
+
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
 
     if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
@@ -826,6 +831,8 @@ static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
 {
     uint16_t role = ble_conn_state_role(p_ble_evt->evt.gap_evt.conn_handle);
 
+//    printf("evt %d\r\n", p_ble_evt->header.evt_id);
+
    // ble_conn_state_on_ble_evt(p_ble_evt);
 
     if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT) || g_BleAppData.AppRole & BLEAPP_ROLE_CENTRAL)
@@ -993,6 +1000,12 @@ static void sec_req_timeout_handler(void * p_context)
             APP_ERROR_CHECK(err_code);
         }
     }
+}
+
+void BleAppAdvStart(ble_adv_mode_t AdvMode)
+{
+    uint32_t err_code = ble_advertising_start(&g_AdvInstance, AdvMode);
+    APP_ERROR_CHECK(err_code);
 }
 
 /**@brief Overloadable function for initializing the Advertising functionality.
@@ -1307,6 +1320,11 @@ bool BleAppStackInit(bool bConnectable)
     return true;
 }
 */
+static void ble_rtos_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
+{
+    g_BleAppData.SDEvtHandler();
+}
+
 /**
  * @brief Function for the SoftDevice initialization.
  *
@@ -1332,7 +1350,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     g_BleAppData.AppMode = pBleAppCfg->AppMode;
     g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
 
-    switch (pBleAppCfg->AppMode)
+    switch (g_BleAppData.AppMode)
     {
     	case BLEAPP_MODE_LOOP:
     	case BLEAPP_MODE_NOCONNECT:
@@ -1347,7 +1365,11 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     	case BLEAPP_MODE_RTOS:
     		if (pBleAppCfg->SDEvtHandler == NULL)
     			return false;
+
+    		g_BleAppData.SDEvtHandler = pBleAppCfg->SDEvtHandler;
             //SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, pBleAppCfg->SDEvtHandler);
+    	    //NRF_SDH_BLE_OBSERVER(g_BleRtosObserver, BLEAPP_OBSERVER_PRIO, ble_rtos_evt_dispatch, NULL);
+
     		break;
     }
 
@@ -1457,6 +1479,7 @@ void BleAppRun()
 		if (g_BleAppData.AppMode == BLEAPP_MODE_RTOS)
 		{
 			BleAppRtosWaitEvt();
+			//nrf_sdh_freertos_init(advertising_start, &erase_bonds);
 	//		intern_softdevice_events_execute();
 		}
 		else
@@ -1470,6 +1493,45 @@ void BleAppRun()
     }
 }
 
+/**@brief   Function for polling SoftDevice events.
+ *
+ * @note    This function is compatible with @ref app_sched_event_handler_t.
+ *
+ * @param[in]   p_event_data Pointer to the event data.
+ * @param[in]   event_size   Size of the event data.
+ */
+static void appsh_events_poll(void * p_event_data, uint16_t event_size)
+{
+    nrf_sdh_evts_poll();
 
+    UNUSED_PARAMETER(p_event_data);
+    UNUSED_PARAMETER(event_size);
+}
+
+extern "C" void SD_EVT_IRQHandler(void)
+{
+    switch (g_BleAppData.AppMode)
+     {
+         case BLEAPP_MODE_LOOP:
+         case BLEAPP_MODE_NOCONNECT:
+             nrf_sdh_evts_poll();
+             break;
+         case BLEAPP_MODE_APPSCHED:
+             {
+                 ret_code_t ret_code = app_sched_event_put(NULL, 0, appsh_events_poll);
+
+                 APP_ERROR_CHECK(ret_code);
+             }
+             break;
+         case BLEAPP_MODE_RTOS:
+             if (g_BleAppData.SDEvtHandler)
+             {
+                 g_BleAppData.SDEvtHandler();
+             //SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, pBleAppCfg->SDEvtHandler);
+   //          NRF_SDH_BLE_OBSERVER(g_BleRtosObserver, BLEAPP_OBSERVER_PRIO, ble_rtos_evt_dispatch, NULL);
+             }
+             break;
+     }
+}
 
 
