@@ -87,6 +87,8 @@ Modified by          Date              Description
 #define LTC2495_CONVERT_CFG_GAIN128			0x86
 #define LTC2495_CONVERT_CFG_GAIN256			0x87
 
+#define LTC2495_MAX_CHAN					16
+
 class ADCLTC2495 : public ADCDevice {
 public:
 	/**
@@ -170,8 +172,9 @@ public:
 	virtual void Reset();
 
 private:
-	float vVFullScale;
+	float vVFullScale[LTC2495_MAX_CHAN];
 	int vRefVoltage;
+
 };
 
 #endif // __ADC_LTC2495_H__

@@ -50,7 +50,7 @@ Modified by          Date              Description
 #endif
 
 #if  defined(BLE_GATT_ATT_MTU_DEFAULT) && !defined(GATT_MTU_SIZE_DEFAULT)
-#define GATT_MTU_SIZE_DEFAULT BLE_GATT_ATT_MTU_DEFAULT
+#define GATT_MTU_SIZE_DEFAULT  			BLE_GATT_ATT_MTU_DEFAULT
 #endif
 
 #define NRF_BLE_MAX_MTU_SIZE            GATT_MTU_SIZE_DEFAULT
@@ -62,7 +62,7 @@ Modified by          Date              Description
 #define BLEAPP_ADV_MANDATA_TYPE_MOTION	2		// Motion sensor data Accel, Gyro, Mag
 #define BLEAPP_ADV_MANDATA_TYPE_GAS		3		// Gas sensor data
 #define BLEAPP_ADV_MANDATA_TYPE_PROXY	4		// Proximity sensor data
-#define BLEAPP_ADV_MANDATA_TYPE_ANALOG	5		// Analog measurement data
+#define BLEAPP_ADV_MANDATA_TYPE_ADC		5		// Analog converter data
 
 #pragma pack(push, 1)
 // I-SYST Manufacture specific data format in advertisement

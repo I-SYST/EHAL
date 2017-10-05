@@ -346,6 +346,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nrf_sdh_soc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_sdh_soc.c</locationURI>
+		</link>
+		<link>
 			<name>src/prbs.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/prbs.c</locationURI>
@@ -996,11 +1001,6 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh_soc.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/softdevice/common/softdevice_handler</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
 			<name>src/nRF5_SDK/ble/ble_services/ble_dis/ble_dis.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_dis/ble_dis.c</locationURI>
@@ -1059,16 +1059,6 @@
 			<name>src/nRF5_SDK/libraries/libraries/balloc/nrf_balloc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/balloc/nrf_balloc.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/softdevice/common/softdevice_handler/softdevice_handler.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-5-PROJECT_LOC%7D/external/nRF5_SDK_13/components/softdevice/common/softdevice_handler/softdevice_handler.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/softdevice/common/softdevice_handler/softdevice_handler_appsh.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-5-PROJECT_LOC%7D/external/nRF5_SDK_13/components/softdevice/common/softdevice_handler/softdevice_handler_appsh.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdh.c</name>

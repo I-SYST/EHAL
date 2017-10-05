@@ -35,6 +35,7 @@ Modified by          Date              Description
 #include <inttypes.h>
 #include <atomic>
 
+#include "sdk_config.h"
 #include "nordic_common.h"
 #include "ble_hci.h"
 #include "nrf_error.h"
@@ -71,6 +72,8 @@ Modified by          Date              Description
 #include "iopincfg.h"
 #include "iopinctrl.h"
 #include "ble_app.h"
+
+extern "C" void nrf_sdh_soc_evts_poll(void * p_context);
 
 //#define IS_SRVC_CHANGED_CHARACT_PRESENT 1                                           /**< Include the service_changed characteristic. If not enabled, the server's database cannot be changed for the lifetime of the device. */
 
@@ -129,6 +132,7 @@ typedef struct _BleAppData {
 	int ConnLedPin;
 	int PeriphDevCnt;
 	BLEAPP_PERIPH *pPeriphDev;
+	uint32_t (*SDEvtHandler)(void) ;
 } BLEAPP_DATA;
 
 #pragma pack(pop)
@@ -289,6 +293,7 @@ void BleAppGapDeviceNameSet( const char* ppDeviceName )
                                           (const uint8_t *)ppDeviceName,
                                           strlen( ppDeviceName ));
     APP_ERROR_CHECK(err_code);
+    ble_advertising_restart_without_whitelist(&g_AdvInstance);
 }
 
 /**@brief Function for the GAP initialization.
@@ -332,6 +337,9 @@ static void BleAppGapParamInit(const BLEAPP_CFG *pBleAppCfg)
     	APP_ERROR_CHECK(err_code);
     }
 */
+    err_code = sd_ble_gap_appearance_set(BLE_APPEARANCE_UNKNOWN);
+    APP_ERROR_CHECK(err_code);
+
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
 
     if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
@@ -416,6 +424,10 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
 //            APP_ERROR_CHECK(err_code);
             break;
         case BLE_ADV_EVT_IDLE:
+        {
+            ret_code_t err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
+            APP_ERROR_CHECK(err_code);
+        }
            // sleep_mode_enter();
             break;
         default:
@@ -638,6 +650,8 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
 static void pm_evt_handler(pm_evt_t const * p_evt)
 {
     ret_code_t err_code;
+    uint16_t role = ble_conn_state_role(p_evt->conn_handle);
+
 //    printf("pm_evt_handler %x\r\n", p_evt->evt_id);
     switch (p_evt->evt_id)
     {
@@ -692,10 +706,6 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
             if (err_code == FDS_ERR_BUSY || err_code == FDS_ERR_NO_SPACE_IN_QUEUES)
             {
                 // Retry.
-            }
-            else
-            {
-                APP_ERROR_CHECK(err_code);
             }
 
             break;
@@ -825,6 +835,8 @@ static void BleAppDBDiscoveryHandler(ble_db_discovery_evt_t * p_evt)
 static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
 {
     uint16_t role = ble_conn_state_role(p_ble_evt->evt.gap_evt.conn_handle);
+
+//    printf("evt %d\r\n", p_ble_evt->header.evt_id);
 
    // ble_conn_state_on_ble_evt(p_ble_evt);
 
@@ -993,6 +1005,12 @@ static void sec_req_timeout_handler(void * p_context)
             APP_ERROR_CHECK(err_code);
         }
     }
+}
+
+void BleAppAdvStart(ble_adv_mode_t AdvMode)
+{
+    uint32_t err_code = ble_advertising_start(&g_AdvInstance, AdvMode);
+    APP_ERROR_CHECK(err_code);
 }
 
 /**@brief Overloadable function for initializing the Advertising functionality.
@@ -1165,28 +1183,24 @@ void gatt_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
+/**@brief Function for handling File Data Storage events.
+ *
+ * @param[in] p_evt  Peer Manager event.
+ * @param[in] cmd
+ */
+static void fds_evt_handler(fds_evt_t const * const p_fds_evt)
+{
+    if (p_fds_evt->id == FDS_EVT_GC)
+    {
+        printf("GC completed");
+    }
+}
+
 bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 {
 	uint32_t err_code;
 
-	NRF_SDH_BLE_OBSERVER(g_BleObserver, BLEAPP_OBSERVER_PRIO, ble_evt_dispatch, NULL);
 
-	BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
-
-#if NRF_SD_BLE_API_VERSION <= 3
-
-    err_code = nrf_crypto_public_key_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &m_crypto_key_pk);
-    APP_ERROR_CHECK(err_code);
-
-    /* Set the public key */
-    err_code = pm_lesc_public_key_set(&s_lesc_public_key);
-    APP_ERROR_CHECK(err_code);
-#else
-    // Private public keypair must be generated at least once for each device. It can be stored
-    // beyond this point. Here it is generated at bootup.
-    err_code = lesc_generate_key_pair();
-    APP_ERROR_CHECK(err_code);
-#endif
 
     //BleAppInitUserData();
 
@@ -1194,6 +1208,8 @@ bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     gatt_init();
 
+    if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
+    	conn_params_init();
 
     BleAppInitUserServices();
 
@@ -1201,8 +1217,7 @@ bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     	BleAppDisInit(pBleAppCfg);
 
 
-    if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
-    	conn_params_init();
+
 
     return true;
 }
@@ -1212,11 +1227,11 @@ bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
  * @param[in]   p_ble_evt   Bluetooth stack event.
  * @param[in]   p_context   Unused.
  */
-/*static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
+static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
 {
     uint16_t conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
     uint16_t role        = ble_conn_state_role(conn_handle);
-
+/*
     if (    (p_ble_evt->header.evt_id == BLE_GAP_EVT_CONNECTED)
         &&  (is_already_connected(&p_ble_evt->evt.gap_evt.params.connected.peer_addr)))
     {
@@ -1241,9 +1256,9 @@ bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     else if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT))
     {
         on_ble_central_evt(p_ble_evt);
-    }
+    }*/
 }
-*/
+
 /*
 void sys_event_handler(uint32_t sys_evt, void * p_context)
 {
@@ -1277,83 +1292,10 @@ void sys_event_handler(uint32_t sys_evt, void * p_context)
     }
 }
 */
-/*
-bool BleAppStackInit(bool bConnectable)
+
+bool BleAppStackInit(int CentLinkCount, int PeriLinkCount, bool bConnectable)
 {
-    ret_code_t err_code;
-
-    err_code = nrf_sdh_enable_request();
-    if (err_code != NRF_SUCCESS)
-    	return false;
-
-    // Configure the BLE stack using the default settings.
-    // Fetch the start address of the application RAM.
-    uint32_t ram_start = 0;
-    err_code = nrf_sdh_ble_default_cfg_set(BLEAPP_CONN_CFG_TAG, &ram_start);
-    if (err_code != NRF_SUCCESS)
-    	return false;
-
-    // Enable BLE stack.
-    err_code = nrf_sdh_ble_enable(&ram_start);
-    if (err_code != NRF_SUCCESS)
-    	return false;
-
-    // Register a handler for BLE events.
-    if (bConnectable)
-    {
-    	NRF_SDH_BLE_OBSERVER(g_BleObserver, BLEAPP_OBSERVER_PRIO, ble_evt_dispatch, NULL);
-    }
-
-    return true;
-}
-*/
-/**
- * @brief Function for the SoftDevice initialization.
- *
- * @details This function initializes the SoftDevice and the BLE event interrupt.
- */
-bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
-{
-	ret_code_t err_code;
-
-	g_BleAppData.ConnLedPort = pBleAppCfg->ConnLedPort;
-	g_BleAppData.ConnLedPin = pBleAppCfg->ConnLedPin;
-
-	if (pBleAppCfg->ConnLedPort != -1 && pBleAppCfg->ConnLedPin != -1)
-    {
-    	IOPinConfig(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin, 0,
-    				IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
-    }
-
-	// initializing the cryptography module
-    nrf_crypto_init();
-
-
-    g_BleAppData.AppMode = pBleAppCfg->AppMode;
-    g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
-
-    switch (pBleAppCfg->AppMode)
-    {
-    	case BLEAPP_MODE_LOOP:
-    	case BLEAPP_MODE_NOCONNECT:
-    	        app_timer_init();
-            //SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, NULL);
-    		break;
-    	case BLEAPP_MODE_APPSCHED:
-             app_timer_init();
-    		APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
-            //SOFTDEVICE_HANDLER_APPSH_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, true);
-    		break;
-    	case BLEAPP_MODE_RTOS:
-    		if (pBleAppCfg->SDEvtHandler == NULL)
-    			return false;
-            //SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, pBleAppCfg->SDEvtHandler);
-    		break;
-    }
-
-
-    // Initialize SoftDevice.
-    err_code = nrf_sdh_enable_request();
+	ret_code_t err_code = nrf_sdh_enable_request();
     APP_ERROR_CHECK(err_code);
 
     // Configure the BLE stack using the default settings.
@@ -1362,23 +1304,22 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     err_code = nrf_sdh_ble_default_cfg_set(BLEAPP_CONN_CFG_TAG, &ram_start);
     APP_ERROR_CHECK(err_code);
 
-    //    BleAppStackInit(pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT);
 
     // Overwrite some of the default configurations for the BLE stack.
     ble_cfg_t ble_cfg;
 
     // Configure the number of custom UUIDS.
     memset(&ble_cfg, 0, sizeof(ble_cfg));
-    ble_cfg.common_cfg.vs_uuid_cfg.vs_uuid_count = 1;
+    ble_cfg.common_cfg.vs_uuid_cfg.vs_uuid_count = 2;
     err_code = sd_ble_cfg_set(BLE_COMMON_CFG_VS_UUID, &ble_cfg, ram_start);
     APP_ERROR_CHECK(err_code);
 
     // Configure the maximum number of connections.
 	memset(&ble_cfg, 0, sizeof(ble_cfg));
-	ble_cfg.conn_cfg.conn_cfg_tag                        = BLEAPP_CONN_CFG_TAG;
-	ble_cfg.gap_cfg.role_count_cfg.periph_role_count  = pBleAppCfg->PeriLinkCount;//PERIPHERAL_LINK_COUNT;//BLE_GAP_ROLE_COUNT_PERIPH_DEFAULT;
-	ble_cfg.gap_cfg.role_count_cfg.central_role_count = pBleAppCfg->CentLinkCount;//CENTRAL_LINK_COUNT;
-	ble_cfg.gap_cfg.role_count_cfg.central_sec_count  = 0;
+	ble_cfg.conn_cfg.conn_cfg_tag                     = BLEAPP_CONN_CFG_TAG;
+	ble_cfg.gap_cfg.role_count_cfg.periph_role_count  = PeriLinkCount;//PERIPHERAL_LINK_COUNT;//BLE_GAP_ROLE_COUNT_PERIPH_DEFAULT;
+	ble_cfg.gap_cfg.role_count_cfg.central_role_count = CentLinkCount;//CENTRAL_LINK_COUNT;
+	ble_cfg.gap_cfg.role_count_cfg.central_sec_count  = CentLinkCount ? BLE_GAP_ROLE_COUNT_CENTRAL_SEC_DEFAULT: 0;
 	err_code = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, ram_start);
 	APP_ERROR_CHECK(err_code);
 
@@ -1401,24 +1342,88 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     err_code = nrf_sdh_ble_enable(&ram_start);
 	APP_ERROR_CHECK(err_code);
 
+    // Register a handler for BLE events.
+//    NRF_SDH_BLE_OBSERVER(m_ble_observer, NRF_SDH_BLE_OBSERVER_PRIO_LEVELS, ble_evt_handler, NULL);
+	NRF_SDH_BLE_OBSERVER(g_BleObserver, BLEAPP_OBSERVER_PRIO, ble_evt_dispatch, NULL);
+
+    return true;
+}
+
+static void ble_rtos_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
+{
+    g_BleAppData.SDEvtHandler();
+}
+
+/**
+ * @brief Function for the SoftDevice initialization.
+ *
+ * @details This function initializes the SoftDevice and the BLE event interrupt.
+ */
+bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
+{
+	ret_code_t err_code;
+
+	g_BleAppData.ConnLedPort = pBleAppCfg->ConnLedPort;
+	g_BleAppData.ConnLedPin = pBleAppCfg->ConnLedPin;
+
+	if (pBleAppCfg->ConnLedPort != -1 && pBleAppCfg->ConnLedPin != -1)
+    {
+    	IOPinConfig(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin, 0,
+    				IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
+    }
+
+
+
+    g_BleAppData.AppMode = pBleAppCfg->AppMode;
+    g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
+
+    switch (g_BleAppData.AppMode)
+    {
+    	case BLEAPP_MODE_LOOP:
+    	case BLEAPP_MODE_NOCONNECT:
+    	    app_timer_init();
+            //SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, NULL);
+    		break;
+    	case BLEAPP_MODE_APPSCHED:
+    		app_timer_init();
+    		APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+            //SOFTDEVICE_HANDLER_APPSH_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, true);
+    		break;
+    	case BLEAPP_MODE_RTOS:
+    		if (pBleAppCfg->SDEvtHandler == NULL)
+    			return false;
+
+    		g_BleAppData.SDEvtHandler = pBleAppCfg->SDEvtHandler;
+            //SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, pBleAppCfg->SDEvtHandler);
+    	    //NRF_SDH_BLE_OBSERVER(g_BleRtosObserver, BLEAPP_OBSERVER_PRIO, ble_rtos_evt_dispatch, NULL);
+
+    		break;
+    }
+
+	// initializing the cryptography module
+    nrf_crypto_init();
+
+
+    // Initialize SoftDevice.
+    BleAppStackInit(pBleAppCfg->CentLinkCount, pBleAppCfg->PeriLinkCount, pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT);
+
 	if (pBleAppCfg->PeriLinkCount > 0 && pBleAppCfg->AdvInterval > 0)
 	{
 		g_BleAppData.AppRole |= BLEAPP_ROLE_PERIPHERAL;
 	}
-
-	if (pBleAppCfg->CentLinkCount > 0)
-	{
-		g_BleAppData.AppRole |= BLEAPP_ROLE_CENTRAL;
-		ret_code_t err_code = ble_db_discovery_init(BleAppDBDiscoveryHandler);
-		APP_ERROR_CHECK(err_code);
-    }
 
     if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
     {
     	BleAppConnectable(pBleAppCfg, bEraseBond);
     }
 
-    NRF_SDH_SOC_OBSERVER(g_SocObserver, BLEAPP_OBSERVER_PRIO, sys_evt_dispatch, NULL);
+    if (pBleAppCfg->CentLinkCount > 0)
+	{
+		g_BleAppData.AppRole |= BLEAPP_ROLE_CENTRAL;
+		ret_code_t err_code = ble_db_discovery_init(BleAppDBDiscoveryHandler);
+		APP_ERROR_CHECK(err_code);
+    }
+
 
     BleAppInitUserData();
 
@@ -1429,6 +1434,26 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
                                           strlen(pBleAppCfg->pDevName));
         APP_ERROR_CHECK(err_code);
     }
+
+	BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
+
+#if NRF_SD_BLE_API_VERSION <= 3
+
+    err_code = nrf_crypto_public_key_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &m_crypto_key_pk);
+    APP_ERROR_CHECK(err_code);
+
+    /* Set the public key */
+    err_code = pm_lesc_public_key_set(&s_lesc_public_key);
+    APP_ERROR_CHECK(err_code);
+#else
+    err_code = fds_register(fds_evt_handler);
+    APP_ERROR_CHECK(err_code);
+
+    // Private public keypair must be generated at least once for each device. It can be stored
+    // beyond this point. Here it is generated at bootup.
+    err_code = lesc_generate_key_pair();
+    APP_ERROR_CHECK(err_code);
+#endif
 
     BleAppAdvInit(pBleAppCfg);
 
@@ -1457,6 +1482,7 @@ void BleAppRun()
 		if (g_BleAppData.AppMode == BLEAPP_MODE_RTOS)
 		{
 			BleAppRtosWaitEvt();
+			//nrf_sdh_freertos_init(advertising_start, &erase_bonds);
 	//		intern_softdevice_events_execute();
 		}
 		else
@@ -1470,6 +1496,53 @@ void BleAppRun()
     }
 }
 
+/**@brief   Function for polling SoftDevice events.
+ *
+ * @note    This function is compatible with @ref app_sched_event_handler_t.
+ *
+ * @param[in]   p_event_data Pointer to the event data.
+ * @param[in]   event_size   Size of the event data.
+ */
+static void appsh_events_poll(void * p_event_data, uint16_t event_size)
+{
+    nrf_sdh_evts_poll();
 
+    UNUSED_PARAMETER(p_event_data);
+    UNUSED_PARAMETER(event_size);
+}
 
+extern "C" void SD_EVT_IRQHandler(void)
+{
+    switch (g_BleAppData.AppMode)
+     {
+         case BLEAPP_MODE_LOOP:
+         case BLEAPP_MODE_NOCONNECT:
+             nrf_sdh_evts_poll();
+             break;
+         case BLEAPP_MODE_APPSCHED:
+             {
+                 ret_code_t ret_code = app_sched_event_put(NULL, 0, appsh_events_poll);
+
+                 APP_ERROR_CHECK(ret_code);
+             }
+             break;
+         case BLEAPP_MODE_RTOS:
+             if (g_BleAppData.SDEvtHandler)
+             {
+                 g_BleAppData.SDEvtHandler();
+             //SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, pBleAppCfg->SDEvtHandler);
+   //          NRF_SDH_BLE_OBSERVER(g_BleRtosObserver, BLEAPP_OBSERVER_PRIO, ble_rtos_evt_dispatch, NULL);
+             }
+             break;
+     }
+}
+
+// We need this here in order for the Linker to keep the nrf_sdh_soc.c
+// which is require for Softdevice to function properly
+// Create section set "sdh_soc_observers".
+NRF_SDH_STACK_OBSERVER(m_nrf_sdh_soc_evts_poll, NRF_SDH_SOC_STACK_OBSERVER_PRIO) =
+{
+    .handler   = nrf_sdh_soc_evts_poll,
+    .p_context = NULL,
+};
 
