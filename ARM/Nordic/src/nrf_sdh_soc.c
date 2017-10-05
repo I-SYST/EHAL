@@ -108,7 +108,7 @@ void nrf_sdh_soc_evts_poll(void * p_context)
     }
 }
 #if 0
-
+// Moved to ble_app_nrf52.cpp
 NRF_SDH_STACK_OBSERVER(m_nrf_sdh_soc_evts_poll, NRF_SDH_SOC_STACK_OBSERVER_PRIO) =
 {
     .handler   = nrf_sdh_soc_evts_poll,
