@@ -79,19 +79,19 @@ void TimerLFnRF5x::IRQHandler()
 
 extern "C" {
 
-void RTC0_IRQHandler()
+__WEAK void RTC0_IRQHandler()
 {
 	if (s_pnRF5xRTC[0])
 		s_pnRF5xRTC[0]->IRQHandler();
 }
 
-void RTC1_IRQHandler()
+__WEAK void RTC1_IRQHandler()
 {
 	if (s_pnRF5xRTC[1])
 		s_pnRF5xRTC[1]->IRQHandler();
 }
 #ifdef NRF52
-void RTC2_IRQHandler()
+__WEAK void RTC2_IRQHandler()
 {
 	if (s_pnRF5xRTC[2])
 		s_pnRF5xRTC[2]->IRQHandler();
