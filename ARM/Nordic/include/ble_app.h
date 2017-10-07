@@ -215,6 +215,8 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond);
 void BleAppEnterDfu();
 void BleAppRun();
 uint16_t BleAppGetConnHandle();
+void BleAppGapDeviceNameSet(const char* ppDeviceName);
+void BleAppAdvManDataSet(uint8_t *pData, int Len);
 
 #ifdef __cplusplus
 }

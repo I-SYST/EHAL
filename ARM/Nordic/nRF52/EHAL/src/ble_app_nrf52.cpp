@@ -133,6 +133,7 @@ typedef struct _BleAppData {
 	int PeriphDevCnt;
 	BLEAPP_PERIPH *pPeriphDev;
 	uint32_t (*SDEvtHandler)(void) ;
+	ble_advdata_t SRData;
 } BLEAPP_DATA;
 
 #pragma pack(pop)
@@ -285,7 +286,7 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
     app_error_handler(DEAD_BEEF, line_num, p_file_name);
 }
 
-void BleAppGapDeviceNameSet( const char* ppDeviceName )
+void BleAppGapDeviceNameSet(const char* ppDeviceName)
 {
     uint32_t                err_code;
 
@@ -425,8 +426,12 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
             break;
         case BLE_ADV_EVT_IDLE:
         {
-            ret_code_t err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
-            APP_ERROR_CHECK(err_code);
+        	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+        	{
+        		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams, BLEAPP_CONN_CFG_TAG);
+        	}
+        	//   ret_code_t err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_SLOW);
+          //  APP_ERROR_CHECK(err_code);
         }
            // sleep_mode_enter();
             break;
@@ -524,8 +529,8 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             {
             	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
             	{
-            		err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_SLOW);
-                    APP_ERROR_CHECK(err_code);
+//            		err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
+//                    APP_ERROR_CHECK(err_code);
             	}
             }
             break;
@@ -1007,6 +1012,15 @@ static void sec_req_timeout_handler(void * p_context)
     }
 }
 
+void BleAppAdvManDataSet(uint8_t *pData, int Len)
+{
+	int l = min(Len, BLE_GAP_ADV_MAX_SIZE);
+
+	memcpy(g_AdvInstance.manuf_data_array, pData, l);
+    uint32_t ret = ble_advdata_set(&(g_AdvInstance.advdata), &g_BleAppData.SRData);
+
+}
+
 void BleAppAdvStart(ble_adv_mode_t AdvMode)
 {
     uint32_t err_code = ble_advertising_start(&g_AdvInstance, AdvMode);
@@ -1112,6 +1126,9 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 			initdata.config.ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
 		}
     }
+
+    memcpy(&g_BleAppData.SRData, &initdata.srdata, sizeof(ble_advdata_t));
+
     initdata.evt_handler = on_adv_evt;
 	err_code = ble_advertising_init(&g_AdvInstance, &initdata);//&advdata, &scanrsp, &options, on_adv_evt, NULL);
 	APP_ERROR_CHECK(err_code);
@@ -1466,6 +1483,7 @@ void BleAppRun()
 	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
 	{
 		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams, BLEAPP_CONN_CFG_TAG);
+//		uint32_t err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
 		APP_ERROR_CHECK(err_code);
 	}
 	else

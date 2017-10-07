@@ -47,20 +47,34 @@ Modified by          Date              Description
 #include "app_scheduler.h"
 #include "pth_bme280.h"
 #include "pth_ms8607.h"
+#include "timer_nrf5x.h"
+
 
 #define DEVICE_NAME                     "PTHSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
 #define PTH_BME280
+#define USE_TIMER_UPDATE			// Use timer to update data
 
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(40, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
-#define APP_ADV_TIMEOUT_IN_SECONDS      60                                         /**< The advertising timeout (in units of seconds). */
+#ifdef USE_TIMER_UPDATE
+// Use timer to update date
+#define APP_ADV_TIMEOUT_IN_SECONDS      0                                         /**< The advertising timeout (in units of seconds). */
+#else
+// Use advertisement timeout to update data
+#define APP_ADV_TIMEOUT_IN_SECONDS      1                                         /**< The advertising timeout (in units of seconds). */
+#endif
 
-/*
-__ALIGN(4) const uint8_t g_lesc_private_key[32] = {
-	0x9a, 0x58, 0xc0, 0xff, 0xeb, 0x7f, 0x4b, 0x89, 0x41, 0xc2, 0x05, 0xfc, 0x9c, 0xca, 0x3e, 0xe5,
-	0x66, 0x4f, 0xf8, 0x80, 0x1b, 0xe9, 0x56, 0x1d, 0xa3, 0x72, 0x82, 0x55, 0xb7, 0x4f, 0x47, 0xd0
+void TimerHandler(Timer *pTimer, uint32_t Evt);
+
+const static TIMER_CFG s_TimerCfg = {
+    .DevNo = 2,
+	.ClkSrc = TIMER_CLKSRC_DEFAULT,
+	.Freq = 0,			// 0 => Default highest frequency
+	.IntPrio = APP_IRQ_PRIORITY_LOW,
+	.EvtHandler = TimerHandler
 };
-*/
+
+TimerLFnRF5x g_Timer;
 
 uint8_t g_AdvDataBuff[sizeof(PTHSENSOR_DATA) + 1] = {
 	BLEAPP_ADV_MANDATA_TYPE_PTH,
@@ -70,7 +84,7 @@ BLEAPP_ADV_MANDATA &g_AdvData = *(BLEAPP_ADV_MANDATA*)g_AdvDataBuff;
 
 
 // Evironmental Sensor Data to advertise
-//PTHSENSOR_DATA &g_PTHData = *(PTHSENSOR_DATA *)g_AdvData.Data;
+PTHSENSOR_DATA &g_PTHData = *(PTHSENSOR_DATA *)g_AdvData.Data;
 
 const BLEAPP_CFG s_BleAppCfg = {
 	{ // Clock config nrf_clock_lf_cfg_t
@@ -100,7 +114,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	0, 						// Total number of uuids
 	APP_ADV_INTERVAL,       // Advertising interval in msec
 	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
-	1000,                          // Slow advertising interval, if > 0, fallback to
+	100,                          // Slow advertising interval, if > 0, fallback to
 								// slow interval on adv timeout and advertise until connected
 	0,
 	0,
@@ -152,23 +166,38 @@ PTHSensor &g_PthSensor = g_Bme280Sensor;
 PTHSensor &g_PthSensor = g_MS8607Sensor;
 #endif
 
+void TimerHandler(Timer *pTimer, uint32_t Evt)
+{
+    if (Evt & TIMER_EVT_TRIGGER(0))
+    {
+    	g_I2c.Enable();
+
+    	g_PthSensor.ReadPTH(g_PTHData);
+
+    	// Update advertisement data
+    	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
+
+    	g_I2c.Disable();
+    }
+}
+
 void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 {
+#ifndef USE_TIMER_UPDATE
     if (p_ble_evt->header.evt_id == BLE_GAP_EVT_TIMEOUT)
     {
     	// Update environmental sensor data everytime advertisement timeout
     	// for re-advertisement
     	g_I2c.Enable();
 
-    	PTHSENSOR_DATA pthdata;
-    	g_PthSensor.ReadPTH(pthdata);
+    	g_PthSensor.ReadPTH(g_PTHData);
 
-    	// Do memcpy to adv data. Due to byte alignment, cannot read directly into
-    	// adv data
-    	memcpy(g_AdvData.Data, &pthdata, sizeof(PTHSENSOR_DATA));
+    	// Update advertisement data
+    	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
 
     	g_I2c.Disable();
     }
+#endif
 }
 
 
@@ -189,6 +218,11 @@ void HardwareInit()
 	memcpy(g_AdvData.Data, &pthdata, sizeof(PTHSENSOR_DATA));
 
 	g_I2c.Disable();
+
+#ifdef USE_TIMER_UPDATE
+    g_Timer.Init(s_TimerCfg);
+	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS);
+#endif
 }
 
 int main()
