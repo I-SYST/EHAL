@@ -34,6 +34,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
+#include <string.h>
 
 #include "istddef.h"
 #include "ble_app.h"
@@ -53,9 +54,17 @@ Modified by          Date              Description
 #define DEVICE_NAME                     "PTHSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
 #define PTH_BME280
-#define USE_TIMER_UPDATE			// Use timer to update data
 
-#define APP_ADV_INTERVAL                MSEC_TO_UNITS(40, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
+// Use timer to update data
+// NOTE :	RTC timer 0 used by radio, RTC Timer 1 used by SDK
+//			Only RTC timer 2 is usable with Softdevice for nRF52, not avail on nRF51
+//
+#ifdef NRF52
+#define USE_TIMER_UPDATE
+#endif
+
+// NOTE : Min advertisement interval for S130 v2 is 100 ms
+#define APP_ADV_INTERVAL                MSEC_TO_UNITS(100, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #ifdef USE_TIMER_UPDATE
 // Use timer to update date
 #define APP_ADV_TIMEOUT_IN_SECONDS      0                                         /**< The advertising timeout (in units of seconds). */
@@ -66,15 +75,6 @@ Modified by          Date              Description
 
 void TimerHandler(Timer *pTimer, uint32_t Evt);
 
-const static TIMER_CFG s_TimerCfg = {
-    .DevNo = 2,
-	.ClkSrc = TIMER_CLKSRC_DEFAULT,
-	.Freq = 0,			// 0 => Default highest frequency
-	.IntPrio = APP_IRQ_PRIORITY_LOW,
-	.EvtHandler = TimerHandler
-};
-
-TimerLFnRF5x g_Timer;
 
 uint8_t g_AdvDataBuff[sizeof(PTHSENSOR_DATA) + 1] = {
 	BLEAPP_ADV_MANDATA_TYPE_PTH,
@@ -85,6 +85,16 @@ BLEAPP_ADV_MANDATA &g_AdvData = *(BLEAPP_ADV_MANDATA*)g_AdvDataBuff;
 
 // Evironmental Sensor Data to advertise
 PTHSENSOR_DATA &g_PTHData = *(PTHSENSOR_DATA *)g_AdvData.Data;
+
+const static TIMER_CFG s_TimerCfg = {
+    .DevNo = 2,
+	.ClkSrc = TIMER_CLKSRC_DEFAULT,
+	.Freq = 0,			// 0 => Default highest frequency
+	.IntPrio = APP_IRQ_PRIORITY_LOW,
+	.EvtHandler = TimerHandler
+};
+
+TimerLFnRF5x g_Timer;
 
 const BLEAPP_CFG s_BleAppCfg = {
 	{ // Clock config nrf_clock_lf_cfg_t
@@ -98,7 +108,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 
 	},
 	0, 						// Number of central link
-	1, 						// Number of peripheral link
+	0, 						// Number of peripheral link
 	BLEAPP_MODE_NOCONNECT,   // Connectionless beacon type
 	DEVICE_NAME,                 // Device name
 	ISYST_BLUETOOTH_ID,     // PnP Bluetooth/USB vendor id
@@ -166,18 +176,29 @@ PTHSensor &g_PthSensor = g_Bme280Sensor;
 PTHSensor &g_PthSensor = g_MS8607Sensor;
 #endif
 
+void ReadPTHData()
+{
+	g_I2c.Enable();
+
+	PTHSENSOR_DATA data;
+
+	g_PthSensor.ReadPTH(data);
+
+	// NOTE : M0 does not access unaligned data
+	// use local 4 bytes align stack variable then mem copy
+	memcpy(&g_PTHData, &data, sizeof(PTHSENSOR_DATA));
+
+	// Update advertisement data
+	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
+
+	g_I2c.Disable();
+}
+
 void TimerHandler(Timer *pTimer, uint32_t Evt)
 {
     if (Evt & TIMER_EVT_TRIGGER(0))
     {
-    	g_I2c.Enable();
-
-    	g_PthSensor.ReadPTH(g_PTHData);
-
-    	// Update advertisement data
-    	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
-
-    	g_I2c.Disable();
+    	ReadPTHData();
     }
 }
 
@@ -188,18 +209,10 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
     {
     	// Update environmental sensor data everytime advertisement timeout
     	// for re-advertisement
-    	g_I2c.Enable();
-
-    	g_PthSensor.ReadPTH(g_PTHData);
-
-    	// Update advertisement data
-    	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
-
-    	g_I2c.Disable();
+    	ReadPTHData();
     }
 #endif
 }
-
 
 void HardwareInit()
 {
@@ -235,3 +248,4 @@ int main()
 
 	return 0;
 }
+

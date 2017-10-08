@@ -75,17 +75,11 @@ Modified by          Date              Description
 
 extern "C" void nrf_sdh_soc_evts_poll(void * p_context);
 
-//#define IS_SRVC_CHANGED_CHARACT_PRESENT 1                                           /**< Include the service_changed characteristic. If not enabled, the server's database cannot be changed for the lifetime of the device. */
-
 #define APP_FEATURE_NOT_SUPPORTED       BLE_GATT_STATUS_ATTERR_APP_BEGIN + 2        /**< Reply when unsupported features are requested. */
 
 #define BLEAPP_OBSERVER_PRIO           1                                           /**< Application's BLE observer priority. You shouldn't need to modify this value. */
 #define BLEAPP_CONN_CFG_TAG            1                                           /**< A tag identifying the SoftDevice BLE configuration. */
 
-#define APP_ADV_INTERVAL                MSEC_TO_UNITS(64, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
-#define APP_ADV_TIMEOUT_IN_SECONDS      180                                         /**< The advertising timeout (in units of seconds). */
-
-//#define APP_TIMER_PRESCALER           0                                           /**< Value of the RTC1 PRESCALER register. */
 #define APP_TIMER_OP_QUEUE_SIZE         10                                           /**< Size of timer operation queues. */
 
 #define SCHED_MAX_EVENT_DATA_SIZE sizeof(app_timer_event_t) /**< Maximum size of scheduler events. Note that scheduler BLE stack events do not contain any data, as the events are being pulled from the stack in the event handler. */
@@ -95,21 +89,11 @@ extern "C" void nrf_sdh_soc_evts_poll(void * p_context);
 #define SCHED_QUEUE_SIZE          		10                        /**< Maximum number of events in the scheduler queue. */
 #endif
 
-#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)             /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
-#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)             /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
 #define SLAVE_LATENCY                   0                                           /**< Slave latency. */
 #define CONN_SUP_TIMEOUT                MSEC_TO_UNITS(4000, UNIT_10_MS)             /**< Connection supervisory timeout (4 seconds), Supervision Timeout uses 10 ms units. */
 
-#if (NRF_SD_BLE_API_VERSION <= 3)
-
-#define APP_TIMER_PRESCALER				0
-
-#define FIRST_CONN_PARAMS_UPDATE_DELAY  APP_TIMER_TICKS(5000, APP_TIMER_PRESCALER)  /**< Time from initiating event (connect or start of notification) to first time sd_ble_gap_conn_param_update is called (5 seconds). */
-#define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000, APP_TIMER_PRESCALER) /**< Time between each call to sd_ble_gap_conn_param_update after the first call (30 seconds). */
-#else
 #define FIRST_CONN_PARAMS_UPDATE_DELAY  APP_TIMER_TICKS(5000)  /**< Time from initiating event (connect or start of notification) to first time sd_ble_gap_conn_param_update is called (5 seconds). */
 #define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000) /**< Time between each call to sd_ble_gap_conn_param_update after the first call (30 seconds). */
-#endif
 
 #define MAX_CONN_PARAMS_UPDATE_COUNT    3                                           /**< Number of attempts before giving up the connection parameter negotiation. */
 
@@ -428,6 +412,7 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
         {
         	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
         	{
+//        		uint32_t ret = ble_advdata_set(&(g_AdvInstance.advdata), &g_BleAppData.SRData);
         		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams, BLEAPP_CONN_CFG_TAG);
         	}
         	//   ret_code_t err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_SLOW);
@@ -1018,7 +1003,6 @@ void BleAppAdvManDataSet(uint8_t *pData, int Len)
 
 	memcpy(g_AdvInstance.manuf_data_array, pData, l);
     uint32_t ret = ble_advdata_set(&(g_AdvInstance.advdata), &g_BleAppData.SRData);
-
 }
 
 void BleAppAdvStart(ble_adv_mode_t AdvMode)
@@ -1032,9 +1016,6 @@ void BleAppAdvStart(ble_adv_mode_t AdvMode)
 __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 {
     uint32_t               err_code;
-    //ble_advdata_t          advdata;
-    //ble_advdata_t          scanrsp;
-    //ble_adv_modes_config_t options;
     ble_advdata_manuf_data_t mdata;
     ble_advertising_init_t	initdata;
 
@@ -1045,8 +1026,6 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     mdata.data.size = pCfg->ManDataLen;
 
     // Build advertising data struct to pass into @ref ble_advertising_init.
-    //memset(&advdata, 0, sizeof(advdata));
-    //memset(&scanrsp, 0, sizeof(scanrsp));
 
     initdata.advdata.include_appearance = false;
     initdata.advdata.flags              = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
@@ -1130,8 +1109,12 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     memcpy(&g_BleAppData.SRData, &initdata.srdata, sizeof(ble_advdata_t));
 
     initdata.evt_handler = on_adv_evt;
-	err_code = ble_advertising_init(&g_AdvInstance, &initdata);//&advdata, &scanrsp, &options, on_adv_evt, NULL);
+	err_code = ble_advertising_init(&g_AdvInstance, &initdata);
 	APP_ERROR_CHECK(err_code);
+
+	// Bypass local copy of manufacturer data of the SDK
+//	g_AdvInstance.manuf_specific_data.data.p_data = initdata.advdata.p_manuf_specific_data->data.p_data;
+//	g_AdvInstance.advdata.p_manuf_specific_data->data.size = initdata.advdata.p_manuf_specific_data->data.size;
 
 	ble_advertising_conn_cfg_tag_set(&g_AdvInstance, BLEAPP_CONN_CFG_TAG);
 }
@@ -1174,11 +1157,7 @@ uint16_t BleAppGetConnHandle()
 }
 
 /**@brief Function for handling events from the GATT library. */
-#if (NRF_SD_BLE_API_VERSION > 3)
 void gatt_evt_handler(nrf_ble_gatt_t * p_gatt, const nrf_ble_gatt_evt_t * p_evt)
-#else
-void gatt_evt_handler(nrf_ble_gatt_t * p_gatt, nrf_ble_gatt_evt_t * p_evt)
-#endif
 {
     if ((g_BleAppData.ConnHdl == p_evt->conn_handle) && (p_evt->evt_id == NRF_BLE_GATT_EVT_ATT_MTU_UPDATED))
     {
@@ -1360,7 +1339,6 @@ bool BleAppStackInit(int CentLinkCount, int PeriLinkCount, bool bConnectable)
 	APP_ERROR_CHECK(err_code);
 
     // Register a handler for BLE events.
-//    NRF_SDH_BLE_OBSERVER(m_ble_observer, NRF_SDH_BLE_OBSERVER_PRIO_LEVELS, ble_evt_handler, NULL);
 	NRF_SDH_BLE_OBSERVER(g_BleObserver, BLEAPP_OBSERVER_PRIO, ble_evt_dispatch, NULL);
 
     return true;
@@ -1399,20 +1377,16 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     	case BLEAPP_MODE_LOOP:
     	case BLEAPP_MODE_NOCONNECT:
     	    app_timer_init();
-            //SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, NULL);
     		break;
     	case BLEAPP_MODE_APPSCHED:
     		app_timer_init();
     		APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
-            //SOFTDEVICE_HANDLER_APPSH_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, true);
     		break;
     	case BLEAPP_MODE_RTOS:
     		if (pBleAppCfg->SDEvtHandler == NULL)
     			return false;
 
     		g_BleAppData.SDEvtHandler = pBleAppCfg->SDEvtHandler;
-            //SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, pBleAppCfg->SDEvtHandler);
-    	    //NRF_SDH_BLE_OBSERVER(g_BleRtosObserver, BLEAPP_OBSERVER_PRIO, ble_rtos_evt_dispatch, NULL);
 
     		break;
     }
@@ -1454,15 +1428,6 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
 	BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
 
-#if NRF_SD_BLE_API_VERSION <= 3
-
-    err_code = nrf_crypto_public_key_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &m_crypto_key_pk);
-    APP_ERROR_CHECK(err_code);
-
-    /* Set the public key */
-    err_code = pm_lesc_public_key_set(&s_lesc_public_key);
-    APP_ERROR_CHECK(err_code);
-#else
     err_code = fds_register(fds_evt_handler);
     APP_ERROR_CHECK(err_code);
 
@@ -1470,7 +1435,6 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     // beyond this point. Here it is generated at bootup.
     err_code = lesc_generate_key_pair();
     APP_ERROR_CHECK(err_code);
-#endif
 
     BleAppAdvInit(pBleAppCfg);
 
@@ -1500,8 +1464,6 @@ void BleAppRun()
 		if (g_BleAppData.AppMode == BLEAPP_MODE_RTOS)
 		{
 			BleAppRtosWaitEvt();
-			//nrf_sdh_freertos_init(advertising_start, &erase_bonds);
-	//		intern_softdevice_events_execute();
 		}
 		else
 		{
