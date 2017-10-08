@@ -205,7 +205,7 @@
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582.1927089570" name="ledmxio.h" rcbsApplicability="disable" resourcePath="include/ledmxio.h" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="ble_app_nrf51.cpp|i2c_nrf5x.cpp|device.cpp|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|BlueIOADC.c|atomic.c|nrf_uart_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="i2c_nrf5x.cpp|device.cpp|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|BlueIOADC.c|atomic.c|nrf_uart_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -411,7 +411,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="ble_app_nrf51.cpp|i2c_nrf5x.cpp|device.cpp|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|BlueIOADC.c|atomic.c|nrf_uart_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="i2c_nrf5x.cpp|device.cpp|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|BlueIOADC.c|atomic.c|nrf_uart_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

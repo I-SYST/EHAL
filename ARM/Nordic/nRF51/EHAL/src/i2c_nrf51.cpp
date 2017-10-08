@@ -251,7 +251,7 @@ int nRF51I2CTxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
 	{
 		dev->pReg->TXD = *pData;
 
-		if (nRF51I2CWaitTxComplete(dev, 100000) == false)
+		if (nRF51I2CWaitTxComplete(dev, 10000) == false)
 		{
 			break;
 		}

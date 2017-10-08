@@ -256,6 +256,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app_handler.c</locationURI>
 		</link>
 		<link>
+			<name>src/ble_app_nrf52.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app_nrf52.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/ble_intrf.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ble_intrf.cpp</locationURI>
