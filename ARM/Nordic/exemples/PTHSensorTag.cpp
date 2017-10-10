@@ -42,6 +42,7 @@ Modified by          Date              Description
 #include "blueio_board.h"
 #include "uart.h"
 #include "i2c.h"
+#include "spi.h"
 #include "custom_board.h"
 #include "iopincfg.h"
 #include "app_util_platform.h"
@@ -61,6 +62,7 @@ Modified by          Date              Description
 //
 #ifdef NRF52
 #define USE_TIMER_UPDATE
+#define NEBLINA_MODULE
 #endif
 
 // NOTE : Min advertisement interval for S130 v2 is 100 ms
@@ -133,6 +135,52 @@ const BLEAPP_CFG s_BleAppCfg = {
 	NULL						// RTOS Softdevice handler
 };
 
+// Motsai Neblina V2 module uses SPI interface
+
+#define NEBLINA_SPI_BOSCH_DEVNO            2
+#define NEBLINA_SPI_BOSCH_MISO_PORT        0
+#define NEBLINA_SPI_BOSCH_MISO_PIN         13
+#define NEBLINA_SPI_BOSCH_MISO_PINOP       1
+#define NEBLINA_SPI_BOSCH_MOSI_PORT        0
+#define NEBLINA_SPI_BOSCH_MOSI_PIN         12
+#define NEBLINA_SPI_BOSCH_MOSI_PINOP       1
+#define NEBLINA_SPI_BOSCH_SCK_PORT         0
+#define NEBLINA_SPI_BOSCH_SCK_PIN          11
+#define NEBLINA_SPI_BOSCH_SCK_PINOP        1
+#define NEBLINA_SPI_BME280_CS_IDX          1
+#define NEBLINA_SPI_BME280_CS_PORT         0
+#define NEBLINA_SPI_BME280_CS_PIN          26
+#define NEBLINA_SPI_BME280_CS_PINOP        1
+
+static const IOPINCFG gsSpiBoschPin[] = {
+    {NEBLINA_SPI_BOSCH_SCK_PORT, NEBLINA_SPI_BOSCH_SCK_PIN, NEBLINA_SPI_BOSCH_SCK_PINOP,
+     IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+    {NEBLINA_SPI_BOSCH_MISO_PORT, NEBLINA_SPI_BOSCH_MISO_PIN, NEBLINA_SPI_BOSCH_MISO_PINOP,
+     IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+    {NEBLINA_SPI_BOSCH_MOSI_PORT, NEBLINA_SPI_BOSCH_MOSI_PIN, NEBLINA_SPI_BOSCH_MOSI_PINOP,
+     IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+    {NEBLINA_SPI_BME280_CS_PORT, NEBLINA_SPI_BME280_CS_PIN, NEBLINA_SPI_BME280_CS_PINOP,
+     IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
+};
+
+static const SPICFG s_SpiCfg = {
+    NEBLINA_SPI_BOSCH_DEVNO,
+    SPIMODE_MASTER,
+    gsSpiBoschPin,
+    sizeof( gsSpiBoschPin ) / sizeof( IOPINCFG ),
+    8000000,   // Speed in Hz
+    8,      // Data Size
+    5,      // Max retries
+    SPIDATABIT_MSB,
+    SPIDATAPHASE_SECOND_CLK, // Data phase
+    SPICLKPOL_LOW,         // clock polarity
+    SPICSEL_AUTO,
+    6, //APP_IRQ_PRIORITY_LOW,      // Interrupt priority
+    nullptr
+};
+
+SPI g_Spi;
+
 // Configure I2C interface
 static const I2CCFG s_I2cCfg = {
 	0,			// I2C device number
@@ -158,9 +206,19 @@ static const I2CCFG s_I2cCfg = {
 // I2C interface instance
 I2C g_I2c;
 
+#ifdef NEBLINA_MODULE
+DeviceIntrf *g_pIntrf = &g_Spi;
+#else
+DeviceIntrf *g_pIntrf = &g_I2c;
+#endif
+
 // Configure environmental sensor
 static PTHSENSOR_CFG s_PthSensorCfg = {
-	BME280_I2C_DEV_ADDR0,
+#ifdef NEBLINA_MODULE
+    0,      // SPI CS index 0
+#else
+	BME280_I2C_DEV_ADDR0,   // I2C device address
+#endif
 	PTHSENSOR_OPMODE_SINGLE,
 	0
 };
@@ -178,7 +236,7 @@ PTHSensor &g_PthSensor = g_MS8607Sensor;
 
 void ReadPTHData()
 {
-	g_I2c.Enable();
+    g_pIntrf->Enable();
 
 	PTHSENSOR_DATA data;
 
@@ -191,7 +249,7 @@ void ReadPTHData()
 	// Update advertisement data
 	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
 
-	g_I2c.Disable();
+	g_pIntrf->Disable();
 }
 
 void TimerHandler(Timer *pTimer, uint32_t Evt)
@@ -217,10 +275,14 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 void HardwareInit()
 {
 	// Initialize I2C
-	g_I2c.Init(s_I2cCfg);
+#ifdef NEBLINA_MODULE
+    g_Spi.Init(s_SpiCfg);
+#else
+    g_I2c.Init(s_I2cCfg);
+#endif
 
 	// Inititalize sensor
-    g_PthSensor.Init(s_PthSensorCfg, &g_I2c);
+    g_PthSensor.Init(s_PthSensorCfg, g_pIntrf);
 
     // Update sensor data
     PTHSENSOR_DATA pthdata;
@@ -230,7 +292,7 @@ void HardwareInit()
 	// adv data
 	memcpy(g_AdvData.Data, &pthdata, sizeof(PTHSENSOR_DATA));
 
-	g_I2c.Disable();
+	g_pIntrf->Disable();
 
 #ifdef USE_TIMER_UPDATE
     g_Timer.Init(s_TimerCfg);
