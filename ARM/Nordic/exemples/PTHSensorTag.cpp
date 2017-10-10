@@ -39,6 +39,8 @@ Modified by          Date              Description
 #include "istddef.h"
 #include "ble_app.h"
 #include "ble_service.h"
+#include "nrf_power.h"
+
 #include "blueio_board.h"
 #include "uart.h"
 #include "i2c.h"
@@ -274,6 +276,9 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 
 void HardwareInit()
 {
+	// Set this only if nRF is power at 2V or more
+	nrf_power_dcdcen_set(true);
+
 	// Initialize I2C
 #ifdef NEBLINA_MODULE
     g_Spi.Init(s_SpiCfg);
