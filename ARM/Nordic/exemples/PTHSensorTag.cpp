@@ -52,7 +52,7 @@ Modified by          Date              Description
 #include "pth_bme280.h"
 #include "pth_ms8607.h"
 #include "timer_nrf5x.h"
-
+#include "board.h"
 
 #define DEVICE_NAME                     "PTHSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
@@ -138,35 +138,20 @@ const BLEAPP_CFG s_BleAppCfg = {
 };
 
 // Motsai Neblina V2 module uses SPI interface
-
-#define NEBLINA_SPI_BOSCH_DEVNO            2
-#define NEBLINA_SPI_BOSCH_MISO_PORT        0
-#define NEBLINA_SPI_BOSCH_MISO_PIN         13
-#define NEBLINA_SPI_BOSCH_MISO_PINOP       1
-#define NEBLINA_SPI_BOSCH_MOSI_PORT        0
-#define NEBLINA_SPI_BOSCH_MOSI_PIN         12
-#define NEBLINA_SPI_BOSCH_MOSI_PINOP       1
-#define NEBLINA_SPI_BOSCH_SCK_PORT         0
-#define NEBLINA_SPI_BOSCH_SCK_PIN          11
-#define NEBLINA_SPI_BOSCH_SCK_PINOP        1
-#define NEBLINA_SPI_BME280_CS_IDX          1
-#define NEBLINA_SPI_BME280_CS_PORT         0
-#define NEBLINA_SPI_BME280_CS_PIN          26
-#define NEBLINA_SPI_BME280_CS_PINOP        1
-
+#ifdef NEBLINA_MODULE
 static const IOPINCFG gsSpiBoschPin[] = {
-    {NEBLINA_SPI_BOSCH_SCK_PORT, NEBLINA_SPI_BOSCH_SCK_PIN, NEBLINA_SPI_BOSCH_SCK_PINOP,
+    {SPI_SCK_PORT, SPI_SCK_PIN, SPI_SCK_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-    {NEBLINA_SPI_BOSCH_MISO_PORT, NEBLINA_SPI_BOSCH_MISO_PIN, NEBLINA_SPI_BOSCH_MISO_PINOP,
+    {SPI_MISO_PORT, SPI_MISO_PIN, SPI_MISO_PINOP,
      IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-    {NEBLINA_SPI_BOSCH_MOSI_PORT, NEBLINA_SPI_BOSCH_MOSI_PIN, NEBLINA_SPI_BOSCH_MOSI_PINOP,
+    {SPI_MOSI_PORT, SPI_MOSI_PIN, SPI_MOSI_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-    {NEBLINA_SPI_BME280_CS_PORT, NEBLINA_SPI_BME280_CS_PIN, NEBLINA_SPI_BME280_CS_PINOP,
+    {SPI_BME280_CS_PORT, SPI_BME280_CS_PIN, SPI_BME280_CS_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
 };
 
 static const SPICFG s_SpiCfg = {
-    NEBLINA_SPI_BOSCH_DEVNO,
+    SPI_DEVNO,
     SPIMODE_MASTER,
     gsSpiBoschPin,
     sizeof( gsSpiBoschPin ) / sizeof( IOPINCFG ),
@@ -182,6 +167,10 @@ static const SPICFG s_SpiCfg = {
 };
 
 SPI g_Spi;
+
+DeviceIntrf *g_pIntrf = &g_Spi;
+
+#else
 
 // Configure I2C interface
 static const I2CCFG s_I2cCfg = {
@@ -208,9 +197,6 @@ static const I2CCFG s_I2cCfg = {
 // I2C interface instance
 I2C g_I2c;
 
-#ifdef NEBLINA_MODULE
-DeviceIntrf *g_pIntrf = &g_Spi;
-#else
 DeviceIntrf *g_pIntrf = &g_I2c;
 #endif
 
