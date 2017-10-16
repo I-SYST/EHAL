@@ -149,24 +149,6 @@ __ALIGN(4) static ble_gap_lesc_p256_pk_t    s_lesc_public_key;      /**< LESC EC
 __ALIGN(4) static ble_gap_lesc_dhkey_t      s_lesc_dh_key;          /**< LESC ECC DH Key*/
 static ble_gap_conn_sec_mode_t s_gap_conn_mode;
 
-#if NRF_SD_BLE_API_VERSION <= 3
-static nrf_crypto_key_t m_crypto_key_sk =
-{
-    .p_le_data = (uint8_t *) g_lesc_private_key,
-    .len = sizeof(g_lesc_private_key)
-};
-
-static nrf_crypto_key_t m_crypto_key_pk =
-{
-    .p_le_data = (uint8_t *) s_lesc_public_key.pk,
-    .len = sizeof(s_lesc_public_key.pk)
-};
-static nrf_crypto_key_t m_crypto_key_dhkey =
-{
-    .p_le_data = (uint8_t *) s_lesc_dh_key.key,
-    .len = sizeof(s_lesc_dh_key.key)
-};
-#else
 /**@brief Allocated private key type to use for LESC DH generation
  */
 NRF_CRYPTO_ECC_PRIVATE_KEY_CREATE(s_private_key, SECP256R1);
@@ -206,10 +188,9 @@ uint32_t lesc_generate_key_pair(void)
     // Set the public key in the PM.
     ret_val = pm_lesc_public_key_set(&s_lesc_public_key);
     APP_ERROR_CHECK(ret_val);
+
     return ret_val;
 }
-
-#endif
 
 static inline void BleConnLedOff() {
 	if (g_BleAppData.ConnLedPort < 0 || g_BleAppData.ConnLedPin < 0)
@@ -241,7 +222,7 @@ void BleAppDfuCallback(fs_evt_t const * const evt, fs_ret_t result)
 
 void BleAppEnterDfu()
 {
-    uint32_t err_code = nrf_dfu_flash_init(true);
+/*    uint32_t err_code = nrf_dfu_flash_init(true);
 
     nrf_dfu_settings_init(true);
 
@@ -251,7 +232,7 @@ void BleAppEnterDfu()
 
     if (err_code != NRF_SUCCESS)
     {
-    }
+    }*/
 }
 
 /**@brief Function for assert macro callback.
@@ -736,6 +717,8 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
         } break;
 
         case PM_EVT_CONN_SEC_START:
+        	break;
+
         case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
         case PM_EVT_PEER_DELETE_SUCCEEDED:
         case PM_EVT_LOCAL_DB_CACHE_APPLIED:
@@ -927,24 +910,25 @@ static void BleAppPeerMngrInit(BLEAPP_SECTYPE SecType, uint8_t SecKeyExchg, bool
 		case BLEAPP_SECTYPE_STATICKEY_NO_MITM:
 			break;
 		case BLEAPP_SECTYPE_STATICKEY_MITM:
+	    	sec_param.mitm = 1;
 			break;
 		case BLEAPP_SECTYPE_LESC_MITM:
+		case BLEAPP_SECTYPE_SIGNED_MITM:
 	    	sec_param.mitm = 1;
 		    sec_param.lesc = 1;
 			break;
 		case BLEAPP_SECTYPE_SIGNED_NO_MITM:
-			break;
-		case BLEAPP_SECTYPE_SIGNED_MITM:
+		    sec_param.lesc = 1;
 			break;
     }
 
-    if (SecType == BLEAPP_SECTYPE_STATICKEY_MITM ||
+/*    if (SecType == BLEAPP_SECTYPE_STATICKEY_MITM ||
     	SecType == BLEAPP_SECTYPE_LESC_MITM ||
 		SecType == BLEAPP_SECTYPE_SIGNED_MITM)
     {
     	sec_param.mitm = 1;
     }
-
+*/
     int type = SecKeyExchg & (BLEAPP_SECEXCHG_KEYBOARD | BLEAPP_SECEXCHG_DISPLAY);
     switch (type)
     {
@@ -1197,7 +1181,6 @@ bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 	uint32_t err_code;
 
 
-
     //BleAppInitUserData();
 
     BleAppGapParamInit(pBleAppCfg);
@@ -1415,7 +1398,6 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 		APP_ERROR_CHECK(err_code);
     }
 
-
     BleAppInitUserData();
 
     if (pBleAppCfg->pDevName != NULL)
@@ -1428,13 +1410,14 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
 	BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
 
-    err_code = fds_register(fds_evt_handler);
-    APP_ERROR_CHECK(err_code);
+   // err_code = fds_register(fds_evt_handler);
+   // APP_ERROR_CHECK(err_code);
 
     // Private public keypair must be generated at least once for each device. It can be stored
     // beyond this point. Here it is generated at bootup.
     err_code = lesc_generate_key_pair();
     APP_ERROR_CHECK(err_code);
+
 
     BleAppAdvInit(pBleAppCfg);
 

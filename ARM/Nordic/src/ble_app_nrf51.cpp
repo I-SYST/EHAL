@@ -803,6 +803,9 @@ static void BleAppPeerMngrInit(BLEAPP_SECTYPE SecType, uint8_t SecKeyExchg, bool
     err_code = pm_register(pm_evt_handler);
     APP_ERROR_CHECK(err_code);
 
+    /* Set the public key */
+    err_code = pm_lesc_public_key_set(&s_lesc_public_key);
+    APP_ERROR_CHECK(err_code);
 }
 
 /**@brief Function for handling the Security Request timer timeout.
@@ -831,6 +834,7 @@ static void sec_req_timeout_handler(void * p_context)
 void BleAppAdvManDataSet(uint8_t *pData, int Len)
 {
     uint32_t ret = ble_advdata_set(&g_BleAppData.AdvData, &g_BleAppData.SRData);
+    APP_ERROR_CHECK(ret);
 }
 
 
@@ -1005,14 +1009,11 @@ bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 {
 	uint32_t err_code;
 
-    BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
 
     err_code = nrf_crypto_public_key_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &m_crypto_key_pk);
     APP_ERROR_CHECK(err_code);
 
-    /* Set the public key */
-    err_code = pm_lesc_public_key_set(&s_lesc_public_key);
-    APP_ERROR_CHECK(err_code);
+    BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
 
     //BleAppInitUserData();
 
@@ -1129,12 +1130,13 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     {
     	case BLEAPP_MODE_LOOP:
     	case BLEAPP_MODE_NOCONNECT:
-    		//APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
-//        	APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+    	case BLEAPP_MODE_IBEACON:
+    		APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
+        	//APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
             SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, NULL);
     		break;
     	case BLEAPP_MODE_APPSCHED:
-    		//APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
+    		APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
     		APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
             SOFTDEVICE_HANDLER_APPSH_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, true);
     		break;

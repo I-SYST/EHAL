@@ -39,9 +39,12 @@ Modified by          Date              Description
 #include "istddef.h"
 #include "ble_app.h"
 #include "ble_service.h"
+#include "nrf_power.h"
+
 #include "blueio_board.h"
 #include "uart.h"
 #include "i2c.h"
+#include "spi.h"
 #include "custom_board.h"
 #include "iopincfg.h"
 #include "app_util_platform.h"
@@ -49,7 +52,7 @@ Modified by          Date              Description
 #include "pth_bme280.h"
 #include "pth_ms8607.h"
 #include "timer_nrf5x.h"
-
+#include "board.h"
 
 #define DEVICE_NAME                     "PTHSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
@@ -61,6 +64,7 @@ Modified by          Date              Description
 //
 #ifdef NRF52
 #define USE_TIMER_UPDATE
+//#define NEBLINA_MODULE
 #endif
 
 // NOTE : Min advertisement interval for S130 v2 is 100 ms
@@ -133,15 +137,49 @@ const BLEAPP_CFG s_BleAppCfg = {
 	NULL						// RTOS Softdevice handler
 };
 
+// Motsai Neblina V2 module uses SPI interface
+#ifdef NEBLINA_MODULE
+static const IOPINCFG gsSpiBoschPin[] = {
+    {SPI_SCK_PORT, SPI_SCK_PIN, SPI_SCK_PINOP,
+     IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+    {SPI_MISO_PORT, SPI_MISO_PIN, SPI_MISO_PINOP,
+     IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+    {SPI_MOSI_PORT, SPI_MOSI_PIN, SPI_MOSI_PINOP,
+     IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+    {SPI_BME280_CS_PORT, SPI_BME280_CS_PIN, SPI_BME280_CS_PINOP,
+     IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
+};
+
+static const SPICFG s_SpiCfg = {
+    SPI_DEVNO,
+    SPIMODE_MASTER,
+    gsSpiBoschPin,
+    sizeof( gsSpiBoschPin ) / sizeof( IOPINCFG ),
+    8000000,   // Speed in Hz
+    8,      // Data Size
+    5,      // Max retries
+    SPIDATABIT_MSB,
+    SPIDATAPHASE_SECOND_CLK, // Data phase
+    SPICLKPOL_LOW,         // clock polarity
+    SPICSEL_AUTO,
+    6, //APP_IRQ_PRIORITY_LOW,      // Interrupt priority
+    nullptr
+};
+
+SPI g_Spi;
+
+DeviceIntrf *g_pIntrf = &g_Spi;
+
+#else
+
 // Configure I2C interface
 static const I2CCFG s_I2cCfg = {
 	0,			// I2C device number
 	{
 
 #ifdef PTH_BME280
-
-		{BLUEIO_TAG_BME280_I2C_SDA_PORT, BLUEIO_TAG_BME280_I2C_SDA_PIN, BLUEIO_TAG_BME280_I2C_SDA_PINOP, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-		{BLUEIO_TAG_BME280_I2C_SCL_PORT, BLUEIO_TAG_BME280_I2C_SCL_PIN, BLUEIO_TAG_BME280_I2C_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
+		{I2C0_SDA_PORT, I2C0_SDA_PIN, I2C0_SDA_PINOP, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
+		{I2C0_SCL_PORT, I2C0_SCL_PIN, I2C0_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
 #else
 		{0, 4, 0, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
 		{0, 3, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
@@ -158,9 +196,16 @@ static const I2CCFG s_I2cCfg = {
 // I2C interface instance
 I2C g_I2c;
 
+DeviceIntrf *g_pIntrf = &g_I2c;
+#endif
+
 // Configure environmental sensor
 static PTHSENSOR_CFG s_PthSensorCfg = {
-	BME280_I2C_DEV_ADDR0,
+#ifdef NEBLINA_MODULE
+    0,      // SPI CS index 0
+#else
+	BME280_I2C_DEV_ADDR0,   // I2C device address
+#endif
 	PTHSENSOR_OPMODE_SINGLE,
 	0
 };
@@ -178,7 +223,7 @@ PTHSensor &g_PthSensor = g_MS8607Sensor;
 
 void ReadPTHData()
 {
-	g_I2c.Enable();
+    g_pIntrf->Enable();
 
 	PTHSENSOR_DATA data;
 
@@ -191,7 +236,7 @@ void ReadPTHData()
 	// Update advertisement data
 	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
 
-	g_I2c.Disable();
+	g_pIntrf->Disable();
 }
 
 void TimerHandler(Timer *pTimer, uint32_t Evt)
@@ -216,11 +261,18 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 
 void HardwareInit()
 {
+	// Set this only if nRF is power at 2V or more
+	nrf_power_dcdcen_set(true);
+
 	// Initialize I2C
-	g_I2c.Init(s_I2cCfg);
+#ifdef NEBLINA_MODULE
+    g_Spi.Init(s_SpiCfg);
+#else
+    g_I2c.Init(s_I2cCfg);
+#endif
 
 	// Inititalize sensor
-    g_PthSensor.Init(s_PthSensorCfg, &g_I2c);
+    g_PthSensor.Init(s_PthSensorCfg, g_pIntrf);
 
     // Update sensor data
     PTHSENSOR_DATA pthdata;
@@ -230,7 +282,7 @@ void HardwareInit()
 	// adv data
 	memcpy(g_AdvData.Data, &pthdata, sizeof(PTHSENSOR_DATA));
 
-	g_I2c.Disable();
+	g_pIntrf->Disable();
 
 #ifdef USE_TIMER_UPDATE
     g_Timer.Init(s_TimerCfg);
