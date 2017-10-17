@@ -456,19 +456,24 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmxfont.h</locationURI>
 		</link>
 		<link>
-			<name>include/sensors/pth_bme280.h</name>
+			<name>include/sensors/tph_bme280.h</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pth_bme280.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/tph_bme280.h</locationURI>
 		</link>
 		<link>
-			<name>include/sensors/pth_ms8607.h</name>
+			<name>include/sensors/tph_ms8607.h</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pth_ms8607.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/tph_ms8607.h</locationURI>
 		</link>
 		<link>
-			<name>include/sensors/pth_sensor.h</name>
+			<name>include/sensors/tph_sensor.h</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pth_sensor.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/tph_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/tphg_bme680.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/tphg_bme680.h</locationURI>
 		</link>
 		<link>
 			<name>include/sys/dirent.h</name>
@@ -531,14 +536,19 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/sensors/pth_bme280.cpp</name>
+			<name>src/sensors/tph_bme280.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/pth_bme280.cpp</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/tph_bme280.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/sensors/pth_ms8607.cpp</name>
+			<name>src/sensors/tph_ms8607.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/pth_ms8607.cpp</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/tph_ms8607.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/tphg_bme680.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/tphg_bme680.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/ble_advertising</name>

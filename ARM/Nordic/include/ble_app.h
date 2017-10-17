@@ -57,18 +57,20 @@ Modified by          Date              Description
 
 #endif
 
-#define BLEAPP_ADV_MANDATA_TYPE_SN		0xFF	// Device Serial Number (8 bytes)
-#define BLEAPP_ADV_MANDATA_TYPE_PTH		1		// Environmental sensor data (Pressure, Temperature, Humidity)
-#define BLEAPP_ADV_MANDATA_TYPE_MOTION	2		// Motion sensor data Accel, Gyro, Mag
-#define BLEAPP_ADV_MANDATA_TYPE_GAS		3		// Gas sensor data
-#define BLEAPP_ADV_MANDATA_TYPE_PROXY	4		// Proximity sensor data
-#define BLEAPP_ADV_MANDATA_TYPE_ADC		5		// Analog converter data
+// Manufacture specific advertisement data type
+#define BLEAPP_ADV_MANDATA_TYPE_SN			0xFF	// Device Serial Number or UID (8 bytes)
+#define BLEAPP_ADV_MANDATA_TYPE_TPH			1		// Environmental sensor data (Temperature, Pressure, Humidity)
+#define BLEAPP_ADV_MANDATA_TYPE_INERTIAL	2		// Motion sensor data Accel, Gyro, Mag
+#define BLEAPP_ADV_MANDATA_TYPE_GAS			3		// Gas sensor data
+#define BLEAPP_ADV_MANDATA_TYPE_PROXY		4		// Proximity sensor data
+#define BLEAPP_ADV_MANDATA_TYPE_ADC			5		// Analog converter data
 
 #pragma pack(push, 1)
-// I-SYST Manufacture specific data format in advertisement
+
+// Manufacture specific data format in advertisement
 typedef struct _BleAppAdvManData {
-	uint8_t Type;		// Data types (see defined code
-	uint8_t Data[1];	// type specific data follows can be more than 1 bytes
+	uint8_t Type;		// Data types (see defined code above)
+	uint8_t Data[1];	// Type specific data follows can be more than 1 bytes
 } BLEAPP_ADV_MANDATA;
 
 #pragma pack(pop)
