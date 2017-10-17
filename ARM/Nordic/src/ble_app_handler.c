@@ -33,6 +33,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
+#include "ble_advertising.h"
+
 #include "ble_app.h"
 
 void __WEAK BleAppInitUserData()

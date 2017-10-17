@@ -206,33 +206,25 @@ static inline void BleConnLedOn() {
 	IOPinClear(g_BleAppData.ConnLedPort, g_BleAppData.ConnLedPin);
 }
 
-#ifdef NRF52
-void BleAppDfuCallback(nrf_fstorage_evt_t *pEvt)
-{
-    if (pEvt->result == FDS_SUCCESS)
-#else
-void BleAppDfuCallback(fs_evt_t const * const evt, fs_ret_t result)
-{
-	if (result == FS_SUCCESS)
-#endif
-    {
-        NVIC_SystemReset();
-    }
-}
-
 void BleAppEnterDfu()
 {
-/*    uint32_t err_code = nrf_dfu_flash_init(true);
+    // SDK14 use this
+    uint32_t err_code = sd_power_gpregret_clr(0, 0xffffffff);
+    err_code = sd_power_gpregret_set(0, 0xB1);//BOOTLOADER_DFU_START);
+    NVIC_SystemReset();
+#if 0
+
+    uint32_t err_code = nrf_dfu_flash_init(true);
 
     nrf_dfu_settings_init(true);
 
     s_dfu_settings.enter_buttonless_dfu = true;
 
     err_code = nrf_dfu_settings_write(BleAppDfuCallback);
-
     if (err_code != NRF_SUCCESS)
     {
-    }*/
+    }
+#endif
 }
 
 /**@brief Function for assert macro callback.
