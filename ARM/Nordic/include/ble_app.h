@@ -39,6 +39,7 @@ Modified by          Date              Description
 #include "ble.h"
 #include "nrf_sdm.h"
 #include "ble_db_discovery.h"
+#include "ble_advertising.h"
 
 /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
 #if (NRF_SD_BLE_API_VERSION <= 3)
@@ -219,6 +220,7 @@ void BleAppRun();
 uint16_t BleAppGetConnHandle();
 void BleAppGapDeviceNameSet(const char* ppDeviceName);
 void BleAppAdvManDataSet(uint8_t *pData, int Len);
+void BleAppAdvStart(ble_adv_mode_t AdvMode);
 
 #ifdef __cplusplus
 }
