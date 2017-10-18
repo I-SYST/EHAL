@@ -616,6 +616,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/external/fprintf/nrf_fprintf_format.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/atomic_fifo</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/balloc</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -626,17 +631,17 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/cli</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/crc32</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crypto</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/experimental_cli</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -841,6 +846,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/rng/nrf_drv_rng.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/atomic_fifo/nrf_atfifo.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/atomic_fifo/nrf_atfifo.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/balloc/nrf_balloc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/balloc/nrf_balloc.c</locationURI>
@@ -849,6 +859,11 @@
 			<name>src/nRF5_SDK/libraries/bootloader/dfu</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/cli/nrf_cli.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/cli/nrf_cli.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crc32/crc32.c</name>
@@ -894,11 +909,6 @@
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_rng.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_rng.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/experimental_cli/nrf_cli.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/experimental_cli/nrf_cli.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/experimental_log/src</name>

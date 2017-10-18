@@ -1210,6 +1210,13 @@
 #define BLE_RACP_ENABLED 0
 #endif
 
+// <q> NRF_BLE_GATT_ENABLED  - nrf_ble_gatt - GATT module
+
+
+#ifndef NRF_BLE_GATT_ENABLED
+#define NRF_BLE_GATT_ENABLED 1
+#endif
+
 // <e> NRF_BLE_CONN_PARAMS_ENABLED - ble_conn_params - Initiating and executing a connection parameters negotiation procedure
 //==========================================================
 #ifndef NRF_BLE_CONN_PARAMS_ENABLED
@@ -1230,13 +1237,6 @@
 #endif
 
 // </e>
-
-// <q> NRF_BLE_GATT_ENABLED  - nrf_ble_gatt - GATT module
-
-
-#ifndef NRF_BLE_GATT_ENABLED
-#define NRF_BLE_GATT_ENABLED 1
-#endif
 
 // <q> NRF_BLE_QWR_ENABLED  - nrf_ble_qwr - Queued writes support module (prepare/execute write)
  
@@ -1291,7 +1291,7 @@
  
 
 #ifndef BLE_BAS_C_ENABLED
-#define BLE_BAS_C_ENABLED 1
+#define BLE_BAS_C_ENABLED 0
 #endif
 
 // <q> BLE_BAS_ENABLED  - ble_bas - Battery Service
@@ -1340,14 +1340,14 @@
  
 
 #ifndef BLE_HRS_C_ENABLED
-#define BLE_HRS_C_ENABLED 1
+#define BLE_HRS_C_ENABLED 0
 #endif
 
 // <q> BLE_HRS_ENABLED  - ble_hrs - Heart Rate Service
  
 
 #ifndef BLE_HRS_ENABLED
-#define BLE_HRS_ENABLED 1
+#define BLE_HRS_ENABLED 0
 #endif
 
 // <q> BLE_HTS_ENABLED  - ble_hts - Health Thermometer Service
@@ -1389,7 +1389,7 @@
  
 
 #ifndef BLE_LLS_ENABLED
-#define BLE_LLS_ENABLED 1
+#define BLE_LLS_ENABLED 0
 #endif
 
 // <q> BLE_NUS_C_ENABLED  - ble_nus_c - Nordic UART Central Service
@@ -1403,7 +1403,7 @@
  
 
 #ifndef BLE_NUS_ENABLED
-#define BLE_NUS_ENABLED 1
+#define BLE_NUS_ENABLED 0
 #endif
 
 // <q> BLE_RSCS_C_ENABLED  - ble_rscs_c - Running Speed and Cadence Client
@@ -1424,7 +1424,7 @@
  
 
 #ifndef BLE_TPS_ENABLED
-#define BLE_TPS_ENABLED 0
+#define BLE_TPS_ENABLED 1
 #endif
 
 // </h> 
@@ -1541,7 +1541,7 @@
  
 
 #ifndef NRF_DFU_BLE_BUTTONLESS_SUPPORTS_BONDS
-#define NRF_DFU_BLE_BUTTONLESS_SUPPORTS_BONDS 1
+#define NRF_DFU_BLE_BUTTONLESS_SUPPORTS_BONDS 0
 #endif
 
 // </h> 
@@ -1810,7 +1810,7 @@
 // <e> GPIOTE_ENABLED - nrf_drv_gpiote - GPIOTE peripheral driver
 //==========================================================
 #ifndef GPIOTE_ENABLED
-#define GPIOTE_ENABLED 1
+#define GPIOTE_ENABLED 0
 #endif
 // <o> GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS - Number of lower power input pins 
 #ifndef GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS
@@ -2441,7 +2441,7 @@
 // <e> RTC_ENABLED - nrf_drv_rtc - RTC peripheral driver
 //==========================================================
 #ifndef RTC_ENABLED
-#define RTC_ENABLED 0
+#define RTC_ENABLED 1
 #endif
 // <o> RTC_DEFAULT_CONFIG_FREQUENCY - Frequency  <16-32768> 
 
@@ -2478,7 +2478,7 @@
  
 
 #ifndef RTC0_ENABLED
-#define RTC0_ENABLED 0
+#define RTC0_ENABLED 1
 #endif
 
 // <q> RTC1_ENABLED  - Enable RTC1 instance
@@ -2750,7 +2750,7 @@
 // <e> TIMER_ENABLED - nrf_drv_timer - TIMER periperal driver
 //==========================================================
 #ifndef TIMER_ENABLED
-#define TIMER_ENABLED 0
+#define TIMER_ENABLED 1
 #endif
 // <o> TIMER_DEFAULT_CONFIG_FREQUENCY  - Timer frequency if in Timer mode
  
@@ -3008,7 +3008,7 @@
 // <e> UART_ENABLED - nrf_drv_uart - UART/UARTE peripheral driver
 //==========================================================
 #ifndef UART_ENABLED
-#define UART_ENABLED 1
+#define UART_ENABLED 0
 #endif
 // <o> UART_DEFAULT_CONFIG_HWFC  - Hardware Flow Control
  
@@ -3148,7 +3148,7 @@
 // <e> WDT_ENABLED - nrf_drv_wdt - WDT peripheral driver
 //==========================================================
 #ifndef WDT_ENABLED
-#define WDT_ENABLED 0
+#define WDT_ENABLED 1
 #endif
 // <o> WDT_CONFIG_BEHAVIOUR  - WDT behavior in CPU SLEEP or HALT mode
  
@@ -3193,13 +3193,6 @@
 // <h> nRF_Libraries 
 
 //==========================================================
-// <q> APP_FIFO_ENABLED  - app_fifo - Software FIFO implementation
-
-
-#ifndef APP_FIFO_ENABLED
-#define APP_FIFO_ENABLED 1
-#endif
-
 // <q> APP_GPIOTE_ENABLED  - app_gpiote - GPIOTE events dispatcher
  
 
@@ -3315,17 +3308,17 @@
 
 // </e>
 
-// <q> APP_TWI_ENABLED  - app_twi - TWI transaction manager
+// <q> NRF_TWI_MNGR_ENABLED  - nrf_twi_mngr - TWI transaction manager
  
 
-#ifndef APP_TWI_ENABLED
-#define APP_TWI_ENABLED 0
+#ifndef NRF_TWI_MNGR_ENABLED
+#define NRF_TWI_MNGR_ENABLED 0
 #endif
 
 // <e> APP_UART_ENABLED - app_uart - UART driver
 //==========================================================
 #ifndef APP_UART_ENABLED
-#define APP_UART_ENABLED 1
+#define APP_UART_ENABLED 0
 #endif
 // <o> APP_UART_DRIVER_INSTANCE  - UART instance used
  
@@ -3390,7 +3383,7 @@
  
 
 #ifndef BUTTON_ENABLED
-#define BUTTON_ENABLED 1
+#define BUTTON_ENABLED 0
 #endif
 
 // <q> CRC16_ENABLED  - crc16 - CRC16 calculation routines
@@ -3404,7 +3397,7 @@
  
 
 #ifndef CRC32_ENABLED
-#define CRC32_ENABLED 0
+#define CRC32_ENABLED 1
 #endif
 
 // <q> ECC_ENABLED  - ecc - Elliptic Curve Cryptography Library
@@ -3461,7 +3454,7 @@
 // <2=> NRF_FSTORAGE_SD 
 
 #ifndef FDS_BACKEND
-#define FDS_BACKEND 	NRF_FSTORAGE_SD
+#define FDS_BACKEND 2
 #endif
 
 // </h> 
@@ -3628,7 +3621,7 @@
 // <e> HCI_TRANSPORT_ENABLED - hci_transport - HCI transport
 //==========================================================
 #ifndef HCI_TRANSPORT_ENABLED
-#define HCI_TRANSPORT_ENABLED 1
+#define HCI_TRANSPORT_ENABLED 0
 #endif
 // <o> HCI_MAX_PACKET_SIZE_IN_BITS - Maximum size of a single application packet in bits. 
 #ifndef HCI_MAX_PACKET_SIZE_IN_BITS
@@ -3854,7 +3847,7 @@
 // <e> NRF_DRV_CSENSE_ENABLED - nrf_drv_csense - Capacitive sensor low-level module
 //==========================================================
 #ifndef NRF_DRV_CSENSE_ENABLED
-#define NRF_DRV_CSENSE_ENABLED 1
+#define NRF_DRV_CSENSE_ENABLED 0
 #endif
 // <e> USE_COMP - Use the comparator to implement the capacitive sensor driver.
 
@@ -3936,7 +3929,7 @@
  
 
 #ifndef NRF_MEMOBJ_ENABLED
-#define NRF_MEMOBJ_ENABLED 1
+#define NRF_MEMOBJ_ENABLED 0
 #endif
 
 // <e> NRF_PWR_MGMT_ENABLED - nrf_pwr_mgmt - Power management module
@@ -4080,7 +4073,7 @@
  
 
 #ifndef NRF_STRERROR_ENABLED
-#define NRF_STRERROR_ENABLED 0
+#define NRF_STRERROR_ENABLED 1
 #endif
 
 // <q> SLIP_ENABLED  - slip - SLIP encoding and decoding
@@ -4159,6 +4152,13 @@
 // <o> NRF_CLI_CMD_BUFF_SIZE - Maximum buffer size for single command. 
 #ifndef NRF_CLI_CMD_BUFF_SIZE
 #define NRF_CLI_CMD_BUFF_SIZE 128
+#endif
+
+// <q> NRF_CLI_ECHO_STATUS  - CLI echo status. If set, echo is ON.
+
+
+#ifndef NRF_CLI_ECHO_STATUS
+#define NRF_CLI_ECHO_STATUS 1
 #endif
 
 // <o> NRF_CLI_PRINTF_BUFF_SIZE - Maximum print buffer size. 
@@ -4365,7 +4365,7 @@
 // <4=> Debug 
 
 #ifndef NRF_LOG_DEFAULT_LEVEL
-#define NRF_LOG_DEFAULT_LEVEL 4
+#define NRF_LOG_DEFAULT_LEVEL 3
 #endif
 
 // <q> NRF_LOG_DEFERRED  - Enable deffered logger.
@@ -6123,7 +6123,7 @@
 // <e> NRF_SDH_ANT_LOG_ENABLED - Enable logging in SoftDevice handler (ANT) module.
 //==========================================================
 #ifndef NRF_SDH_ANT_LOG_ENABLED
-#define NRF_SDH_ANT_LOG_ENABLED 0
+#define NRF_SDH_ANT_LOG_ENABLED 1
 #endif
 // <o> NRF_SDH_ANT_LOG_LEVEL  - Default Severity level
  
@@ -6174,7 +6174,7 @@
 // <e> NRF_SDH_BLE_LOG_ENABLED - Enable logging in SoftDevice handler (BLE) module.
 //==========================================================
 #ifndef NRF_SDH_BLE_LOG_ENABLED
-#define NRF_SDH_BLE_LOG_ENABLED 0
+#define NRF_SDH_BLE_LOG_ENABLED 1
 #endif
 // <o> NRF_SDH_BLE_LOG_LEVEL  - Default Severity level
  
@@ -6225,7 +6225,7 @@
 // <e> NRF_SDH_LOG_ENABLED - Enable logging in SoftDevice handler module.
 //==========================================================
 #ifndef NRF_SDH_LOG_ENABLED
-#define NRF_SDH_LOG_ENABLED 0
+#define NRF_SDH_LOG_ENABLED 1
 #endif
 // <o> NRF_SDH_LOG_LEVEL  - Default Severity level
  
@@ -6276,7 +6276,7 @@
 // <e> NRF_SDH_SOC_LOG_ENABLED - Enable logging in SoftDevice handler (SoC) module.
 //==========================================================
 #ifndef NRF_SDH_SOC_LOG_ENABLED
-#define NRF_SDH_SOC_LOG_ENABLED 0
+#define NRF_SDH_SOC_LOG_ENABLED 1
 #endif
 // <o> NRF_SDH_SOC_LOG_LEVEL  - Default Severity level
  
@@ -6607,7 +6607,7 @@
 // <e> NFC_NDEF_RECORD_PARSER_ENABLED - nfc_ndef_record_parser - NFC NDEF Record parser module
 //==========================================================
 #ifndef NFC_NDEF_RECORD_PARSER_ENABLED
-#define NFC_NDEF_RECORD_PARSER_ENABLED 0
+#define NFC_NDEF_RECORD_PARSER_ENABLED 1
 #endif
 // <e> NFC_NDEF_RECORD_PARSER_LOG_ENABLED - Enables logging in the module.
 //==========================================================
@@ -7335,7 +7335,7 @@
 // <e> NFC_T4T_HAL_ENABLED - nfc_t4t_hal - Hardware Abstraction Layer for NFC library.
 //==========================================================
 #ifndef NFC_T4T_HAL_ENABLED
-#define NFC_T4T_HAL_ENABLED 0
+#define NFC_T4T_HAL_ENABLED 1
 #endif
 // <o> NFCT_CONFIG_IRQ_PRIORITY  - Interrupt priority
  
@@ -8077,7 +8077,7 @@
 // <e> NRF_SDH_ANT_ENABLED - nrf_sdh_ant - SoftDevice ANT event handler
 //==========================================================
 #ifndef NRF_SDH_ANT_ENABLED
-#define NRF_SDH_ANT_ENABLED 0
+#define NRF_SDH_ANT_ENABLED 1
 #endif
 // <h> ANT Channels 
 
@@ -8205,7 +8205,7 @@
 
 // <o> NRF_SDH_BLE_TOTAL_LINK_COUNT - Maximum number of total concurrent connections using the default configuration. 
 #ifndef NRF_SDH_BLE_TOTAL_LINK_COUNT
-#define NRF_SDH_BLE_TOTAL_LINK_COUNT 2
+#define NRF_SDH_BLE_TOTAL_LINK_COUNT 1
 #endif
 
 // <o> NRF_SDH_BLE_GAP_EVENT_LENGTH - The time set aside for this connection on every connection interval in 1.25 ms units. 

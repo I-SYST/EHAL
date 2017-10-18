@@ -95,7 +95,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/cc310_lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_memobj&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_cli&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/cli&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
@@ -103,6 +103,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/timer&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fstorage&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -195,7 +196,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/cc310_lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_memobj&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_cli&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/cli&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
@@ -203,6 +204,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/timer&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fstorage&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -255,7 +257,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="nRF5_SDK/softdevice/common/nrf_sdh_soc.c|ble_app.cpp|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/libraries/log|nRF5_SDK/softdevice/common/softdevice_handler|device.cpp|nRF5_SDK_12|atomic.c|sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c|nRF5_SDK/softdevice/common/nrf_sdh_soc.c|ble_app.cpp|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/libraries/log|nRF5_SDK/softdevice/common/softdevice_handler|device.cpp|nRF5_SDK_12|atomic.c|sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -355,7 +357,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/cc310_lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_memobj&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_cli&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/cli&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
@@ -363,6 +365,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/timer&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fstorage&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -455,7 +458,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/cc310_lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_memobj&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_cli&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/cli&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
@@ -463,6 +466,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/timer&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fstorage&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -515,7 +519,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="nRF5_SDK/softdevice/common/nrf_sdh_soc.c|ble_app.cpp|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/libraries/log|nRF5_SDK/softdevice/common/softdevice_handler|device.cpp|nRF5_SDK_12|atomic.c|sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c|nRF5_SDK/softdevice/common/nrf_sdh_soc.c|ble_app.cpp|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/libraries/log|nRF5_SDK/softdevice/common/softdevice_handler|device.cpp|nRF5_SDK_12|atomic.c|sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -617,7 +621,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/cc310_lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_memobj&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_cli&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/cli&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
@@ -625,6 +629,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/timer&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fstorage&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -717,7 +722,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/cc310_lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_memobj&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_cli&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/cli&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
@@ -725,6 +730,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/timer&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fstorage&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -777,7 +783,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="nRF5_SDK/softdevice/common/nrf_sdh_soc.c|ble_app.cpp|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/libraries/log|nRF5_SDK/softdevice/common/softdevice_handler|device.cpp|nRF5_SDK_12|atomic.c|sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c|nRF5_SDK/softdevice/common/nrf_sdh_soc.c|ble_app.cpp|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/libraries/log|nRF5_SDK/softdevice/common/softdevice_handler|device.cpp|nRF5_SDK_12|atomic.c|sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -879,7 +885,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/cc310_lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_memobj&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_cli&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/cli&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
@@ -887,6 +893,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/timer&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fstorage&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -979,7 +986,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/cc310_lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_memobj&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_cli&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/cli&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/experimental_log/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
@@ -987,6 +994,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/timer&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fstorage&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -1039,7 +1047,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="nRF5_SDK/softdevice/common/nrf_sdh_soc.c|ble_app.cpp|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/libraries/log|nRF5_SDK/softdevice/common/softdevice_handler|device.cpp|nRF5_SDK_12|atomic.c|sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c|nRF5_SDK/softdevice/common/nrf_sdh_soc.c|ble_app.cpp|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/libraries/log|nRF5_SDK/softdevice/common/softdevice_handler|device.cpp|nRF5_SDK_12|atomic.c|sysstatus_impl.cpp|diskio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
