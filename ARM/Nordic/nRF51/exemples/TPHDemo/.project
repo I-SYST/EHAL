@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>PthDemo</name>
+	<name>TPHDemo</name>
 	<comment></comment>
 	<projects>
 		<project>CMSIS</project>
@@ -28,9 +28,15 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/env_pth_demo.cpp</name>
+			<name>src/env_tph_demo.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/exemples/sensor/env_pth_demo.cpp</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/exemples/sensor/env_tph_demo.cpp</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-4-PROJECT_LOC%7D</value>
+		</variable>
+	</variableList>
 </projectDescription>

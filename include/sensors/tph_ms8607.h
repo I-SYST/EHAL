@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
-File   : pth_ms8607.h
+File   : tph_ms8607.h
 
 Author : Hoang Nguyen Hoan          			Feb. 12, 2017
 
 Desc   : MS8607 environment sensor implementation
-			- Temperature, Humidity, Barometric pressure
+			- Temperature, Pressure, Humidity
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#ifndef __PTH_MS8607_H__
-#define __PTH_MS8607_H__
+#ifndef __TPH_MS8607_H__
+#define __TPH_MS8607_H__
 
 #include <stdint.h>
 #include <string.h>
@@ -43,7 +43,7 @@ Modified by          Date              Description
 #endif
 
 #include "iopincfg.h"
-#include "pth_sensor.h"
+#include "tph_sensor.h"
 
 // Device address
 #define MS8607_PTDEV_ADDR				0x76
@@ -67,11 +67,13 @@ Modified by          Date              Description
 
 #ifdef __cplusplus
 
-class PthMS8607 : public PTHSensor {
+class TphMS8607 : public TPHSensor {
 public:
-	PthMS8607() {}
-	virtual ~PthMS8607() {}
-	virtual bool Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf);
+	TphMS8607() {}
+	virtual ~TphMS8607() {}
+	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer = NULL);
+//	virtual bool Init(const void *pCfgData, DeviceIntrf *pIntrf, Timer *pTimer);
+
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
@@ -80,14 +82,14 @@ public:
 	 * @brief Set operating mode
 	 *
 	 * @param OpMode : Operating mode
-	 * 					- PTHSENSOR_OPMODE_SLEEP
-	 * 					- PTHSENSOR_OPMODE_SINGLE
-	 * 					- PTHSENSOR_OPMODE_CONTINUOUS
+	 * 					- TPHSENSOR_OPMODE_SLEEP
+	 * 					- TPHSENSOR_OPMODE_SINGLE
+	 * 					- TPHSENSOR_OPMODE_CONTINUOUS
 	 * @param Freq : Sampling frequency in Hz for continuous mode
 	 *
 	 * @return true- if success
 	 */
-	virtual bool SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq);
+	virtual bool SetMode(SENSOR_OPMODE OpMode, uint32_t Freq);
 
 	/**
 	 * @brief	Start sampling data
@@ -95,7 +97,7 @@ public:
 	 * @return	true - success
 	 */
 	virtual bool StartSampling();
-	bool ReadPTH(PTHSENSOR_DATA &PthData);
+	bool ReadTPH(TPHSENSOR_DATA &PthData);
 	float ReadTemperature();
 	float ReadPressure();
 	float ReadHumidity();
@@ -119,4 +121,4 @@ extern "C" {
 
 #endif	// __cplusplus
 
-#endif	// __PTH_MS8607_H__
+#endif	// __TPH_MS8607_H__

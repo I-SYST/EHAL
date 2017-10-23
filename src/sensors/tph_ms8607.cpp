@@ -42,7 +42,7 @@ Modified by          Date              Description
 
 #include "idelay.h"
 #include "iopincfg.h"
-#include "sensors/pth_ms8607.h"
+#include "sensors/tph_ms8607.h"
 
 uint8_t crc4_PT(uint16_t *pData)
 {
@@ -73,8 +73,11 @@ uint8_t crc4_PT(uint16_t *pData)
 	return (n_rem ^ 0x00);
 }
 
-bool PthMS8607::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
+bool TphMS8607::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+//bool TphMS8607::Init(const void *pCfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
+	//TPHSENSOR_CFG *cfg = (TPHSENSOR_CFG*)pCfgData;
+
 	SetInterface(pIntrf);
 	SetDeviceAddess(CfgData.DevAddr);
 
@@ -85,7 +88,7 @@ bool PthMS8607::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
 	return true;
 }
 
-void PthMS8607::ReadPtProm()
+void TphMS8607::ReadPtProm()
 {
 	uint8_t cmd;
 
@@ -104,7 +107,7 @@ void PthMS8607::ReadPtProm()
 	int crc = crc4_PT(vPTProm);
 }
 
-bool PthMS8607::StartSampling()
+bool TphMS8607::StartSampling()
 {
 	return true;
 }
@@ -113,25 +116,25 @@ bool PthMS8607::StartSampling()
  * @brief Set operating mode
  *
  * @param OpMode : Operating mode
- * 					- PTHSENSOR_OPMODE_SLEEP
- * 					- PTHSENSOR_OPMODE_SINGLE
- * 					- PTHSENSOR_OPMODE_CONTINUOUS
+ * 					- TPHSENSOR_OPMODE_SLEEP
+ * 					- TPHSENSOR_OPMODE_SINGLE
+ * 					- TPHSENSOR_OPMODE_CONTINUOUS
  * @param Freq : Sampling frequency in Hz for continuous mode
  *
  * @return true- if success
  */
-bool PthMS8607::SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq)
+bool TphMS8607::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 {
 	vOpMode = OpMode;
 	vSampFreq = Freq;
 
 	switch (OpMode)
 	{
-		case PTHSENSOR_OPMODE_SLEEP:
+		case SENSOR_OPMODE_SLEEP:
 			break;
-		case PTHSENSOR_OPMODE_SINGLE:
+		case SENSOR_OPMODE_SINGLE:
 			break;
-		case PTHSENSOR_OPMODE_CONTINUOUS:
+		case SENSOR_OPMODE_CONTINUOUS:
 			break;
 	}
 
@@ -140,19 +143,19 @@ bool PthMS8607::SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq)
 	return true;
 }
 
-bool PthMS8607::Enable()
+bool TphMS8607::Enable()
 {
-	SetMode(PTHSENSOR_OPMODE_CONTINUOUS, vSampFreq);
+	SetMode(SENSOR_OPMODE_CONTINUOUS, vSampFreq);
 
 	return true;
 }
 
-void PthMS8607::Disable()
+void TphMS8607::Disable()
 {
-	SetMode(PTHSENSOR_OPMODE_SLEEP, 0);
+	SetMode(SENSOR_OPMODE_SLEEP, 0);
 }
 
-void PthMS8607::Reset()
+void TphMS8607::Reset()
 {
 	uint8_t cmd;
 
@@ -163,7 +166,7 @@ void PthMS8607::Reset()
 	vpIntrf->Tx(MS8607_RHDEV_ADDR, &cmd, 1);
 }
 
-bool PthMS8607::ReadPTH(PTHSENSOR_DATA &PthData)
+bool TphMS8607::ReadTPH(TPHSENSOR_DATA &TphData)
 {
 	bool retval = false;
 
@@ -171,14 +174,14 @@ bool PthMS8607::ReadPTH(PTHSENSOR_DATA &PthData)
 	ReadPressure();
 	ReadHumidity();
 
-	PthData.Humidity = (int16_t)vCurRelHum;
-	PthData.Pressure = (uint32_t)vCurBarPres;
-	PthData.Temperature = vCurTemp;
+	TphData.Humidity = (int16_t)vCurRelHum;
+	TphData.Pressure = (uint32_t)vCurBarPres;
+	TphData.Temperature = vCurTemp;
 
 	return retval;
 }
 
-float PthMS8607::ReadTemperature()
+float TphMS8607::ReadTemperature()
 {
 	uint8_t cmd = MS8607_CMD_T_CONVERT_D2_256;
 	uint32_t raw = 0;
@@ -215,7 +218,7 @@ float PthMS8607::ReadTemperature()
 	return (float)vCurTemp / 100.0;
 }
 
-float PthMS8607::ReadPressure()
+float TphMS8607::ReadPressure()
 {
 	uint8_t cmd = MS8607_CMD_P_CONVERT_D1_256;
 	uint32_t raw = 0;
@@ -271,7 +274,7 @@ float PthMS8607::ReadPressure()
 	return (float)vCurBarPres / 100.0;
 }
 
-float PthMS8607::ReadHumidity()
+float TphMS8607::ReadHumidity()
 {
 	uint8_t cmd = MS8607_CMD_RH_HOLD_MASTER;
 	uint32_t raw = 0;

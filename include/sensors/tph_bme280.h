@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
-File   : pth_bme280.h
+File   : tph_bme280.h
 
 Author : Hoang Nguyen Hoan          			Feb. 12, 2017
 
 Desc   : BME280 environment sensor implementation
-			- Temperature, Humidity, Barometric pressure
+			- Temperature, Pressure, Humidity
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#ifndef __PTH_BME280_H__
-#define __PTH_BME280_H__
+#ifndef __TPH_BME280_H__
+#define __TPH_BME280_H__
 
 #include <stdint.h>
 #include <string.h>
@@ -43,7 +43,7 @@ Modified by          Date              Description
 #endif
 
 #include "iopincfg.h"
-#include "pth_sensor.h"
+#include "tph_sensor.h"
 
 // Device address depending on SDO wiring
 #define BME280_I2C_DEV_ADDR0			0x76	// SDO to GND
@@ -100,24 +100,24 @@ typedef struct {
 
 #ifdef __cplusplus
 
-class PthBme280 : public PTHSensor {
+class TphBme280 : public TPHSensor {
 public:
-	PthBme280() : vCalibTFine(0), vRegWrMask(0xFF) {}
-	virtual ~PthBme280() {}
-	virtual bool Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf);
+	TphBme280() : vCalibTFine(0), vRegWrMask(0xFF) {}
+	virtual ~TphBme280() {}
+	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer = NULL);
 
 	/**
 	 * @brief Set operating mode
 	 *
 	 * @param OpMode : Operating mode
-	 * 					- PTHSENSOR_OPMODE_SLEEP
-	 * 					- PTHSENSOR_OPMODE_SINGLE
-	 * 					- PTHSENSOR_OPMODE_CONTINUOUS
+	 * 					- TPHSENSOR_OPMODE_SLEEP
+	 * 					- TPHSENSOR_OPMODE_SINGLE
+	 * 					- TPHSENSOR_OPMODE_CONTINUOUS
 	 * @param Freq : Sampling frequency in Hz for continuous mode
 	 *
 	 * @return true- if success
 	 */
-	virtual bool SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq);
+	virtual bool SetMode(SENSOR_OPMODE OpMode, uint32_t Freq);
 
 	/**
 	 * @brief	Start sampling data
@@ -128,23 +128,23 @@ public:
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
-	bool ReadPTH(PTHSENSOR_DATA &PthData);
+	bool ReadTPH(TPHSENSOR_DATA &PthData);
 	float ReadTemperature() {
-		PTHSENSOR_DATA pthdata;
-		ReadPTH(pthdata);
-		return (float)pthdata.Temperature / 100.0;
+		TPHSENSOR_DATA tphdata;
+		ReadTPH(tphdata);
+		return (float)tphdata.Temperature / 100.0;
 	}
 
 	float ReadPressure() {
-		PTHSENSOR_DATA pthdata;
-		ReadPTH(pthdata);
-		return (float)pthdata.Pressure / 100.0;
+		TPHSENSOR_DATA tphdata;
+		ReadTPH(tphdata);
+		return (float)tphdata.Pressure / 100.0;
 	}
 
 	float ReadHumidity() {
-		PTHSENSOR_DATA pthdata;
-		ReadPTH(pthdata);
-		return (float)pthdata.Humidity / 100.0;
+		TPHSENSOR_DATA tphdata;
+		ReadTPH(tphdata);
+		return (float)tphdata.Humidity / 100.0;
 	}
 
 private:
@@ -170,4 +170,4 @@ extern "C" {
 
 #endif	// __cplusplus
 
-#endif	// __PHT_BME280_H__
+#endif	// __TPH_BME280_H__

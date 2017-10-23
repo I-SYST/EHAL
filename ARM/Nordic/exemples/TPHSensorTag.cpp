@@ -49,14 +49,14 @@ Modified by          Date              Description
 #include "iopincfg.h"
 #include "app_util_platform.h"
 #include "app_scheduler.h"
-#include "pth_bme280.h"
-#include "pth_ms8607.h"
+#include "tph_bme280.h"
+#include "tph_ms8607.h"
 #include "timer_nrf5x.h"
 #include "board.h"
 
 #define DEVICE_NAME                     "PTHSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
-#define PTH_BME280
+#define TPH_BME280
 
 // Use timer to update data
 // NOTE :	RTC timer 0 used by radio, RTC Timer 1 used by SDK
@@ -80,15 +80,15 @@ Modified by          Date              Description
 void TimerHandler(Timer *pTimer, uint32_t Evt);
 
 
-uint8_t g_AdvDataBuff[sizeof(PTHSENSOR_DATA) + 1] = {
-	BLEAPP_ADV_MANDATA_TYPE_PTH,
+uint8_t g_AdvDataBuff[sizeof(TPHSENSOR_DATA) + 1] = {
+	BLEAPP_ADV_MANDATA_TYPE_TPH,
 };
 
 BLEAPP_ADV_MANDATA &g_AdvData = *(BLEAPP_ADV_MANDATA*)g_AdvDataBuff;
 
 
 // Evironmental Sensor Data to advertise
-PTHSENSOR_DATA &g_PTHData = *(PTHSENSOR_DATA *)g_AdvData.Data;
+TPHSENSOR_DATA &g_TPHData = *(TPHSENSOR_DATA *)g_AdvData.Data;
 
 const static TIMER_CFG s_TimerCfg = {
     .DevNo = 2,
@@ -200,38 +200,38 @@ DeviceIntrf *g_pIntrf = &g_I2c;
 #endif
 
 // Configure environmental sensor
-static PTHSENSOR_CFG s_PthSensorCfg = {
+static TPHSENSOR_CFG s_TphSensorCfg = {
 #ifdef NEBLINA_MODULE
     0,      // SPI CS index 0
 #else
 	BME280_I2C_DEV_ADDR0,   // I2C device address
 #endif
-	PTHSENSOR_OPMODE_SINGLE,
+	TPHSENSOR_OPMODE_SINGLE,
 	0
 };
 
 // Environmental sensor instance
-PthBme280 g_Bme280Sensor;
-PthMS8607 g_MS8607Sensor;
+TphBme280 g_Bme280Sensor;
+TphMS8607 g_MS8607Sensor;
 
 
-#ifdef PTH_BME280
-PTHSensor &g_PthSensor = g_Bme280Sensor;
+#ifdef TPH_BME280
+TPHSensor &g_TphSensor = g_Bme280Sensor;
 #else
-PTHSensor &g_PthSensor = g_MS8607Sensor;
+TPHSensor &g_TphSensor = g_MS8607Sensor;
 #endif
 
 void ReadPTHData()
 {
     g_pIntrf->Enable();
 
-	PTHSENSOR_DATA data;
+	TPHSENSOR_DATA data;
 
-	g_PthSensor.ReadPTH(data);
+	g_TphSensor.ReadTPH(data);
 
 	// NOTE : M0 does not access unaligned data
 	// use local 4 bytes align stack variable then mem copy
-	memcpy(&g_PTHData, &data, sizeof(PTHSENSOR_DATA));
+	memcpy(&g_TPHData, &data, sizeof(TPHSENSOR_DATA));
 
 	// Update advertisement data
 	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
@@ -272,15 +272,15 @@ void HardwareInit()
 #endif
 
 	// Inititalize sensor
-    g_PthSensor.Init(s_PthSensorCfg, g_pIntrf);
+    g_TphSensor.Init(s_TphSensorCfg, g_pIntrf);
 
     // Update sensor data
-    PTHSENSOR_DATA pthdata;
-	g_PthSensor.ReadPTH(pthdata);
+    TPHSENSOR_DATA tphdata;
+	g_TphSensor.ReadTPH(tphdata);
 
 	// Do memcpy to adv data. Due to byte alignment, cannot read directly into
 	// adv data
-	memcpy(g_AdvData.Data, &pthdata, sizeof(PTHSENSOR_DATA));
+	memcpy(g_AdvData.Data, &tphdata, sizeof(TPHSENSOR_DATA));
 
 	g_pIntrf->Disable();
 

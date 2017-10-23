@@ -42,13 +42,13 @@ Modified by          Date              Description
 #include "idelay.h"
 #include "device_intrf.h"
 #include "iopincfg.h"
-#include "sensors/pth_bme280.h"
+#include "sensors/tph_bme280.h"
 
 //static BME280_CALIB_DATA s_Bme280CalibData;
 
 // Returns temperature in DegC, resolution is 0.01 DegC. Output value of “5123” equals 51.23 DegC.
 // t_fine carries fine temperature as global value
-int32_t PthBme280::CompenTemp(int32_t adc_T)
+int32_t TphBme280::CompenTemp(int32_t adc_T)
 {
 	int32_t var1, var2, t;
 
@@ -63,7 +63,7 @@ int32_t PthBme280::CompenTemp(int32_t adc_T)
 
 // Returns pressure in Pa as unsigned 32 bit integer in Q24.8 format (24 integer bits and 8 fractional bits).
 // Output value of “24674867” represents 24674867/256 = 96386.2 Pa = 963.862 hPa
-uint32_t PthBme280::CompenPress(int32_t adc_P)
+uint32_t TphBme280::CompenPress(int32_t adc_P)
 {
 	int64_t var1, var2;
 	uint64_t p;
@@ -92,7 +92,7 @@ uint32_t PthBme280::CompenPress(int32_t adc_P)
 
 // Returns humidity in %RH as unsigned 32 bit integer in Q22.10 format (22 integer and 10 fractional bits).
 // Output value of “47445” represents 47445/1024 = 46.333 %RH
-uint32_t PthBme280::CompenHum(int32_t adc_H)
+uint32_t TphBme280::CompenHum(int32_t adc_H)
 {
 	int32_t var1;
 
@@ -109,7 +109,7 @@ uint32_t PthBme280::CompenHum(int32_t adc_H)
 	return (uint32_t)(var1 >> 12);
 }
 
-bool PthBme280::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
+bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
 	uint8_t regaddr = BME280_REG_ID;
 	uint8_t d;
@@ -117,8 +117,16 @@ bool PthBme280::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
 
 	vCalibTFine = 0;
 
-	SetInterface(pIntrf);
-	SetDeviceAddess(CfgData.DevAddr);
+	if (pIntrf != NULL)
+	{
+		SetInterface(pIntrf);
+		SetDeviceAddess(CfgData.DevAddr);
+	}
+
+	if (pTimer != NULL)
+	{
+		vpTimer = pTimer;
+	}
 
 	if (CfgData.DevAddr == BME280_I2C_DEV_ADDR0 || CfgData.DevAddr == BME280_I2C_DEV_ADDR1)
 	{
@@ -132,7 +140,7 @@ bool PthBme280::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
 
 	Read((uint8_t*)&regaddr, 1, &d, 1);
 
-	if (d == BME280_ID)
+	if (d == BME280_ID || d == 0x61)
 	{
 		found  = true;
 
@@ -175,14 +183,14 @@ bool PthBme280::Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
  * @brief Set operating mode
  *
  * @param OpMode : Operating mode
- * 					- PTHSENSOR_OPMODE_SLEEP
- * 					- PTHSENSOR_OPMODE_SINGLE
- * 					- PTHSENSOR_OPMODE_CONTINUOUS
+ * 					- TPHSENSOR_OPMODE_SLEEP
+ * 					- TPHSENSOR_OPMODE_SINGLE
+ * 					- TPHSENSOR_OPMODE_CONTINUOUS
  * @param Freq : Sampling frequency in Hz for continuous mode
  *
  * @return true- if success
  */
-bool PthBme280::SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq)
+bool TphBme280::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 {
 	uint8_t regaddr;
 	uint8_t d = 0;
@@ -198,11 +206,11 @@ bool PthBme280::SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq)
 
 	switch (OpMode)
 	{
-		case PTHSENSOR_OPMODE_SLEEP:
+		case SENSOR_OPMODE_SLEEP:
 			regaddr = BME280_REG_CTRL_MEAS & vRegWrMask;
 			Write(&regaddr, 1, &vCtrlReg, 1);
 			break;
-		case PTHSENSOR_OPMODE_SINGLE:
+		case SENSOR_OPMODE_SINGLE:
 			regaddr = BME280_REG_CTRL_HUM & vRegWrMask;
 			d = 1;								// Humi oversampling x 1
 			Write(&regaddr, 1, &d, 1);
@@ -210,7 +218,7 @@ bool PthBme280::SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq)
 			// PT config
 			vCtrlReg = (1 << 5) | (1 << 2) | 1;	// oversampling x1, forced
 			break;
-		case PTHSENSOR_OPMODE_CONTINUOUS:
+		case SENSOR_OPMODE_CONTINUOUS:
 			{
 				uint32_t period = 1000 / Freq;
 				if (period >= 1000)
@@ -268,7 +276,7 @@ bool PthBme280::SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq)
  *
  * @return	true - success
  */
-bool PthBme280::StartSampling()
+bool TphBme280::StartSampling()
 {
 	uint8_t regaddr = BME280_REG_CTRL_MEAS & vRegWrMask;
 	Write(&regaddr, 1, &vCtrlReg, 1);
@@ -276,19 +284,19 @@ bool PthBme280::StartSampling()
 	return true;
 }
 
-bool PthBme280::Enable()
+bool TphBme280::Enable()
 {
-	SetMode(PTHSENSOR_OPMODE_CONTINUOUS, vSampFreq);
+	SetMode(SENSOR_OPMODE_CONTINUOUS, vSampFreq);
 
 	return true;
 }
 
-void PthBme280::Disable()
+void TphBme280::Disable()
 {
-	SetMode(PTHSENSOR_OPMODE_SLEEP, 0);
+	SetMode(SENSOR_OPMODE_SLEEP, 0);
 }
 
-void PthBme280::Reset()
+void TphBme280::Reset()
 {
 	uint8_t addr = BME280_REG_RESET & vRegWrMask;
 	uint8_t d = BME280_REG_RESET_VAL;
@@ -296,14 +304,14 @@ void PthBme280::Reset()
 	Write(&addr, 1, &d, 1);
 }
 
-bool PthBme280::ReadPTH(PTHSENSOR_DATA &PthData)
+bool TphBme280::ReadTPH(TPHSENSOR_DATA &PthData)
 {
 	uint8_t addr = BME280_REG_STATUS;
 	uint8_t status = 0;
 	bool retval = false;
 	int timeout = 20;
 
-	if (vOpMode == PTHSENSOR_OPMODE_SINGLE)
+	if (vOpMode == SENSOR_OPMODE_SINGLE)
 	{
 		StartSampling();
 		usDelay(20000);

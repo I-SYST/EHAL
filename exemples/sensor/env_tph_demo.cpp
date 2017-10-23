@@ -8,11 +8,12 @@
 
 #include "i2c.h"
 #include "spi.h"
-#include "sensors/pth_bme280.h"
+#include "sensors/tph_bme280.h"
+#include "sensors/tphg_bme680.h"
 #include "blueio_board.h"
 #include "board.h"
 
-#define PTH_I2C
+#define TPH_I2C
 
 static const IOPINCFG s_SpiPins[] = {
     {SPI_SCK_PORT, SPI_SCK_PIN, SPI_SCK_PINOP,
@@ -44,8 +45,8 @@ static const SPICFG s_SpiCfg = {
 static const I2CCFG s_I2cCfg = {
 	0,			// I2C device number
 	{
-		{BLUEIO_TAG_BME280_I2C_SDA_PORT, BLUEIO_TAG_BME280_I2C_SDA_PIN, BLUEIO_TAG_BME280_I2C_SDA_PINOP, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-		{BLUEIO_TAG_BME280_I2C_SCL_PORT, BLUEIO_TAG_BME280_I2C_SCL_PIN, BLUEIO_TAG_BME280_I2C_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
+		{I2C0_SDA_PORT, I2C0_SDA_PIN, I2C0_SDA_PINOP, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
+		{I2C0_SCL_PORT, I2C0_SCL_PIN, I2C0_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
 	},
 	100000,	// Rate
 	I2CMODE_MASTER,
@@ -55,25 +56,32 @@ static const I2CCFG s_I2cCfg = {
 	NULL		// Event callback
 };
 
-#ifdef PTH_I2C
 I2C g_I2c;
-#else
 SPI g_Spi;
+
+#ifdef	TPH_I2C
+DeviceIntrf *g_pIntrf = &g_I2c;
+#else
+DeviceIntrf *g_pIntrf = &g_Spi;
 #endif
 
-static const PTHSENSOR_CFG s_PthSensorCfg = {
+static const TPHSENSOR_CFG s_TphSensorCfg = {
 
-#ifdef	PTH_I2C
+#ifdef	TPH_I2C
 	BME280_I2C_DEV_ADDR0,		// Device address
 #else
-	1,
+	0,
 #endif
-	PTHSENSOR_OPMODE_CONTINUOUS,	// Operating mode
-	100						// Sampling frequency in Hz
+	TPHSENSOR_OPMODE_SINGLE,	// Operating mode
+	100,						// Sampling frequency in Hz
+	1,
+	1,
+	1,
+	0
 };
 
-PthBme280 g_PthSensor;
-
+//TphBme280 g_TphSensor;
+TphgBme680	g_TphSensor;
 //
 // Print a greeting message on standard output and exit.
 //
@@ -91,17 +99,14 @@ int main()
 {
 	uint8_t cdata[41];
 
-#ifdef	PTH_I2C
 	g_I2c.Init(s_I2cCfg);
-	bool res = g_PthSensor.Init(s_PthSensorCfg, &g_I2c);
-#else
-	g_Spi.Init(s_SpiCfg);
-	g_PthSensor.Init(s_PthSensorCfg, &g_Spi);
-#endif
+//	g_Spi.Init(s_SpiCfg);
+
+	bool res = g_TphSensor.Init(s_TphSensorCfg, g_pIntrf);
 
 
 	while (res == true) {
-		float t = g_PthSensor.ReadTemperature();
+		float t = g_TphSensor.ReadTemperature();
 	}
 	return 0;
 }

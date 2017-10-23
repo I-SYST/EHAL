@@ -1,11 +1,10 @@
 /*--------------------------------------------------------------------------
-File   : ble_app_handler.cpp
+File   : gas_sensor.h
 
-Author : Hoang Nguyen Hoan          Feb. 23, 2017
+Author : Hoang Nguyen Hoan          			Oct. 18, 2017
 
-Desc   : Nordic SDK based BLE peripheral application creation helper
-			Dummy user app handler.
-			All functions can be overloaded
+Desc   : Generic environment sensor abstraction
+			- gas
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -33,33 +32,54 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#include "ble_advertising.h"
+#ifndef __GAS_SENSOR_H__
+#define __GAS_SENSOR_H__
 
-#include "ble_app.h"
+#include <stdint.h>
+#include <string.h>
 
-void __WEAK BleAppInitUserData()
-{
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
 
+#include "iopincfg.h"
+#include "sensor.h"
+
+#pragma pack(push, 1)
+
+typedef struct __GasSensor_Data {
+	uint32_t GasRes;		// Gas resistance value
+} GASSENSOR_DATA;
+
+#pragma pack(pop)
+
+#pragma pack(push, 4)
+typedef struct __GasSensor_Config {
+	uint32_t		DevAddr;	// Either I2C dev address or CS index select if SPI is used
+	SENSOR_OPMODE 	OpMode;		// Operating mode
+	uint32_t		Freq;		// Sampling frequency in Hz if continuous mode is used
+	int32_t			HeatTemp;	// Heating temperature in Celsius in 2 decimal fix point (3145 = 31.45 Degree)
+	int 			HeatDur;	// Heating duration in msec
+} GASSENSOR_CFG;
+
+#pragma pack(pop)
+
+#ifdef __cplusplus
+
+class GasSensor : virtual public Sensor {
+public:
+	virtual bool Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL) = 0;
+	virtual bool ReadGas(GASSENSOR_DATA &GasData) = 0;
+
+protected:
+};
+
+extern "C" {
+#endif	// __cplusplus
+
+#ifdef __cplusplus
 }
 
-void __WEAK BleAppInitUserServices()
-{
+#endif	// __cplusplus
 
-}
-
-void __WEAK BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
-{
-
-}
-
-void __WEAK BleCentralEvtUserHandler(ble_evt_t * p_ble_evt)
-{
-
-}
-
-void __WEAK BleAppRtosWaitEvt(void)
-{
-
-}
-
-
+#endif	// __GAS_SENSOR_H__

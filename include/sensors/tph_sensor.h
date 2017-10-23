@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
-File   : pth_sensor.h
+File   : tph_sensor.h
 
 Author : Hoang Nguyen Hoan          			Feb. 12, 2017
 
-Desc   : Generic environment sensor abstraction
-			- Temperature, Humidity, Barometric pressure
+Desc   : Generic TPH environment sensor abstraction
+			- Temperature, Pressure, Humidity
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -32,8 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
-#ifndef __PTH_SENSOR_H__
-#define __PTH_SENSOR_H__
+#ifndef __TPH_SENSOR_H__
+#define __TPH_SENSOR_H__
 
 #include <stdint.h>
 #include <string.h>
@@ -43,18 +43,10 @@ Modified by          Date              Description
 #endif
 
 #include "iopincfg.h"
-#include "device.h"
+#include "sensor.h"
 
-#pragma pack(push, 4)
 
-//
-// PTH sensor operating mode
-//
-typedef enum __PthSensor_OpMode {
-	PTHSENSOR_OPMODE_SLEEP,
-	PTHSENSOR_OPMODE_SINGLE,		// Single capture
-	PTHSENSOR_OPMODE_CONTINUOUS		// Continuous capture
-} PTHSENSOR_OPMODE;
+#pragma pack(push, 1)
 
 //
 // PTH sensor data
@@ -62,60 +54,67 @@ typedef enum __PthSensor_OpMode {
 // 2 decimals fix point data
 // value 1234 means 12.34
 //
-typedef struct __PthSensor_Data {
-	uint32_t Pressure;		// Barometric pressure in Pa
-	int16_t  Temperature;	// Temperature in degree C
-	uint16_t Humidity;		// Relative humidity in %
-} PTHSENSOR_DATA;
+typedef struct __TPHSensor_Data {
+	uint32_t Pressure;		// Barometric pressure in Pa no decimal
+	int16_t  Temperature;	// Temperature in degree C, 2 decimals fixed point
+	uint16_t Humidity;		// Relative humidity in %, 2 decimals fixed point
+} TPHSENSOR_DATA;
 
+#pragma pack(pop)
+
+#pragma pack(push, 4)
 //
 // PTH sensor configuration
 //
-typedef struct __PthSensor_Config {
+typedef struct __TPHSensor_Config {
 	uint32_t		DevAddr;	// Either I2C dev address or CS index select if SPI is used
-	PTHSENSOR_OPMODE OpMode;	// Operating mode
+	SENSOR_OPMODE 	OpMode;		// Operating mode
 	uint32_t		Freq;		// Sampling frequency in Hz if continuous mode is used
-} PTHSENSOR_CFG;
+	int				TempOvrs;	// Oversampling measurement for temperature
+	int				PresOvrs;	// Oversampling measurement for pressure
+	int 			HumOvrs;	// Oversampling measurement for humidity
+	uint32_t		FilterCoeff;// Filter coefficient select value (this value is device dependent)
+} TPHSENSOR_CFG;
 
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-class PTHSensor : public Device {
+class TPHSensor : virtual public Sensor {
 public:
-	virtual bool Init(const PTHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf) = 0;
+	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL) = 0;
 
 	/**
-	 * @brief	Read PTH data
-	 * 			Read PTH data from device if available. If not
+	 * @brief	Read TPH data
+	 * 			Read TPH data from device if available. If not
 	 * 			return previous data.
 	 *
-	 * @param PthData : PTH data to return
+	 * @param PthData : TPH data to return
 	 *
 	 * @return	true - new data
 	 * 			false - old data
 	 */
-	virtual bool ReadPTH(PTHSENSOR_DATA &PthData) = 0;
+	virtual bool ReadTPH(TPHSENSOR_DATA &PthData) = 0;
 
 	/**
 	 * @brief Set operating mode
 	 *
 	 * @param OpMode : Operating mode
-	 * 					- PTHSENSOR_OPMODE_SLEEP
-	 * 					- PTHSENSOR_OPMODE_SINGLE
-	 * 					- PTHSENSOR_OPMODE_CONTINUOUS
+	 * 					- TPHSENSOR_OPMODE_SLEEP
+	 * 					- TPHSENSOR_OPMODE_SINGLE
+	 * 					- TPHSENSOR_OPMODE_CONTINUOUS
 	 * @param Freq : Sampling frequency in Hz for continuous mode
 	 *
 	 * @return true- if success
 	 */
-	virtual bool SetMode(PTHSENSOR_OPMODE OpMode, uint32_t Freq) = 0;
+	//virtual bool SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq) = 0;
 
 	/**
 	 * @brief	Start sampling data
 	 *
 	 * @return	true - success
 	 */
-	virtual bool StartSampling() = 0;
+	//virtual bool StartSampling() = 0;
 
 	/**
 	 * @brief	Read temperature
@@ -139,8 +138,6 @@ public:
 	virtual float ReadHumidity() = 0;
 
 protected:
-	PTHSENSOR_OPMODE vOpMode;
-	uint32_t vSampFreq;			// Sampling frequency in Hz
 };
 
 extern "C" {
@@ -151,4 +148,4 @@ extern "C" {
 
 #endif	// __cplusplus
 
-#endif	// __PTH_SENSOR_H__
+#endif	// __TPH_SENSOR_H__
