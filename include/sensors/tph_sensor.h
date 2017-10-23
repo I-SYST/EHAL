@@ -3,7 +3,7 @@ File   : tph_sensor.h
 
 Author : Hoang Nguyen Hoan          			Feb. 12, 2017
 
-Desc   : Generic environment sensor abstraction
+Desc   : Generic TPH environment sensor abstraction
 			- Temperature, Pressure, Humidity
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
@@ -43,18 +43,10 @@ Modified by          Date              Description
 #endif
 
 #include "iopincfg.h"
-#include "device.h"
+#include "sensor.h"
 
-#pragma pack(push, 4)
 
-//
-// PTH sensor operating mode
-//
-typedef enum __TPHSensor_OpMode {
-	TPHSENSOR_OPMODE_SLEEP,
-	TPHSENSOR_OPMODE_SINGLE,		// Single capture
-	TPHSENSOR_OPMODE_CONTINUOUS		// Continuous capture
-} TPHSENSOR_OPMODE;
+#pragma pack(push, 1)
 
 //
 // PTH sensor data
@@ -63,17 +55,20 @@ typedef enum __TPHSensor_OpMode {
 // value 1234 means 12.34
 //
 typedef struct __TPHSensor_Data {
-	int16_t  Temperature;	// Temperature in degree C
-	uint32_t Pressure;		// Barometric pressure in Pa
-	uint16_t Humidity;		// Relative humidity in %
+	uint32_t Pressure;		// Barometric pressure in Pa no decimal
+	int16_t  Temperature;	// Temperature in degree C, 2 decimals fixed point
+	uint16_t Humidity;		// Relative humidity in %, 2 decimals fixed point
 } TPHSENSOR_DATA;
 
+#pragma pack(pop)
+
+#pragma pack(push, 4)
 //
 // PTH sensor configuration
 //
 typedef struct __TPHSensor_Config {
 	uint32_t		DevAddr;	// Either I2C dev address or CS index select if SPI is used
-	TPHSENSOR_OPMODE OpMode;	// Operating mode
+	SENSOR_OPMODE 	OpMode;		// Operating mode
 	uint32_t		Freq;		// Sampling frequency in Hz if continuous mode is used
 	int				TempOvrs;	// Oversampling measurement for temperature
 	int				PresOvrs;	// Oversampling measurement for pressure
@@ -85,9 +80,9 @@ typedef struct __TPHSensor_Config {
 
 #ifdef __cplusplus
 
-class TPHSensor : public Device {
+class TPHSensor : virtual public Sensor {
 public:
-	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf) = 0;
+	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL) = 0;
 
 	/**
 	 * @brief	Read TPH data
@@ -112,14 +107,14 @@ public:
 	 *
 	 * @return true- if success
 	 */
-	virtual bool SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq) = 0;
+	//virtual bool SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq) = 0;
 
 	/**
 	 * @brief	Start sampling data
 	 *
 	 * @return	true - success
 	 */
-	virtual bool StartSampling() = 0;
+	//virtual bool StartSampling() = 0;
 
 	/**
 	 * @brief	Read temperature
@@ -143,8 +138,6 @@ public:
 	virtual float ReadHumidity() = 0;
 
 protected:
-	TPHSENSOR_OPMODE vOpMode;
-	uint32_t vSampFreq;			// Sampling frequency in Hz
 };
 
 extern "C" {

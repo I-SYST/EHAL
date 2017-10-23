@@ -109,7 +109,7 @@ uint32_t TphBme280::CompenHum(int32_t adc_H)
 	return (uint32_t)(var1 >> 12);
 }
 
-bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
+bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
 	uint8_t regaddr = BME280_REG_ID;
 	uint8_t d;
@@ -117,8 +117,16 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
 
 	vCalibTFine = 0;
 
-	SetInterface(pIntrf);
-	SetDeviceAddess(CfgData.DevAddr);
+	if (pIntrf != NULL)
+	{
+		SetInterface(pIntrf);
+		SetDeviceAddess(CfgData.DevAddr);
+	}
+
+	if (pTimer != NULL)
+	{
+		vpTimer = pTimer;
+	}
 
 	if (CfgData.DevAddr == BME280_I2C_DEV_ADDR0 || CfgData.DevAddr == BME280_I2C_DEV_ADDR1)
 	{
@@ -182,7 +190,7 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
  *
  * @return true- if success
  */
-bool TphBme280::SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq)
+bool TphBme280::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 {
 	uint8_t regaddr;
 	uint8_t d = 0;
@@ -198,11 +206,11 @@ bool TphBme280::SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq)
 
 	switch (OpMode)
 	{
-		case TPHSENSOR_OPMODE_SLEEP:
+		case SENSOR_OPMODE_SLEEP:
 			regaddr = BME280_REG_CTRL_MEAS & vRegWrMask;
 			Write(&regaddr, 1, &vCtrlReg, 1);
 			break;
-		case TPHSENSOR_OPMODE_SINGLE:
+		case SENSOR_OPMODE_SINGLE:
 			regaddr = BME280_REG_CTRL_HUM & vRegWrMask;
 			d = 1;								// Humi oversampling x 1
 			Write(&regaddr, 1, &d, 1);
@@ -210,7 +218,7 @@ bool TphBme280::SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq)
 			// PT config
 			vCtrlReg = (1 << 5) | (1 << 2) | 1;	// oversampling x1, forced
 			break;
-		case TPHSENSOR_OPMODE_CONTINUOUS:
+		case SENSOR_OPMODE_CONTINUOUS:
 			{
 				uint32_t period = 1000 / Freq;
 				if (period >= 1000)
@@ -278,14 +286,14 @@ bool TphBme280::StartSampling()
 
 bool TphBme280::Enable()
 {
-	SetMode(TPHSENSOR_OPMODE_CONTINUOUS, vSampFreq);
+	SetMode(SENSOR_OPMODE_CONTINUOUS, vSampFreq);
 
 	return true;
 }
 
 void TphBme280::Disable()
 {
-	SetMode(TPHSENSOR_OPMODE_SLEEP, 0);
+	SetMode(SENSOR_OPMODE_SLEEP, 0);
 }
 
 void TphBme280::Reset()
@@ -303,7 +311,7 @@ bool TphBme280::ReadTPH(TPHSENSOR_DATA &PthData)
 	bool retval = false;
 	int timeout = 20;
 
-	if (vOpMode == TPHSENSOR_OPMODE_SINGLE)
+	if (vOpMode == SENSOR_OPMODE_SINGLE)
 	{
 		StartSampling();
 		usDelay(20000);

@@ -104,7 +104,7 @@ class TphBme280 : public TPHSensor {
 public:
 	TphBme280() : vCalibTFine(0), vRegWrMask(0xFF) {}
 	virtual ~TphBme280() {}
-	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf);
+	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer = NULL);
 
 	/**
 	 * @brief Set operating mode
@@ -117,7 +117,7 @@ public:
 	 *
 	 * @return true- if success
 	 */
-	virtual bool SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq);
+	virtual bool SetMode(SENSOR_OPMODE OpMode, uint32_t Freq);
 
 	/**
 	 * @brief	Start sampling data

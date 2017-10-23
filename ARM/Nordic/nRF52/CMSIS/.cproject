@@ -82,7 +82,7 @@
 									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
-									<listOptionValue builtIn="false" value="NRF52832"/>
+									<listOptionValue builtIn="false" value="NRF52832_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
 								</option>
@@ -199,7 +199,7 @@
 									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
-									<listOptionValue builtIn="false" value="NRF52832"/>
+									<listOptionValue builtIn="false" value="NRF52832_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
 								</option>
@@ -318,7 +318,7 @@
 									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
-									<listOptionValue builtIn="false" value="NRF52832"/>
+									<listOptionValue builtIn="false" value="NRF52832_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
 								</option>
@@ -437,7 +437,7 @@
 									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
-									<listOptionValue builtIn="false" value="NRF52832"/>
+									<listOptionValue builtIn="false" value="NRF52832_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
 								</option>

@@ -73,8 +73,11 @@ uint8_t crc4_PT(uint16_t *pData)
 	return (n_rem ^ 0x00);
 }
 
-bool TphMS8607::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf)
+bool TphMS8607::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+//bool TphMS8607::Init(const void *pCfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
+	//TPHSENSOR_CFG *cfg = (TPHSENSOR_CFG*)pCfgData;
+
 	SetInterface(pIntrf);
 	SetDeviceAddess(CfgData.DevAddr);
 
@@ -120,18 +123,18 @@ bool TphMS8607::StartSampling()
  *
  * @return true- if success
  */
-bool TphMS8607::SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq)
+bool TphMS8607::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 {
 	vOpMode = OpMode;
 	vSampFreq = Freq;
 
 	switch (OpMode)
 	{
-		case TPHSENSOR_OPMODE_SLEEP:
+		case SENSOR_OPMODE_SLEEP:
 			break;
-		case TPHSENSOR_OPMODE_SINGLE:
+		case SENSOR_OPMODE_SINGLE:
 			break;
-		case TPHSENSOR_OPMODE_CONTINUOUS:
+		case SENSOR_OPMODE_CONTINUOUS:
 			break;
 	}
 
@@ -142,14 +145,14 @@ bool TphMS8607::SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq)
 
 bool TphMS8607::Enable()
 {
-	SetMode(TPHSENSOR_OPMODE_CONTINUOUS, vSampFreq);
+	SetMode(SENSOR_OPMODE_CONTINUOUS, vSampFreq);
 
 	return true;
 }
 
 void TphMS8607::Disable()
 {
-	SetMode(TPHSENSOR_OPMODE_SLEEP, 0);
+	SetMode(SENSOR_OPMODE_SLEEP, 0);
 }
 
 void TphMS8607::Reset()

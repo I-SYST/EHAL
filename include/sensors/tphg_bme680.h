@@ -44,6 +44,7 @@ Modified by          Date              Description
 
 #include "iopincfg.h"
 #include "tph_sensor.h"
+#include "gas_sensor.h"
 
 // Device address depending on SDO wiring
 #define BME680_I2C_DEV_ADDR0			0x76		// SDO to GND
@@ -132,14 +133,62 @@ Modified by          Date              Description
 #define BME680_REG_MEAS_STATUS_0_GAS_MEASURING	(1<<6)
 #define BME680_REG_MEAS_STATUS_0_NEW_DATA		(1<<7)
 
+#define BME680_REG_CALIB_00_23_START	0x8A
+#define BME680_REG_CALIB_24_40_START	0xE1
+
+#define BME680_REG_RES_HEAT_VAL			0x00
+
+#define BME680_REG_RES_HEAT_RANGE		0x02
+
+#define	BME680_REG_RES_HEAT_RANGE_MASK		0x30
+
+#define BME680_REG_RANGE_SW_ERR			0x04
+
+#define BME680_REG_RANGE_SW_ERR_MASK		0xF0
+
+#pragma pack(push, 1)
+typedef struct {
+	int16_t par_T2;
+	int8_t par_T3;
+	uint8_t pad0;
+	uint16_t par_P1;
+	int16_t par_P2;
+	int8_t par_P3;
+	uint8_t pad1;
+	int16_t par_P4;
+	int16_t par_P5;
+	int8_t par_P7;
+	int8_t par_P6;
+	uint16_t pad2;
+	int16_t par_P8;
+	int16_t par_P9;
+	uint8_t par_P10;
+	uint16_t par_H2;
+	uint16_t par_H1;
+	int8_t par_H3;
+	int8_t par_H4;
+	int8_t par_H5;
+	uint8_t par_H6;
+	int8_t par_H7;
+	uint16_t par_T1;
+	int16_t par_GH2;
+	int8_t par_GH1;
+	int8_t par_GH3;
+	uint8_t res_heat_range;
+	int8_t res_heat_val;
+	int8_t range_sw_err;
+} BME680_CALIB_DATA;
+#pragma pack(pop)
 
 #ifdef __cplusplus
 
-class TphgBme680 : public TPHSensor {
+class TphgBme680 : public TPHSensor, public GasSensor {
 public:
-	TphgBme680() : vRegWrMask(0xFF) {}
+	TphgBme680() : vRegWrMask(0xFF), vMeasGas(false) {}
 	virtual ~TphgBme680() {}
-	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf);
+	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer);
+	virtual bool Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL);
+//	virtual bool Init(const void *pCfgData, DeviceIntrf *pIntrf, Timer *pTimer);
 
 	/**
 	 * @brief Set operating mode
@@ -152,7 +201,7 @@ public:
 	 *
 	 * @return true- if success
 	 */
-	virtual bool SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq);
+	virtual bool SetMode(SENSOR_OPMODE OpMode, uint32_t Freq);
 
 	/**
 	 * @brief	Start sampling data
@@ -182,13 +231,28 @@ public:
 		return (float)tphdata.Humidity / 100.0;
 	}
 
+	bool ReadGas(GASSENSOR_DATA &TphData);
+
 private:
+
+	BME680_CALIB_DATA vCalibData;
+
+	uint32_t CalcPressure(int32_t RawPress);
+	int32_t CalcTemperature(int32_t RawTemp);
+	uint32_t CalcHumidity(int32_t RawHum);
+	uint32_t CalcGas(uint16_t RawGas, uint8_t Range);
+	uint8_t CalcHeaterResistance(uint16_t Temp);
 
 	int32_t vCurTemp;
 	uint32_t vCurBarPres;
 	uint32_t vCurRelHum;
+	uint32_t vCurGas;
+
+	int32_t vCalibTFine;	// For internal calibration use only
 	uint8_t vCtrlReg;
 	uint8_t vRegWrMask;
+
+	bool vMeasGas;			// Do gas measurement
 };
 
 extern "C" {

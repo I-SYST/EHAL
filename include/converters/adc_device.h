@@ -135,7 +135,7 @@ typedef struct __ADC_Data_Packet {
 
 #pragma pack(pop)
 
-class ADCDevice : public Device {
+class ADCDevice : virtual public Device {
 public:
 
 	/**

@@ -71,7 +71,9 @@ class TphMS8607 : public TPHSensor {
 public:
 	TphMS8607() {}
 	virtual ~TphMS8607() {}
-	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf);
+	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer = NULL);
+//	virtual bool Init(const void *pCfgData, DeviceIntrf *pIntrf, Timer *pTimer);
+
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
@@ -87,7 +89,7 @@ public:
 	 *
 	 * @return true- if success
 	 */
-	virtual bool SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq);
+	virtual bool SetMode(SENSOR_OPMODE OpMode, uint32_t Freq);
 
 	/**
 	 * @brief	Start sampling data
