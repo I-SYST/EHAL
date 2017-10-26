@@ -89,25 +89,12 @@ public:
 	 * 			Read TPH data from device if available. If not
 	 * 			return previous data.
 	 *
-	 * @param PthData : TPH data to return
+	 * @param 	TphData : TPH data to return
 	 *
 	 * @return	true - new data
 	 * 			false - old data
 	 */
-	virtual bool ReadTPH(TPHSENSOR_DATA &PthData) = 0;
-
-	/**
-	 * @brief Set operating mode
-	 *
-	 * @param OpMode : Operating mode
-	 * 					- TPHSENSOR_OPMODE_SLEEP
-	 * 					- TPHSENSOR_OPMODE_SINGLE
-	 * 					- TPHSENSOR_OPMODE_CONTINUOUS
-	 * @param Freq : Sampling frequency in Hz for continuous mode
-	 *
-	 * @return true- if success
-	 */
-	//virtual bool SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq) = 0;
+	virtual bool Read(TPHSENSOR_DATA &TphData) = 0;
 
 	/**
 	 * @brief	Start sampling data

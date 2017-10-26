@@ -138,7 +138,7 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 		vRegWrMask = 0x7F;
 	}
 
-	Read((uint8_t*)&regaddr, 1, &d, 1);
+	Device::Read((uint8_t*)&regaddr, 1, &d, 1);
 
 	if (d == BME280_ID || d == 0x61)
 	{
@@ -152,7 +152,7 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 		// Load calibration data
 
 		regaddr = BME280_REG_CALIB_00_25_START;
-		Read(&regaddr, 1, (uint8_t*)&vCalibData, 26);
+		Device::Read(&regaddr, 1, (uint8_t*)&vCalibData, 26);
 
 		uint8_t *p =  (uint8_t*)&vCalibData;
 
@@ -161,7 +161,7 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 		uint8_t cd[8];
 
 		regaddr = BME280_REG_CALIB_26_41_START;
-		Read(&regaddr, 1, cd, 8);
+		Device::Read(&regaddr, 1, cd, 8);
 
 		p[25] = cd[0];
 		p[26] = cd[1];
@@ -200,7 +200,7 @@ bool TphBme280::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 
 	// read current ctrl_meas register
 	regaddr = BME280_REG_CTRL_MEAS;
-	Read(&regaddr, 1, &vCtrlReg, 1);
+	Device::Read(&regaddr, 1, &vCtrlReg, 1);
 
 	vCtrlReg &= ~BME280_REG_CTRL_MEAS_MODE_MASK;
 
@@ -304,7 +304,7 @@ void TphBme280::Reset()
 	Write(&addr, 1, &d, 1);
 }
 
-bool TphBme280::ReadTPH(TPHSENSOR_DATA &PthData)
+bool TphBme280::Read(TPHSENSOR_DATA &TphData)
 {
 	uint8_t addr = BME280_REG_STATUS;
 	uint8_t status = 0;
@@ -318,7 +318,7 @@ bool TphBme280::ReadTPH(TPHSENSOR_DATA &PthData)
 	}
 
 	do {
-		Read(&addr, 1, &status, 1);
+		Device::Read(&addr, 1, &status, 1);
 		usDelay(1000);
 	} while ((status & 9) != 0 && timeout-- > 0);
 
@@ -327,7 +327,7 @@ bool TphBme280::ReadTPH(TPHSENSOR_DATA &PthData)
 		uint8_t d[8];
 		addr = BME280_REG_PRESS_MSB;
 
-		if (Read(&addr, 1, d, 8) == 8)
+		if (Device::Read(&addr, 1, d, 8) == 8)
 		{
 			int32_t p = (((uint32_t)d[0] << 12) | ((uint32_t)d[1] << 4) | ((uint32_t)d[2] >> 4));
 			int32_t t = (((uint32_t)d[3] << 12) | ((uint32_t)d[4] << 4) | ((uint32_t)d[5] >> 4));
@@ -340,9 +340,9 @@ bool TphBme280::ReadTPH(TPHSENSOR_DATA &PthData)
 		}
 	}
 
-	PthData.Humidity = (int16_t)vCurRelHum;
-	PthData.Pressure = (uint32_t)vCurBarPres;
-	PthData.Temperature = vCurTemp;
+	TphData.Humidity = (int16_t)vCurRelHum;
+	TphData.Pressure = (uint32_t)vCurBarPres;
+	TphData.Temperature = vCurTemp;
 
 	return retval;
 }

@@ -97,7 +97,7 @@ public:
 	 * @return	true - success
 	 */
 	virtual bool StartSampling();
-	bool ReadTPH(TPHSENSOR_DATA &PthData);
+	bool Read(TPHSENSOR_DATA &TphData);
 	float ReadTemperature();
 	float ReadPressure();
 	float ReadHumidity();

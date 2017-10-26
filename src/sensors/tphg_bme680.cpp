@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : pthg_bme680.cpp
+File   : tphg_bme680.cpp
 
 Author : Hoang Nguyen Hoan          			Oct. 15, 2017
 
@@ -113,24 +113,23 @@ uint32_t TphgBme680::CalcHumidity(int32_t RawAdcHum)
 	int64_t var4;
 	int64_t var5;
 	int32_t h;
+	int64_t temp_scaled = ((vCurTemp << 8LL) + 50LL) / 100LL;
 
-	var1 = (RawAdcHum - ((uint32_t)vCalibData.par_H1 << 4L)) -
-		   (((int64_t)vCurTemp * (int64_t)vCalibData.par_H3 ) >> 1LL);
-	var2 = ((uint64_t)vCalibData.par_H2 * ((int64_t)vCurTemp * (int64_t)vCalibData.par_H4
-			+ ((((int64_t)vCurTemp * (int64_t)vCurTemp * (int64_t)vCalibData.par_H5 ) >> 6LL))
-			+ 16384LL)) >> 10LL;
-	var3 = var1 * var2;
-	var4 = (((uint64_t)vCalibData.par_H6 << 7LL) + (int64_t)vCurTemp * (int64_t)vCalibData.par_H7) >> 4LL;
-	var5 = (var4 * var3 * var3) >> 39LL;
+	var1 = (int64_t)((RawAdcHum - ((uint32_t)vCalibData.par_H1 << 4L)) << 8LL) -
+		   ((temp_scaled * (int64_t)vCalibData.par_H3) >> 1LL);
+	var2 = ((uint64_t)vCalibData.par_H2 * (temp_scaled * (int64_t)vCalibData.par_H4
+			+ ((temp_scaled * temp_scaled * (int64_t)vCalibData.par_H5 ) >> 14LL)
+			+ 4194304LL)) >> 10LL;
+	var3 = (var1 * var2) >> 8LL;
+	var4 = (((uint64_t)vCalibData.par_H6 << 15LL) + (int64_t)temp_scaled * (int64_t)vCalibData.par_H7) >> 4LL;
+	var5 = (var4 * (var3 >> 14LL)  * (var3 >> 14LL)) >> 27LL;
 
-	h = (int32_t)((var3 + var5) >> 22LL);
+	h = ((var3 + var5) * 100LL) >> 30LL;
 
 	if (h > 10000) /* Cap at 100%rH */
 		h = 10000;
 	else if (h < 0)
 		h = 0;
-
-	return h;
 }
 
 uint32_t TphgBme680::CalcGas(uint16_t RawAdcGas, uint8_t Range)
@@ -183,7 +182,7 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 		vpTimer = pTimer;
 	}
 
-	Read((uint8_t*)&regaddr, 1, &d, 1);
+	Device::Read((uint8_t*)&regaddr, 1, &d, 1);
 	if (d != BME680_ID)
 	{
 		return false;
@@ -213,29 +212,29 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 
 	memset(&vCalibData, 0xFF, sizeof(vCalibData));
 	regaddr = BME680_REG_CALIB_00_23_START;
-	Read(&regaddr, 1, (uint8_t*)&vCalibData, 24);
+	Device::Read(&regaddr, 1, (uint8_t*)&vCalibData, 24);
 
 	uint8_t *p =  (uint8_t*)&vCalibData;
 
 	uint8_t cd[16];
 
 	regaddr = BME680_REG_CALIB_24_40_START;
-	Read(&regaddr, 1, cd, 16);
+	Device::Read(&regaddr, 1, cd, 16);
 
 	vCalibData.par_H1 = ((int16_t)cd[2] << 4) | (cd[1] & 0xF);
 	vCalibData.par_H2 = ((int16_t)cd[0] << 4) | (cd[1] >> 4);
 	memcpy(&p[27], &cd[3], 13);
 
 	regaddr = BME680_REG_RES_HEAT_RANGE;
-	Read(&regaddr, 1, &d, 1);
+	Device::Read(&regaddr, 1, &d, 1);
 	vCalibData.res_heat_range = (d & BME680_REG_RES_HEAT_RANGE_MASK) >> 4;
 
 	regaddr = BME680_REG_RES_HEAT_VAL;
-	Read(&regaddr, 1, &d, 1);
+	Device::Read(&regaddr, 1, &d, 1);
 	vCalibData.res_heat_val = d;
 
 	regaddr = BME680_REG_RANGE_SW_ERR;
-	Read(&regaddr, 1, &d, 1);
+	Device::Read(&regaddr, 1, &d, 1);
 	vCalibData.range_sw_err = (d & BME680_REG_RANGE_SW_ERR_MASK) >> 4;
 
 	// Setup oversampling.  Datasheet recommend write humidity oversampling first
@@ -269,7 +268,7 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 
 
 	regaddr = BME680_REG_CONFIG;
-	Read((uint8_t*)&regaddr, 1, &d, 1);
+	Device::Read((uint8_t*)&regaddr, 1, &d, 1);
 
 	regaddr &= vRegWrMask;
 	d |= (CfgData.FilterCoeff << BME680_REG_CONFIG_FILTER_BITPOS) & BME680_REG_CONFIG_FILTER_MASK;
@@ -298,7 +297,53 @@ bool TphgBme680::Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	}
 
 	vMeasGas = true;
+	vNbHeatPoint = CfgData.NbHeatPoint;
+	memcpy(vHeatPoints, CfgData.pHeatProfile, vNbHeatPoint * sizeof(GASSENSOR_HEAT));
 
+	SetHeatingProfile(CfgData.NbHeatPoint, CfgData.pHeatProfile);
+
+	uint8_t reg = BME680_REG_CTRL_GAS1 & vRegWrMask;
+	uint8_t d = BME680_REG_CTRL_GAS1_RUN_GAS | (vNbHeatPoint & BME680_REG_CTRL_GAS1_NB_CONV_MASK);
+
+	Device::Write(&reg, 1, &d, 1);
+
+	return true;
+}
+
+/**
+ * @brief	Set gas heating profile
+ *
+ * @param	Count : Number of heating temperature settings
+ * 			pProfile : Pointer to array of temperature/duration settings
+ *
+ * @return	true - success
+ */
+bool TphgBme680::SetHeatingProfile(int Count, const GASSENSOR_HEAT *pProfile)
+{
+	if (Count == 0 || pProfile == NULL)
+		return false;
+
+	uint8_t regt = BME680_REG_RES_HEAT_X_START;
+	uint8_t regd = BME680_REG_GAS_WAIT_X_START;
+
+	for (int i = 0; i < Count; i++)
+	{
+		uint8_t ht = CalcHeaterResistance(pProfile[i].Temp);
+		uint16_t dur = pProfile[i].Dur;
+		uint8_t df = 0;
+
+		while (dur > 0 && df < 4)
+		{
+			dur >>= 2;
+			df++;
+		}
+
+		Write(&regt, 1, &ht, 1);
+		Write(&regd, 1, &df, 1);
+
+		regt++;
+		regd++;
+	}
 
 	return true;
 }
@@ -319,11 +364,8 @@ bool TphgBme680::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 	uint8_t regaddr;
 	//uint8_t d = 0;
 
-	TPHSensor::vOpMode = OpMode;
-	TPHSensor::vSampFreq = Freq;
-
-	GasSensor::vOpMode = OpMode;
-	GasSensor::vSampFreq = Freq;
+	vOpMode = OpMode;
+	vSampFreq = Freq;
 
 	// read current ctrl_meas register
 	//regaddr = BME680_REG_CTRL_MEAS;
@@ -345,7 +387,7 @@ bool TphgBme680::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 			break;
 	}
 
-	StartSampling();
+	//StartSampling();
 
 	return true;
 }
@@ -394,7 +436,7 @@ void TphgBme680::Reset()
 	Write(&addr, 1, &d, 1);
 }
 
-bool TphgBme680::ReadTPH(TPHSENSOR_DATA &TphData)
+bool TphgBme680::Read(TPHSENSOR_DATA &TphData)
 {
 	uint8_t addr = BME680_REG_STATUS;
 	uint8_t status = 0;
@@ -409,7 +451,7 @@ bool TphgBme680::ReadTPH(TPHSENSOR_DATA &TphData)
 
 	do {
 		usDelay(1000);
-		Read(&addr, 1, &status, 1);
+		Device::Read(&addr, 1, &status, 1);
 	} while ((status & (BME680_REG_MEAS_STATUS_0_MEASURING | BME680_REG_MEAS_STATUS_0_GAS_MEASURING)) != 0 && timeout-- > 0);
 
 	if ((status & BME680_REG_MEAS_STATUS_0_NEW_DATA)== 0)
@@ -417,7 +459,7 @@ bool TphgBme680::ReadTPH(TPHSENSOR_DATA &TphData)
 		uint8_t d[8];
 		addr = BME680_REG_PRESS_MSB;
 
-		if (Read(&addr, 1, d, 8) == 8)
+		if (Device::Read(&addr, 1, d, 8) == 8)
 		{
 			int32_t p = (((uint32_t)d[0] << 12) | ((uint32_t)d[1] << 4) | ((uint32_t)d[2] >> 4));
 			int32_t t = (((uint32_t)d[3] << 12) | ((uint32_t)d[4] << 4) | ((uint32_t)d[5] >> 4));
@@ -440,14 +482,14 @@ bool TphgBme680::ReadTPH(TPHSENSOR_DATA &TphData)
 	return retval;
 }
 
-bool TphgBme680::ReadGas(GASSENSOR_DATA &TphData)
+bool TphgBme680::Read(GASSENSOR_DATA &GasData)
 {
 	uint8_t addr = BME680_REG_GAS_R_MSB;
 	uint8_t status = 0;
 	int timeout = 20;
 	uint8_t d[2];
 
-	Read(&addr, 1, d, 2);
+	Device::Read(&addr, 1, d, 2);
 
 	uint8_t grange;
 	uint16_t gadc;
@@ -457,6 +499,7 @@ bool TphgBme680::ReadGas(GASSENSOR_DATA &TphData)
 
 	uint32_t res = CalcGas(gadc, grange);
 
-	printf(" %d\r\n", res);
+	GasData.GasRes = res;
+
 	return true;
 }

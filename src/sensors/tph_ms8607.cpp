@@ -166,7 +166,7 @@ void TphMS8607::Reset()
 	vpIntrf->Tx(MS8607_RHDEV_ADDR, &cmd, 1);
 }
 
-bool TphMS8607::ReadTPH(TPHSENSOR_DATA &TphData)
+bool TphMS8607::Read(TPHSENSOR_DATA &TphData)
 {
 	bool retval = false;
 

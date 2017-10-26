@@ -128,22 +128,22 @@ public:
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
-	bool ReadTPH(TPHSENSOR_DATA &PthData);
+	bool Read(TPHSENSOR_DATA &TphData);
 	float ReadTemperature() {
 		TPHSENSOR_DATA tphdata;
-		ReadTPH(tphdata);
+		Read(tphdata);
 		return (float)tphdata.Temperature / 100.0;
 	}
 
 	float ReadPressure() {
 		TPHSENSOR_DATA tphdata;
-		ReadTPH(tphdata);
+		Read(tphdata);
 		return (float)tphdata.Pressure / 100.0;
 	}
 
 	float ReadHumidity() {
 		TPHSENSOR_DATA tphdata;
-		ReadTPH(tphdata);
+		Read(tphdata);
 		return (float)tphdata.Humidity / 100.0;
 	}
 
