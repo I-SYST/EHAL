@@ -171,12 +171,29 @@ public:
     virtual void DisableTimerTrigger(int TrigNo) = 0;
 
     /**
+     * @brief   Get current timer counter in msec
+     * This function return the current timer in msec since last reset.
+     *
+     * @return  Counter in msec
+     */
+	virtual uint32_t mSecond() { return TickCount() * vnsPeriod / 1000000LL; }
+
+	/**
+	 * @brief   Convert tick count to msec
+	 *
+	 * @param   Count : Timer tick count value
+	 *
+	 * @return  Converted count in msec
+	 */
+	virtual uint32_t mSecond(uint64_t Count) { return Count * vnsPeriod / 1000LL; }
+
+	/**
      * @brief   Get current timer counter in usec
      * This function return the current timer in usec since last reset.
      *
      * @return  Counter in usec
      */
-	virtual uint32_t uSecond() { return TickCount() * vnsPeriod / 1000; }
+	virtual uint32_t uSecond() { return TickCount() * vnsPeriod / 1000LL; }
 
 	/**
 	 * @brief   Convert tick count to usec
@@ -185,7 +202,7 @@ public:
 	 *
 	 * @return  Converted count in usec
 	 */
-	virtual uint32_t uSecond(uint64_t Count) { return Count * vnsPeriod / 1000; }
+	virtual uint32_t uSecond(uint64_t Count) { return Count * vnsPeriod / 1000LL; }
 
 	/**
      * @brief   Get current timer counter in nsec
