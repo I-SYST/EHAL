@@ -113,7 +113,7 @@ uint32_t TphgBme680::CalcHumidity(int32_t RawAdcHum)
 	int64_t var4;
 	int64_t var5;
 	int32_t h;
-	int64_t temp_scaled = ((vCurTemp << 8LL) + 50LL) / 100LL;
+	int64_t temp_scaled = ((vTphData.Temperature << 8LL) + 50LL) / 100LL;
 
 	var1 = (int64_t)((RawAdcHum - ((uint32_t)vCalibData.par_H1 << 4L)) << 8LL) -
 		   ((temp_scaled * (int64_t)vCalibData.par_H3) >> 1LL);
@@ -159,7 +159,7 @@ uint8_t TphgBme680::CalcHeaterResistance(uint16_t Temp)
 	var2 = ((int32_t)vCalibData.par_GH2 << 1) * 33L + 154L;
 	var3 = ((int32_t)vCalibData.par_GH3 << 6L);
 	var4 = var1 * (65536 + var2 * (Temp << 16L) / 100L);
-	uint64_t var5 = var4 + var3 * (vCurTemp << 16L) / 100L;
+	uint64_t var5 = var4 + var3 * (vTphData.Temperature << 16L) / 100L;
 	uint64_t var6 = 262144 / (4 + vCalibData.res_heat_range);
 	uint64_t var7 = 4294967296LL / (uint64_t)(65536L + (uint32_t)vCalibData.res_heat_val * 131L);
 	hres = (uint8_t)((222822L * (var5 * var6 * var7 - 1638400)) >> 16LL);
@@ -497,9 +497,10 @@ bool TphgBme680::UpdateData()
 			int32_t p = (((uint32_t)d[0] << 12) | ((uint32_t)d[1] << 4) | ((uint32_t)d[2] >> 4));
 			int32_t t = (((uint32_t)d[3] << 12) | ((uint32_t)d[4] << 4) | ((uint32_t)d[5] >> 4));
 			int32_t h = (((uint32_t)d[6] << 8) | d[7]);
-			vCurTemp = CalcTemperature(t);
-			vCurBarPres = CalcPressure(p);
-			vCurRelHum = CalcHumidity(h);
+
+			vTphData.Temperature = CalcTemperature(t);
+			vTphData.Pressure = CalcPressure(p);
+			vTphData.Humidity = CalcHumidity(h);
 
 		}
 
@@ -512,10 +513,15 @@ bool TphgBme680::UpdateData()
 			if ((d[1] & (BME680_REG_GAS_R_LSB_GAS_VALID_R |BME680_REG_GAS_R_LSB_HEAT_STAB_R)) ==
 					(BME680_REG_GAS_R_LSB_GAS_VALID_R |BME680_REG_GAS_R_LSB_HEAT_STAB_R))
 			{
-				vCurGas[gasidx] = CalcGas(gadc, grange);
-				vCurGasIdx = gasidx;
+				vGasData.GasRes[gasidx] = CalcGas(gadc, grange);
+				vGasData.MeasIdx = gasidx;
 				vbGasData = true;
 			}
+		}
+
+		if (vpTimer)
+		{
+			vTphData.Timestamp = vpTimer->mSecond();
 		}
 
 		vbSampling = false;
@@ -535,9 +541,7 @@ bool TphgBme680::Read(TPHSENSOR_DATA &TphData)
 {
 	bool retval = UpdateData();
 
-	TphData.Humidity = (int16_t)vCurRelHum;
-	TphData.Pressure = (uint32_t)vCurBarPres;
-	TphData.Temperature = vCurTemp;
+	memcpy(&TphData, &vTphData, sizeof(TPHSENSOR_DATA));
 
 	return retval;
 }
@@ -549,8 +553,7 @@ bool TphgBme680::Read(GASSENSOR_DATA &GasData)
 	if (vbGasData == false)
 		retval = UpdateData();
 
-	GasData.GasRes[vCurGasIdx] = vCurGas[vCurGasIdx];
-	GasData.MeasIdx = vCurGasIdx;
+	memcpy(&GasData, &vGasData, sizeof(GASSENSOR_DATA));
 
 	vbGasData = false;
 

@@ -333,16 +333,20 @@ bool TphBme280::Read(TPHSENSOR_DATA &TphData)
 			int32_t t = (((uint32_t)d[3] << 12) | ((uint32_t)d[4] << 4) | ((uint32_t)d[5] >> 4));
 			int32_t h = (((uint32_t)d[6] << 8) | d[7]);
 
-			vCurTemp = CompenTemp(t);
-			vCurBarPres = CompenPress(p) * 100 / 256;
-			vCurRelHum = CompenHum(h) * 100 / 1024;
+			vTphData.Temperature = CompenTemp(t);
+			vTphData.Pressure = CompenPress(p) * 100 / 256;
+			vTphData.Humidity = CompenHum(h) * 100 / 1024;
+
+			if (vpTimer)
+			{
+				vTphData.Timestamp = vpTimer->mSecond();
+			}
+
 			retval = true;
 		}
 	}
 
-	TphData.Humidity = (int16_t)vCurRelHum;
-	TphData.Pressure = (uint32_t)vCurBarPres;
-	TphData.Temperature = vCurTemp;
+	memcpy(&TphData, &vTphData, sizeof(TPHSENSOR_DATA));
 
 	return retval;
 }

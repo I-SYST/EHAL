@@ -153,9 +153,6 @@ private:
 	int32_t CompenTemp(int32_t RawTemp);
 	uint32_t CompenHum(int32_t RawHum);
 
-	int32_t vCurTemp;
-	uint32_t vCurBarPres;
-	uint32_t vCurRelHum;
 	int32_t vCalibTFine;	// For internal calibration use only
 	BME280_CALIB_DATA vCalibData;
 	uint8_t vCtrlReg;

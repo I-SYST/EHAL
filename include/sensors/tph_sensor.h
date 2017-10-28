@@ -49,7 +49,7 @@ Modified by          Date              Description
 #pragma pack(push, 1)
 
 //
-// PTH sensor data
+// TPH sensor data
 //
 // 2 decimals fix point data
 // value 1234 means 12.34
@@ -126,6 +126,8 @@ public:
 	virtual float ReadHumidity() = 0;
 
 protected:
+
+	TPHSENSOR_DATA vTphData;	// Last measured data
 };
 
 extern "C" {

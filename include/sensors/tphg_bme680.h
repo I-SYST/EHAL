@@ -273,12 +273,6 @@ private:
 	uint8_t CalcHeaterResistance(uint16_t Temp);
 	bool UpdateData();
 
-	int32_t vCurTemp;
-	uint32_t vCurBarPres;
-	uint32_t vCurRelHum;
-	uint32_t vCurGas[BME680_GAS_HEAT_PROFILE_MAX];
-	int		 vCurGasIdx;
-
 	int32_t vCalibTFine;	// For internal calibration use only
 	uint8_t vCtrlReg;
 	uint8_t vRegWrMask;

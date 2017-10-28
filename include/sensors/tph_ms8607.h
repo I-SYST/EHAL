@@ -106,9 +106,6 @@ private:
 
 	void ReadPtProm();
 
-	int32_t vCurTemp;
-	int32_t vCurBarPres;
-	int32_t vCurRelHum;
 	uint16_t vPTProm[8];
 	int32_t vCurDT;
 };

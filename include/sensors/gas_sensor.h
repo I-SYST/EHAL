@@ -70,7 +70,7 @@ typedef struct __GasSensor_Config {
 	SENSOR_OPMODE 	OpMode;			// Operating mode
 	uint32_t		Freq;			// Sampling frequency in Hz if continuous mode is used
 	int				NbHeatPoint;	// Number of heating point in profile
-	const GASSENSOR_HEAT	*pHeatProfile;	// Pointer to array of heating temperature profile
+	const GASSENSOR_HEAT *pHeatProfile;	// Pointer to array of heating temperature profile
 } GASSENSOR_CFG;
 
 #pragma pack(pop)
@@ -93,6 +93,8 @@ public:
 	virtual bool SetHeatingProfile(int Count, const GASSENSOR_HEAT *pProfile) = 0;
 
 protected:
+
+	GASSENSOR_DATA vGasData;	// Last measured data
 };
 
 extern "C" {
