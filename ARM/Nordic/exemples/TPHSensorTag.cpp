@@ -51,12 +51,14 @@ Modified by          Date              Description
 #include "app_scheduler.h"
 #include "tph_bme280.h"
 #include "tph_ms8607.h"
+#include "tphg_bme680.h"
 #include "timer_nrf5x.h"
 #include "board.h"
 
-#define DEVICE_NAME                     "PTHSensorTag"                            /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "TPHSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
-#define TPH_BME280
+//#define TPH_BME280
+#define TPH_BME680
 
 // Use timer to update data
 // NOTE :	RTC timer 0 used by radio, RTC Timer 1 used by SDK
@@ -79,16 +81,22 @@ Modified by          Date              Description
 
 void TimerHandler(Timer *pTimer, uint32_t Evt);
 
+#pragma pack(push, 1)
+typedef struct __EnvData {
+	uint32_t Pressure;		// Barometric pressure in Pa no decimal
+	int16_t  Temperature;	// Temperature in degree C, 2 decimals fixed point
+	uint16_t Humidity;		// Relative humidity in %, 2 decimals fixed point
+} ENVSENSOR_DATA;
+#pragma pop(pop)
 
-uint8_t g_AdvDataBuff[sizeof(TPHSENSOR_DATA) + 1] = {
+uint8_t g_AdvDataBuff[sizeof(ENVSENSOR_DATA) + 1] = {
 	BLEAPP_ADV_MANDATA_TYPE_TPH,
 };
 
 BLEAPP_ADV_MANDATA &g_AdvData = *(BLEAPP_ADV_MANDATA*)g_AdvDataBuff;
 
-
 // Evironmental Sensor Data to advertise
-TPHSENSOR_DATA &g_TPHData = *(TPHSENSOR_DATA *)g_AdvData.Data;
+ENVSENSOR_DATA &g_TPHData = *(ENVSENSOR_DATA *)g_AdvData.Data;
 
 const static TIMER_CFG s_TimerCfg = {
     .DevNo = 2,
@@ -177,7 +185,7 @@ static const I2CCFG s_I2cCfg = {
 	0,			// I2C device number
 	{
 
-#ifdef PTH_BME280
+#ifdef TPH_BME280
 		{I2C0_SDA_PORT, I2C0_SDA_PIN, I2C0_SDA_PINOP, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
 		{I2C0_SCL_PORT, I2C0_SCL_PIN, I2C0_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
 #else
@@ -206,17 +214,24 @@ static TPHSENSOR_CFG s_TphSensorCfg = {
 #else
 	BME280_I2C_DEV_ADDR0,   // I2C device address
 #endif
-	TPHSENSOR_OPMODE_SINGLE,
+	SENSOR_OPMODE_SINGLE,
+	100,						// Sampling frequency in Hz
+	1,
+	1,
+	1,
 	0
 };
 
 // Environmental sensor instance
+TphgBme680 g_Bme680Sensor;
 TphBme280 g_Bme280Sensor;
 TphMS8607 g_MS8607Sensor;
 
 
 #ifdef TPH_BME280
 TPHSensor &g_TphSensor = g_Bme280Sensor;
+#elif defined(TPH_BME680)
+TPHSensor &g_TphSensor = g_Bme680Sensor;
 #else
 TPHSensor &g_TphSensor = g_MS8607Sensor;
 #endif
@@ -227,11 +242,12 @@ void ReadPTHData()
 
 	TPHSENSOR_DATA data;
 
-	g_TphSensor.ReadTPH(data);
+	g_TphSensor.Read(data);
 
 	// NOTE : M0 does not access unaligned data
 	// use local 4 bytes align stack variable then mem copy
-	memcpy(&g_TPHData, &data, sizeof(TPHSENSOR_DATA));
+	// skip timestamp as advertising pack is limited in size
+	memcpy(&g_TPHData, ((uint8_t*)&data) + 4, sizeof(ENVSENSOR_DATA));
 
 	// Update advertisement data
 	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
@@ -252,7 +268,7 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 #ifndef USE_TIMER_UPDATE
     if (p_ble_evt->header.evt_id == BLE_GAP_EVT_TIMEOUT)
     {
-    	// Update environmental sensor data everytime advertisement timeout
+    	// Update environmental sensor data every time advertisement timeout
     	// for re-advertisement
     	ReadPTHData();
     }
@@ -276,15 +292,16 @@ void HardwareInit()
 
     // Update sensor data
     TPHSENSOR_DATA tphdata;
-	g_TphSensor.ReadTPH(tphdata);
+	g_TphSensor.Read(tphdata);
 
 	// Do memcpy to adv data. Due to byte alignment, cannot read directly into
 	// adv data
-	memcpy(g_AdvData.Data, &tphdata, sizeof(TPHSENSOR_DATA));
+	memcpy(g_AdvData.Data, ((uint8_t*)&tphdata) + 4, sizeof(ENVSENSOR_DATA));
 
 	g_pIntrf->Disable();
 
 #ifdef USE_TIMER_UPDATE
+	// Only with SDK14
     g_Timer.Init(s_TimerCfg);
 	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS);
 #endif
