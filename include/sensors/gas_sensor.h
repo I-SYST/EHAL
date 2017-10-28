@@ -45,10 +45,14 @@ Modified by          Date              Description
 #include "iopincfg.h"
 #include "sensor.h"
 
+#define GASSENSOR_MEASUREMENT_POINT_MAX			10	// Max number of gas measurement point
+
 #pragma pack(push, 1)
 
 typedef struct __GasSensor_Data {
-	uint32_t GasRes;		// Gas resistance value
+	uint32_t Timestamp;		// Time stamp in msec
+	uint32_t GasRes[GASSENSOR_MEASUREMENT_POINT_MAX];	// Gas resistance value
+	int		 MeasIdx;		// Latest measure point index
 } GASSENSOR_DATA;
 
 // Heating temperature setting point for the heating profile

@@ -55,6 +55,7 @@ Modified by          Date              Description
 // value 1234 means 12.34
 //
 typedef struct __TPHSensor_Data {
+	uint32_t Timestamp;		// Time stamp count in msec
 	uint32_t Pressure;		// Barometric pressure in Pa no decimal
 	int16_t  Temperature;	// Temperature in degree C, 2 decimals fixed point
 	uint16_t Humidity;		// Relative humidity in %, 2 decimals fixed point

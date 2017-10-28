@@ -130,6 +130,8 @@ uint32_t TphgBme680::CalcHumidity(int32_t RawAdcHum)
 		h = 10000;
 	else if (h < 0)
 		h = 0;
+
+	return h;
 }
 
 uint32_t TphgBme680::CalcGas(uint16_t RawAdcGas, uint8_t Range)
@@ -168,10 +170,10 @@ uint8_t TphgBme680::CalcHeaterResistance(uint16_t Temp)
 // TPH sensor init
 bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
-	uint8_t regaddr = BME680_REG_ID;
+	uint8_t regaddr;
 	uint8_t d;
 
-	if (pIntrf != NULL)
+	if (pIntrf != NULL && pIntrf != GetInterface())
 	{
 		SetInterface(pIntrf);
 		SetDeviceAddess(CfgData.DevAddr);
@@ -182,31 +184,43 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 		vpTimer = pTimer;
 	}
 
+	if (CfgData.DevAddr == BME680_I2C_DEV_ADDR0 || CfgData.DevAddr == BME680_I2C_DEV_ADDR1)
+	{
+		// I2C mode
+		vRegWrMask = BME680_REG_I2C_ADDR_MASK;
+	}
+	else
+	{
+		vRegWrMask = BME680_REG_SPI_ADDR_MASK;
+
+		// Set SPI register page to 0
+		// for reading chip id later
+		regaddr = BME680_REG_STATUS & vRegWrMask;
+		d = 0;
+		Write((uint8_t*)&regaddr, 1, &d, 1);
+	}
+
+	// Read chip id
+	regaddr = BME680_REG_ID & vRegWrMask;
 	Device::Read((uint8_t*)&regaddr, 1, &d, 1);
 	if (d != BME680_ID)
 	{
 		return false;
 	}
 
-	if (CfgData.DevAddr == BME680_I2C_DEV_ADDR0 || CfgData.DevAddr == BME680_I2C_DEV_ADDR1)
-	{
-		// I2C mode
-		vRegWrMask = 0xFF;
-	}
-	else
-	{
-		vRegWrMask = 0x7F;
+	// Device found
 
+	Reset();
+
+	usDelay(30000);
+
+	if (vRegWrMask == BME680_REG_SPI_ADDR_MASK)
+	{
 		// Set default SPI page 1
 		regaddr = BME680_REG_STATUS & vRegWrMask;
 		d = BME680_REG_STATUS_SPI_MEM_PG;
 		Write((uint8_t*)&regaddr, 1, &d, 1);
 	}
-
-
-	Reset();
-
-	usDelay(30000);
 
 	// Load calibration data
 
@@ -284,7 +298,7 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 // Gas sensor init
 bool TphgBme680::Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
-	if (pIntrf != NULL)
+	if (pIntrf != NULL && pIntrf != GetInterface())
 	{
 		SetInterface(pIntrf);
 		SetDeviceAddess(CfgData.DevAddr);
@@ -296,16 +310,21 @@ bool TphgBme680::Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 		vpTimer = pTimer;
 	}
 
-	vMeasGas = true;
+	vbMeasGas = true;
 	vNbHeatPoint = CfgData.NbHeatPoint;
 	memcpy(vHeatPoints, CfgData.pHeatProfile, vNbHeatPoint * sizeof(GASSENSOR_HEAT));
 
 	SetHeatingProfile(CfgData.NbHeatPoint, CfgData.pHeatProfile);
 
 	uint8_t reg = BME680_REG_CTRL_GAS1 & vRegWrMask;
-	uint8_t d = BME680_REG_CTRL_GAS1_RUN_GAS | (vNbHeatPoint & BME680_REG_CTRL_GAS1_NB_CONV_MASK);
+	uint8_t d = BME680_REG_CTRL_GAS1_RUN_GAS | ((vNbHeatPoint - 1) & BME680_REG_CTRL_GAS1_NB_CONV_MASK);
 
 	Device::Write(&reg, 1, &d, 1);
+
+	if (vOpMode == SENSOR_OPMODE_SINGLE)
+	{
+		StartSampling();
+	}
 
 	return true;
 }
@@ -330,16 +349,30 @@ bool TphgBme680::SetHeatingProfile(int Count, const GASSENSOR_HEAT *pProfile)
 	{
 		uint8_t ht = CalcHeaterResistance(pProfile[i].Temp);
 		uint16_t dur = pProfile[i].Dur;
-		uint8_t df = 0;
-
-		while (dur > 0 && df < 4)
+		uint8_t df = 0x4;
+		int mul = 0;
+		if (dur > 0x3F)
 		{
-			dur >>= 2;
-			df++;
+			int delta = 0xFF;
+			for (int j = 1; j < 4; j++)
+			{
+				if ((dur / df) < 0x40)
+				{
+					int x = dur % df;
+					if (x < delta)
+					{
+						delta = x;
+						mul = j;
+					}
+				}
+				df <<= 2;
+			}
+			dur = dur / (1 << (mul << 1));
+			dur |= (mul << 6);
 		}
 
 		Write(&regt, 1, &ht, 1);
-		Write(&regd, 1, &df, 1);
+		Write(&regd, 1, (uint8_t*)&dur, 1);
 
 		regt++;
 		regd++;
@@ -399,21 +432,21 @@ bool TphgBme680::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
  */
 bool TphgBme680::StartSampling()
 {
-	uint8_t regaddr = BME680_REG_CTRL_MEAS & vRegWrMask;
-	uint8_t d;
+	uint8_t regaddr = BME680_REG_MEAS_STATUS_0 & vRegWrMask;
+	uint8_t status = 0;
 
-	if (vMeasGas)
+	Device::Read(&regaddr, 1, &status, 1);
+
+	if ((status & BME680_REG_MEAS_STATUS_0_BUSY) == 0)
 	{
-		regaddr = BME680_REG_CTRL_GAS1 & vRegWrMask;
-		d = BME680_REG_CTRL_GAS1_RUN_GAS | 2;
+		regaddr = BME680_REG_CTRL_MEAS & vRegWrMask;
+		Write(&regaddr, 1, &vCtrlReg, 1);
+		vbSampling = true;
 
-		// set heater
+		return true;
 	}
 
-	regaddr = BME680_REG_CTRL_MEAS & vRegWrMask;
-	Write(&regaddr, 1, &vCtrlReg, 1);
-
-	return true;
+	return false;
 }
 
 bool TphgBme680::Enable()
@@ -433,47 +466,74 @@ void TphgBme680::Reset()
 	uint8_t addr = BME680_REG_RESET & vRegWrMask;
 	uint8_t d = BME680_REG_RESET_VAL;
 
+	if (vRegWrMask == BME680_REG_SPI_ADDR_MASK)
+	{
+		// SPI interface
+		// Set SPI page 0
+		addr = BME680_REG_STATUS & vRegWrMask;
+		d = 0;
+		Write((uint8_t*)&addr, 1, &d, 1);
+	}
 	Write(&addr, 1, &d, 1);
 }
 
-bool TphgBme680::Read(TPHSENSOR_DATA &TphData)
+bool TphgBme680::UpdateData()
 {
-	uint8_t addr = BME680_REG_STATUS;
+	uint8_t addr = BME680_REG_MEAS_STATUS_0 & vRegWrMask;
 	uint8_t status = 0;
-	bool retval = false;
-	int timeout = 20;
+	uint8_t	gasidx;
 
-	if (vOpMode == SENSOR_OPMODE_SINGLE)
-	{
-		StartSampling();
-		usDelay(20000);
-	}
+	Device::Read(&addr, 1, &status, 1);
 
-	do {
-		usDelay(1000);
-		Device::Read(&addr, 1, &status, 1);
-	} while ((status & (BME680_REG_MEAS_STATUS_0_MEASURING | BME680_REG_MEAS_STATUS_0_GAS_MEASURING)) != 0 && timeout-- > 0);
+	gasidx = status & BME680_REG_MEAS_STATUS_0_GAS_MEAS_IDX_0;
 
-	if ((status & BME680_REG_MEAS_STATUS_0_NEW_DATA)== 0)
+	if (status & BME680_REG_MEAS_STATUS_0_NEW_DATA)
 	{
 		uint8_t d[8];
-		addr = BME680_REG_PRESS_MSB;
+		addr = BME680_REG_PRESS_MSB & vRegWrMask;
 
 		if (Device::Read(&addr, 1, d, 8) == 8)
 		{
 			int32_t p = (((uint32_t)d[0] << 12) | ((uint32_t)d[1] << 4) | ((uint32_t)d[2] >> 4));
 			int32_t t = (((uint32_t)d[3] << 12) | ((uint32_t)d[4] << 4) | ((uint32_t)d[5] >> 4));
 			int32_t h = (((uint32_t)d[6] << 8) | d[7]);
-
-			// NOTE : Calculate temperature first as it will be used for subsequence
-			// compensation
 			vCurTemp = CalcTemperature(t);
 			vCurBarPres = CalcPressure(p);
 			vCurRelHum = CalcHumidity(h);
 
-			retval = true;
 		}
+
+		addr = BME680_REG_GAS_R_MSB & vRegWrMask;
+
+		if (Device::Read(&addr, 1, d, 2) == 2)
+		{
+			int32_t grange = d[1] & BME680_REG_GAS_R_LSB_GAS_RANGE_R;
+			int32_t gadc = (d[1] >> 5) | (d[0] << 2);
+			if ((d[1] & (BME680_REG_GAS_R_LSB_GAS_VALID_R |BME680_REG_GAS_R_LSB_HEAT_STAB_R)) ==
+					(BME680_REG_GAS_R_LSB_GAS_VALID_R |BME680_REG_GAS_R_LSB_HEAT_STAB_R))
+			{
+				vCurGas[gasidx] = CalcGas(gadc, grange);
+				vCurGasIdx = gasidx;
+				vbGasData = true;
+			}
+		}
+
+		vbSampling = false;
+
+		if (vOpMode == SENSOR_OPMODE_SINGLE)
+		{
+			StartSampling();
+		}
+
+		return true;
 	}
+
+	return false;
+}
+
+bool TphgBme680::Read(TPHSENSOR_DATA &TphData)
+{
+	bool retval = UpdateData();
 
 	TphData.Humidity = (int16_t)vCurRelHum;
 	TphData.Pressure = (uint32_t)vCurBarPres;
@@ -484,22 +544,15 @@ bool TphgBme680::Read(TPHSENSOR_DATA &TphData)
 
 bool TphgBme680::Read(GASSENSOR_DATA &GasData)
 {
-	uint8_t addr = BME680_REG_GAS_R_MSB;
-	uint8_t status = 0;
-	int timeout = 20;
-	uint8_t d[2];
+	bool retval = vbGasData;
 
-	Device::Read(&addr, 1, d, 2);
+	if (vbGasData == false)
+		retval = UpdateData();
 
-	uint8_t grange;
-	uint16_t gadc;
+	GasData.GasRes[vCurGasIdx] = vCurGas[vCurGasIdx];
+	GasData.MeasIdx = vCurGasIdx;
 
-	grange = d[1] & BME680_REG_GAS_R_LSB_GAS_RANGE_R;
-	gadc = (d[1] >> 5) | (d[0] << 2);
+	vbGasData = false;
 
-	uint32_t res = CalcGas(gadc, grange);
-
-	GasData.GasRes = res;
-
-	return true;
+	return retval;
 }

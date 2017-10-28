@@ -132,6 +132,9 @@ Modified by          Date              Description
 #define BME680_REG_MEAS_STATUS_0_MEASURING		(1<<5)
 #define BME680_REG_MEAS_STATUS_0_GAS_MEASURING	(1<<6)
 #define BME680_REG_MEAS_STATUS_0_NEW_DATA		(1<<7)
+#define BME680_REG_MEAS_STATUS_0_BUSY			(BME680_REG_MEAS_STATUS_0_NEW_DATA | \
+												 BME680_REG_MEAS_STATUS_0_MEASURING | \
+												 BME680_REG_MEAS_STATUS_0_GAS_MEASURING)
 
 #define BME680_REG_CALIB_00_23_START	0x8A
 #define BME680_REG_CALIB_24_40_START	0xE1
@@ -147,6 +150,10 @@ Modified by          Date              Description
 #define BME680_REG_RANGE_SW_ERR_MASK		0xF0
 
 #define BME680_GAS_HEAT_PROFILE_MAX		10	// Max number of heating temperature set
+
+#define BME680_REG_SPI_ADDR_MASK		0x7F
+#define BME680_REG_I2C_ADDR_MASK		0xFF
+
 
 #pragma pack(push, 1)
 typedef struct {
@@ -186,9 +193,17 @@ typedef struct {
 
 class TphgBme680 : public TPHSensor, public GasSensor {
 public:
-	TphgBme680() : vRegWrMask(0xFF), vMeasGas(false) {}
+	TphgBme680() : vRegWrMask(0xFF), vbMeasGas(false), vbSampling(false), vbGasData(false) {}
 	virtual ~TphgBme680() {}
+
+	/**
+	 * Main init, must be call first before initializing Gas sensor
+	 */
 	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer);
+
+	/**
+	 * Must call init TPH first before calling this function
+	 */
 	virtual bool Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL);
 
 	/**
@@ -256,17 +271,21 @@ private:
 	uint32_t CalcHumidity(int32_t RawHum);
 	uint32_t CalcGas(uint16_t RawGas, uint8_t Range);
 	uint8_t CalcHeaterResistance(uint16_t Temp);
+	bool UpdateData();
 
 	int32_t vCurTemp;
 	uint32_t vCurBarPres;
 	uint32_t vCurRelHum;
-	uint32_t vCurGas;
+	uint32_t vCurGas[BME680_GAS_HEAT_PROFILE_MAX];
+	int		 vCurGasIdx;
 
 	int32_t vCalibTFine;	// For internal calibration use only
 	uint8_t vCtrlReg;
 	uint8_t vRegWrMask;
 
-	bool vMeasGas;			// Do gas measurement
+	bool vbMeasGas;			// Do gas measurement
+	bool vbSampling;
+	bool vbGasData;
 	int vNbHeatPoint;		// Number of heating points
 	GASSENSOR_HEAT vHeatPoints[BME680_GAS_HEAT_PROFILE_MAX];
 };
