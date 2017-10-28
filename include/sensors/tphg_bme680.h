@@ -88,7 +88,7 @@ Modified by          Date              Description
 
 #define BME680_REG_CTRL_GAS1			0x71
 
-#define BME680_REG_CTRL_GAS1_NB_CONV		(0xF<<0)
+#define BME680_REG_CTRL_GAS1_NB_CONV_MASK	(0xF<<0)
 #define BME680_REG_CTRL_GAS1_RUN_GAS		(1<<4)
 
 #define BME680_REG_CTRL_GAS0			0x70
@@ -132,6 +132,9 @@ Modified by          Date              Description
 #define BME680_REG_MEAS_STATUS_0_MEASURING		(1<<5)
 #define BME680_REG_MEAS_STATUS_0_GAS_MEASURING	(1<<6)
 #define BME680_REG_MEAS_STATUS_0_NEW_DATA		(1<<7)
+#define BME680_REG_MEAS_STATUS_0_BUSY			(BME680_REG_MEAS_STATUS_0_NEW_DATA | \
+												 BME680_REG_MEAS_STATUS_0_MEASURING | \
+												 BME680_REG_MEAS_STATUS_0_GAS_MEASURING)
 
 #define BME680_REG_CALIB_00_23_START	0x8A
 #define BME680_REG_CALIB_24_40_START	0xE1
@@ -145,6 +148,12 @@ Modified by          Date              Description
 #define BME680_REG_RANGE_SW_ERR			0x04
 
 #define BME680_REG_RANGE_SW_ERR_MASK		0xF0
+
+#define BME680_GAS_HEAT_PROFILE_MAX		10	// Max number of heating temperature set
+
+#define BME680_REG_SPI_ADDR_MASK		0x7F
+#define BME680_REG_I2C_ADDR_MASK		0xFF
+
 
 #pragma pack(push, 1)
 typedef struct {
@@ -184,11 +193,28 @@ typedef struct {
 
 class TphgBme680 : public TPHSensor, public GasSensor {
 public:
-	TphgBme680() : vRegWrMask(0xFF), vMeasGas(false) {}
+	TphgBme680() : vRegWrMask(0xFF), vbMeasGas(false), vbSampling(false), vbGasData(false) {}
 	virtual ~TphgBme680() {}
+
+	/**
+	 * Main init, must be call first before initializing Gas sensor
+	 */
 	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer);
+
+	/**
+	 * Must call init TPH first before calling this function
+	 */
 	virtual bool Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL);
-//	virtual bool Init(const void *pCfgData, DeviceIntrf *pIntrf, Timer *pTimer);
+
+	/**
+	 * @brief	Set gas heating profile
+	 *
+	 * @param	Count : Number of heating temperature settings
+	 * 			pProfile : Pointer to array of temperature/duration settings
+	 *
+	 * @return	true - success
+	 */
+	virtual bool SetHeatingProfile(int Count, const GASSENSOR_HEAT *pProfile);
 
 	/**
 	 * @brief Set operating mode
@@ -212,26 +238,29 @@ public:
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
-	bool ReadTPH(TPHSENSOR_DATA &PthData);
+	bool Read(TPHSENSOR_DATA &TphData);
 	float ReadTemperature() {
 		TPHSENSOR_DATA tphdata;
-		ReadTPH(tphdata);
+		Read(tphdata);
 		return (float)tphdata.Temperature / 100.0;
 	}
 
 	float ReadPressure() {
 		TPHSENSOR_DATA tphdata;
-		ReadTPH(tphdata);
+		Read(tphdata);
 		return (float)tphdata.Pressure / 100.0;
 	}
 
 	float ReadHumidity() {
 		TPHSENSOR_DATA tphdata;
-		ReadTPH(tphdata);
+		Read(tphdata);
 		return (float)tphdata.Humidity / 100.0;
 	}
 
-	bool ReadGas(GASSENSOR_DATA &TphData);
+	//bool Read(TPHSENSOR_DATA &TphData) { ReadTPH(TphData); }
+
+	bool Read(GASSENSOR_DATA &GasData);
+	//bool Read(GASSENSOR_DATA &GasData) { ReadGas(GasData); }
 
 private:
 
@@ -242,17 +271,17 @@ private:
 	uint32_t CalcHumidity(int32_t RawHum);
 	uint32_t CalcGas(uint16_t RawGas, uint8_t Range);
 	uint8_t CalcHeaterResistance(uint16_t Temp);
-
-	int32_t vCurTemp;
-	uint32_t vCurBarPres;
-	uint32_t vCurRelHum;
-	uint32_t vCurGas;
+	bool UpdateData();
 
 	int32_t vCalibTFine;	// For internal calibration use only
 	uint8_t vCtrlReg;
 	uint8_t vRegWrMask;
 
-	bool vMeasGas;			// Do gas measurement
+	bool vbMeasGas;			// Do gas measurement
+	bool vbSampling;
+	bool vbGasData;
+	int vNbHeatPoint;		// Number of heating points
+	GASSENSOR_HEAT vHeatPoints[BME680_GAS_HEAT_PROFILE_MAX];
 };
 
 extern "C" {

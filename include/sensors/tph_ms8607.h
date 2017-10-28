@@ -97,7 +97,7 @@ public:
 	 * @return	true - success
 	 */
 	virtual bool StartSampling();
-	bool ReadTPH(TPHSENSOR_DATA &PthData);
+	bool Read(TPHSENSOR_DATA &TphData);
 	float ReadTemperature();
 	float ReadPressure();
 	float ReadHumidity();
@@ -106,9 +106,6 @@ private:
 
 	void ReadPtProm();
 
-	int32_t vCurTemp;
-	int32_t vCurBarPres;
-	int32_t vCurRelHum;
 	uint16_t vPTProm[8];
 	int32_t vCurDT;
 };

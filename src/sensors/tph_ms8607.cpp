@@ -74,12 +74,13 @@ uint8_t crc4_PT(uint16_t *pData)
 }
 
 bool TphMS8607::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
-//bool TphMS8607::Init(const void *pCfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
 	//TPHSENSOR_CFG *cfg = (TPHSENSOR_CFG*)pCfgData;
 
 	SetInterface(pIntrf);
 	SetDeviceAddess(CfgData.DevAddr);
+
+	vpTimer = pTimer;
 
 	Reset();
 
@@ -166,19 +167,24 @@ void TphMS8607::Reset()
 	vpIntrf->Tx(MS8607_RHDEV_ADDR, &cmd, 1);
 }
 
-bool TphMS8607::ReadTPH(TPHSENSOR_DATA &TphData)
+bool TphMS8607::Read(TPHSENSOR_DATA &TphData)
 {
 	bool retval = false;
 
+// TODO: Create UpdateData function
+// so that we get correct timestamp
 	ReadTemperature();
 	ReadPressure();
 	ReadHumidity();
 
-	TphData.Humidity = (int16_t)vCurRelHum;
-	TphData.Pressure = (uint32_t)vCurBarPres;
-	TphData.Temperature = vCurTemp;
+	if (vpTimer)
+	{
+		vTphData.Timestamp = vpTimer->mSecond();
+	}
 
-	return retval;
+	memcpy(&TphData, &vTphData, sizeof(TPHSENSOR_DATA));
+
+	return true;
 }
 
 float TphMS8607::ReadTemperature()
@@ -201,10 +207,10 @@ float TphMS8607::ReadTemperature()
 
 		raw = ((uint32_t)d[0] << 16) + ((uint32_t)d[1] << 8) + d[3];
 		vCurDT = raw - ((int32_t)vPTProm[5] << 8L);
-		vCurTemp = 2000L + (((uint64_t)vCurDT * (int64_t)vPTProm[6]) >> 23LL);
+		vTphData.Temperature = 2000L + (((uint64_t)vCurDT * (int64_t)vPTProm[6]) >> 23LL);
 
 		// Second order conversion
-		if (vCurTemp < 2000)
+		if (vTphData.Temperature < 2000)
 		{
 			t2 = (3LL * vCurDT * vCurDT) >> 33LL;
 		}
@@ -212,10 +218,10 @@ float TphMS8607::ReadTemperature()
 		{
 			t2 = (5LL * vCurDT * vCurDT) >> 38LL;
 		}
-		vCurTemp -= t2;
+		vTphData.Temperature -= t2;
 	}
 
-	return (float)vCurTemp / 100.0;
+	return (float)vTphData.Temperature / 100.0;
 }
 
 float TphMS8607::ReadPressure()
@@ -242,15 +248,15 @@ float TphMS8607::ReadPressure()
 		int64_t off2, sens2;
 
 		// Second order compensation
-		if (vCurTemp < 2000)
+		if (vTphData.Temperature < 2000)
 		{
-			int64_t tx2 = (vCurTemp - 2000) * (vCurTemp - 2000);
+			int64_t tx2 = (vTphData.Temperature - 2000) * (vTphData.Temperature - 2000);
 			off2 = (61LL * tx2) >> 4LL;
 			sens2 = (29LL * tx2) >> 4LL;
 
-			if (vCurTemp < 1500)
+			if (vTphData.Temperature < 1500)
 			{
-				int64_t tx1 = (vCurTemp + 1500) * (vCurTemp + 1500);
+				int64_t tx1 = (vTphData.Temperature + 1500) * (vTphData.Temperature + 1500);
 				off2 += 16LL * tx1;
 				sens2 += 8LL * tx1;
 			}
@@ -267,11 +273,11 @@ float TphMS8607::ReadPressure()
 		// pressure in mBar (1 mBar = 100 Pascal)
 		int64_t p = (((int64_t)raw * (sens >> 21LL) - off) >> 15LL);
 
-		vCurBarPres = p * 100;
+		vTphData.Pressure = p * 100;
 	}
 
 	// pressur in Pascal
-	return (float)vCurBarPres / 100.0;
+	return (float)vTphData.Pressure / 100.0;
 }
 
 float TphMS8607::ReadHumidity()
@@ -289,11 +295,11 @@ float TphMS8607::ReadHumidity()
 	{
 		int32_t rh = ((12500L * raw) >> 16L) - 600L;
 
-		rh = rh + ((2000 - vCurTemp) * (-18)) / 100;
+		rh = rh + ((2000 - vTphData.Temperature) * (-18)) / 100;
 
-		vCurRelHum = rh;
+		vTphData.Humidity = rh;
 	}
 
-	 return (float)vCurRelHum / 100.0;
+	 return (float)vTphData.Humidity / 100.0;
 }
 

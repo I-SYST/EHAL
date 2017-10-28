@@ -128,22 +128,22 @@ public:
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
-	bool ReadTPH(TPHSENSOR_DATA &PthData);
+	bool Read(TPHSENSOR_DATA &TphData);
 	float ReadTemperature() {
 		TPHSENSOR_DATA tphdata;
-		ReadTPH(tphdata);
+		Read(tphdata);
 		return (float)tphdata.Temperature / 100.0;
 	}
 
 	float ReadPressure() {
 		TPHSENSOR_DATA tphdata;
-		ReadTPH(tphdata);
+		Read(tphdata);
 		return (float)tphdata.Pressure / 100.0;
 	}
 
 	float ReadHumidity() {
 		TPHSENSOR_DATA tphdata;
-		ReadTPH(tphdata);
+		Read(tphdata);
 		return (float)tphdata.Humidity / 100.0;
 	}
 
@@ -153,9 +153,6 @@ private:
 	int32_t CompenTemp(int32_t RawTemp);
 	uint32_t CompenHum(int32_t RawHum);
 
-	int32_t vCurTemp;
-	uint32_t vCurBarPres;
-	uint32_t vCurRelHum;
 	int32_t vCalibTFine;	// For internal calibration use only
 	BME280_CALIB_DATA vCalibData;
 	uint8_t vCtrlReg;

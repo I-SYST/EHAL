@@ -49,12 +49,13 @@ Modified by          Date              Description
 #pragma pack(push, 1)
 
 //
-// PTH sensor data
+// TPH sensor data
 //
 // 2 decimals fix point data
 // value 1234 means 12.34
 //
 typedef struct __TPHSensor_Data {
+	uint32_t Timestamp;		// Time stamp count in msec
 	uint32_t Pressure;		// Barometric pressure in Pa no decimal
 	int16_t  Temperature;	// Temperature in degree C, 2 decimals fixed point
 	uint16_t Humidity;		// Relative humidity in %, 2 decimals fixed point
@@ -89,25 +90,12 @@ public:
 	 * 			Read TPH data from device if available. If not
 	 * 			return previous data.
 	 *
-	 * @param PthData : TPH data to return
+	 * @param 	TphData : TPH data to return
 	 *
 	 * @return	true - new data
 	 * 			false - old data
 	 */
-	virtual bool ReadTPH(TPHSENSOR_DATA &PthData) = 0;
-
-	/**
-	 * @brief Set operating mode
-	 *
-	 * @param OpMode : Operating mode
-	 * 					- TPHSENSOR_OPMODE_SLEEP
-	 * 					- TPHSENSOR_OPMODE_SINGLE
-	 * 					- TPHSENSOR_OPMODE_CONTINUOUS
-	 * @param Freq : Sampling frequency in Hz for continuous mode
-	 *
-	 * @return true- if success
-	 */
-	//virtual bool SetMode(TPHSENSOR_OPMODE OpMode, uint32_t Freq) = 0;
+	virtual bool Read(TPHSENSOR_DATA &TphData) = 0;
 
 	/**
 	 * @brief	Start sampling data
@@ -138,6 +126,8 @@ public:
 	virtual float ReadHumidity() = 0;
 
 protected:
+
+	TPHSENSOR_DATA vTphData;	// Last measured data
 };
 
 extern "C" {
