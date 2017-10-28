@@ -290,6 +290,11 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 
 	SetMode(CfgData.OpMode, CfgData.Freq);
 
+	if (vOpMode == SENSOR_OPMODE_SINGLE)
+	{
+		StartSampling();
+	}
+
 	usDelay(10000);
 
 	return true;
@@ -499,7 +504,7 @@ bool TphgBme680::UpdateData()
 			int32_t h = (((uint32_t)d[6] << 8) | d[7]);
 
 			vTphData.Temperature = CalcTemperature(t);
-			vTphData.Pressure = CalcPressure(p);
+			vTphData.Pressure = CalcPressure(p) * 100;
 			vTphData.Humidity = CalcHumidity(h);
 
 		}
