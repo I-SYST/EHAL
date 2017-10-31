@@ -201,7 +201,7 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	}
 
 	// Read chip id
-	regaddr = BME680_REG_ID & vRegWrMask;
+	regaddr = BME680_REG_ID;
 	Device::Read((uint8_t*)&regaddr, 1, &d, 1);
 	if (d != BME680_ID)
 	{
@@ -437,7 +437,7 @@ bool TphgBme680::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
  */
 bool TphgBme680::StartSampling()
 {
-	uint8_t regaddr = BME680_REG_MEAS_STATUS_0 & vRegWrMask;
+	uint8_t regaddr = BME680_REG_MEAS_STATUS_0;
 	uint8_t status = 0;
 
 	Device::Read(&regaddr, 1, &status, 1);
@@ -468,7 +468,7 @@ void TphgBme680::Disable()
 
 void TphgBme680::Reset()
 {
-	uint8_t addr = BME680_REG_RESET & vRegWrMask;
+	uint8_t addr = 0;
 	uint8_t d = BME680_REG_RESET_VAL;
 
 	if (vRegWrMask == BME680_REG_SPI_ADDR_MASK)
@@ -479,12 +479,13 @@ void TphgBme680::Reset()
 		d = 0;
 		Write((uint8_t*)&addr, 1, &d, 1);
 	}
+	addr = BME680_REG_RESET & vRegWrMask;
 	Write(&addr, 1, &d, 1);
 }
 
 bool TphgBme680::UpdateData()
 {
-	uint8_t addr = BME680_REG_MEAS_STATUS_0 & vRegWrMask;
+	uint8_t addr = BME680_REG_MEAS_STATUS_0;
 	uint8_t status = 0;
 	uint8_t	gasidx;
 
@@ -495,7 +496,7 @@ bool TphgBme680::UpdateData()
 	if (status & BME680_REG_MEAS_STATUS_0_NEW_DATA)
 	{
 		uint8_t d[8];
-		addr = BME680_REG_PRESS_MSB & vRegWrMask;
+		addr = BME680_REG_PRESS_MSB;
 
 		if (Device::Read(&addr, 1, d, 8) == 8)
 		{
@@ -504,12 +505,12 @@ bool TphgBme680::UpdateData()
 			int32_t h = (((uint32_t)d[6] << 8) | d[7]);
 
 			vTphData.Temperature = CalcTemperature(t);
-			vTphData.Pressure = CalcPressure(p) * 100;
+			vTphData.Pressure = CalcPressure(p);
 			vTphData.Humidity = CalcHumidity(h);
 
 		}
 
-		addr = BME680_REG_GAS_R_MSB & vRegWrMask;
+		addr = BME680_REG_GAS_R_MSB;
 
 		if (Device::Read(&addr, 1, d, 2) == 2)
 		{

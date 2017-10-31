@@ -61,31 +61,30 @@ int32_t TphBme280::CompenTemp(int32_t adc_T)
 	return t;
 }
 
-// Returns pressure in Pa as unsigned 32 bit integer in Q24.8 format (24 integer bits and 8 fractional bits).
-// Output value of “24674867” represents 24674867/256 = 96386.2 Pa = 963.862 hPa
+// @return value in Pa
 uint32_t TphBme280::CompenPress(int32_t adc_P)
 {
 	int64_t var1, var2;
-	uint64_t p;
+	uint32_t p;
 
-	var1 = (int64_t)vCalibTFine - 128000;
-	var2 = var1 * var1 * (int64_t)vCalibData.dig_P6;
-	var2 = var2 + ((var1 * (int64_t)vCalibData.dig_P5) << 17LL);
-	var2 = var2 + ((int64_t)vCalibData.dig_P4 << 35LL);
-	var1 = ((var1 * var1 * (int64_t)vCalibData.dig_P3) >> 8) +
-		   ((var1 * (int64_t)vCalibData.dig_P2) << 12);
-	var1 = ((1LL << 47LL) + var1) * ((int64_t)vCalibData.dig_P1) >> 33;
+	var1 = (vCalibTFine >> 1) - 64000;
+	var2 = (var1 * var1 * (int64_t)vCalibData.dig_P6) >> 15;
+	var2 = (var2 + var1 * (int64_t)vCalibData.dig_P5) << 1;
+	var2 = (var2 >> 2) + ((int64_t)vCalibData.dig_P4 << 16);
+	var1 = (((int64_t)vCalibData.dig_P3 * var1 * var1) >> 19 +
+			(int64_t)vCalibData.dig_P2 * var1) >> 19;
+	var1 = (int32_t)vCalibData.dig_P1 + ((var1 * (uint32_t)vCalibData.dig_P1) >> 15);
 
-	if (var1 == 0)
+	if (var1 <= 0)
 	{
 		return 0; // avoid exception caused by division by zero
 	}
 
 	p = 1048576 - adc_P;
-	p = (((p << 31LL) - var2) * 3125LL) / var1;
-	var1 = ((int64_t)vCalibData.dig_P9 * (p >> 13LL) * (p >> 13LL)) >> 25LL;
-	var2 = (((int64_t)vCalibData.dig_P8 * p) >> 19LL);
-	p = ((p + var1 + var2) >> 8) + ((int64_t)vCalibData.dig_P7 << 4);
+	p = (p - (var2 >> 12LL)) * 6250 / var1;
+	var1 = (((int64_t)vCalibData.dig_P9 * (int64_t)p * (int64_t)p) >> 31LL);
+	var2 = (((int64_t)p * (int64_t)vCalibData.dig_P8) >> 15LL);
+	p = p + ((var1 + var2 + ((int32_t)vCalibData.dig_P7)) >> 4);
 
 	return (uint32_t)p;
 }
@@ -97,16 +96,17 @@ uint32_t TphBme280::CompenHum(int32_t adc_H)
 	int32_t var1;
 
 	var1 = (vCalibTFine - 76800);
-	var1 = (((( (adc_H << 14) - (((int32_t)vCalibData.dig_H4) << 20) -
-				 (((int32_t)vCalibData.dig_H5) * var1)) +
-				 16384) >> 15) * (((((((var1 * ((int32_t)vCalibData.dig_H6)) >> 10) * (((var1 *
-				 ((int32_t)vCalibData.dig_H3)) >> 11) + 32768)) >> 10) + 2097152) *
-				((int32_t)vCalibData.dig_H2) + 8192) >> 14));
-	var1 = (var1 - (((((var1 >> 15) * (var1 >> 15)) >> 7) * ((int32_t)vCalibData.dig_H1)) >> 4));
+	var1 = (((( (adc_H << 14) - ((int32_t)vCalibData.dig_H4 << 20) -
+				 ((int32_t)vCalibData.dig_H5 * var1)) + 16384) >> 15) *
+			(((((((var1 * (int32_t)vCalibData.dig_H6) >> 10) * (((var1 *
+				 (int32_t)vCalibData.dig_H3) >> 11) + 32768)) >> 10) + 2097152) *
+				(int32_t)vCalibData.dig_H2 + 8192) >> 14));
+	var1 = (var1 - (((((var1 >> 15) * (var1 >> 15)) >> 7) * (int32_t)vCalibData.dig_H1) >> 4));
 	var1 = (var1 < 0 ? 0 : var1);
 	var1 = (var1 > 419430400 ? 419430400 : var1);
 
-	return (uint32_t)(var1 >> 12);
+	return (uint32_t)((var1 * 100LL)>> 22LL);
+
 }
 
 bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
@@ -170,6 +170,31 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 		vCalibData.dig_H4 = ((int16_t)cd[3] << 4) | (cd[4] & 0xF);
 		vCalibData.dig_H5 = ((int16_t)cd[5] << 4) | (cd[4] >> 4);
 		vCalibData.dig_H6 = cd[6];
+
+		// Setup oversampling & filters.
+		d = 0;
+		if (CfgData.HumOvrs > 0)
+		{
+			d = (CfgData.HumOvrs & 7);
+		}
+
+		regaddr = BME280_REG_CTRL_HUM & vRegWrMask;
+		Write((uint8_t*)&regaddr, 1, &d, 1);
+
+		regaddr = BME280_REG_CONFIG;
+		Device::Read((uint8_t*)&regaddr, 1, &d, 1);
+
+		regaddr &= vRegWrMask;
+		d |= (CfgData.FilterCoeff << BME280_REG_CONFIG_FILTER_BITPOS) & BME280_REG_CONFIG_FILTER_MASK;
+		Write((uint8_t*)&regaddr, 1, &d, 1);
+
+		regaddr = BME280_REG_CTRL_MEAS;
+		Device::Read(&regaddr, 1, &vCtrlReg, 1);
+
+		regaddr &= vRegWrMask;
+		vCtrlReg |= (CfgData.PresOvrs << BME280_REG_CTRL_MEAS_OSRS_P_BITPOS) & BME280_REG_CTRL_MEAS_OSRS_P_MASK;
+		vCtrlReg |= (CfgData.TempOvrs << BME280_REG_CTRL_MEAS_OSRS_T_BITPOS) & BME280_REG_CTRL_MEAS_OSRS_T_MASK;
+		Write((uint8_t*)&regaddr, 1, &d, 1);
 
 		SetMode(CfgData.OpMode, CfgData.Freq);
 
@@ -334,8 +359,8 @@ bool TphBme280::Read(TPHSENSOR_DATA &TphData)
 			int32_t h = (((uint32_t)d[6] << 8) | d[7]);
 
 			vTphData.Temperature = CompenTemp(t);
-			vTphData.Pressure = CompenPress(p) * 100 / 256;
-			vTphData.Humidity = CompenHum(h) * 100 / 1024;
+			vTphData.Pressure = CompenPress(p);
+			vTphData.Humidity = CompenHum(h);
 
 			if (vpTimer)
 			{
