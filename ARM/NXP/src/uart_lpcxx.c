@@ -179,8 +179,8 @@ int LpcUARTSetRate(DEVINTRF *pDev, int Rate)
 	mval &= 0xf;
 
 	int div = (rate16 + rate16 * dval / mval);
-//	dl = (pclk + (div >> 1)) / div;
-	dl = pclk / div;
+	dl = (pclk + (div >> 1)) / div;
+	//dl = pclk / div;
 
 	rate16 = dl << 4;
 	Rate = pclk / (rate16 + rate16 * dval / mval);

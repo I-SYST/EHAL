@@ -176,6 +176,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/seep.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensor.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>

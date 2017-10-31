@@ -117,6 +117,9 @@ void UART_IRQHandler(void)
 			case LPCUART_IIR_ID_RDA:
 				cnt = 0;
 				// TRG4 & 14 : works well at 1 Mbaud
+				// Disable interrupt is require here, otherwise there will be drop
+				// DONOT remove this
+				uint32_t state = DisableInterrupt();
 				while ((g_LpcUartDev->pUartReg->LSR & LPCUART_LSR_RDR) && cnt < 14)
 				{
 					uint8_t *p = CFifoPut(g_LpcUartDev->pUartDev->hRxFifo);
@@ -125,7 +128,7 @@ void UART_IRQHandler(void)
 					*p = g_LpcUartDev->pUartReg->RBR;
 					cnt++;
 				}
-
+				EnableInterrupt(state);
 				cnt = CFifoUsed(g_LpcUartDev->pUartDev->hRxFifo);
 				if (cnt > s_RxFifoPeak)
 				{
@@ -143,7 +146,7 @@ void UART_IRQHandler(void)
 			case LPCUART_IIR_ID_THRE:
 			{
 				cnt = 0;
-				uint32_t state = DisableInterrupt();
+				//uint32_t state = DisableInterrupt();
 				g_LpcUartDev->bTxReady = false;
 				do {
 					uint8_t *p = CFifoGet(g_LpcUartDev->pUartDev->hTxFifo);
@@ -155,7 +158,7 @@ void UART_IRQHandler(void)
 					LPC_USART->THR = *p;
 					cnt++;
 				} while ((g_LpcUartDev->pUartReg->LSR & (LPCUART_LSR_TEMT | LPCUART_LSR_THRE)) && cnt < 14);
-				EnableInterrupt(state);
+				//EnableInterrupt(state);
 
 				if (g_LpcUartDev->pUartDev->EvtCallback)
 				{

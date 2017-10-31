@@ -34,13 +34,14 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #include <stdint.h>
+
 extern unsigned long __StackTop;
 extern void ResetEntry(void);
 
 void DEF_IRQHandler(void) { while(1); }
-__attribute__((weak, alias("DEF_IRQHandler"))) void NMI_Handler(void) { while(1);}
+__attribute__((weak, alias("DEF_IRQHandler"))) void NMI_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void HardFault_Handler(void);
-__attribute__((weak, alias("DEF_IRQHandler"))) void SVC_Handler(void) { while(1);}
+__attribute__((weak, alias("DEF_IRQHandler"))) void SVC_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void PendSV_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void SysTick_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void FLEX_INT0_IRQHandler(void);
@@ -62,12 +63,12 @@ __attribute__((weak, alias("DEF_IRQHandler"))) void TIMER32_1_IRQHandler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void SSP0_IRQHandler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void UART_IRQHandler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void USB_IRQHandler(void);
-__attribute__((weak, alias("DEF_IRQHandler"))) void USB_FIQHandler(void) { }
+__attribute__((weak, alias("DEF_IRQHandler"))) void USB_FIQHandler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void ADC_IRQHandler(void);
-__attribute__((weak, alias("DEF_IRQHandler"))) void WDT_IRQHandler(void) { while(1);}
-__attribute__((weak, alias("DEF_IRQHandler"))) void BOD_IRQHandler(void) { }
-__attribute__((weak, alias("DEF_IRQHandler"))) void FMC_IRQHandler(void) { while(1);}
-__attribute__((weak, alias("DEF_IRQHandler"))) void USBWakeup_IRQHandler(void) { }
+__attribute__((weak, alias("DEF_IRQHandler"))) void WDT_IRQHandler(void);
+__attribute__((weak, alias("DEF_IRQHandler"))) void BOD_IRQHandler(void);
+__attribute__((weak, alias("DEF_IRQHandler"))) void FMC_IRQHandler(void);
+__attribute__((weak, alias("DEF_IRQHandler"))) void USBWakeup_IRQHandler(void);
 
 /**
  * This interrupt vector is by default located in FLASH. Though it can not be
@@ -85,7 +86,7 @@ void (* const g_Vectors[])(void) =
 	0,
 	0,
 	0,
-	(void (*) )0xefffd13b,		// Checksum value
+	(void (*) )0xefffd13d,		// Checksum value
 	0, 0, 0,
 	SVC_Handler,
 	0,
@@ -129,3 +130,6 @@ void (* const g_Vectors[])(void) =
 };
 
 const uint32_t g_iVectorSize = sizeof(g_Vectors) + 4;
+
+
+
