@@ -52,6 +52,8 @@ Modified by          Date              Description
 
 class Device {
 public:
+	Device() : vDevAddr(0), vpIntrf(NULL) {}
+
 	virtual bool Enable() = 0;
 	virtual void Disable() = 0;
 	virtual void Reset() = 0;
@@ -102,6 +104,7 @@ public:
 protected:
 
 	void SetInterface(DeviceIntrf *pIntrf) { vpIntrf = pIntrf; }
+	DeviceIntrf *GetInterface() { return vpIntrf; }
 	void SetDeviceAddess(uint32_t Addr) { vDevAddr =  Addr; }
 
 	uint32_t vDevAddr;
