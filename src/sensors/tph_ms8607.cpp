@@ -117,7 +117,6 @@ bool TphMS8607::StartSampling()
  * @brief Set operating mode
  *
  * @param OpMode : Operating mode
- * 					- TPHSENSOR_OPMODE_SLEEP
  * 					- TPHSENSOR_OPMODE_SINGLE
  * 					- TPHSENSOR_OPMODE_CONTINUOUS
  * @param Freq : Sampling frequency in Hz for continuous mode
@@ -131,8 +130,6 @@ bool TphMS8607::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 
 	switch (OpMode)
 	{
-		case SENSOR_OPMODE_SLEEP:
-			break;
 		case SENSOR_OPMODE_SINGLE:
 			break;
 		case SENSOR_OPMODE_CONTINUOUS:
@@ -146,14 +143,14 @@ bool TphMS8607::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 
 bool TphMS8607::Enable()
 {
-	SetMode(SENSOR_OPMODE_CONTINUOUS, vSampFreq);
+	SetState(SENSOR_STATE_IDLE);
 
 	return true;
 }
 
 void TphMS8607::Disable()
 {
-	SetMode(SENSOR_OPMODE_SLEEP, 0);
+	SetState(SENSOR_STATE_SLEEP);
 }
 
 void TphMS8607::Reset()
@@ -273,11 +270,11 @@ float TphMS8607::ReadPressure()
 		// pressure in mBar (1 mBar = 100 Pascal)
 		int64_t p = (((int64_t)raw * (sens >> 21LL) - off) >> 15LL);
 
-		vTphData.Pressure = p * 100;
+		vTphData.Pressure = p;
 	}
 
 	// pressur in Pascal
-	return (float)vTphData.Pressure / 100.0;
+	return (float)vTphData.Pressure;
 }
 
 float TphMS8607::ReadHumidity()

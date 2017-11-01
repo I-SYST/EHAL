@@ -49,23 +49,63 @@ Modified by          Date              Description
 //
 // Sensor operating mode
 //
+// Not all sensor devices have CONTINUOUS mode. If not avail, it can be implemented
+// using timer with SINGLE mode.
+//
+// NOTE: Timer configuration and operation is handled by user firmware application
+//
 typedef enum __Sensor_OpMode {
-	SENSOR_OPMODE_SLEEP,
 	SENSOR_OPMODE_SINGLE,			// Single capture
 	SENSOR_OPMODE_CONTINUOUS		// Continuous capture
 } SENSOR_OPMODE;
 
+//
+// Sensor state
+//
+// To indicate current state of the sensor.
+//
+typedef enum __Sensor_State {
+	SENSOR_STATE_SLEEP,				// Sleep state low power
+	SENSOR_STATE_IDLE,				// Idle state powered on
+	SENSOR_STATE_SAMPLING			// Sampling in progress
+} SENSOR_STATE;
+
 #ifdef __cplusplus
 
+//
+// Sensor generic base class
+//
+// Require implementations :
+//	bool StartSampling();
+//
+// Require implementations from Device base class
+//	bool Enable();
+//	void Disable();
+//	void Reset();
+//
 class Sensor : virtual public Device {
 public:
+	//
+	// *** Require implementations ***
+	//
+
+	/**
+	 * @brief	Start sampling data
+	 *
+	 * @return	true - success
+	 */
+	virtual bool StartSampling() = 0;
+
+	//
+	// *** Optional overloadable ***
+	//
+
 	/**
 	 * @brief Set operating mode
 	 *		sensor implementation must overload this function to do necessary
 	 *	hardware setting for the operating mode.
 	 *
 	 * @param OpMode : Operating mode
-	 * 					- SENSOR_OPMODE_SLEEP
 	 * 					- SENSOR_OPMODE_SINGLE
 	 * 					- SENSOR_OPMODE_CONTINUOUS
 	 * @param Freq : Sampling frequency in Hz for continuous mode
@@ -80,26 +120,53 @@ public:
 	}
 
 	/**
-	 * @brief	Start sampling data
-	 *
-	 * @return	true - success
-	 */
-	virtual bool StartSampling() = 0;
-
-	/**
 	 * @brief	Get current operating mode
 	 *
 	 * @return	Operating mode
-	 * 				- SENSOR_OPMODE_SLEEP
 	 * 				- SENSOR_OPMODE_SINGLE
 	 * 				- SENSOR_OPMODE_CONTINUOUS
 	 */
-	SENSOR_OPMODE Mode() { return vOpMode; }
-	uint32_t SamplingFrequency() { return vSampFreq; }
+	virtual SENSOR_OPMODE Mode() { return vOpMode; }
+
+	/**
+	 * @brief	Get sampling frequency.
+	 * 		The sampling frequency is relevant only in continuous mode
+	 *
+	 * @return	Frequency in Hz
+	 */
+	virtual uint32_t SamplingFrequency() { return vSampFreq; }
+
+	/**
+	 * @brief	Set current sensor state
+	 *
+	 * @param 	State
+	 *				- SENSOR_STATE_SLEEP	// Sleep state low power
+	 *				- SENSOR_STATE_IDLE		// Idle state powered on
+	 *				- SENSOR_STATE_SAMPLING	// Sampling in progress
+	 *
+	 * @return	Actual state. In the case where the new state could
+	 * 			not be set, it returns the actual state of the sensor.
+	 */
+	virtual SENSOR_STATE SetState(SENSOR_STATE State) {
+		vState = State;
+		return vState;
+	}
+
+	/**
+	 * @brief	Get current sensor state
+	 *
+	 * @return	Current state
+	 *				- SENSOR_STATE_SLEEP	// Sleep state low power
+	 *				- SENSOR_STATE_IDLE		// Idle state powered on
+	 *				- SENSOR_STATE_SAMPLING	// Sampling in progress
+	 */
+	virtual SENSOR_STATE GetState() { return vState; }
 
 protected:
-	SENSOR_OPMODE vOpMode;
-	uint32_t vSampFreq;			// Sampling frequency in Hz
+
+	SENSOR_STATE vState;		// Current sensor state
+	SENSOR_OPMODE vOpMode;		// Current operating mode
+	uint32_t vSampFreq;			// Sampling frequency in Hz, relevant to CONTINUOUS mode
 	Timer *vpTimer;				// Timer to use for time stamping data
 };
 

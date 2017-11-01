@@ -79,7 +79,34 @@ typedef struct __GasSensor_Config {
 
 class GasSensor : virtual public Sensor {
 public:
+
+	/**
+	 * @brief	Initialize sensor
+	 *
+	 * @param 	CfgData : Reference to configuration data
+	 * 			pIntrf 	: Pointer to interface to the sensor.
+	 * 					  This pointer will be kept internally
+	 * 					  for all access to device.
+	 * 					  DONOT delete this object externally
+	 * 			pTimer	: Pointer to timer for retrieval of time stamp
+	 * 					  This pointer will be kept internally
+	 * 					  for all access to device.
+	 * 					  DONOT delete this object externally
+	 *
+	 * @return	true - Success
+	 */
 	virtual bool Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL) = 0;
+
+	/**
+	 * @brief	Read gas sensor data
+	 * 			Read gas data from device if available. If not
+	 * 			return previous data
+	 *
+	 * @param 	GasData : Gas sensor data
+	 *
+	 * @return	true - new data
+	 * 			false - old data
+	 */
 	virtual bool Read(GASSENSOR_DATA &GasData) = 0;
 
 	/**

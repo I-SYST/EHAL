@@ -78,7 +78,7 @@ typedef struct __Timer_Config {
     TIMER_CLKSRC    ClkSrc;     // Clock source.  Not all timer allows user select clock source
     uint32_t        Freq;       // Frequency in Hz, 0 - to auto select max timer frequency
     int             IntPrio;    // Interrupt priority. recommended to use highest
-    							// priority if precision timming is required
+    							// priority if precision timing is required
     TIMER_EVTCB     EvtHandler; // Interrupt handler
 } TIMER_CFG;
 

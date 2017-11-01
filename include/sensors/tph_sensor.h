@@ -51,7 +51,7 @@ Modified by          Date              Description
 //
 // TPH sensor data
 //
-// 2 decimals fix point data
+// 2 decimals fixed point data
 // value 1234 means 12.34
 //
 typedef struct __TPHSensor_Data {
@@ -64,6 +64,7 @@ typedef struct __TPHSensor_Data {
 #pragma pack(pop)
 
 #pragma pack(push, 4)
+
 //
 // PTH sensor configuration
 //
@@ -83,6 +84,22 @@ typedef struct __TPHSensor_Config {
 
 class TPHSensor : virtual public Sensor {
 public:
+
+	/**
+	 * @brief	Initialize sensor
+	 *
+	 * @param 	CfgData : Reference to configuration data
+	 * 			pIntrf 	: Pointer to interface to the sensor.
+	 * 					  This pointer will be kept internally
+	 * 					  for all access to device.
+	 * 					  DONOT delete this object externally
+	 * 			pTimer	: Pointer to timer for retrieval of time stamp
+	 * 					  This pointer will be kept internally
+	 * 					  for all access to device.
+	 * 					  DONOT delete this object externally
+	 *
+	 * @return	true - Success
+	 */
 	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL) = 0;
 
 	/**
@@ -96,13 +113,6 @@ public:
 	 * 			false - old data
 	 */
 	virtual bool Read(TPHSENSOR_DATA &TphData) = 0;
-
-	/**
-	 * @brief	Start sampling data
-	 *
-	 * @return	true - success
-	 */
-	//virtual bool StartSampling() = 0;
 
 	/**
 	 * @brief	Read temperature

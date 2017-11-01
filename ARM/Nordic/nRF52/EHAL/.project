@@ -461,6 +461,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmxfont.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/gas_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gas_sensor.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/tph_bme280.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/tph_bme280.h</locationURI>
