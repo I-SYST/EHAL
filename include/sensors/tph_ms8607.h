@@ -72,19 +72,34 @@ public:
 	TphMS8607() {}
 	virtual ~TphMS8607() {}
 	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer = NULL);
-//	virtual bool Init(const void *pCfgData, DeviceIntrf *pIntrf, Timer *pTimer);
 
+	/**
+	 * @brief	Power on or wake up device
+	 *
+	 * @return	true - If success
+	 */
 	virtual bool Enable();
+
+	/**
+	 * @brief	Put device in power down or power saving sleep mode
+	 *
+	 * @return	None
+	 */
 	virtual void Disable();
+
+	/**
+	 * @brief	Reset device to it initial state
+	 *
+	 * @return	None
+	 */
 	virtual void Reset();
 
 	/**
 	 * @brief Set operating mode
 	 *
 	 * @param OpMode : Operating mode
-	 * 					- TPHSENSOR_OPMODE_SLEEP
-	 * 					- TPHSENSOR_OPMODE_SINGLE
-	 * 					- TPHSENSOR_OPMODE_CONTINUOUS
+	 * 					- SENSOR_OPMODE_SINGLE
+	 * 					- SENSOR_OPMODE_CONTINUOUS
 	 * @param Freq : Sampling frequency in Hz for continuous mode
 	 *
 	 * @return true- if success
@@ -97,6 +112,17 @@ public:
 	 * @return	true - success
 	 */
 	virtual bool StartSampling();
+
+	/**
+	 * @brief	Read TPH data
+	 * 			Read TPH data from device if available. If not
+	 * 			return previous data.
+	 *
+	 * @param 	TphData : TPH data to return
+	 *
+	 * @return	true - new data
+	 * 			false - old data
+	 */
 	bool Read(TPHSENSOR_DATA &TphData);
 	float ReadTemperature();
 	float ReadPressure();

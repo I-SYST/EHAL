@@ -71,7 +71,7 @@ uint32_t TphBme280::CompenPress(int32_t adc_P)
 	var2 = (var1 * var1 * (int64_t)vCalibData.dig_P6) >> 15;
 	var2 = (var2 + var1 * (int64_t)vCalibData.dig_P5) << 1;
 	var2 = (var2 >> 2) + ((int64_t)vCalibData.dig_P4 << 16);
-	var1 = (((int64_t)vCalibData.dig_P3 * var1 * var1) >> 19 +
+	var1 = ((((int64_t)vCalibData.dig_P3 * var1 * var1) >> 19) +
 			(int64_t)vCalibData.dig_P2 * var1) >> 19;
 	var1 = (int32_t)vCalibData.dig_P1 + ((var1 * (uint32_t)vCalibData.dig_P1) >> 15);
 
@@ -198,10 +198,35 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 
 		SetMode(CfgData.OpMode, CfgData.Freq);
 
+		SetState(SENSOR_STATE_SLEEP);
+
 		usDelay(10000);
 	}
 
 	return found;
+}
+
+/**
+ * @brief	Set current sensor state
+ *
+ * @param 	State
+ *				- SENSOR_STATE_SLEEP	// Sleep state low power
+ *				- SENSOR_STATE_IDLE		// Idle state powered on
+ *				- SENSOR_STATE_SAMPLING	// Sampling in progress
+ *
+ * @return	Actual state. In the case where the new state could
+ * 			not be set, it returns the actual state of the sensor.
+ */
+SENSOR_STATE TphBme280::SetState(SENSOR_STATE State) {
+
+	if (State == SENSOR_STATE_SLEEP)
+	{
+		uint8_t regaddr = BME280_REG_CTRL_MEAS & vRegWrMask;
+		vCtrlReg &= ~BME280_REG_CTRL_MEAS_MODE_MASK;
+		Write(&regaddr, 1, &vCtrlReg, 1);
+	}
+
+	return Sensor::SetState(State);
 }
 
 /**
@@ -229,66 +254,44 @@ bool TphBme280::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 
 	vCtrlReg &= ~BME280_REG_CTRL_MEAS_MODE_MASK;
 
-	switch (OpMode)
+	if (vOpMode == SENSOR_OPMODE_CONTINUOUS)
 	{
-		case SENSOR_OPMODE_SLEEP:
-			regaddr = BME280_REG_CTRL_MEAS & vRegWrMask;
-			Write(&regaddr, 1, &vCtrlReg, 1);
-			break;
-		case SENSOR_OPMODE_SINGLE:
-			regaddr = BME280_REG_CTRL_HUM & vRegWrMask;
-			d = 1;								// Humi oversampling x 1
-			Write(&regaddr, 1, &d, 1);
+		uint32_t period = 1000 / Freq;
+		if (period >= 1000)
+		{
+			d = (5 << 5) | (4 << 2);
+		}
+		else if (period >= 500)
+		{
+			d = (4 << 5) | (4 << 2);
+		}
+		else if (period >= 250)
+		{
+			d = (3 << 5) | (3 << 2);
+		}
+		else if (period >= 125)
+		{
+			d = (2 << 5) | (3 << 2);
+		}
+		else if (period >= 62)
+		{
+			d = (1 << 5) | (3 << 2);
+		}
+		else if (period >= 20)
+		{
+			d = (7 << 5) | (2 << 2);
+		}
+		else if (period >= 10)
+		{
+			d = (6 << 5) | (1 << 2);
+		}
+		else
+		{
+			d = 0;
+		}
 
-			// PT config
-			vCtrlReg = (1 << 5) | (1 << 2) | 1;	// oversampling x1, forced
-			break;
-		case SENSOR_OPMODE_CONTINUOUS:
-			{
-				uint32_t period = 1000 / Freq;
-				if (period >= 1000)
-				{
-					d = (5 << 5) | (4 << 2);
-				}
-				else if (period >= 500)
-				{
-					d = (4 << 5) | (4 << 2);
-				}
-				else if (period >= 250)
-				{
-					d = (3 << 5) | (3 << 2);
-				}
-				else if (period >= 125)
-				{
-					d = (2 << 5) | (3 << 2);
-				}
-				else if (period >= 62)
-				{
-					d = (1 << 5) | (3 << 2);
-				}
-				else if (period >= 20)
-				{
-					d = (7 << 5) | (2 << 2);
-				}
-				else if (period >= 10)
-				{
-					d = (6 << 5) | (1 << 2);
-				}
-				else
-				{
-					d = 0;
-				}
-
-				regaddr = BME280_REG_CONFIG & vRegWrMask;
-				Write(&regaddr, 1, &d, 1);
-
-				regaddr = BME280_REG_CTRL_HUM & vRegWrMask;
-				d = 1;								// Humi oversampling x 1
-				Write(&regaddr, 1, &d, 1);
-
-				vCtrlReg = (1 << 5) | (1 << 2) | 3;	// oversampling x1, continuous
-			}
-			break;
+		regaddr = BME280_REG_CONFIG & vRegWrMask;
+		Write(&regaddr, 1, &d, 1);
 	}
 
 	StartSampling();
@@ -304,21 +307,23 @@ bool TphBme280::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 bool TphBme280::StartSampling()
 {
 	uint8_t regaddr = BME280_REG_CTRL_MEAS & vRegWrMask;
-	Write(&regaddr, 1, &vCtrlReg, 1);
+	uint8_t d = vCtrlReg | BME280_REG_CTRL_MEAS_MODE_NORMAL;
+
+	Write(&regaddr, 1, &d, 1);
 
 	return true;
 }
 
 bool TphBme280::Enable()
 {
-	SetMode(SENSOR_OPMODE_CONTINUOUS, vSampFreq);
+	//SetMode(SENSOR_OPMODE_CONTINUOUS, vSampFreq);
 
 	return true;
 }
 
 void TphBme280::Disable()
 {
-	SetMode(SENSOR_OPMODE_SLEEP, 0);
+	SetState(SENSOR_STATE_SLEEP);
 }
 
 void TphBme280::Reset()
@@ -334,7 +339,7 @@ bool TphBme280::Read(TPHSENSOR_DATA &TphData)
 	uint8_t addr = BME280_REG_STATUS;
 	uint8_t status = 0;
 	bool retval = false;
-	int timeout = 20;
+/*	int timeout = 20;
 
 	if (vOpMode == SENSOR_OPMODE_SINGLE)
 	{
@@ -346,6 +351,8 @@ bool TphBme280::Read(TPHSENSOR_DATA &TphData)
 		Device::Read(&addr, 1, &status, 1);
 		usDelay(1000);
 	} while ((status & 9) != 0 && timeout-- > 0);
+*/
+	Device::Read(&addr, 1, &status, 1);
 
 	if ((status & 9)== 0)
 	{

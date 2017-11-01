@@ -75,6 +75,7 @@ Modified by          Date              Description
 #define BME680_REG_CTRL_MEAS_MODE_MASK		(3<<0)
 #define BME680_REG_CTRL_MEAS_MODE_SLEEP		(0<<0)
 #define BME680_REG_CTRL_MEAS_MODE_FORCED	(1<<0)
+#define BME680_REG_CTRL_MEAS_MODE_NORMAL	(1<<0)
 #define BME680_REG_CTRL_MEAS_OSRS_P_MASK	(7<<2)
 #define BME680_REG_CTRL_MEAS_OSRS_P_BITPOS	(2)
 #define BME680_REG_CTRL_MEAS_OSRS_T_MASK	(7<<5)
@@ -207,6 +208,19 @@ public:
 	virtual bool Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL);
 
 	/**
+	 * @brief	Set current sensor state
+	 *
+	 * @param 	State
+	 *				- SENSOR_STATE_SLEEP	// Sleep state low power
+	 *				- SENSOR_STATE_IDLE		// Idle state powered on
+	 *				- SENSOR_STATE_SAMPLING	// Sampling in progress
+	 *
+	 * @return	Actual state. In the case where the new state could
+	 * 			not be set, it returns the actual state of the sensor.
+	 */
+	virtual SENSOR_STATE SetState(SENSOR_STATE State);
+
+	/**
 	 * @brief	Set gas heating profile
 	 *
 	 * @param	Count : Number of heating temperature settings
@@ -235,32 +249,84 @@ public:
 	 * @return	true - success
 	 */
 	virtual bool StartSampling();
+
+	/**
+	 * @brief	Power on or wake up device
+	 *
+	 * @return	true - If success
+	 */
 	virtual bool Enable();
+
+	/**
+	 * @brief	Put device in power down or power saving sleep mode
+	 *
+	 * @return	None
+	 */
 	virtual void Disable();
+
+	/**
+	 * @brief	Reset device to it initial state
+	 *
+	 * @return	None
+	 */
 	virtual void Reset();
+
+	/**
+	 * @brief	Read gas sensor data
+	 * 			Read gas data from device if available. If not
+	 * 			return previous data
+	 *
+	 * @param 	GasData : Gas sensor data
+	 *
+	 * @return	true - new data
+	 * 			false - old data
+	 */
+	bool Read(GASSENSOR_DATA &GasData);
+
+	/**
+	 * @brief	Read TPH data
+	 * 			Read TPH data from device if available. If not
+	 * 			return previous data.
+	 *
+	 * @param 	TphData : TPH data to return
+	 *
+	 * @return	true - new data
+	 * 			false - old data
+	 */
 	bool Read(TPHSENSOR_DATA &TphData);
+
+	/**
+	 * @brief	Read temperature
+	 *
+	 * @return	Temperature in degree C
+	 */
 	float ReadTemperature() {
 		TPHSENSOR_DATA tphdata;
 		Read(tphdata);
 		return (float)tphdata.Temperature / 100.0;
 	}
 
+	/**
+	 * @brief	Read barometric pressure
+	 *
+	 * @return	Barometric pressure in Pascal
+	 */
 	float ReadPressure() {
 		TPHSENSOR_DATA tphdata;
 		Read(tphdata);
 		return (float)tphdata.Pressure / 100.0;
 	}
 
+	/**
+	 * @brief	Read relative humidity
+	 *
+	 * @return	Relative humidity in %
+	 */
 	float ReadHumidity() {
 		TPHSENSOR_DATA tphdata;
 		Read(tphdata);
 		return (float)tphdata.Humidity / 100.0;
 	}
-
-	//bool Read(TPHSENSOR_DATA &TphData) { ReadTPH(TphData); }
-
-	bool Read(GASSENSOR_DATA &GasData);
-	//bool Read(GASSENSOR_DATA &GasData) { ReadGas(GasData); }
 
 private:
 

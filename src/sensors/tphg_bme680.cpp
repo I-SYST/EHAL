@@ -288,6 +288,8 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	d |= (CfgData.FilterCoeff << BME680_REG_CONFIG_FILTER_BITPOS) & BME680_REG_CONFIG_FILTER_MASK;
 	Write((uint8_t*)&regaddr, 1, &d, 1);
 
+	SetState(SENSOR_STATE_SLEEP);
+
 	SetMode(CfgData.OpMode, CfgData.Freq);
 
 	if (vOpMode == SENSOR_OPMODE_SINGLE)
@@ -387,6 +389,29 @@ bool TphgBme680::SetHeatingProfile(int Count, const GASSENSOR_HEAT *pProfile)
 }
 
 /**
+ * @brief	Set current sensor state
+ *
+ * @param 	State
+ *				- SENSOR_STATE_SLEEP	// Sleep state low power
+ *				- SENSOR_STATE_IDLE		// Idle state powered on
+ *				- SENSOR_STATE_SAMPLING	// Sampling in progress
+ *
+ * @return	Actual state. In the case where the new state could
+ * 			not be set, it returns the actual state of the sensor.
+ */
+SENSOR_STATE TphgBme680::SetState(SENSOR_STATE State) {
+
+	if (State == SENSOR_STATE_SLEEP)
+	{
+		uint8_t regaddr = BME680_REG_CTRL_MEAS & vRegWrMask;
+		vCtrlReg &= ~BME680_REG_CTRL_MEAS_MODE_MASK;
+		Write(&regaddr, 1, &vCtrlReg, 1);
+	}
+
+	return Sensor::SetState(State);
+}
+
+/**
  * @brief Set operating mode
  *
  * @param OpMode : Operating mode
@@ -413,10 +438,10 @@ bool TphgBme680::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 
 	switch (OpMode)
 	{
-		case SENSOR_OPMODE_SLEEP:
+/*		case SENSOR_OPMODE_SLEEP:
 			regaddr = BME680_REG_CTRL_MEAS & vRegWrMask;
 			Write(&regaddr, 1, &vCtrlReg, 1);
-			break;
+			break;*/
 		case SENSOR_OPMODE_CONTINUOUS:
 			// There is no continuous mode.  Force back to single
 		case SENSOR_OPMODE_SINGLE:
@@ -456,14 +481,14 @@ bool TphgBme680::StartSampling()
 
 bool TphgBme680::Enable()
 {
-	SetMode(SENSOR_OPMODE_CONTINUOUS, vSampFreq);
+	//SetMode(SENSOR_OPMODE_CONTINUOUS, vSampFreq);
 
 	return true;
 }
 
 void TphgBme680::Disable()
 {
-	SetMode(SENSOR_OPMODE_SLEEP, 0);
+	SetState(SENSOR_STATE_SLEEP);
 }
 
 void TphgBme680::Reset()
@@ -531,12 +556,12 @@ bool TphgBme680::UpdateData()
 		}
 
 		vbSampling = false;
-
+/*
 		if (vOpMode == SENSOR_OPMODE_SINGLE)
 		{
 			StartSampling();
 		}
-
+*/
 		return true;
 	}
 

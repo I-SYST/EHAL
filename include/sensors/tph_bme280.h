@@ -115,7 +115,28 @@ class TphBme280 : public TPHSensor {
 public:
 	TphBme280() : vCalibTFine(0), vRegWrMask(0xFF) {}
 	virtual ~TphBme280() {}
+
+	/**
+	 * @brief	Sensor in initialization
+	 * @param CfgData
+	 * @param pIntrf
+	 * @param pTimer
+	 * @return
+	 */
 	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer = NULL);
+
+	/**
+	 * @brief	Set current sensor state
+	 *
+	 * @param 	State
+	 *				- SENSOR_STATE_SLEEP	// Sleep state low power
+	 *				- SENSOR_STATE_IDLE		// Idle state powered on
+	 *				- SENSOR_STATE_SAMPLING	// Sampling in progress
+	 *
+	 * @return	Actual state. In the case where the new state could
+	 * 			not be set, it returns the actual state of the sensor.
+	 */
+	SENSOR_STATE SetState(SENSOR_STATE State);
 
 	/**
 	 * @brief Set operating mode
@@ -136,10 +157,39 @@ public:
 	 * @return	true - success
 	 */
 	virtual bool StartSampling();
+	/**
+	 * @brief	Power on or wake up device
+	 *
+	 * @return	true - If success
+	 */
 	virtual bool Enable();
+
+	/**
+	 * @brief	Put device in power down or power saving sleep mode
+	 *
+	 * @return	None
+	 */
 	virtual void Disable();
+
+	/**
+	 * @brief	Reset device to it initial state
+	 *
+	 * @return	None
+	 */
 	virtual void Reset();
+
+	/**
+	 * @brief	Read TPH data
+	 * 			Read TPH data from device if available. If not
+	 * 			return previous data.
+	 *
+	 * @param 	TphData : TPH data to return
+	 *
+	 * @return	true - new data
+	 * 			false - old data
+	 */
 	bool Read(TPHSENSOR_DATA &TphData);
+
 	float ReadTemperature() {
 		TPHSENSOR_DATA tphdata;
 		Read(tphdata);
@@ -149,7 +199,7 @@ public:
 	float ReadPressure() {
 		TPHSENSOR_DATA tphdata;
 		Read(tphdata);
-		return (float)tphdata.Pressure / 100.0;
+		return (float)tphdata.Pressure;
 	}
 
 	float ReadHumidity() {
@@ -157,6 +207,7 @@ public:
 		Read(tphdata);
 		return (float)tphdata.Humidity / 100.0;
 	}
+
 
 private:
 

@@ -6,11 +6,18 @@ SEARCH_DIR("../../../../../../src")
 SEARCH_DIR("../../../../EHAL/ARM/src")
 SEARCH_DIR("../../../../../EHAL/ARM/src")
 SEARCH_DIR("../../../../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../EHAL/ARM/nRF52/CMSIS/Release")
+SEARCH_DIR("../../../../../EHAL/ARM/nRF52/CMSIS/Release")
+SEARCH_DIR("../../../../../../EHAL/ARM/nRF52/CMSIS/Release")
 GROUP(-lgcc -lc -lnosys -lCMSIS)
 
 MEMORY
 {
-	FLASH (rx) : ORIGIN = 0x23000, LENGTH = 0x5d000
+	/*
+		Reserve flash for Sooftdevice 0x00000-0x23000 
+		Reserve flash for DFU 0x78000-0x80000
+	*/
+	FLASH (rx) : ORIGIN = 0x23000, LENGTH = 0x55000
 	RAM (rwx) :  ORIGIN = 0x20002200, LENGTH = 0xDE00
 	/** Location of non initialized RAM. Non initialized RAM is used for exchanging bond information
 	*  from application to bootloader when using buttonluss DFU OTA.

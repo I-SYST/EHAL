@@ -176,6 +176,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/seep.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensor.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -454,6 +459,11 @@
 			<name>include/miscdev/ledmxfont.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmxfont.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/gas_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gas_sensor.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/tph_bme280.h</name>
