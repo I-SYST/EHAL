@@ -234,7 +234,6 @@ public:
 	 * @brief Set operating mode
 	 *
 	 * @param OpMode : Operating mode
-	 * 					- TPHSENSOR_OPMODE_SLEEP
 	 * 					- TPHSENSOR_OPMODE_SINGLE
 	 * 					- TPHSENSOR_OPMODE_CONTINUOUS
 	 * @param Freq : Sampling frequency in Hz for continuous mode
@@ -341,6 +340,7 @@ private:
 
 	int32_t vCalibTFine;	// For internal calibration use only
 	uint8_t vCtrlReg;
+	uint8_t vCtrlGas1Reg;
 	uint8_t vRegWrMask;
 
 	bool vbMeasGas;			// Do gas measurement

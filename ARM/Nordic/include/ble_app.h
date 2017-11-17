@@ -41,6 +41,8 @@ Modified by          Date              Description
 #include "ble_db_discovery.h"
 #include "ble_advertising.h"
 
+#include "bluetooth/bleadv_mandata.h"
+
 /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
 #if (NRF_SD_BLE_API_VERSION <= 3)
    #define NRF_BLE_MAX_MTU_SIZE        GATT_MTU_SIZE_DEFAULT
@@ -57,24 +59,6 @@ Modified by          Date              Description
 #define NRF_BLE_MAX_MTU_SIZE            GATT_MTU_SIZE_DEFAULT
 
 #endif
-
-// Manufacture specific advertisement data type
-#define BLEAPP_ADV_MANDATA_TYPE_SN			0xFF	// Device Serial Number or UID (8 bytes)
-#define BLEAPP_ADV_MANDATA_TYPE_TPH			1		// Environmental sensor data (Temperature, Pressure, Humidity)
-#define BLEAPP_ADV_MANDATA_TYPE_INERTIAL	2		// Motion sensor data Accel, Gyro, Mag
-#define BLEAPP_ADV_MANDATA_TYPE_GAS			3		// Gas sensor data
-#define BLEAPP_ADV_MANDATA_TYPE_PROXY		4		// Proximity sensor data
-#define BLEAPP_ADV_MANDATA_TYPE_ADC			5		// Analog converter data
-
-#pragma pack(push, 1)
-
-// Manufacture specific data format in advertisement
-typedef struct _BleAppAdvManData {
-	uint8_t Type;		// Data types (see defined code above)
-	uint8_t Data[1];	// Type specific data follows can be more than 1 bytes
-} BLEAPP_ADV_MANDATA;
-
-#pragma pack(pop)
 
 typedef enum _BleAppMode {
 	BLEAPP_MODE_LOOP,		// just main loop (event mode), No scheduler, no RTOS

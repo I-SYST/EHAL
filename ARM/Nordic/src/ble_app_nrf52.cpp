@@ -487,8 +487,8 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             {
             	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
             	{
-//            		err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
-//                    APP_ERROR_CHECK(err_code);
+            		//err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
+                  //APP_ERROR_CHECK(err_code);
             	}
             }
             break;
@@ -1089,8 +1089,8 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 	APP_ERROR_CHECK(err_code);
 
 	// Bypass local copy of manufacturer data of the SDK
-//	g_AdvInstance.manuf_specific_data.data.p_data = initdata.advdata.p_manuf_specific_data->data.p_data;
-//	g_AdvInstance.advdata.p_manuf_specific_data->data.size = initdata.advdata.p_manuf_specific_data->data.size;
+	//g_AdvInstance.manuf_specific_data.data.p_data = initdata.advdata.p_manuf_specific_data->data.p_data;
+	//g_AdvInstance.advdata.p_manuf_specific_data->data.size = initdata.advdata.p_manuf_specific_data->data.size;
 
 	ble_advertising_conn_cfg_tag_set(&g_AdvInstance, BLEAPP_CONN_CFG_TAG);
 }
@@ -1340,6 +1340,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     {
     	IOPinConfig(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin, 0,
     				IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
+    	IOPinSet(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin);
     }
 
 
