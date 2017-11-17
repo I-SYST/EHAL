@@ -103,6 +103,9 @@ struct __device_intrf {
 	DEVINTRF_EVTCB EvtCB;	// Interrupt based event callback function pointer. Must be set to NULL if not used
 	bool Busy;		        // Busy flag to be set check and set at start and reset at end of transmission
 	int MaxRetry;			// Max retry when data could not be transfered (Rx/Tx returns zero count)
+	int EnCnt;				// Count the number of time device is enabled, this used as ref count where multiple
+							// devices are using the same interface. It is to avoid it being disabled while another
+							// device is still using it
 
 	// Bellow are all mandatory functions to implement
 	// On init, all implementation must fill these function, no NULL allowed
@@ -267,11 +270,17 @@ extern "C" {
 
 // C only function prototypes
 static inline void DeviceIntrfDisable(DEVINTRF *pDev) {
-	pDev->Disable(pDev);
+	if (AtomicDec(&pDev->EnCnt) < 1)
+    {
+    	pDev->Disable(pDev);
+    }
 }
 
 static inline void DeviceIntrfEnable(DEVINTRF *pDev) {
-	pDev->Enable(pDev);
+    if (AtomicInc(&pDev->EnCnt) == 1)
+    {
+    	pDev->Enable(pDev);
+    }
 }
 
 static inline int DeviceIntrfGetRate(DEVINTRF *pDev) {
@@ -368,9 +377,9 @@ public:
 	virtual int Rate(void) = 0;
 	// Disable device for power reduction, re-enable with Enable() without
 	// full init
-	virtual void Disable(void) = 0;
+	virtual void Disable(void) { DeviceIntrfDisable(*this); }
 	// Enable device
-	virtual void Enable(void) = 0;
+	virtual void Enable(void) { DeviceIntrfEnable(*this); }
 	// Receive full frame
 	virtual int Rx(int DevAddr, uint8_t *pBuff, int BuffLen) {
 		return DeviceIntrfRx(*this,DevAddr, pBuff, BuffLen);
