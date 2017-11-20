@@ -1311,6 +1311,16 @@ bool BleAppStackInit(int CentLinkCount, int PeriLinkCount, bool bConnectable)
 	err_code = sd_ble_cfg_set(BLE_CONN_CFG_GAP, &ble_cfg, ram_start);
 	APP_ERROR_CHECK(err_code);
 
+    memset(&ble_cfg, 0, sizeof(ble_cfg));
+    ble_cfg.gatts_cfg.attr_tab_size.attr_tab_size = 3000;
+    err_code = sd_ble_cfg_set(BLE_GATTS_CFG_ATTR_TAB_SIZE, &ble_cfg, ram_start);
+    APP_ERROR_CHECK(err_code);
+
+    memset(&ble_cfg, 0, sizeof(ble_cfg));
+    ble_cfg.gatts_cfg.service_changed.service_changed = 1;
+    err_code = sd_ble_cfg_set(BLE_GATTS_CFG_SERVICE_CHANGED, &ble_cfg, ram_start);
+    APP_ERROR_CHECK(err_code);
+
     // Enable BLE stack.
     err_code = nrf_sdh_ble_enable(&ram_start);
 	APP_ERROR_CHECK(err_code);
