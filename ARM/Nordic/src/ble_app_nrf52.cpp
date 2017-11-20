@@ -118,6 +118,7 @@ typedef struct _BleAppData {
 	BLEAPP_PERIPH *pPeriphDev;
 	uint32_t (*SDEvtHandler)(void) ;
 	ble_advdata_t SRData;
+	int MaxMtu;
 } BLEAPP_DATA;
 
 #pragma pack(pop)
@@ -132,7 +133,7 @@ NRF_BLE_GATT_DEF(s_Gatt);
 static ble_gap_adv_params_t s_AdvParams;                                 /**< Parameters to be passed to the stack when starting advertising. */
 
 BLEAPP_DATA g_BleAppData = {
-	BLEAPP_MODE_LOOP, 0, BLE_CONN_HANDLE_INVALID, -1, -1
+	BLEAPP_MODE_LOOP, 0, BLE_CONN_HANDLE_INVALID, -1, -1,
 };
 
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
@@ -583,9 +584,9 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
 
 #if (NRF_SD_BLE_API_VERSION >= 3)
         case BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST:
-//           printf("%x:BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST\r\n", p_ble_evt->header.evt_id);
+           //printf("%x:BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST %d\r\n", p_ble_evt->header.evt_id, g_BleAppData.MaxMtu);
             err_code = sd_ble_gatts_exchange_mtu_reply(p_ble_evt->evt.gatts_evt.conn_handle,
-                                                       NRF_BLE_MAX_MTU_SIZE);
+            										   g_BleAppData.MaxMtu);// NRF_BLE_MAX_MTU_SIZE);
             APP_ERROR_CHECK(err_code);
             break; // BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST
 #endif
@@ -738,7 +739,8 @@ static void BleAppDBDiscoveryHandler(ble_db_discovery_evt_t * p_evt)
     {
     	g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].ConnHdl = p_evt->conn_handle;
     	g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].SrvcCnt = s_DbDiscovery.srv_count;
-    	memcpy(g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].Srvc, s_DbDiscovery.services, s_DbDiscovery.srv_count * sizeof(ble_gatt_db_srv_t));
+    	memcpy(g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].Srvc, s_DbDiscovery.services,
+    		   s_DbDiscovery.srv_count * sizeof(ble_gatt_db_srv_t));
 
         uint32_t i;
 
@@ -1297,7 +1299,7 @@ bool BleAppStackInit(int CentLinkCount, int PeriLinkCount, bool bConnectable)
 	// Configure the maximum ATT MTU.
 	memset(&ble_cfg, 0x00, sizeof(ble_cfg));
 	ble_cfg.conn_cfg.conn_cfg_tag                 = BLEAPP_CONN_CFG_TAG;
-	ble_cfg.conn_cfg.params.gatt_conn_cfg.att_mtu = NRF_BLE_MAX_MTU_SIZE;//NRF_BLE_GATT_MAX_MTU_SIZE;
+	ble_cfg.conn_cfg.params.gatt_conn_cfg.att_mtu = g_BleAppData.MaxMtu;//NRF_BLE_GATT_MAX_MTU_SIZE;
 	err_code = sd_ble_cfg_set(BLE_CONN_CFG_GATT, &ble_cfg, ram_start);
 	APP_ERROR_CHECK(err_code);
 
@@ -1348,6 +1350,11 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     g_BleAppData.AppMode = pBleAppCfg->AppMode;
     g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
 
+    if (pBleAppCfg->MaxMtu > NRF_BLE_MAX_MTU_SIZE)
+    	g_BleAppData.MaxMtu = pBleAppCfg->MaxMtu;
+    else
+    	g_BleAppData.MaxMtu = NRF_BLE_MAX_MTU_SIZE;
+
     switch (g_BleAppData.AppMode)
     {
     	case BLEAPP_MODE_LOOP:
@@ -1372,7 +1379,8 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
 
     // Initialize SoftDevice.
-    BleAppStackInit(pBleAppCfg->CentLinkCount, pBleAppCfg->PeriLinkCount, pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT);
+    BleAppStackInit(pBleAppCfg->CentLinkCount, pBleAppCfg->PeriLinkCount,
+    				pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT);
 
 	if (pBleAppCfg->PeriLinkCount > 0 && pBleAppCfg->AdvInterval > 0)
 	{
