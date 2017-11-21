@@ -586,7 +586,8 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
         case BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST:
            //printf("%x:BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST %d\r\n", p_ble_evt->header.evt_id, g_BleAppData.MaxMtu);
             err_code = sd_ble_gatts_exchange_mtu_reply(p_ble_evt->evt.gatts_evt.conn_handle,
-            										   g_BleAppData.MaxMtu);// NRF_BLE_MAX_MTU_SIZE);
+            										   g_BleAppData.MaxMtu);
+            										   //NRF_BLE_MAX_MTU_SIZE);
             APP_ERROR_CHECK(err_code);
             break; // BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST
 #endif
