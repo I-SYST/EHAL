@@ -324,9 +324,9 @@ bool TphgBme680::Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	SetHeatingProfile(CfgData.NbHeatPoint, CfgData.pHeatProfile);
 
 	uint8_t reg = BME680_REG_CTRL_GAS1 & vRegWrMask;
-	uint8_t d = BME680_REG_CTRL_GAS1_RUN_GAS | ((vNbHeatPoint - 1) & BME680_REG_CTRL_GAS1_NB_CONV_MASK);
+	vCtrlGas1Reg = BME680_REG_CTRL_GAS1_RUN_GAS | ((vNbHeatPoint - 1) & BME680_REG_CTRL_GAS1_NB_CONV_MASK);
 
-	Device::Write(&reg, 1, &d, 1);
+	Device::Write(&reg, 1, &vCtrlGas1Reg, 1);
 
 	if (vOpMode == SENSOR_OPMODE_SINGLE)
 	{
@@ -572,6 +572,11 @@ bool TphgBme680::Read(TPHSENSOR_DATA &TphData)
 {
 	bool retval = UpdateData();
 
+	uint8_t reg = BME680_REG_CTRL_GAS1 & vRegWrMask;
+	uint8_t d = vCtrlGas1Reg & ~BME680_REG_CTRL_GAS1_RUN_GAS;
+
+	Device::Write(&reg, 1, &d, 1);
+
 	memcpy(&TphData, &vTphData, sizeof(TPHSENSOR_DATA));
 
 	return retval;
@@ -585,6 +590,10 @@ bool TphgBme680::Read(GASSENSOR_DATA &GasData)
 		retval = UpdateData();
 
 	memcpy(&GasData, &vGasData, sizeof(GASSENSOR_DATA));
+
+	uint8_t reg = BME680_REG_CTRL_GAS1 & vRegWrMask;
+
+	Device::Write(&reg, 1, &vCtrlGas1Reg, 1);
 
 	vbGasData = false;
 

@@ -125,6 +125,8 @@ public:
 	// This functions MUST ONLY be called if StartTx returns true.
 	virtual void StopTx(void) { DeviceIntrfStopTx(&vBleIntrf.DevIntrf); }
 
+	virtual bool RequestToSend(int NbBytes);
+
 private:
 
 	BLEINTRF vBleIntrf;

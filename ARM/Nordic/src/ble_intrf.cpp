@@ -379,4 +379,21 @@ bool BleIntrf::Init(const BLEINTRF_CFG &Cfg)
 	return BleIntrfInit(&vBleIntrf, &Cfg);
 }
 
+bool BleIntrf::RequestToSend(int NbBytes)
+{
+	bool retval = false;
+
+	if (vBleIntrf.hTxFifo)
+	{
+		int avail = CFifoAvail(vBleIntrf.hTxFifo);
+		if ((avail * vBleIntrf.PacketSize) > NbBytes)
+			retval = true;
+	}
+	else
+	{
+		retval = true;
+	}
+
+	return retval;
+}
 

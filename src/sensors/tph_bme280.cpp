@@ -233,7 +233,6 @@ SENSOR_STATE TphBme280::SetState(SENSOR_STATE State) {
  * @brief Set operating mode
  *
  * @param OpMode : Operating mode
- * 					- TPHSENSOR_OPMODE_SLEEP
  * 					- TPHSENSOR_OPMODE_SINGLE
  * 					- TPHSENSOR_OPMODE_CONTINUOUS
  * @param Freq : Sampling frequency in Hz for continuous mode

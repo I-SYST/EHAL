@@ -102,11 +102,15 @@ typedef struct _I2C_Config {
 
 // Device driver data require by low level functions
 typedef struct {
-	I2CMODE Mode;				// Operating mode Master/Slave
-	int 	Rate;				// Speed in Hz
-	int 	SlaveAddr;			// I2C slave address used in slave mode only
-	int 	MaxRetry;			// Max number of retry
+	I2CMODE Mode;			// Operating mode Master/Slave
+	int 	Rate;			// Speed in Hz
+	int 	SlaveAddr;		// I2C slave address used in slave mode only
+	int 	MaxRetry;		// Max number of retry
 	DEVINTRF DevIntrf;		// I2C device interface implementation
+	int 	SclPort;
+	int		SclPin;
+	int		SdaPort;
+	int		SdaPin;
 } I2CDEV;
 
 #pragma pack(pop)
@@ -128,8 +132,8 @@ static inline int I2CGetRate(I2CDEV *pDev) { return pDev->DevIntrf.GetRate(&pDev
 static inline int I2CSetRate(I2CDEV *pDev, int Rate) {
 	return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate);
 }
-static inline void I2CEnable(I2CDEV *pDev) { pDev->DevIntrf.Enable(&pDev->DevIntrf); }
-static inline void I2CDisable(I2CDEV *pDev) { pDev->DevIntrf.Disable(&pDev->DevIntrf); }
+static inline void I2CEnable(I2CDEV *pDev) { DeviceIntrfEnable(&pDev->DevIntrf); }
+static inline void I2CDisable(I2CDEV *pDev) { DeviceIntrfDisable(&pDev->DevIntrf); }
 static inline int I2CRx(I2CDEV *pDev, int DevAddr, uint8_t *pBuff, int Bufflen) {
 	return DeviceIntrfRx(&pDev->DevIntrf, DevAddr, pBuff, Bufflen);
 }
@@ -142,7 +146,7 @@ static inline int I2CRead(I2CDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdL
 }
 static inline int I2CWrite(I2CDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
         uint8_t *pTxData, int TxLen) {
-	return DeviceIntrfRead(&pDev->DevIntrf, DevAddr, pAdCmd, AdCmdLen, pTxData, TxLen);
+	return DeviceIntrfWrite(&pDev->DevIntrf, DevAddr, pAdCmd, AdCmdLen, pTxData, TxLen);
 }
 static inline bool I2CStartRx(I2CDEV *pDev, int DevAddr) {
 	return DeviceIntrfStartRx(&pDev->DevIntrf, DevAddr);

@@ -155,7 +155,9 @@ static inline sig_atomic_t AtomicDec(sig_atomic_t *pVar) {
 	return --(*pVar);
 	//   AppModel_resume_scheduling();
 #elif defined(__GNUC__)
-	return __atomic_fetch_sub (pVar, 1, __ATOMIC_SEQ_CST);
+   	__atomic_store_n(pVar, *pVar - 1, __ATOMIC_SEQ_CST);
+   	return *pVar;
+//	return __atomic_fetch_sub (pVar, 1, __ATOMIC_SEQ_CST);
 #endif
 }
 #endif  // __TSOK__

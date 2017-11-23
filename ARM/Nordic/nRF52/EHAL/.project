@@ -56,6 +56,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_board.h</locationURI>
 		</link>
 		<link>
+			<name>include/bluetooth</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>include/cfifo.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/cfifo.h</locationURI>
@@ -431,6 +436,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/utf8cvt.cpp</locationURI>
 		</link>
 		<link>
+			<name>include/bluetooth/bleadv_mandata.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/bluetooth/bleadv_mandata.h</locationURI>
+		</link>
+		<link>
 			<name>include/converters/adc_device.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/converters/adc_device.h</locationURI>
@@ -677,11 +687,6 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/fstorage</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/libraries</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -956,11 +961,6 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/fstorage/nrf_fstorage_sd.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/libraries/balloc</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
 			<name>src/nRF5_SDK/libraries/pwr_mgmt/nrf_pwr_mgmt.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/pwr_mgmt/nrf_pwr_mgmt.c</locationURI>
@@ -1099,11 +1099,6 @@
 			<name>src/nRF5_SDK/libraries/experimental_log/src/nrf_log_str_formatter.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/experimental_log/src/nrf_log_str_formatter.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/libraries/balloc/nrf_balloc.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/balloc/nrf_balloc.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdh.c</name>
