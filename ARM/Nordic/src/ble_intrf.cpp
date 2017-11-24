@@ -215,6 +215,7 @@ int BleIntrfTxData(DEVINTRF *pDevIntrf, uint8_t *pData, int DataLen)
     BLEINTRF_PKT *pkt;
     int maxlen = intrf->hTxFifo->BlkSize - sizeof(pkt->Len);
 	int cnt = 0;
+	uint32_t res;
 
 	while (DataLen > 0)
 	{
@@ -231,20 +232,37 @@ int BleIntrfTxData(DEVINTRF *pDevIntrf, uint8_t *pData, int DataLen)
 
 	if (s_bBleIntrfTxReady == true)
 	{
-		pkt = (BLEINTRF_PKT *)CFifoGet(intrf->hTxFifo);
-		if (pkt != NULL)
-		{
-	        s_bBleIntrfTxReady = false;
-			uint32_t res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, pkt->Data, pkt->Len);
+	    res = 0;
+	    if (intrf->TransBuffLen > 0)
+	    {
+            res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, intrf->TransBuff, intrf->TransBuffLen);
+	    }
+	    if (res == 0)
+	    {
+	        intrf->TransBuffLen = 0;
+            do {
+                pkt = (BLEINTRF_PKT *)CFifoGet(intrf->hTxFifo);
+                if (pkt != NULL)
+                {
+                    s_bBleIntrfTxReady = false;
+                    uint32_t res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, pkt->Data, pkt->Len);
 #if (NRF_SD_BLE_API_VERSION <= 3)
-			if (res != BLE_ERROR_NO_TX_PACKETS)
+                    if (res != BLE_ERROR_NO_TX_PACKETS)
 #else
-			if (res != NRF_ERROR_RESOURCES)
+                    if (res != NRF_ERROR_RESOURCES)
 #endif
-			{
-				s_bBleIntrfTxReady = true;
-			}
-		}
+                    {
+                        s_bBleIntrfTxReady = true;
+                    }
+                    if (res != NRF_SUCCESS)
+                    {
+                        memcpy(intrf->TransBuff, pkt->Data, pkt->Len);
+                        intrf->TransBuffLen = pkt->Len;
+                        break;
+                    }
+                }
+            } while (pkt != NULL && s_bBleIntrfTxReady == true);
+	    }
 	}
 
 	return cnt;
@@ -289,20 +307,35 @@ void BleIntrfTxComplete(BLESRVC *pBleSvc, int CharIdx)
 {
     BLEINTRF *intrf = (BLEINTRF*)pBleSvc->pContext;
     BLEINTRF_PKT *pkt;
+    uint32_t res = 0;
 
     s_bBleIntrfTxReady = true;
-    pkt = (BLEINTRF_PKT *)CFifoGet(intrf->hTxFifo);
-    if (pkt != NULL)
+
+    if (intrf->TransBuffLen > 0)
     {
-        s_bBleIntrfTxReady = false;
-        uint32_t res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, pkt->Data, pkt->Len);
-#if (NRF_SD_BLE_API_VERSION <= 3)
-        if (res != BLE_ERROR_NO_TX_PACKETS)
-#else
-        if (res != NRF_ERROR_RESOURCES)
-#endif
+        res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, intrf->TransBuff, intrf->TransBuffLen);
+    }
+    if (res == 0)
+    {
+        intrf->TransBuffLen = 0;
+        pkt = (BLEINTRF_PKT *)CFifoGet(intrf->hTxFifo);
+        if (pkt != NULL)
         {
-            s_bBleIntrfTxReady = true;
+            s_bBleIntrfTxReady = false;
+            uint32_t res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, pkt->Data, pkt->Len);
+#if (NRF_SD_BLE_API_VERSION <= 3)
+            if (res != BLE_ERROR_NO_TX_PACKETS)
+#else
+            if (res != NRF_ERROR_RESOURCES)
+#endif
+            {
+                s_bBleIntrfTxReady = true;
+            }
+            if (res != NRF_SUCCESS)
+            {
+                memcpy(intrf->TransBuff, pkt->Data, pkt->Len);
+                intrf->TransBuffLen = pkt->Len;
+            }
         }
     }
 }
@@ -356,6 +389,7 @@ bool BleIntrfInit(BLEINTRF *pBleIntrf, const BLEINTRF_CFG *pCfg)
 	pBleIntrf->TxCharIdx = pCfg->TxCharIdx;
 
 	pBleIntrf->pBleSrv->pCharArray[pBleIntrf->RxCharIdx].WrCB = BleIntrfRxWrCB;
+	pBleIntrf->pBleSrv->pCharArray[pBleIntrf->TxCharIdx].TxCompleteCB = BleIntrfTxComplete;
 
 	pBleIntrf->DevIntrf.Enable = BleIntrfEnable;
 	pBleIntrf->DevIntrf.Disable = BleIntrfDisable;
@@ -370,6 +404,7 @@ bool BleIntrfInit(BLEINTRF *pBleIntrf, const BLEINTRF_CFG *pCfg)
 	pBleIntrf->DevIntrf.Busy = false;
 	pBleIntrf->DevIntrf.MaxRetry = 0;
 	pBleIntrf->DevIntrf.EvtCB = pCfg->EvtCB;
+	pBleIntrf->TransBuffLen = 0;
 
 	return true;
 }
