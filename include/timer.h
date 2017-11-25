@@ -185,7 +185,7 @@ public:
 	 *
 	 * @return  Converted count in msec
 	 */
-	virtual uint32_t mSecond(uint64_t Count) { return Count * vnsPeriod / 1000LL; }
+	virtual uint32_t mSecond(uint64_t Count) { return Count * vnsPeriod / 1000000LL; }
 
 	/**
      * @brief   Get current timer counter in usec

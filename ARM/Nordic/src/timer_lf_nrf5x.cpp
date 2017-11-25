@@ -71,6 +71,8 @@ void TimerLFnRF5x::IRQHandler()
         }
     }
 
+    vLastCount = count;
+
     if (vEvtHandler)
     {
         vEvtHandler(this, evt);

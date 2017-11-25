@@ -165,22 +165,22 @@ void BleSrvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt)
 
 #if (NRF_SD_BLE_API_VERSION > 3)
         case BLE_GATTS_EVT_HVN_TX_COMPLETE:
+#else
+        case BLE_EVT_TX_COMPLETE:
+
+#endif
             if (pSrvc->ConnHdl == pBleEvt->evt.gatts_evt.conn_handle)
             {
                 for (int i = 0; i < pSrvc->NbChar; i++)
                 {
-                    if (pSrvc->pCharArray[i].TxCompleteCB)
+                    //if (pBleEvt->evt.gatts_evt.params.hvc.handle == pSrvc->pCharArray[i].Hdl.value_handle &&
+                    if (pSrvc->pCharArray[i].TxCompleteCB != NULL)
                     {
                         pSrvc->pCharArray[i].TxCompleteCB(pSrvc, i);
                     }
                 }
             }
             break;
-#else
-        case BLE_EVT_TX_COMPLETE:
-            break;
-
-#endif
 
         default:
             break;
