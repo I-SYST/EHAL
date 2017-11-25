@@ -55,6 +55,7 @@ Modified by          Date              Description
 #define BME680_REG_STATUS				0x73
 
 #define BME680_REG_STATUS_SPI_MEM_PG		(1<<4)		// SPI page select
+#define BME680_REG_STATUS_SPI_MEM_PG_POS	(4)			// SPI page select shift position
 
 #define BME680_REG_RESET				0xE0
 
@@ -194,7 +195,8 @@ typedef struct {
 
 class TphgBme680 : public TPHSensor, public GasSensor {
 public:
-	TphgBme680() : vRegWrMask(0xFF), vbMeasGas(false), vbSampling(false), vbGasData(false) {}
+	TphgBme680() : vbMeasGas(false), vbSampling(false),
+				   vbGasData(false), vbSpi(false) {}
 	virtual ~TphgBme680() {}
 
 	/**
@@ -337,12 +339,15 @@ private:
 	uint32_t CalcGas(uint16_t RawGas, uint8_t Range);
 	uint8_t CalcHeaterResistance(uint16_t Temp);
 	bool UpdateData();
+	void SelectRegPage(uint8_t Reg);
+	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
+	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
 
 	int32_t vCalibTFine;	// For internal calibration use only
 	uint8_t vCtrlReg;
 	uint8_t vCtrlGas1Reg;
-	uint8_t vRegWrMask;
-
+	bool vbSpi;				// Set to true if SPI interfacing
+	int vRegPage;			// Current register page, SPI interface only
 	bool vbMeasGas;			// Do gas measurement
 	bool vbSampling;
 	bool vbGasData;
