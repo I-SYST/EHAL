@@ -595,7 +595,7 @@ void TphgBme680::SelectRegPage(uint8_t Reg)
 
 	vRegPage = page;
 	uint8_t regaddr = BME680_REG_STATUS;
-	uint8_t d = (vRegPage & 1) << BME680_REG_STATUS_SPI_MEM_PG_POS;
+	uint8_t d = (vRegPage & 1) << BME680_REG_STATUS_SPI_MEM_PG_BITPOS;
 	Device::Write(&regaddr, 1, &d, 1);
 }
 

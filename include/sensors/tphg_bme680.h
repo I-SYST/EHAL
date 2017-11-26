@@ -55,7 +55,7 @@ Modified by          Date              Description
 #define BME680_REG_STATUS				0x73
 
 #define BME680_REG_STATUS_SPI_MEM_PG		(1<<4)		// SPI page select
-#define BME680_REG_STATUS_SPI_MEM_PG_POS	(4)			// SPI page select shift position
+#define BME680_REG_STATUS_SPI_MEM_PG_BITPOS	(4)			// SPI page select shift position
 
 #define BME680_REG_RESET				0xE0
 
