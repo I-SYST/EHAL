@@ -168,6 +168,7 @@ protected:
 	SENSOR_OPMODE vOpMode;		// Current operating mode
 	uint32_t vSampFreq;			// Sampling frequency in Hz, relevant to CONTINUOUS mode
 	Timer *vpTimer;				// Timer to use for time stamping data
+	uint64_t vSampleCnt;		// Keeping sample count
 };
 
 extern "C" {

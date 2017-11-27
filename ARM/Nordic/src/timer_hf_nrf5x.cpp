@@ -56,9 +56,13 @@ void TimerHFnRF5x::IRQHandler()
         {
             evt |= 1 << (i + 2);
             vpReg->EVENTS_COMPARE[i] = 0;
-            if (vTrigType[i] == TIMER_TRIG_TYPE_CONTINUOUS)
+            if (vTrigger[i].Type == TIMER_TRIG_TYPE_CONTINUOUS)
             {
             	vpReg->CC[i] = count + vCC[i] - INTERRUPT_LATENCY;
+            }
+            if (vTrigger[i].Handler)
+            {
+            	vTrigger[i].Handler(this, i);
             }
         }
 
@@ -131,6 +135,8 @@ bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
     {
         return false;
     }
+
+    memset(vTrigger, 0, sizeof(vTrigger));
 
 	vMaxNbTrigEvt = TIMER_NRF5X_HF_MAX_TRIGGER_EVT;
     switch (Cfg.DevNo)
@@ -378,7 +384,7 @@ uint64_t TimerHFnRF5x::TickCount()
 	return (uint64_t)vLastCount + vRollover;
 }
 
-uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type)
+uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler)
 {
     if (TrigNo < 0 || TrigNo >= vMaxNbTrigEvt)
         return 0;
@@ -391,7 +397,7 @@ uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
         return 0;
     }
 
-    vTrigType[TrigNo] = Type;
+    vTrigger[TrigNo].Type = Type;
     vCC[TrigNo] = cc;
     vpReg->TASKS_CAPTURE[TrigNo] = 1;
 
@@ -412,6 +418,9 @@ uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
 
     vLastCount = count;
 
+    vTrigger[TrigNo].nsPeriod = vnsPeriod * (uint64_t)cc / 10ULL;
+    vTrigger[TrigNo].Handler = Handler;
+
     return vnsPeriod * (uint64_t)cc / 10ULL; // Return real period in nsec
 }
 
@@ -420,10 +429,25 @@ void TimerHFnRF5x::DisableTimerTrigger(int TrigNo)
     if (TrigNo < 0 || TrigNo >= vMaxNbTrigEvt)
         return;
 
-    vTrigType[TrigNo] = TIMER_TRIG_TYPE_SINGLE;
     vCC[TrigNo] = 0;
     vpReg->CC[TrigNo] = 0;
     vpReg->INTENCLR = TIMER_INTENSET_COMPARE0_Msk << TrigNo;
+
+    vTrigger[TrigNo].Type = TIMER_TRIG_TYPE_SINGLE;
+    vTrigger[TrigNo].Handler = NULL;
+    vTrigger[TrigNo].nsPeriod = 0;
+
+}
+
+int TimerHFnRF5x::GetFreeTimerTrigger(void)
+{
+	for (int i = 0; i < TIMER_NRF5X_HF_MAX_TRIGGER_EVT; i++)
+	{
+		if (vTrigger[i].nsPeriod == 0)
+			return i;
+	}
+
+	return -1;
 }
 
 

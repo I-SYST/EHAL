@@ -534,9 +534,15 @@ bool TphgBme680::UpdateData()
 			}
 		}
 
+		vSampleCnt++;
+
 		if (vpTimer)
 		{
 			vTphData.Timestamp = vpTimer->mSecond();
+		}
+		else
+		{
+			vTphData.Timestamp = vSampleCnt;
 		}
 
 		vbSampling = false;
