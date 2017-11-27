@@ -64,9 +64,13 @@ void TimerLFnRF5x::IRQHandler()
         {
             evt |= 1 << (i + 2);
             vpReg->EVENTS_COMPARE[i] = 0;
-            if (vTrigType[i] == TIMER_TRIG_TYPE_CONTINUOUS)
+            if (vTrigger[i].Type == TIMER_TRIG_TYPE_CONTINUOUS)
             {
             	vpReg->CC[i] = count + vCC[i];
+            }
+            if (vTrigger[i].Handler)
+            {
+            	vTrigger[i].Handler(this, i);
             }
         }
     }
@@ -290,7 +294,7 @@ uint64_t TimerLFnRF5x::TickCount()
 	return (uint64_t)vpReg->COUNTER + vRollover;
 }
 
-uint64_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type)
+uint64_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler)
 {
     if (TrigNo < 0 || TrigNo >= TIMER_NRF5X_RTC_MAX_TRIGGER_EVT)
         return 0;
@@ -302,7 +306,7 @@ uint64_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
         return 0;
     }
 
-    vTrigType[TrigNo] = Type;
+    vTrigger[TrigNo].Type = Type;
     vCC[TrigNo] = cc;
     vpReg->EVTENSET = RTC_EVTEN_COMPARE0_Msk << TrigNo;
 
@@ -313,6 +317,9 @@ uint64_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
 
     vpReg->CC[TrigNo] = vCC[TrigNo] + vpReg->COUNTER;
 
+    vTrigger[TrigNo].nsPeriod = vnsPeriod * (uint64_t)cc;
+    vTrigger[TrigNo].Handler = Handler;
+
     return vnsPeriod * (uint64_t)cc; // Return real period in nsec
 }
 
@@ -321,10 +328,24 @@ void TimerLFnRF5x::DisableTimerTrigger(int TrigNo)
     if (TrigNo < 0 || TrigNo >= TIMER_NRF5X_RTC_MAX_TRIGGER_EVT)
         return;
 
-    vTrigType[TrigNo] = TIMER_TRIG_TYPE_SINGLE;
     vCC[TrigNo] = 0;
     vpReg->CC[TrigNo] = 0;
     vpReg->EVTENCLR = RTC_EVTEN_COMPARE0_Msk << TrigNo;
     vpReg->INTENCLR = RTC_INTENCLR_COMPARE0_Msk << TrigNo;
+
+    vTrigger[TrigNo].Type = TIMER_TRIG_TYPE_SINGLE;
+    vTrigger[TrigNo].Handler = NULL;
+    vTrigger[TrigNo].nsPeriod = 0;
+}
+
+int TimerLFnRF5x::GetFreeTimerTrigger(void)
+{
+	for (int i = 0; i < TIMER_NRF5X_RTC_MAX_TRIGGER_EVT; i++)
+	{
+		if (vTrigger[i].nsPeriod == 0)
+			return i;
+	}
+
+	return -1;
 }
 

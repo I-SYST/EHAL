@@ -61,19 +61,25 @@ public:
 	virtual uint32_t Frequency(uint32_t Freq);
 	virtual uint32_t Frequency(void) { return vFreq; }
 	virtual uint64_t TickCount();
-    int MaxTriggerTimer() { return TIMER_NRF5X_RTC_MAX_TRIGGER_EVT; }
-    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type);
-	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type) {
-		return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type) / 1000000ULL);
+    int MaxTimerTrigger() { return TIMER_NRF5X_RTC_MAX_TRIGGER_EVT; }
+    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod,
+    									TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod,
+										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL) {
+		return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type, Handler) / 1000000ULL);
 	}
     virtual void DisableTimerTrigger(int TrigNo);
 
+    int GetFreeTimerTrigger(void);
+
     void IRQHandler();
+
 protected:
 private:
     NRF_RTC_Type *vpReg;
     uint32_t vCC[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
-    TIMER_TRIG_TYPE vTrigType[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
+    //TIMER_TRIG_TYPE vTrigType[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
+    TIMER_TRIGGER vTrigger[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
 };
 
 // *****
@@ -82,11 +88,12 @@ private:
 #define TIMER_NRF5X_HF_BASE_FREQ   			16000000
 #ifdef NRF52
 #define TIMER_NRF5X_HF_MAX              	5           // 5 high frequency timer available on nRF52
+#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	6           // Max number of supported counter trigger event
 #else
 #define TIMER_NRF5X_HF_MAX              	3           // 3 high frequency timer available on nRF51
+#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	4           // Max number of supported counter trigger event
 #endif
 
-#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	4           // Max number of supported counter trigger event
 
 class TimerHFnRF5x : public Timer {
 public:
@@ -99,32 +106,39 @@ public:
     virtual void Reset();
     virtual uint32_t Frequency(uint32_t Freq);
     virtual uint64_t TickCount();
-    int MaxTriggerTimer() {
+    int MaxTimerTrigger() {
 #ifdef NRF52
     	return vMaxNbTrigEvt;
 #else
     	return TIMER_NRF5X_HF_MAX_TRIGGER_EVT;
 #endif
     }
-    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type);
-	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type) {
-		return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type) / 1000000ULL);
+    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod,
+    									TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod,
+										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL) {
+		return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type, Handler) / 1000000ULL);
 	}
     virtual void DisableTimerTrigger(int TrigNo);
 
+    int GetFreeTimerTrigger(void);
+
     void IRQHandler();
+
 protected:
 private:
 
     NRF_TIMER_Type *vpReg;
     int vMaxNbTrigEvt;		// Number of trigger is not the same for all timers.
-#ifdef NRF52
-    uint32_t vCC[TIMER_NRF5X_HF_MAX_TRIGGER_EVT + 2];
-    TIMER_TRIG_TYPE vTrigType[TIMER_NRF5X_HF_MAX_TRIGGER_EVT + 2];
-#else
+//#ifdef NRF52
+//    uint32_t vCC[TIMER_NRF5X_HF_MAX_TRIGGER_EVT + 2];
+    //TIMER_TRIG_TYPE vTrigType[TIMER_NRF5X_HF_MAX_TRIGGER_EVT + 2];
+//    TIMER_TRIGGER vTrigger[TIMER_NRF5X_HF_MAX_TRIGGER_EVT + 2];
+//#else
     uint32_t vCC[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
-    TIMER_TRIG_TYPE vTrigType[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
-#endif
+//    TIMER_TRIG_TYPE vTrigType[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
+    TIMER_TRIGGER vTrigger[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
+//#endif
 };
 
 #endif // __TIMER_NRF5x_H__

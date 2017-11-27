@@ -65,8 +65,15 @@ class Timer;
 
 // Timer event handler callback
 typedef void (*TIMER_EVTCB)(Timer *pTimer, uint32_t Evt);
+typedef void (*TIMER_TRIGCB)(Timer *pTimer, int TrigNo);
 
 #pragma pack(push, 4)
+
+typedef struct __Timer_Trigger_Info {
+	TIMER_TRIG_TYPE Type;		// Trigger type
+	uint64_t nsPeriod;			// Trigger period in nanosecond
+	TIMER_TRIGCB Handler;	// Trigger event callback
+} TIMER_TRIGGER;
 
 //
 // NOTE : Interrupt priority should be as high as possible
@@ -139,7 +146,7 @@ public:
 	 *
 	 * @return	count
 	 */
-	virtual int MaxTriggerTimer() = 0;
+	virtual int MaxTimerTrigger() = 0;
 
 	/**
 	 * @brief	Enable timer trigger event
@@ -150,7 +157,9 @@ public:
 	 *
 	 * @return  real period in nsec based on clock calculation
 	 */
-	virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type) = 0;
+	virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod,
+										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL) = 0;
+	int EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
 
 	/**
 	 * @brief	Enable timer trigger event
@@ -161,7 +170,9 @@ public:
 	 *
 	 * @return  real period in nsec based on clock calculation
 	 */
-	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type) = 0;
+	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod,
+										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL) = 0;
+	int EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
 
 	/**
 	 * @brief   Disable timer trigger event
@@ -227,6 +238,16 @@ public:
 	 * @return  Timer frequency in Hz
 	 */
 	virtual uint32_t Frequency(void) { return vFreq; }
+
+	/**
+	 * @brief	Get first available timer trigger index
+	 * This function returns the first available timer trigger to be used to with
+	 * EnableTimerTrigger
+	 *
+	 * @return	success : Timer trigger index
+	 * 			fail : -1
+	 */
+	virtual int GetFreeTimerTrigger(void) = 0;
 
 protected:
 
