@@ -107,6 +107,14 @@ public:
 	virtual bool SetMode(SENSOR_OPMODE OpMode, uint32_t Freq);
 
 	/**
+	 * @brief	Set sampling frequency.
+	 * 		The sampling frequency is relevant only in continuous mode.
+	 *
+	 * @return	Frequency in Hz
+	 */
+	virtual uint32_t SamplingFrequency(uint32_t FreqHz);
+
+	/**
 	 * @brief	Start sampling data
 	 *
 	 * @return	true - success

@@ -137,6 +137,14 @@ public:
 	virtual uint32_t SamplingFrequency() { return vSampFreq; }
 
 	/**
+	 * @brief	Set sampling frequency.
+	 * 		The sampling frequency is relevant only in continuous mode.
+	 *
+	 * @return	Frequency in Hz
+	 */
+	virtual uint32_t SamplingFrequency(uint32_t FreqHz) = 0;
+
+	/**
 	 * @brief	Set current sensor state
 	 *
 	 * @param 	State
@@ -147,7 +155,7 @@ public:
 	 * @return	Actual state. In the case where the new state could
 	 * 			not be set, it returns the actual state of the sensor.
 	 */
-	virtual SENSOR_STATE SetState(SENSOR_STATE State) {
+	virtual SENSOR_STATE State(SENSOR_STATE State) {
 		vState = State;
 		return vState;
 	}
@@ -160,7 +168,7 @@ public:
 	 *				- SENSOR_STATE_IDLE		// Idle state powered on
 	 *				- SENSOR_STATE_SAMPLING	// Sampling in progress
 	 */
-	virtual SENSOR_STATE GetState() { return vState; }
+	virtual SENSOR_STATE State() { return vState; }
 
 protected:
 

@@ -220,7 +220,7 @@ public:
 	 * @return	Actual state. In the case where the new state could
 	 * 			not be set, it returns the actual state of the sensor.
 	 */
-	virtual SENSOR_STATE SetState(SENSOR_STATE State);
+	virtual SENSOR_STATE State(SENSOR_STATE State);
 
 	/**
 	 * @brief	Set gas heating profile
@@ -243,6 +243,14 @@ public:
 	 * @return true- if success
 	 */
 	virtual bool SetMode(SENSOR_OPMODE OpMode, uint32_t Freq);
+
+	/**
+	 * @brief	Set sampling frequency.
+	 * 		The sampling frequency is relevant only in continuous mode.
+	 *
+	 * @return	Frequency in Hz
+	 */
+	virtual uint32_t SamplingFrequency(uint32_t FreqHz);
 
 	/**
 	 * @brief	Start sampling data

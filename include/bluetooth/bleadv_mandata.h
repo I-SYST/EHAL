@@ -44,11 +44,12 @@ Modified by          Date              Description
 #define BLEADV_MANDATA_TYPE_MAG			5		// Magnetometer sensor data
 #define BLEADV_MANDATA_TYPE_PROXY		6		// Proximity sensor data
 #define BLEADV_MANDATA_TYPE_ADC			7		// Analog converter data
+#define BLEADV_MANDATA_TYPE_GPIO		8		// GPIO pins state
 
 #pragma pack(push, 1)
 
 // Generic manufacture specific data format in advertisement
-typedef struct _BleAppAdvManData {
+typedef struct __BleApp_Advertising_ManData {
 	uint8_t Type;		// Data types (see defined code above)
 	uint8_t Data[1];	// Type specific data follows can be more than 1 bytes
 } BLEADV_MANDATA;
@@ -63,6 +64,17 @@ typedef struct __EnvGasData {
 	uint32_t GasRes;		// Gas resistance
 	uint16_t AirQIdx;		// Air quality index
 } BLEADV_MANDATA_GASSENSOR;
+
+typedef struct __IMU_Raw_Data {
+	uint16_t x;
+	uint16_t y;
+	uint16_t z;
+} BLEADV_MANDATA_IMUSENSOR;
+
+typedef struct __GPIO_Data {
+	uint32_t PortNo;		// Port number starting from 0
+	uint32_t PinVal;		// Bit field pin state
+} BLEADV_MANDATA_GPIO;
 
 #pragma pack(pop)
 
