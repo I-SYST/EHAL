@@ -113,7 +113,7 @@ typedef struct {
 
 class TphBme280 : public TPHSensor {
 public:
-	TphBme280() : vCalibTFine(0), vRegWrMask(0xFF) {}
+	TphBme280() : vCalibTFine(0), vbSpi(false) {}
 	virtual ~TphBme280() {}
 
 	/**
@@ -136,7 +136,7 @@ public:
 	 * @return	Actual state. In the case where the new state could
 	 * 			not be set, it returns the actual state of the sensor.
 	 */
-	SENSOR_STATE SetState(SENSOR_STATE State);
+	SENSOR_STATE State(SENSOR_STATE State);
 
 	/**
 	 * @brief Set operating mode
@@ -149,6 +149,14 @@ public:
 	 * @return true- if success
 	 */
 	virtual bool SetMode(SENSOR_OPMODE OpMode, uint32_t Freq);
+
+	/**
+	 * @brief	Set sampling frequency.
+	 * 		The sampling frequency is relevant only in continuous mode.
+	 *
+	 * @return	Frequency in Hz
+	 */
+	virtual uint32_t SamplingFrequency(uint32_t FreqHz);
 
 	/**
 	 * @brief	Start sampling data
@@ -213,11 +221,14 @@ private:
 	uint32_t CompenPress(int32_t RawPress);
 	int32_t CompenTemp(int32_t RawTemp);
 	uint32_t CompenHum(int32_t RawHum);
+	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
+	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
 
 	int32_t vCalibTFine;	// For internal calibration use only
 	BME280_CALIB_DATA vCalibData;
 	uint8_t vCtrlReg;
-	uint8_t vRegWrMask;
+//	uint8_t vRegWrMask;
+	bool vbSpi;
 };
 
 extern "C" {

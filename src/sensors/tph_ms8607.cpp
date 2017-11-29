@@ -108,6 +108,17 @@ void TphMS8607::ReadPtProm()
 	int crc = crc4_PT(vPTProm);
 }
 
+/**
+ * @brief	Set sampling frequency.
+ * 		The sampling frequency is relevant only in continuous mode.
+ *
+ * @return	Frequency in Hz
+ */
+uint32_t TphMS8607::SamplingFrequency(uint32_t FreqHz)
+{
+
+}
+
 bool TphMS8607::StartSampling()
 {
 	return true;
@@ -143,14 +154,14 @@ bool TphMS8607::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 
 bool TphMS8607::Enable()
 {
-	SetState(SENSOR_STATE_IDLE);
+	State(SENSOR_STATE_IDLE);
 
 	return true;
 }
 
 void TphMS8607::Disable()
 {
-	SetState(SENSOR_STATE_SLEEP);
+	State(SENSOR_STATE_SLEEP);
 }
 
 void TphMS8607::Reset()

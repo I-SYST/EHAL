@@ -431,9 +431,44 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/converters/dac_device.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/accel_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/accel_sensor.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/gas_sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gas_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/gyro_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gyro_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/imu_bmi160.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/imu_bmi160.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/imu_lsm9ds1.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/imu_lsm9ds1.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/imu_mpu9250.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/imu_mpu9250.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/imu_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/imu_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/mag_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/mag_sensor.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/tph_bme280.h</name>

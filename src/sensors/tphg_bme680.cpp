@@ -280,7 +280,7 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	d |= (CfgData.FilterCoeff << BME680_REG_CONFIG_FILTER_BITPOS) & BME680_REG_CONFIG_FILTER_MASK;
 	Write((uint8_t*)&regaddr, 1, &d, 1);
 
-	SetState(SENSOR_STATE_SLEEP);
+	State(SENSOR_STATE_SLEEP);
 
 	SetMode(CfgData.OpMode, CfgData.Freq);
 
@@ -391,7 +391,7 @@ bool TphgBme680::SetHeatingProfile(int Count, const GASSENSOR_HEAT *pProfile)
  * @return	Actual state. In the case where the new state could
  * 			not be set, it returns the actual state of the sensor.
  */
-SENSOR_STATE TphgBme680::SetState(SENSOR_STATE State) {
+SENSOR_STATE TphgBme680::State(SENSOR_STATE State) {
 
 	if (State == SENSOR_STATE_SLEEP)
 	{
@@ -400,7 +400,7 @@ SENSOR_STATE TphgBme680::SetState(SENSOR_STATE State) {
 		Write(&regaddr, 1, &vCtrlReg, 1);
 	}
 
-	return Sensor::SetState(State);
+	return Sensor::State(State);
 }
 
 /**
@@ -448,6 +448,17 @@ bool TphgBme680::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
 }
 
 /**
+ * @brief	Set sampling frequency.
+ * 		The sampling frequency is relevant only in continuous mode.
+ *
+ * @return	Frequency in Hz
+ */
+uint32_t TphgBme680::SamplingFrequency(uint32_t FreqHz)
+{
+
+}
+
+/**
  * @brief	Start sampling data
  *
  * @return	true - success
@@ -480,7 +491,7 @@ bool TphgBme680::Enable()
 
 void TphgBme680::Disable()
 {
-	SetState(SENSOR_STATE_SLEEP);
+	State(SENSOR_STATE_SLEEP);
 }
 
 void TphgBme680::Reset()
