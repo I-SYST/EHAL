@@ -194,7 +194,7 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 
 		vCtrlReg |= (CfgData.PresOvrs << BME280_REG_CTRL_MEAS_OSRS_P_BITPOS) & BME280_REG_CTRL_MEAS_OSRS_P_MASK;
 		vCtrlReg |= (CfgData.TempOvrs << BME280_REG_CTRL_MEAS_OSRS_T_BITPOS) & BME280_REG_CTRL_MEAS_OSRS_T_MASK;
-		Write((uint8_t*)&regaddr, 1, &d, 1);
+		Write((uint8_t*)&regaddr, 1, &vCtrlReg, 1);
 
 		SetMode(CfgData.OpMode, CfgData.Freq);
 
