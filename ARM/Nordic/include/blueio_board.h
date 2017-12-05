@@ -40,6 +40,7 @@ Modified by          Date              Description
 #define BLUEIO_BOARD						1
 #endif
 
+// ***** Default pin map for BLUEIO Boards
 // LEDs
 #define BLUEIO_LED1_PORT					0
 #define BLUEIO_LED1_PIN						30
@@ -53,11 +54,33 @@ Modified by          Date              Description
 #define BLUEIO_LED3_PIN						28
 #define BLUEIO_LED3_PINOP					0
 
-// Most IMM-NRF5x base boards use P0.30 for Bluetooth connection state LED
+// Buttons
+#define BLUEIO_BUT1_PORT					0
+#define BLUEIO_BUT1_PIN						2
+#define BLUEIO_BUT1_PINOP					0
+#define BLUEIO_BUT2_PORT					0
+#define BLUEIO_BUT2_PIN						13
+#define BLUEIO_BUT2_PINOP					0
+
+// UART pins
+#define BLUEIO_UART_RX_PORT					0
+#define BLUEIO_UART_RX_PIN					8
+#define BLUEIO_UART_RX_PINOP				0
+#define BLUEIO_UART_TX_PORT					0
+#define BLUEIO_UART_TX_PIN					7
+#define BLUEIO_UART_TX_PINOP				0
+#define BLUEIO_UART_CTS_PORT				0
+#define BLUEIO_UART_CTS_PIN					12
+#define BLUEIO_UART_CTS_PINOP				0
+#define BLUEIO_UART_RTS_PORT				0
+#define BLUEIO_UART_RTS_PIN					11
+#define BLUEIO_UART_RTS_PINOP				0
+
+// ***** Most IMM-NRF5x base boards use P0.30 for Bluetooth connection state LED
 #define BLUEIO_CONNECT_LED_PORT				BLUEIO_LED1_PORT
 #define BLUEIO_CONNECT_LED_PIN				BLUEIO_LED1_PIN
 
-// IBK-BLUEIO - Blue IO breakout board
+// ***** IBK-BLUEIO - Blue IO breakout board
 #define BLUEIO_LED_BLUE_PORT				BLUEIO_LED1_PORT
 #define BLUEIO_LED_BLUE_PIN					BLUEIO_LED1_PIN
 #define BLUEIO_LED_BLUE_PINOP				BLUEIO_LED1_PINOP
@@ -68,7 +91,7 @@ Modified by          Date              Description
 #define BLUEIO_LED_RED_PIN					BLUEIO_LED3_PIN
 #define BLUEIO_LED_RED_PINOP				BLUEIO_LED3_PINOP
 
-// BLUEIO-TAG-BME680 board LEDs
+// ***** BLUEIO-TAG-BME680 board
 #define BLUEIO_TAG_BME680_LED1_PORT			BLUEIO_LED1_PORT
 #define BLUEIO_TAG_BME680_LED1_PIN			BLUEIO_LED1_PIN
 #define BLUEIO_TAG_BME680_LED1_PINOP		BLUEIO_LED1_PINOP
@@ -87,23 +110,23 @@ Modified by          Date              Description
 
 #define BLUEIO_TAG_BME680_I2C_SDA_PORT		0
 #define BLUEIO_TAG_BME680_I2C_SDA_PIN		28
-#define BLUEIO_TAG_BME680_I2C_SDA_PINOP		0
+#define BLUEIO_TAG_BME680_I2C_SDA_PINOP		1
 
 #define BLUEIO_TAG_BME680_I2C_SCL_PORT		0
 #define BLUEIO_TAG_BME680_I2C_SCL_PIN		29
-#define BLUEIO_TAG_BME680_I2C_SCL_PINOP		0
+#define BLUEIO_TAG_BME680_I2C_SCL_PINOP		1
 
 #define BLUEIO_TAG_BME680_SPI_SCK_PORT		0
 #define BLUEIO_TAG_BME680_SPI_SCK_PIN		17
-#define BLUEIO_TAG_BME680_SPI_SCK_PINOP		0
+#define BLUEIO_TAG_BME680_SPI_SCK_PINOP		1
 
 #define BLUEIO_TAG_BME680_SPI_MOSI_PORT		0
 #define BLUEIO_TAG_BME680_SPI_MOSI_PIN		16
-#define BLUEIO_TAG_BME680_SPI_MOSI_PINOP	0
+#define BLUEIO_TAG_BME680_SPI_MOSI_PINOP	1
 
 #define BLUEIO_TAG_BME680_SPI_MISO_PORT		0
 #define BLUEIO_TAG_BME680_SPI_MISO_PIN		15
-#define BLUEIO_TAG_BME680_SPI_MISO_PINOP	0
+#define BLUEIO_TAG_BME680_SPI_MISO_PINOP	1
 
 #define BLUEIO_TAG_BME680_IMU_CS_PORT		0
 #define BLUEIO_TAG_BME680_IMU_CS_PIN		5
@@ -113,22 +136,14 @@ Modified by          Date              Description
 #define BLUEIO_TAG_BME680_IMU_INT_PIN		6
 #define BLUEIO_TAG_BME680_IMU_INT_PINOP		0
 
-// BLUEIO-TAG-BMEx80 board LEDs
-#define BLUEIO_TAG_BMEx80_LED1_PORT			BLUEIO_LED1_PORT
-#define BLUEIO_TAG_BMEx80_LED1_PIN			BLUEIO_LED1_PIN
-#define BLUEIO_TAG_BMEx80_LED1_PINOP		BLUEIO_LED1_PINOP
+// ***** BLUEIO-TAG-BME280 board
+#define BLUEIO_TAG_BME280_LED1_PORT			BLUEIO_LED1_PORT
+#define BLUEIO_TAG_BME280_LED1_PIN			BLUEIO_LED1_PIN
+#define BLUEIO_TAG_BME280_LED1_PINOP		BLUEIO_LED1_PINOP
 
 #define BLUEIO_TAG_BME280_LED2_PORT			0
 #define BLUEIO_TAG_BME280_LED2_PIN			17
 #define BLUEIO_TAG_BME280_LED2_PINOP		0
-
-// Buttons
-#define BLUEIO_BUT1_PORT					0
-#define BLUEIO_BUT1_PIN						2
-#define BLUEIO_BUT1_PINOP					0
-#define BLUEIO_BUT2_PORT					0
-#define BLUEIO_BUT2_PIN						13
-#define BLUEIO_BUT2_PINOP					0
 
 // BLUEIO-TAG-BMEx80 buttons
 
@@ -143,20 +158,6 @@ Modified by          Date              Description
 #define BLUEIO_TAG_BMEx80_I2C_SCL_PORT		0
 #define BLUEIO_TAG_BMEx80_I2C_SCL_PIN		25
 #define BLUEIO_TAG_BMEx80_I2C_SCL_PINOP		0
-
-// UART pins
-#define BLUEIO_UART_RX_PORT					0
-#define BLUEIO_UART_RX_PIN					8
-#define BLUEIO_UART_RX_PINOP				0
-#define BLUEIO_UART_TX_PORT					0
-#define BLUEIO_UART_TX_PIN					7
-#define BLUEIO_UART_TX_PINOP				0
-#define BLUEIO_UART_CTS_PORT				0
-#define BLUEIO_UART_CTS_PIN					12
-#define BLUEIO_UART_CTS_PINOP				0
-#define BLUEIO_UART_RTS_PORT				0
-#define BLUEIO_UART_RTS_PIN					11
-#define BLUEIO_UART_RTS_PINOP				0
 
 
 #endif // __BLUEIO_BOARD_H__

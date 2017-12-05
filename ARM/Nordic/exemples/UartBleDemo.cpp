@@ -89,8 +89,8 @@ BLESRVC_CHAR g_UartChars[] = {
 		BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY,
 		s_RxCharDescString,         // char UTF-8 description string
 		NULL,                       // Callback for write char, set to NULL for read char
-		true,                       // Notify flag for read characteristic
 		NULL,						// Callback on set notification
+		NULL,						// Tx completed callback
 		NULL,						// pointer to char default values
 		0,							// Default value length in bytes
 	},
@@ -101,8 +101,8 @@ BLESRVC_CHAR g_UartChars[] = {
 		BLESVC_CHAR_PROP_WRITEWORESP,	// char properties define by BLUEIOSVC_CHAR_PROP_...
 		s_TxCharDescString,			// char UTF-8 description string
 		UartTxSrvcCallback,         // Callback for write char, set to NULL for read char
-		false,                      // Notify flag for read characteristic
 		NULL,						// Callback on set notification
+		NULL,						// Tx completed callback
 		NULL,						// pointer to char default values
 		0							// Default value length in bytes
 	},
@@ -152,7 +152,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	&s_UartBleDevDesc,
 	g_ManData,              // Manufacture specific data to advertise
 	sizeof(g_ManData),      // Length of manufacture specific data
-	BLEAPP_SECTYPE_NONE,    // Secure connection type
+	BLEAPP_SECTYPE_STATICKEY_MITM,//BLEAPP_SECTYPE_NONE,    // Secure connection type
 	BLEAPP_SECEXCHG_NONE,   // Security key exchange
 	NULL,      				// Service uuids to advertise
 	0, 						// Total number of uuids
@@ -246,6 +246,10 @@ void HardwareInit()
 
 void BleAppInitUserData()
 {
+    ble_opt_t opt;
+    opt.gap_opt.passkey.p_passkey = (uint8_t*)"123456";
+	uint32_t err_code =  sd_ble_opt_set(BLE_GAP_OPT_PASSKEY, &opt);
+	APP_ERROR_CHECK(err_code);
 
 }
 

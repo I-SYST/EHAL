@@ -39,7 +39,7 @@ Modified by          Date              Description
 #include "ble.h"
 #include "nrf_sdm.h"
 #include "ble_db_discovery.h"
-#include "ble_advertising.h"
+//#include "ble_advertising.h"
 
 #include "bluetooth/bleadv_mandata.h"
 
@@ -59,6 +59,15 @@ Modified by          Date              Description
 #define NRF_BLE_MAX_MTU_SIZE            GATT_MTU_SIZE_DEFAULT
 
 #endif
+
+typedef enum __BleAppAdvMode {
+	BLEAPP_ADVMODE_IDLE,			// no connectable advertising is ongoing.
+	BLEAPP_ADVMODE_DIRECTED,		// Directed advertising attempts to connect to the most recently disconnected peer.
+	BLEAPP_ADVMODE_DIRECTED_SLOW,	// Directed advertising (low duty cycle) attempts to connect to the most recently disconnected peer.
+	BLEAPP_ADVMODE_FAST,			// Fast advertising will connect to any peer device, or filter with a whitelist if one exists.
+	BLEAPP_ADVMODE_SLOW				// Slow advertising is similar to fast advertising. By default, it uses a longer
+									// advertising interval and time-out than fast advertising. However, these options are defined by the user.
+} BLEAPP_ADVMODE;
 
 typedef enum _BleAppMode {
 	BLEAPP_MODE_LOOP,		// just main loop (event mode), No scheduler, no RTOS
@@ -205,7 +214,7 @@ void BleAppRun();
 uint16_t BleAppGetConnHandle();
 void BleAppGapDeviceNameSet(const char* ppDeviceName);
 void BleAppAdvManDataSet(uint8_t *pData, int Len);
-void BleAppAdvStart(ble_adv_mode_t AdvMode);
+void BleAppAdvStart(BLEAPP_ADVMODE AdvMode);
 
 #ifdef __cplusplus
 }
