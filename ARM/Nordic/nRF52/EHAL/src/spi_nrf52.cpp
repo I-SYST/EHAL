@@ -178,7 +178,8 @@ int nRF52SPIRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
 		dev->pReg->EVENTS_END = 0;
 		dev->pReg->TASKS_START = 1;
 
-		nRF52SPIWaitDMA(dev, 100000);
+		if (nRF52SPIWaitDMA(dev, 100000) == false)
+			break;
 
         l = dev->pReg->RXD.AMOUNT;
 		BuffLen -= l;

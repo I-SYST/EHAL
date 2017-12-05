@@ -39,7 +39,6 @@ Modified by          Date              Description
 #include "ble.h"
 #include "nrf_sdm.h"
 #include "ble_db_discovery.h"
-//#include "ble_advertising.h"
 
 #include "bluetooth/bleadv_mandata.h"
 
