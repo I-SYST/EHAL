@@ -389,7 +389,8 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
 //        		uint32_t ret = ble_advdata_set(&(g_AdvInstance.advdata), &g_BleAppData.SRData);
         		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams, BLEAPP_CONN_CFG_TAG);
         	}
-        	//   ret_code_t err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_SLOW);
+        	else
+        	   ret_code_t err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_SLOW);
           //  APP_ERROR_CHECK(err_code);
         }
            // sleep_mode_enter();
@@ -984,9 +985,9 @@ void BleAppAdvManDataSet(uint8_t *pData, int Len)
     uint32_t ret = ble_advdata_set(&(g_AdvInstance.advdata), &g_BleAppData.SRData);
 }
 
-void BleAppAdvStart(ble_adv_mode_t AdvMode)
+void BleAppAdvStart(BLEAPP_ADVMODE AdvMode)
 {
-    uint32_t err_code = ble_advertising_start(&g_AdvInstance, AdvMode);
+    uint32_t err_code = ble_advertising_start(&g_AdvInstance, (ble_adv_mode_t)AdvMode);
     APP_ERROR_CHECK(err_code);
 }
 
