@@ -45,13 +45,16 @@ Modified by          Date              Description
 #define BLEADV_MANDATA_TYPE_PROXY		6		// Proximity sensor data
 #define BLEADV_MANDATA_TYPE_ADC			7		// Analog converter data
 #define BLEADV_MANDATA_TYPE_GPIO		8		// GPIO pins state
+#define BLEADV_MANDATA_TYPE_BUT			9		// Button/Switch state
+
+#define BLEADV_MANDATA_LEN_MAX			8		// Max number of bytes of data
 
 #pragma pack(push, 1)
 
 // Generic manufacture specific data format in advertisement
 typedef struct __BleApp_Advertising_ManData {
-	uint8_t Type;		// Data types (see defined code above)
-	uint8_t Data[1];	// Type specific data follows can be more than 1 bytes
+	uint8_t Type;							// Data types (see defined code above)
+	uint8_t Data[BLEADV_MANDATA_LEN_MAX];	// Type specific data follows can be more than 1 bytes
 } BLEADV_MANDATA;
 
 typedef struct __EnvTPHData {
@@ -71,10 +74,13 @@ typedef struct __IMU_Raw_Data {
 	uint16_t z;
 } BLEADV_MANDATA_IMUSENSOR;
 
-typedef struct __GPIO_Data {
-	uint32_t PortNo;		// Port number starting from 0
-	uint32_t PinVal;		// Bit field pin state
+typedef struct __GPIO_Pin_State {
+	uint32_t State;		// Bit field pins state
 } BLEADV_MANDATA_GPIO;
+
+typedef struct __ButSwitch_State {
+	uint32_t State;		// Bit field state state 0 = close, 1 = open
+} BLEADV_MANDATA_BUT;
 
 #pragma pack(pop)
 

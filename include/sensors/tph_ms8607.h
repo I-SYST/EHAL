@@ -104,7 +104,7 @@ public:
 	 *
 	 * @return true- if success
 	 */
-	virtual bool SetMode(SENSOR_OPMODE OpMode, uint32_t Freq);
+	virtual bool Mode(SENSOR_OPMODE OpMode, uint32_t Freq);
 
 	/**
 	 * @brief	Set sampling frequency.

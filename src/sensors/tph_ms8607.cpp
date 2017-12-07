@@ -77,8 +77,8 @@ bool TphMS8607::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 {
 	//TPHSENSOR_CFG *cfg = (TPHSENSOR_CFG*)pCfgData;
 
-	SetInterface(pIntrf);
-	SetDeviceAddess(CfgData.DevAddr);
+	Interface(pIntrf);
+	DeviceAddess(CfgData.DevAddr);
 
 	vpTimer = pTimer;
 
@@ -134,7 +134,7 @@ bool TphMS8607::StartSampling()
  *
  * @return true- if success
  */
-bool TphMS8607::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
+bool TphMS8607::Mode(SENSOR_OPMODE OpMode, uint32_t Freq)
 {
 	vOpMode = OpMode;
 	vSampFreq = Freq;

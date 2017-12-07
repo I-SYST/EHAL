@@ -237,7 +237,7 @@ int BleIntrfTxData(DEVINTRF *pDevIntrf, uint8_t *pData, int DataLen)
 	    {
             res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, intrf->TransBuff, intrf->TransBuffLen);
 	    }
-	    if (res == 0)
+	    if (res == NRF_SUCCESS)
 	    {
 	        intrf->TransBuffLen = 0;
             do {
@@ -368,17 +368,24 @@ bool BleIntrfInit(BLEINTRF *pBleIntrf, const BLEINTRF_CFG *pCfg)
 	if (pBleIntrf == NULL || pCfg == NULL)
 		return false;
 
-	if (pCfg->PacketSize <= 0 || pCfg->pRxFifoMem == NULL || pCfg->pTxFifoMem == NULL)
+	if (pCfg->PacketSize <= 0)
 	{
 		pBleIntrf->PacketSize = NRFBLEINTRF_PACKET_SIZE;
+	}
+	else
+	{
+		pBleIntrf->PacketSize = pCfg->PacketSize;
+	}
+
+	if (pCfg->pRxFifoMem == NULL || pCfg->pTxFifoMem == NULL)
+	{
 		pBleIntrf->hRxFifo = CFifoInit(s_nRFBleRxFifoMem, NRFBLEINTRF_CFIFO_SIZE, pBleIntrf->PacketSize, true);
 		pBleIntrf->hTxFifo = CFifoInit(s_nRFBleTxFifoMem, NRFBLEINTRF_CFIFO_SIZE, pBleIntrf->PacketSize, true);
 	}
 	else
 	{
-		pBleIntrf->PacketSize = pCfg->PacketSize;
-		pBleIntrf->hRxFifo = CFifoInit(pCfg->pRxFifoMem, pCfg->RxFifoMemSize, pCfg->PacketSize, true);
-		pBleIntrf->hTxFifo = CFifoInit(pCfg->pTxFifoMem, pCfg->TxFifoMemSize, pCfg->PacketSize, true);
+		pBleIntrf->hRxFifo = CFifoInit(pCfg->pRxFifoMem, pCfg->RxFifoMemSize, pBleIntrf->PacketSize, true);
+		pBleIntrf->hTxFifo = CFifoInit(pCfg->pTxFifoMem, pCfg->TxFifoMemSize, pBleIntrf->PacketSize, true);
 	}
 
 	pBleIntrf->DevIntrf.pDevData = (void*)pBleIntrf;

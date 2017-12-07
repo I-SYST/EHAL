@@ -119,8 +119,8 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 
 	if (pIntrf != NULL)
 	{
-		SetInterface(pIntrf);
-		SetDeviceAddess(CfgData.DevAddr);
+		Interface(pIntrf);
+		DeviceAddess(CfgData.DevAddr);
 	}
 
 	if (pTimer != NULL)
@@ -196,7 +196,7 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 		vCtrlReg |= (CfgData.TempOvrs << BME280_REG_CTRL_MEAS_OSRS_T_BITPOS) & BME280_REG_CTRL_MEAS_OSRS_T_MASK;
 		Write((uint8_t*)&regaddr, 1, &vCtrlReg, 1);
 
-		SetMode(CfgData.OpMode, CfgData.Freq);
+		Mode(CfgData.OpMode, CfgData.Freq);
 
 		State(SENSOR_STATE_SLEEP);
 
@@ -239,7 +239,7 @@ SENSOR_STATE TphBme280::State(SENSOR_STATE State) {
  *
  * @return true- if success
  */
-bool TphBme280::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
+bool TphBme280::Mode(SENSOR_OPMODE OpMode, uint32_t Freq)
 {
 	uint8_t regaddr;
 	uint8_t d = 0;

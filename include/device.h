@@ -206,23 +206,33 @@ protected:
 	/**
 	 * @brief	Set device's communication interface
 	 *
-	 * @param pIntrf
+	 * @param 	pIntrf : Pointer to preinitialized static interface.
 	 */
-	void SetInterface(DeviceIntrf *pIntrf) { vpIntrf = pIntrf; }
+	void Interface(DeviceIntrf *pIntrf) { vpIntrf = pIntrf; }
 
 	/**
 	 * @brief	Get device's communication interface
 	 *
-	 * @return
+	 * @return	return pointer to interface in use or NULL
 	 */
-	DeviceIntrf *GetInterface() { return vpIntrf; }
+	DeviceIntrf *Interface() { return vpIntrf; }
 
 	/**
-	 * @brief	Set device's map address or chip select
+	 * @brief	Set device's map address
+	 * Device address is dependent of interface and device type. For I2C type it
+	 * would be the 7 bits address, SPI would be CS pin index, other memory mapped
+	 * would be a 32bit address.
 	 *
 	 * @param 	Addr : Device's address or zero based chip select index
 	 */
-	void SetDeviceAddess(uint32_t Addr) { vDevAddr =  Addr; }
+	void DeviceAddess(uint32_t Addr) { vDevAddr =  Addr; }
+
+	/**
+	 * @brief	Get device's map address
+	 *
+	 * @return	Address or chip select pin zero based index
+	 */
+	uint32_t DeviceAddress() { return vDevAddr; }
 
 	uint32_t 	vDevAddr;		// device address or chip select
 	DeviceIntrf *vpIntrf;

@@ -173,10 +173,10 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	uint8_t regaddr;
 	uint8_t d;
 
-	if (pIntrf != NULL && pIntrf != GetInterface())
+	if (pIntrf != NULL && pIntrf != Interface())
 	{
-		SetInterface(pIntrf);
-		SetDeviceAddess(CfgData.DevAddr);
+		Interface(pIntrf);
+		DeviceAddess(CfgData.DevAddr);
 	}
 
 	if (pTimer != NULL)
@@ -282,7 +282,7 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 
 	State(SENSOR_STATE_SLEEP);
 
-	SetMode(CfgData.OpMode, CfgData.Freq);
+	Mode(CfgData.OpMode, CfgData.Freq);
 
 	if (vOpMode == SENSOR_OPMODE_SINGLE)
 	{
@@ -297,10 +297,10 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 // Gas sensor init
 bool TphgBme680::Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
-	if (pIntrf != NULL && pIntrf != GetInterface())
+	if (pIntrf != NULL && pIntrf != Interface())
 	{
-		SetInterface(pIntrf);
-		SetDeviceAddess(CfgData.DevAddr);
+		Interface(pIntrf);
+		DeviceAddess(CfgData.DevAddr);
 	}
 
 
@@ -414,7 +414,7 @@ SENSOR_STATE TphgBme680::State(SENSOR_STATE State) {
  *
  * @return true- if success
  */
-bool TphgBme680::SetMode(SENSOR_OPMODE OpMode, uint32_t Freq)
+bool TphgBme680::Mode(SENSOR_OPMODE OpMode, uint32_t Freq)
 {
 	uint8_t regaddr;
 	//uint8_t d = 0;
