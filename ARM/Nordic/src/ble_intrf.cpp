@@ -44,9 +44,6 @@ Modified by          Date              Description
 
 static uint8_t s_nRFBleRxFifoMem[NRFBLEINTRF_CFIFO_SIZE];
 static uint8_t s_nRFBleTxFifoMem[NRFBLEINTRF_CFIFO_SIZE];
-//static uint8_t s_BleInrfWrBuffer[NRFBLEINTRF_PACKET_SIZE];
-//static int s_BleIntrfWrBufferLen = 0;
-static volatile bool s_bBleIntrfTxReady = true;
 
 /**
  * @brief - Disable
@@ -197,6 +194,34 @@ bool BleIntrfStartTx(DEVINTRF *pDevIntrf, int DevAddr)
 	return true;
 }
 
+bool BleIntrfNotify(BLEINTRF *pIntrf)
+{
+    BLEINTRF_PKT *pkt;
+    uint32_t res = NRF_SUCCESS;
+
+    if (pIntrf->TransBuffLen > 0)
+    {
+        res = BleSrvcCharNotify(pIntrf->pBleSrv, pIntrf->TxCharIdx, pIntrf->TransBuff, pIntrf->TransBuffLen);
+    }
+    if (res == NRF_SUCCESS)
+    {
+        pIntrf->TransBuffLen = 0;
+        do {
+            pkt = (BLEINTRF_PKT *)CFifoGet(pIntrf->hTxFifo);
+            if (pkt != NULL)
+            {
+                uint32_t res = BleSrvcCharNotify(pIntrf->pBleSrv, pIntrf->TxCharIdx, pkt->Data, pkt->Len);
+                if (res != NRF_SUCCESS)
+                {
+                    memcpy(pIntrf->TransBuff, pkt->Data, pkt->Len);
+                    pIntrf->TransBuffLen = pkt->Len;
+                    break;
+                }
+            }
+        } while (pkt != NULL);
+    }
+}
+
 /**
  * @brief - TxData
  * 		Transfer data from pData passed in parameter.  Assuming StartTx was
@@ -229,41 +254,7 @@ int BleIntrfTxData(DEVINTRF *pDevIntrf, uint8_t *pData, int DataLen)
 		pData += l;
 		cnt += l;
 	}
-
-	if (s_bBleIntrfTxReady == true)
-	{
-	    res = 0;
-	    if (intrf->TransBuffLen > 0)
-	    {
-            res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, intrf->TransBuff, intrf->TransBuffLen);
-	    }
-	    if (res == NRF_SUCCESS)
-	    {
-	        intrf->TransBuffLen = 0;
-            do {
-                pkt = (BLEINTRF_PKT *)CFifoGet(intrf->hTxFifo);
-                if (pkt != NULL)
-                {
-                    s_bBleIntrfTxReady = false;
-                    uint32_t res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, pkt->Data, pkt->Len);
-#if (NRF_SD_BLE_API_VERSION <= 3)
-                    if (res != BLE_ERROR_NO_TX_PACKETS)
-#else
-                    if (res != NRF_ERROR_RESOURCES)
-#endif
-                    {
-                        s_bBleIntrfTxReady = true;
-                    }
-                    if (res != NRF_SUCCESS)
-                    {
-                        memcpy(intrf->TransBuff, pkt->Data, pkt->Len);
-                        intrf->TransBuffLen = pkt->Len;
-                        break;
-                    }
-                }
-            } while (pkt != NULL && s_bBleIntrfTxReady == true);
-	    }
-	}
+	BleIntrfNotify(intrf);
 
 	return cnt;
 }
@@ -305,39 +296,7 @@ void BleIntrfReset(DEVINTRF *pDevIntrf)
  */
 void BleIntrfTxComplete(BLESRVC *pBleSvc, int CharIdx)
 {
-    BLEINTRF *intrf = (BLEINTRF*)pBleSvc->pContext;
-    BLEINTRF_PKT *pkt;
-    uint32_t res = 0;
-
-    s_bBleIntrfTxReady = true;
-
-    if (intrf->TransBuffLen > 0)
-    {
-        res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, intrf->TransBuff, intrf->TransBuffLen);
-    }
-    if (res == 0)
-    {
-        intrf->TransBuffLen = 0;
-        pkt = (BLEINTRF_PKT *)CFifoGet(intrf->hTxFifo);
-        if (pkt != NULL)
-        {
-            s_bBleIntrfTxReady = false;
-            uint32_t res = BleSrvcCharNotify(intrf->pBleSrv, intrf->TxCharIdx, pkt->Data, pkt->Len);
-#if (NRF_SD_BLE_API_VERSION <= 3)
-            if (res != BLE_ERROR_NO_TX_PACKETS)
-#else
-            if (res != NRF_ERROR_RESOURCES)
-#endif
-            {
-                s_bBleIntrfTxReady = true;
-            }
-            if (res != NRF_SUCCESS)
-            {
-                memcpy(intrf->TransBuff, pkt->Data, pkt->Len);
-                intrf->TransBuffLen = pkt->Len;
-            }
-        }
-    }
+    BleIntrfNotify((BLEINTRF*)pBleSvc->pContext);
 }
 
 void BleIntrfRxWrCB(BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len)
@@ -425,13 +384,12 @@ bool BleIntrf::RequestToSend(int NbBytes)
 {
 	bool retval = false;
 
-	// **** Patching for testing. This should normal not require
-	// somehow it stops transmitting when queue is full. This is to force retransmit
-	if (s_bBleIntrfTxReady == true && CFifoUsed(vBleIntrf.hTxFifo))
-	{
-		BleIntrfTxComplete(vBleIntrf.pBleSrv, vBleIntrf.TxCharIdx);
-	}
 	// ****
+	// Some threaded application firmware may stop sending when queue full
+	// causing lockup
+	// Try to send to free up the queue before validating.
+	//
+	BleIntrfNotify(&vBleIntrf);
 
 	if (vBleIntrf.hTxFifo)
 	{
