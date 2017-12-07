@@ -425,6 +425,14 @@ bool BleIntrf::RequestToSend(int NbBytes)
 {
 	bool retval = false;
 
+	// **** Patching for testing. This should normal not require
+	// somehow it stops transmitting when queue is full. This is to force retransmit
+	if (s_bBleIntrfTxReady == true && CFifoUsed(vBleIntrf.hTxFifo))
+	{
+		BleIntrfTxComplete(vBleIntrf.pBleSrv, vBleIntrf.TxCharIdx);
+	}
+	// ****
+
 	if (vBleIntrf.hTxFifo)
 	{
 		int avail = CFifoAvail(vBleIntrf.hTxFifo);
