@@ -51,6 +51,7 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.746578172" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1983009834" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="S132"/>
+									<listOptionValue builtIn="false" value="NRF_DFU_SVCI_ENABLED"/>
 									<listOptionValue builtIn="false" value="NRF_DFU_DEBUG_VERSION"/>
 									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>
@@ -86,6 +87,8 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/rng&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/delay&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/atomic&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/slip&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/sha256&quot;"/>
@@ -203,9 +206,9 @@
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm.1903617375" name="Remove command" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm" value="rm" valueType="string"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash.789014220" name="Create flash image" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash" value="true" valueType="boolean"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize.1668768257" name="Print size" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize" value="true" valueType="boolean"/>
-							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.357102057" name="Float ABI" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.hard" valueType="enumerated"/>
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.357102057" name="Float ABI" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.default" valueType="enumerated"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.thumbinterwork.202966799" name="Thumb interwork (-mthumb-interwork)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.thumbinterwork" value="true" valueType="boolean"/>
-							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.714276158" name="FPU Type" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.fpv4spd16" valueType="enumerated"/>
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.714276158" name="FPU Type" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.default" valueType="enumerated"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform.648695191" isAbstract="false" osList="all" superClass="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform"/>
 							<builder buildPath="${workspace_loc:/dfu}/Release" id="ilg.gnuarmeclipse.managedbuild.cross.builder.31130685" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="ilg.gnuarmeclipse.managedbuild.cross.builder"/>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.198585525" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
@@ -215,6 +218,7 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1006502036" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.59876801" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="S132"/>
+									<listOptionValue builtIn="false" value="NRF_DFU_SVCI_ENABLED"/>
 									<listOptionValue builtIn="false" value="NRF_DFU_DEBUG_VERSION"/>
 									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>
@@ -250,6 +254,8 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/rng&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/delay&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/atomic&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/slip&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/sha256&quot;"/>
@@ -287,10 +293,10 @@
 									<listOptionValue builtIn="false" value="../src/secure_dfu_gcc_nrf52.ld"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.paths.9850305" name="Library search path (-L)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.paths" useByScannerDiscovery="false" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/Release_FPU&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/Release&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.usenewlibnano.1283897450" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.usenewlibnano" value="true" valueType="boolean"/>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.nodeflibs.1718097532" name="Do not use default libraries (-nodefaultlibs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.nodeflibs" value="true" valueType="boolean"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.nodeflibs.1718097532" name="Do not use default libraries (-nodefaultlibs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.nodeflibs" useByScannerDiscovery="false" value="false" valueType="boolean"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker.input.1270997331" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
