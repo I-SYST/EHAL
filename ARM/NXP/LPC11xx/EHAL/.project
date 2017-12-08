@@ -46,6 +46,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/cfifo.h</locationURI>
 		</link>
 		<link>
+			<name>include/converters</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>include/convutil.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/convutil.h</locationURI>
@@ -134,6 +139,11 @@
 			<name>include/md5.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/md5.h</locationURI>
+		</link>
+		<link>
+			<name>include/miscdev</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>include/prbs.h</name>
@@ -291,6 +301,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/cfifo.c</locationURI>
 		</link>
 		<link>
+			<name>src/converters</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/crc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/crc.c</locationURI>
@@ -346,6 +361,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/isha256.c</locationURI>
 		</link>
 		<link>
+			<name>src/miscdev</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/prbs.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/prbs.c</locationURI>
@@ -369,6 +389,11 @@
 			<name>src/seep_impl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/seep_impl.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/spi_lpcxx.c</name>
@@ -416,6 +441,71 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/utf8cvt.cpp</locationURI>
 		</link>
 		<link>
+			<name>include/converters/adc_device.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/converters/adc_device.h</locationURI>
+		</link>
+		<link>
+			<name>include/converters/adc_ltc2495.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/converters/adc_ltc2495.h</locationURI>
+		</link>
+		<link>
+			<name>include/converters/dac_device.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/converters/dac_device.h</locationURI>
+		</link>
+		<link>
+			<name>include/miscdev/ledmx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmx.h</locationURI>
+		</link>
+		<link>
+			<name>include/miscdev/ledmxfont.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmxfont.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/accel_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/accel_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/ag_bmi160.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/ag_bmi160.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/agm_lsm9ds1.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_lsm9ds1.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/agm_mpu9250.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_mpu9250.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/agm_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/gas_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gas_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/gyro_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gyro_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/mag_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/mag_sensor.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/pth_bme280.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pth_bme280.h</locationURI>
@@ -431,9 +521,54 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pth_sensor.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/tphg_bme680.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/tphg_bme680.h</locationURI>
+		</link>
+		<link>
 			<name>include/sys/dirent.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sys/dirent.h</locationURI>
+		</link>
+		<link>
+			<name>src/converters/adc_device.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/converters/adc_device.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/converters/adc_ltc2495.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/converters/adc_ltc2495.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/ledmx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmx.c</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/ledmxfont.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmxfont.c</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/agm_mpu9250.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/agm_mpu9250.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/tph_bme280.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/tph_bme280.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/tph_ms8607.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/tph_ms8607.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/tphg_bme680.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/tphg_bme680.cpp</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
