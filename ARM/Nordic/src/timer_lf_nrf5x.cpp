@@ -338,7 +338,7 @@ void TimerLFnRF5x::DisableTimerTrigger(int TrigNo)
     vTrigger[TrigNo].nsPeriod = 0;
 }
 
-int TimerLFnRF5x::GetFreeTimerTrigger(void)
+int TimerLFnRF5x::FindAvailTimerTrigger(void)
 {
 	for (int i = 0; i < TIMER_NRF5X_RTC_MAX_TRIGGER_EVT; i++)
 	{

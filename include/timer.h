@@ -247,7 +247,7 @@ public:
 	 * @return	success : Timer trigger index
 	 * 			fail : -1
 	 */
-	virtual int GetFreeTimerTrigger(void) = 0;
+	virtual int FindAvailTimerTrigger(void) = 0;
 
 protected:
 

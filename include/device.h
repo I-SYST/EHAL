@@ -128,7 +128,7 @@ public:
 	 *
 	 * @return	Data read
 	 */
-	virtual uint8_t Rea8(uint8_t *pRegAddr, int RegAddrLen) {
+	virtual uint8_t Read8(uint8_t *pRegAddr, int RegAddrLen) {
 		uint8_t val = 0;
 		Read(pRegAddr, RegAddrLen, &val, 1);
 		return val;

@@ -36,7 +36,7 @@ Modified by          Date              Description
 
 int Timer::EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler)
 {
-	int idx = GetFreeTimerTrigger();
+	int idx = FindAvailTimerTrigger();
 	if (idx < 0)
 		return 0;
 
@@ -47,7 +47,7 @@ int Timer::EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRI
 
 int Timer::EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler)
 {
-	int idx = GetFreeTimerTrigger();
+	int idx = FindAvailTimerTrigger();
 	if (idx < 0)
 		return 0;
 
