@@ -401,6 +401,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sysstatus.c</locationURI>
 		</link>
 		<link>
+			<name>src/timer.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/timer.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/timer_hf_nrf5x.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/timer_hf_nrf5x.cpp</locationURI>
@@ -471,9 +476,44 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmxfont.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/accel_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/accel_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/ag_bmi160.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/ag_bmi160.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/agm_lsm9ds1.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_lsm9ds1.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/agm_mpu9250.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_mpu9250.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/agm_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_sensor.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/gas_sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gas_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/gyro_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gyro_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/mag_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/mag_sensor.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/tph_bme280.h</name>
@@ -554,6 +594,11 @@
 			<name>src/nRF5_SDK/softdevice</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/agm_mpu9250.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/agm_mpu9250.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sensors/tph_bme280.cpp</name>
