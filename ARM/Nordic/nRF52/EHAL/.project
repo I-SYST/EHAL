@@ -796,6 +796,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_db_discovery/ble_db_discovery.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/ble/ble_services/ble_bas</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/ble_services/ble_dis</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -1089,6 +1094,11 @@
 			<name>src/nRF5_SDK/softdevice/common/nrf_sdh_soc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh_soc.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_services/ble_bas/ble_bas.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_bas/ble_bas.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/ble_services/ble_dis/ble_dis.c</name>
