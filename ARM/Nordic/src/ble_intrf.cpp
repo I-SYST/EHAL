@@ -203,7 +203,7 @@ bool BleIntrfNotify(BLEINTRF *pIntrf)
     {
         res = BleSrvcCharNotify(pIntrf->pBleSrv, pIntrf->TxCharIdx, pIntrf->TransBuff, pIntrf->TransBuffLen);
     }
-    if (res == NRF_SUCCESS)
+    if (res != NRF_ERROR_RESOURCES)
     {
         pIntrf->TransBuffLen = 0;
         do {
@@ -211,7 +211,7 @@ bool BleIntrfNotify(BLEINTRF *pIntrf)
             if (pkt != NULL)
             {
                 uint32_t res = BleSrvcCharNotify(pIntrf->pBleSrv, pIntrf->TxCharIdx, pkt->Data, pkt->Len);
-                if (res != NRF_SUCCESS)
+                if (res == NRF_ERROR_RESOURCES)
                 {
                     memcpy(pIntrf->TransBuff, pkt->Data, pkt->Len);
                     pIntrf->TransBuffLen = pkt->Len;
