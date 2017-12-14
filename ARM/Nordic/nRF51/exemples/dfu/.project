@@ -25,6 +25,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>src/ehal_dfu_public_key.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/src/ehal_dfu_public_key.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK_12</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
