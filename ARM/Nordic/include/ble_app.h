@@ -138,6 +138,7 @@ typedef struct _BleAppConfig {
 	uint32_t ConnIntervalMax;   // Max connection interval
 	int ConnLedPort;			// Connection LED port & pin number
 	int ConnLedPin;
+	int TxPower;				// Tx power in dBm
 	uint32_t (*SDEvtHandler)(void) ;// Require for BLEAPP_MODE_RTOS
 	int	MaxMtu;					// Max MTU size or 0 for default
 	int PeriphDevCnt;			// Max number of peripheral connection

@@ -123,6 +123,12 @@ typedef struct _BleAppData {
 
 #pragma pack(pop)
 
+static const int8_t s_TxPowerdBm[] = {
+	-40, -30, -20, -16, -12, -8, -4, 0, 4
+};
+
+static const int s_NbTxPowerdBm = sizeof(s_TxPowerdBm) / sizeof(int8_t);
+
 BLE_ADVERTISING_DEF(g_AdvInstance);             /**< Advertising module instance. */
 //static ble_advertising_t g_AdvInstance;                     /**< Advertising module instance. */
 //NRF_SDH_BLE_OBSERVER(g_BleAdvBleObserver, BLEAPP_OBSERVER_PRIO, ble_advertising_on_ble_evt, &g_AdvInstance);
@@ -1338,6 +1344,19 @@ static void ble_rtos_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
     g_BleAppData.SDEvtHandler();
 }
 
+int8_t GetValidTxPower(int TxPwr)
+{
+	int8_t retval = s_TxPowerdBm[0];
+
+	for (int i = 1; i < s_NbTxPowerdBm; i++)
+	{
+		if (s_TxPowerdBm[i] > TxPwr)
+			break;
+
+		retval = s_TxPowerdBm[i];
+	}
+}
+
 /**
  * @brief Function for the SoftDevice initialization.
  *
@@ -1393,6 +1412,8 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     // Initialize SoftDevice.
     BleAppStackInit(pBleAppCfg->CentLinkCount, pBleAppCfg->PeriLinkCount,
     				pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT);
+
+    sd_ble_gap_tx_power_set(GetValidTxPower(pBleAppCfg->TxPower));
 
 	if (pBleAppCfg->PeriLinkCount > 0 && pBleAppCfg->AdvInterval > 0)
 	{
