@@ -8,8 +8,8 @@ See http://embeddedsoftdev.blogspot.ca/p/h.html for more detail installation and
 
 The way the EHAL folder is structure is simple.  The deeper you go inside the more it is specific the the architecture or platform.  The parent folder contains all that is commonly available to the child fonder.  Which means, source file from child folder can access any source in the upper parent folder but not the other way around.  This is the way to keep the abstraction separated from implementation and easier to keep track of things.
 
-
-/your_root     - Development root directory
+```
+/your_root     - Development root directory
  |-- external    - Contains downloaded SDKs from silicon vendors
  |   |-- CMSIS            - ARM CMSIS SDK for all ARM platform (download from ARM)
  |   |-- nRF5_SDK     - Latest Nordic SDK (download from nordicsemi.com)
@@ -80,3 +80,4 @@ The way the EHAL folder is structure is simple.  The deeper you go inside the mo
  |   |-- Win
  |   |   |...
  | ...
+```
