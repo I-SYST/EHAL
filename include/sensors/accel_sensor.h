@@ -68,10 +68,17 @@ class AccelSensor : virtual public Sensor {
 public:
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf *pIntrf, Timer *pTimer) = 0;
 	virtual bool Read(ACCELSENSOR_DATA *pData) = 0;
-	virtual int Range(int x, int y, int z) = 0;
+	virtual uint8_t Scale() { return vScale; }
+	virtual uint8_t Scale(uint8_t Value) { vScale = Value; }
+
+protected:
+	virtual bool UpdateData() = 0;
+
+	ACCELSENSOR_DATA vData;
 
 private:
 	ACCELINTCB vIntHandler;
+	uint8_t vScale;
 };
 
 #endif // __ACCEL_SENSOR_H__

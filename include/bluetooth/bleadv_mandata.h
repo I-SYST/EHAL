@@ -46,6 +46,7 @@ Modified by          Date              Description
 #define BLEADV_MANDATA_TYPE_ADC			7		// Analog converter data
 #define BLEADV_MANDATA_TYPE_GPIO		8		// GPIO pins state
 #define BLEADV_MANDATA_TYPE_BUT			9		// Button/Switch state
+#define BLEADV_MANDATA_TYPE_MOT			10		// Motion detection
 
 #define BLEADV_MANDATA_LEN_MAX			8		// Max number of bytes of data
 

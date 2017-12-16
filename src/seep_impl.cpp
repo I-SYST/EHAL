@@ -49,7 +49,7 @@ Seep::~Seep()
 {
 }
 
-bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, DEVINTRF *pInterf)
+bool SeepInit(SEEPDEV *pDev, const SEEP_CFG *pCfgData, DEVINTRF *pInterf)
 {
     pDev->pInterf = pInterf;
     pDev->DevAddr = pCfgData->DevAddr;

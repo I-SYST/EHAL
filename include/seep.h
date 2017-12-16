@@ -97,7 +97,7 @@ extern "C" {
  *
  * @return  true - initialization successful
  */
-bool SeepInit(SEEPDEV *pDev, SEEP_CFG *pCfgData, DEVINTRF *pInterf);
+bool SeepInit(SEEPDEV *pDev, const SEEP_CFG *pCfgData, DEVINTRF *pInterf);
 
 /**
  * @brief Get EEPROM size
@@ -163,7 +163,7 @@ public:
     virtual ~Seep();
     Seep(Seep&);    // copy ctor not allowed
 
-    virtual bool Init(SEEP_CFG &Cfg, DeviceIntrf *pInterf) {
+    virtual bool Init(const SEEP_CFG &Cfg, DeviceIntrf *pInterf) {
         return SeepInit(&vDevData, &Cfg, *pInterf);
     }
 

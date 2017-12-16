@@ -170,6 +170,16 @@ public:
 	 */
 	virtual SENSOR_STATE State() { return vState; }
 
+	/**
+	 * @brief	Read sensor and update internal data with new readings
+	 *    This function should be called by a periodic timer to update
+	 * sensor data in SENSOR_OPMODE_CONTINUOUS or interrupt or when Read is called
+	 * in SENSOR_OPMODE_SINGLE
+	 *
+	 * @return	true - New data is updated
+	 */
+	virtual bool UpdateData() = 0;
+
 protected:
 
 	SENSOR_STATE vState;		// Current sensor state

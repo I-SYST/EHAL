@@ -48,7 +48,7 @@ Modified by          Date              Description
 
 #pragma pack(pop)
 
-class ImuLsm9ds1 : public AccelSensor, public GyroSensor, public MagSensor {
+class AgmLsm9ds1 : public AccelSensor, public GyroSensor, public MagSensor {
 public:
 	bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf *pIntrf, Timer *pTimer);
 	bool Read(ACCELSENSOR_DATA *pData);

@@ -49,6 +49,7 @@ Modified by          Date              Description
 
 // Accel & Gyro registers
 //
+
 #define MPU9250_AG_XG_OFFSET_H			0x13
 #define MPU9250_AG_XG_OFFSET_L			0x14
 #define MPU9250_AG_YG_OFFSET_H			0x15
@@ -73,16 +74,21 @@ Modified by          Date              Description
 #define MPU9250_AG_GYRO_CONFIG_XGYROCT_EN					(1<<7)
 
 #define MPU9250_AG_ACCEL_CONFIG			0x1C
-
-#define MPU9250_AG_ACCEL_CONFIG_ACCEL_FS_SEL_MASK			(3<<3)
-#define MPU9250_AG_ACCEL_CONFIG_AZ_ST_EN					(1<<5)
-#define MPU9250_AG_ACCEL_CONFIG_AY_ST_EN					(1<<6)
-#define MPU9250_AG_ACCEL_CONFIG_AX_ST_EN					(1<<7)
+#define MPU9250_AG_ACCEL_CONFIG_ACCEL_FS_SEL_MASK			(3<<3)		// Accel full scale select mask
+#define MPU9250_AG_ACCEL_CONFIG_ACCEL_FS_SEL_2G				(0<<3)		// 2g
+#define MPU9250_AG_ACCEL_CONFIG_ACCEL_FS_SEL_4G				(1<<3)		// 4g
+#define MPU9250_AG_ACCEL_CONFIG_ACCEL_FS_SEL_8G				(2<<3)		// 8g
+#define MPU9250_AG_ACCEL_CONFIG_ACCEL_FS_SEL_16G			(3<<3)		// 16g
+#define MPU9250_AG_ACCEL_CONFIG_AZ_ST_EN					(1<<5)		// Z accel self test enable
+#define MPU9250_AG_ACCEL_CONFIG_AY_ST_EN					(1<<6)		// Y accel self test enable
+#define MPU9250_AG_ACCEL_CONFIG_AX_ST_EN					(1<<7)		// X accel self test enable
 
 #define MPU9250_AG_ACCEL_CONFIG2		0x1D
 
 #define MPU9250_AG_ACCEL_CONFIG2_A_DLPF_CFG_MASK			(3)
+#define MPU9250_AG_ACCEL_CONFIG2_A_DLPF_CFG_BITPOS			(0)
 #define MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B_MASK		(3<<2)
+#define MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B_BITPOS		(2)
 
 #define MPU9250_AG_LP_ACCEL_ODR			0x1E
 
@@ -365,20 +371,26 @@ public:
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf *pIntrf, Timer *pTimer = NULL);
 	virtual bool Init(const GYROSENSOR_CFG&, DeviceIntrf*, Timer *pTimer = NULL);
 	virtual bool Init(const MAGSENSOR_CFG&, DeviceIntrf*, Timer *pTimer = NULL);
-	virtual void WakeOnMotion(bool bEnable);
+	bool WakeOnMotion(bool bEnable, uint8_t Threshold);
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
 	virtual bool StartSampling();
-	virtual int Range(int x, int y, int z) {}
+	virtual uint8_t Scale(uint8_t Value);
 	virtual bool Read(ACCELSENSOR_DATA *pData);
 	virtual bool Read(GYROSENSOR_DATA*);
 	virtual bool Read(MAGSENSOR_DATA*);
-	uint32_t SamplingFrequency(uint32_t FreqHz) {}
+	/**
+	 * @brief	Set sampling frequency.
+	 * 		The sampling frequency is relevant only in continuous mode.
+	 *
+	 * @return	Frequency in Hz
+	 */
+	 uint32_t SamplingFrequency(uint32_t FreqHz);
 
 private:
-
 	bool InitDefault(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer);
+	bool UpdateData();
 	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
 

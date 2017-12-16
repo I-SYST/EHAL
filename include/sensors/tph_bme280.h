@@ -223,6 +223,7 @@ private:
 	uint32_t CompenHum(int32_t RawHum);
 	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
+	bool UpdateData() {}
 
 	int32_t vCalibTFine;	// For internal calibration use only
 	BME280_CALIB_DATA vCalibData;
