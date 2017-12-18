@@ -135,6 +135,7 @@ public:
 	float ReadTemperature();
 	float ReadPressure();
 	float ReadHumidity();
+	bool UpdateData() {}
 
 private:
 
