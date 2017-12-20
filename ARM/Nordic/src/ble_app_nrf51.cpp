@@ -114,11 +114,13 @@ typedef struct _BleAppData {
 	BLEAPP_PERIPH *pPeriphDev;
 	ble_advdata_t AdvData;
 	ble_advdata_t SRData;
+	ble_adv_modes_config_t AdvConf;
 } BLEAPP_DATA;
 
 #pragma pack(pop)
 
 static ble_gap_adv_params_t s_AdvParams;                                 /**< Parameters to be passed to the stack when starting advertising. */
+static ble_advdata_manuf_data_t s_BleAppManData;
 
 BLEAPP_DATA g_BleAppData = {
 	BLEAPP_MODE_LOOP, 0, BLE_CONN_HANDLE_INVALID, -1, -1
@@ -403,7 +405,8 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             {
             	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
             	{
-            		err_code = ble_advertising_start(BLE_ADV_MODE_SLOW);
+                    err_code = ble_advdata_set(&g_BleAppData.AdvData, &g_BleAppData.SRData);
+                    err_code = sd_ble_gap_adv_start(&s_AdvParams);
             		APP_ERROR_CHECK(err_code);
             	}
             }
@@ -833,66 +836,57 @@ static void sec_req_timeout_handler(void * p_context)
 
 void BleAppAdvManDataSet(uint8_t *pData, int Len)
 {
-    uint32_t ret = ble_advdata_set(&g_BleAppData.AdvData, &g_BleAppData.SRData);
-    APP_ERROR_CHECK(ret);
+   uint32_t ret = ble_advdata_set(&g_BleAppData.AdvData, &g_BleAppData.SRData);
+   APP_ERROR_CHECK(ret);
 }
-
 
 /**@brief Overloadable function for initializing the Advertising functionality.
  */
 __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 {
     uint32_t               err_code;
-    ble_advdata_manuf_data_t mdata;
 
-    ble_advdata_t          advdata;
-    ble_advdata_t          scanrsp;
-    ble_adv_modes_config_t options;
-    ble_advdata_t          *padvdata = &advdata;
-    ble_advdata_t          *psrdata = &scanrsp;
-    ble_adv_modes_config_t *pconfig = &options;
+    memset(&g_BleAppData.AdvData, 0, sizeof(g_BleAppData.AdvData));
+    memset(&g_BleAppData.SRData, 0, sizeof(g_BleAppData.SRData));
 
-    memset(&advdata, 0, sizeof(advdata));
-    memset(&scanrsp, 0, sizeof(scanrsp));
+    s_BleAppManData.company_identifier = pCfg->VendorID;
+    s_BleAppManData.data.p_data = (uint8_t*)pCfg->pManData;
+    s_BleAppManData.data.size = pCfg->ManDataLen;
 
-    mdata.company_identifier = pCfg->VendorID;
-    mdata.data.p_data = (uint8_t*)pCfg->pManData;
-    mdata.data.size = pCfg->ManDataLen;
-
-    padvdata->include_appearance = false;
-    padvdata->flags              = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+    g_BleAppData.AdvData.include_appearance = false;
+    g_BleAppData.AdvData.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
 
     if (pCfg->pDevName != NULL)
     {
     	if (strlen(pCfg->pDevName) < 14)
     	{
-    		padvdata->name_type      = BLE_ADVDATA_SHORT_NAME;
-    		padvdata->short_name_len = strlen(pCfg->pDevName);
+    		g_BleAppData.AdvData.name_type      = BLE_ADVDATA_SHORT_NAME;
+    		g_BleAppData.AdvData.short_name_len = strlen(pCfg->pDevName);
     	}
     	else
-    		padvdata->name_type = BLE_ADVDATA_FULL_NAME;
+    		g_BleAppData.AdvData.name_type = BLE_ADVDATA_FULL_NAME;
     }
     else
     {
-    	padvdata->name_type = BLE_ADVDATA_NO_NAME;
+    	g_BleAppData.AdvData.name_type = BLE_ADVDATA_NO_NAME;
     }
 
-    if (padvdata->name_type == BLE_ADVDATA_NO_NAME)
+    if (g_BleAppData.AdvData.name_type == BLE_ADVDATA_NO_NAME)
     {
         if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
         {
-        	padvdata->uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-        	padvdata->uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+        	g_BleAppData.AdvData.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+        	g_BleAppData.AdvData.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
 			if (pCfg->pManData != NULL)
 			{
-				psrdata->p_manuf_specific_data = &mdata;
+				g_BleAppData.SRData.p_manuf_specific_data = &s_BleAppManData;
 			}
         }
         else
         {
 			if (pCfg->pManData != NULL)
 			{
-				padvdata->p_manuf_specific_data = &mdata;
+				g_BleAppData.AdvData.p_manuf_specific_data = &s_BleAppManData;
 			}
         }
     }
@@ -900,18 +894,18 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     {
         if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
         {
-        	psrdata->uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-        	psrdata->uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+        	g_BleAppData.SRData.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+        	g_BleAppData.SRData.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
         }
         if (pCfg->pManData != NULL)
         {
-        	padvdata->p_manuf_specific_data = &mdata;
+        	g_BleAppData.AdvData.p_manuf_specific_data = &s_BleAppManData;
         }
     }
 
     if (pCfg->AppMode == BLEAPP_MODE_NOCONNECT || pCfg->AppMode == BLEAPP_MODE_IBEACON)
     {
-        err_code = ble_advdata_set(padvdata, psrdata);
+        err_code = ble_advdata_set(&g_BleAppData.AdvData, &g_BleAppData.SRData);
         APP_ERROR_CHECK(err_code);
 
         // Initialize advertising parameters (used when starting advertising).
@@ -925,24 +919,25 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     }
     else
     {
-		memset(pconfig, 0, sizeof(options));
-    	pconfig->ble_adv_fast_enabled  = true;
-    	pconfig->ble_adv_fast_interval = pCfg->AdvInterval;
-    	pconfig->ble_adv_fast_timeout  = pCfg->AdvTimeout;
+		memset(&g_BleAppData.AdvConf, 0, sizeof(g_BleAppData.AdvConf));
+    	g_BleAppData.AdvConf.ble_adv_fast_enabled  = true;
+    	g_BleAppData.AdvConf.ble_adv_fast_interval = pCfg->AdvInterval;
+    	g_BleAppData.AdvConf.ble_adv_fast_timeout  = pCfg->AdvTimeout;
 
 		if (pCfg->AdvSlowInterval > 0)
 		{
-			pconfig->ble_adv_slow_enabled  = true;
-			pconfig->ble_adv_slow_interval = pCfg->AdvSlowInterval;
-			pconfig->ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
+			g_BleAppData.AdvConf.ble_adv_slow_enabled  = true;
+			g_BleAppData.AdvConf.ble_adv_slow_interval = pCfg->AdvSlowInterval;
+			g_BleAppData.AdvConf.ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
 		}
 
-		err_code = ble_advertising_init(padvdata, psrdata, pconfig, on_adv_evt, NULL);
-		APP_ERROR_CHECK(err_code);
     }
 
-    memcpy(&g_BleAppData.AdvData, padvdata, sizeof(ble_advdata_t));
-    memcpy(&g_BleAppData.SRData, psrdata, sizeof(ble_advdata_t));
+	err_code = ble_advertising_init(&g_BleAppData.AdvData, &g_BleAppData.SRData, &g_BleAppData.AdvConf, on_adv_evt, NULL);
+	APP_ERROR_CHECK(err_code);
+
+	//memcpy(&g_BleAppData.AdvData, padvdata, sizeof(ble_advdata_t));
+    //memcpy(&g_BleAppData.SRData, psrdata, sizeof(ble_advdata_t));
 }
 
 void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
