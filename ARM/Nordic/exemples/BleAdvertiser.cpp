@@ -5,6 +5,8 @@
 // Copyright   : Copyright (c) 2017, I-SYST
 // Description : Hello World in C++
 //============================================================================
+#include <string.h>
+
 #include "app_util.h"
 
 #include "istddef.h"
@@ -24,7 +26,11 @@ const BLEAPP_CFG s_BleAppCfg = {
 		1, 1, 0
 #else
 		NRF_CLOCK_LF_SRC_XTAL,	// Source 32KHz XTAL
+#ifdef NRF51
+		0, 0, NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM
+#else
 		0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM
+#endif
 #endif
 	},
 	0, 						// Number of central link
@@ -80,8 +86,6 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 
 int main()
 {
-    //HardwareInit();
-
     BleAppInit((const BLEAPP_CFG *)&s_BleAppCfg, true);
 
     BleAppRun();
