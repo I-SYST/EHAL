@@ -1355,6 +1355,8 @@ int8_t GetValidTxPower(int TxPwr)
 
 		retval = s_TxPowerdBm[i];
 	}
+
+	return retval;
 }
 
 /**
