@@ -1,9 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : convutil.h
+/**-------------------------------------------------------------------------
+@file	convutil.h
 
-Author : Hoang Nguyen Hoan          Feb. 8, 2015
+@brief	Conversion utilities
 
-Desc   : Conversion utilities
+@author Hoang Nguyen Hoan
+@date	Feb. 8, 2015
+
+@license
 
 Copyright (c) 2015, I-SYST inc., all rights reserved
 
@@ -27,9 +30,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 
 #ifndef __CONVUTIL_H__
@@ -50,25 +50,35 @@ Modified by          Date              Description
 extern "C" {
 #endif
 
-/*
- * 16 bits endianess conversion
+/**
+ * @brief	16 bits endianess conversion.
+ *
+ * @param	x : 16 bits data to covert.
+ *
+ * @return	converted data.
  */
 static inline int16_t EndianCvt16(int16_t x) {
 	return ((x >> 8) & 0xff) | ((x << 8) & 0xff00);
 }
 
-/*
- * 32 bits endianess conversion
+/**
+ * @brief	32 bits endianess conversion.
+ *
+ * @param	x : 32 bits data to covert.
+ *
+ * @return	converted data.
  */
 static inline uint32_t EndianCvt32(uint32_t x) {
 	return (((x >> 24UL) & 0xff) | ((x << 24UL) & 0xff000000) |
 			((x >> 8UL) & 0xff00) | ((x << 8UL) & 0xff0000));
 }
 
-/*
- * Convert ascii hex char to integer
+/**
+ * @brief	Convert ASCII hex character to integer.
  *
- * @return -1 if wrong character
+ * @param	c : Hex character to convert
+ *
+ * @return 	converted value.  -1 if wrong character
  */
 static inline int chex2i(char c) {
 	if (c >= 'a')

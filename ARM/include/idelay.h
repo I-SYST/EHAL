@@ -1,12 +1,15 @@
-/*--------------------------------------------------------------------------
-File   : idelay.h
+/**-------------------------------------------------------------------------
+@file	idelay.h
 
-Author : Hoang Nguyen Hoan          May 22, 2015
+@brief	Delay loop functions.
 
-Desc   : Delay loop functions.
-		 The delay loop is calculated based on a 16MHz ARM
-		 loop is invariant to compiler optimization.
-		 nsec delay cannot be achieved is at 295ns per loop.
+The delay loop is calculated based on a 16MHz ARM loop is invariant to compiler
+optimization. nsec delay cannot be achieved is at 295ns per loop.
+
+@author Hoang Nguyen Hoan
+@date	May 22, 2015
+
+@license
 
 Copyright (c) 2011, I-SYST inc., all rights reserved
 
@@ -35,16 +38,21 @@ Modified by         Date            Description
 ----------------------------------------------------------------------------*/
 #ifndef __IDELAY_H__
 #define __IDELAY_H__
+
 #include <stdint.h>
 #include "system_core_clock.h"
 
 extern uint32_t SystemMicroSecLoopCnt;
 
 /**
- * Microsecond delay. This function is based on a 16MHz clock. For higher clock
+ * @brief	Microsecond delay.
+ *
+ * This function is based on a 16MHz clock. For higher clock
  * rate SystemMicroSecNopCnt needs to be adjusted.  Adjustment of this variable
  * should be done in the CMSIS SystemCoreCLockUpdate function.
  * This delay is only approximate, it is not 100% accurate.
+ *
+ * @param	cnt : microsecond delay count
  */
 static inline __attribute__((always_inline)) void usDelay(uint32_t cnt) {
 	asm volatile (
@@ -74,10 +82,14 @@ static inline __attribute__((always_inline)) void usDelay(uint32_t cnt) {
 }
 
 /**
+ * @brief	Nanosecond delay.
+ *
  * This is highly inaccurate use at you own risk
  *
  * nsec delay cannot be achieved for low cpu clock.
  * this loop is 295ns on a 16MHz cpu
+ *
+ * @param	cnt : nanosecond count
  */
 static inline __attribute__((always_inline)) void nsDelay(uint32_t cnt) {
 	asm volatile (

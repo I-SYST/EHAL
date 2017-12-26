@@ -1,10 +1,15 @@
-/*--------------------------------------------------------------------------
-File   : istddef.h
+/**-------------------------------------------------------------------------
+@file	istddef.h
 
-Author : Hoang Nguyen Hoan          Jan. 16, 2012
+@brief	Standard generic defines.
 
-Desc   : Standard generic defines
- 	 	 Mostly for compatibilities
+Contains software version data structure and application specific data.\n
+Mostly for compatibilities.
+
+@author Hoang Nguyen Hoan
+@date	Jan. 16, 2012
+
+@license
 
 Copyright (c) 2011, I-SYST inc., all rights reserved
 
@@ -28,9 +33,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 
 #ifndef __ISTDDEF_H__
@@ -49,42 +51,57 @@ Modified by          Date              Description
 #endif
 #endif
 
+/// only for backward compatibility, otherwise useless.
 #ifndef Bool
 typedef bool	Bool;
 #endif
 
+/// only for backward compatibility, otherwise useless.
 #ifndef FALSE
 #define FALSE		false
 #endif
+/// only for backward compatibility, otherwise useless.
 #ifndef TRUE
 #define TRUE		true
 #endif
 
 #pragma pack(push, 1)
 
-#define ISYST_BLUETOOTH_ID			0x0177	// I-SYST Bluetooth company identifier
+#define ISYST_BLUETOOTH_ID			0x0177	//!< I-SYST Bluetooth company identifier
 
+///
+/// Structure defining software version.
+///
+/// Version number MM.mm.ssss.bbbbbbbb\n
+/// Where MM = Major, mm = minor, ssss = Subversion, bbbbbbbb = Build number
 typedef struct {
-	union {					// Verison number
-		uint16_t	Vers;
+	union {
+		uint16_t	Vers;   	//!< Verion number 0xMMmm, MM = Major, mm = minor (MM.mm)
 		struct {
-			unsigned Minor:8;
-			unsigned Major:8;
+			unsigned Minor:8;	//!< Version major
+			unsigned Major:8;	//!< Version minor
 		};
 	};
-	uint16_t SubVers;
-	uint32_t Build;			// Build number
+	uint16_t SubVers;		//!< Subversion
+	uint32_t Build;			//!< Build number
 } VERS;
 #pragma pack(pop)
 
-#define APPINFO_NAMESIZE_MAX		16
-#define APPINFO_PRIVATESIZE_MAX		16
+#define APPINFO_NAMESIZE_MAX		16		//!< Max size in bytes for application name
+#define APPINFO_PRIVATESIZE_MAX		16		//!< Max size in bytes for private data
 
 #pragma pack(push, 4)
+
+///
+/// Structure defining Application data.
+///
+/// It contains application identifier (Name), version and application specific private data
+/// This data is usually static const located at specific location where bootloader/dfu can
+/// access to validate.
 typedef struct {
-	char Name[APPINFO_NAMESIZE_MAX];			// Application signature
-	VERS Vers;
-	uint8_t Private[APPINFO_PRIVATESIZE_MAX];	// APPINFO_PRIVATESIZE_MAX bytes private data
+	char Name[APPINFO_NAMESIZE_MAX];			//!< Application signature
+	VERS Vers;									//!< Version number
+	uint8_t Private[APPINFO_PRIVATESIZE_MAX];	//!< APPINFO_PRIVATESIZE_MAX bytes private data
 } APP_INFO;
 #pragma pack(pop)
 
@@ -92,18 +109,21 @@ typedef struct {
 extern "C" {
 #endif
 
-// min function
 #ifndef min
+
+/// An inline min function when there isn't one available.
 static inline int min(int x, int y) { return x > y ? y : x; }
 #endif
 
 // max function
 #ifndef max
+/// An inline max function when there isn't one available.
 static inline int max(int x, int y) { return x > y ? x : y; }
 #endif
 
 #ifdef __cplusplus
 }
 #endif
+
 #endif // __ISTDDEF_H__
 
