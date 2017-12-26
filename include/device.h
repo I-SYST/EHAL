@@ -1,9 +1,16 @@
-/*--------------------------------------------------------------------------
-File   : device.h
+/**-------------------------------------------------------------------------
+@file	device.h
 
-Author : Hoang Nguyen Hoan          			Feb. 12, 2017
+@brief	Generic device base class
 
-Desc   : Generic device base class
+This is the base class to implement all sort devices, hardware or software.
+For example a sensor device or a software audio decoder.  The device can transfer
+data via it's DeviceIntrf object.
+
+@author	Hoang Nguyen Hoan
+@date	Feb. 12, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -27,9 +34,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 #ifndef __DEVICE_H__
 #define __DEVICE_H__
@@ -46,9 +50,11 @@ Modified by          Date              Description
 
 #ifdef __cplusplus
 
-//
-//
-//
+/// @brief	Device base class
+///
+/// This is the base class to implement all sort devices, hardware or software.
+/// For example a sensor device or a software audio decoder.  The device can transfer
+/// data via it's DeviceIntrf object.
 class Device {
 public:
 	Device() : vDevAddr(0), vpIntrf(NULL) {}
@@ -66,15 +72,11 @@ public:
 
 	/**
 	 * @brief	Put device in power down or power saving sleep mode
-	 *
-	 * @return	None
 	 */
 	virtual void Disable() = 0;
 
 	/**
-	 * @brief	Reset device to it initial state
-	 *
-	 * @return	None
+	 * @brief	Reset device to it initial default state
 	 */
 	virtual void Reset() = 0;
 
@@ -87,9 +89,9 @@ public:
 	 *
 	 * @param 	pCmdAddr 	: Buffer containing command or address to be written
 	 * 						  prior reading data back
-	 *  		CmdAddrLen 	: Command buffer size
-	 * 			pBuff		: Data buffer container
-	 * 			BuffLen		: Data buffer size
+	 * @param	CmdAddrLen 	: Command buffer size
+	 * @param	pBuff		: Data buffer container
+	 * @param	BuffLen		: Data buffer size
 	 *
 	 * @return	Actual number of bytes read
 	 */
@@ -102,13 +104,13 @@ public:
 	}
 
 	/**
-	 * @brief	Write to device's registery/memory block
+	 * @brief	Write to device's register/memory block
 	 *
 	 * @param 	pCmdAddr 	: Buffer containing command or address to be written
 	 * 						  prior writing data back
-	 *  		CmdAddrLen 	: Command buffer size
-	 * 			pData		: Data buffer to be written to the device
-	 * 			DataLen		: Size of data
+	 * @param	CmdAddrLen 	: Command buffer size
+	 * @param	pData		: Data buffer to be written to the device
+	 * @param	DataLen		: Size of data
 	 *
 	 * @return	Actual number of bytes written
 	 */
@@ -124,7 +126,7 @@ public:
 	 * @brief	Read device's 8 bits register/memory
 	 *
 	 * @param 	pRegAddr	: Buffer containing address location to read
-	 * 			RegAddrLen	: Address buffer size
+	 * @param	RegAddrLen	: Address buffer size
 	 *
 	 * @return	Data read
 	 */
@@ -138,7 +140,7 @@ public:
 	 * @brief	Read device's 16 bits register/memory
 	 *
 	 * @param 	pRegAddr	: Buffer containing address location to read
-	 * 			RegAddrLen	: Address buffer size
+	 * @param	RegAddrLen	: Address buffer size
 	 *
 	 * @return	Data read
 	 */
@@ -152,7 +154,7 @@ public:
 	 * @brief	Read device's 32 bit register/memory
 	 *
 	 * @param 	pRegAddr	: Buffer containing address location to read
-	 * 			RegAddrLen	: Address buffer size
+	 * @param	RegAddrLen	: Address buffer size
 	 *
 	 * @return	Data read
 	 */
@@ -166,8 +168,8 @@ public:
 	 * @brief	Write 8 bits data to device's register/memory
 	 *
 	 * @param 	pRegAddr	: Buffer containing address location to write
-	 * 			RegAddrLen	: Address buffer size
-	 * 			Data		: Data to be written to the device
+	 * @param	RegAddrLen	: Address buffer size
+	 * @param	Data		: Data to be written to the device
 	 *
 	 * @return	true - Success
 	 */
@@ -179,8 +181,8 @@ public:
 	 * @brief	Write 16 bits data to device's register/memory
 	 *
 	 * @param 	pRegAddr	: Buffer containing address location to write
-	 * 			RegAddrLen	: Address buffer size
-	 * 			Data		: Data to be written to the device
+	 * @param	RegAddrLen	: Address buffer size
+	 * @param	Data		: Data to be written to the device
 	 *
 	 * @return	true - Success
 	 */
@@ -192,8 +194,8 @@ public:
 	 * @brief	Write 32 bits data to device's register/memory
 	 *
 	 * @param 	pRegAddr	: Buffer containing address location to write
-	 * 			RegAddrLen	: Address buffer size
-	 * 			Data		: Data to be written to the device
+	 * @param	RegAddrLen	: Address buffer size
+	 * @param	Data		: Data to be written to the device
 	 *
 	 * @return	true - Success
 	 */
@@ -219,6 +221,7 @@ protected:
 
 	/**
 	 * @brief	Set device's map address
+	 *
 	 * Device address is dependent of interface and device type. For I2C type it
 	 * would be the 7 bits address, SPI would be CS pin index, other memory mapped
 	 * would be a 32bit address.
@@ -234,8 +237,8 @@ protected:
 	 */
 	uint32_t DeviceAddress() { return vDevAddr; }
 
-	uint32_t 	vDevAddr;		// device address or chip select
-	DeviceIntrf *vpIntrf;
+	uint32_t 	vDevAddr;		//!< Device address or chip select
+	DeviceIntrf *vpIntrf;		//!< Device's interface
 };
 
 extern "C" {
