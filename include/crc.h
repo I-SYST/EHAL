@@ -41,6 +41,10 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
+/** @addtogroup Utilities
+  * @{
+  */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -100,5 +104,7 @@ uint32_t crc32(uint8_t *pData, int Len);
 #ifdef __cplusplus
 }
 #endif
+
+/** @} End of group Utilities */
 
 #endif // __CRC_H__

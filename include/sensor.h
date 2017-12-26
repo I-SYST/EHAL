@@ -201,6 +201,6 @@ extern "C" {
 
 #endif	// __cplusplus
 
-/** @} */ /* End of group Sensors */
+/** @} End of group Sensors */
 
 #endif	// __SENSOR_H__

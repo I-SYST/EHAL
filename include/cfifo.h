@@ -47,15 +47,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma pack(push,4)
 
 /// Header defining a circular fifo memory block.
-typedef struct {
+typedef struct __CFIFO_Header {
 	volatile int32_t PutIdx;	//!< Index to start of empty data block
 	volatile int32_t GetIdx;	//!< Index to start of used data block
 	int32_t MaxIdxCnt;			//!< Max block count
-	bool    bBlocking;          //!< False to push out when fifo is full (drop)
+	bool    bBlocking;          //!< False to push out when FIFO is full (drop)
 	uint32_t DropCnt;           //!< Count dropped block
 	uint32_t BlkSize;			//!< Block size in bytes
-	uint32_t MemSize;			//!< Total fifo memory size allocated
-	uint8_t *pMemStart;			//!< Start of fifo data memory
+	uint32_t MemSize;			//!< Total FIFO memory size allocated
+	uint8_t *pMemStart;			//!< Start of FIFO data memory
 } CFIFOHDR;
 
 #pragma pack(pop)
@@ -66,10 +66,10 @@ typedef struct {
 ///
 typedef CFIFOHDR*	HCFIFO;
 
-/// This macro calculates total memory require in bytes including header for byte based fifo.
+/// This macro calculates total memory require in bytes including header for byte based FIFO.
 #define CFIFO_MEMSIZE(FSIZE)					((FSIZE) + sizeof(CFIFOHDR))
 
-/// This macro calculates total memory require in bytes including header for block based fifo.
+/// This macro calculates total memory require in bytes including header for block based FIFO.
 #define CFIFO_TOTAL_MEMSIZE(NbBlk, BlkSize)		((NbBlk) * (BlkSize) + sizeof(CFIFOHDR))
 
 #ifdef __cplusplus
@@ -79,13 +79,13 @@ extern "C" {
 /**
  * @brief	Initialize FIFO.
  *
- * This function must be called first to initialize fifo before any other functions
+ * This function must be called first to initialize FIFO before any other functions
  * can be used.
  *
- * @param	pMemBlk 		: Pointer to memory block to be used for fifo
+ * @param	pMemBlk 		: Pointer to memory block to be used for FIFO
  * @param	TotalMemSize	: Total memory size in byte
  * @param	BlkSize 		: Block size in bytes
- * @param   bBlocking  		: Behavior when fifo is full.\n
+ * @param   bBlocking  		: Behavior when FIFO is full.\n
  *                    			false - Old data will be pushed out to make place
  *                            			for new data.\n
  *                    			true  - New data will not be pushed in
@@ -95,11 +95,11 @@ extern "C" {
 HCFIFO CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize, bool bDrop);
 
 /**
- * @brief	Retrieve FIFO data by returning pointer to fifo memory block for reading.
+ * @brief	Retrieve FIFO data by returning pointer to FIFO memory block for reading.
  *
- * This function returns a direct pointer to fifo memory to quickly retrieve data.
+ * This function returns a direct pointer to FIFO memory to quickly retrieve data.
  * User must ensure to transfer data quickly to avoid data being overwritten by a
- * new fifo put. This is to allows fifo handling within interrupt.
+ * new FIFO put. This is to allows FIFO handling within interrupt.
  *
  * @param	hFifo : CFIFO handle
  *
@@ -108,7 +108,7 @@ HCFIFO CFifoInit(uint8_t *pMemBlk, uint32_t TotalMemSize, uint32_t BlkSize, bool
 uint8_t *CFifoGet(HCFIFO pFifo);
 
 /**
- * @brief	Retrieve FIFO data in multiple blocks by returning pointer to fifo memory blocks
+ * @brief	Retrieve FIFO data in multiple blocks by returning pointer to FIFO memory blocks
  * for reading.
  *
  * This function returns a direct pointer to FIFO memory to quickly retrieve data.
@@ -124,7 +124,7 @@ uint8_t *CFifoGet(HCFIFO pFifo);
 uint8_t *CFifoGetMultiple(HCFIFO hFifo, int *pCnt);
 
 /**
- * @brief	Insert FIFO data by returning pointer to fifo memory block for writing.
+ * @brief	Insert FIFO data by returning pointer to FIFO memory block for writing.
  *
  * @param	hFifo : CFIFO handle
  *
@@ -161,23 +161,23 @@ int CFifoPop(HCFIFO hFifo, uint8_t *pBuff, int BuffLen);
  * @param	pData : Pointer to data to be inserted
  * @param	DataLen : Size of data in bytes
  *
- * @return	Number of bytes inserted into Fifo
+ * @return	Number of bytes inserted into FIFO
  */
 int CFifoPush(HCFIFO hFifo, uint8_t *pData, int DataLen);
 
 /**
- * @brief	Reset fifo
+ * @brief	Reset FIFO
  *
  * @param	hFifo : CFIFO handle
  */
 void CFifoFlush(HCFIFO hFifo);
 
 /**
- * @brief	Get available blocks in fifo
+ * @brief	Get available blocks in FIFO
  *
  * @param	hFifo : CFIFO handle
  *
- * @return	Number of fifo block available for writing
+ * @return	Number of FIFO block available for writing
  */
 int CFifoAvail(HCFIFO hFifo);
 
@@ -186,7 +186,7 @@ int CFifoAvail(HCFIFO hFifo);
  *
  * @param	hFifo : CFIFO handle
  *
- * @return	Number of fifo block used
+ * @return	Number of FIFO block used
  */
 int CFifoUsed(HCFIFO hFifo);
 

@@ -37,6 +37,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __BASE64_H__
 #define __BASE64_H__
 
+/** @addtogroup Utilities
+  * @{
+  */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -44,7 +48,7 @@ extern "C" {
 /**
  * @brief	Encode binary to base64 ASCII format.
  *
- * @param 	pSrc : Pointer to source binary data
+ * @param 	pSrc 	: Pointer to source binary data
  * @param	SrcLen	: Source data length in bytes
  * @param	pDest	: Pointer to ASCII destination buffer
  * @param	DstLen	: Destination buffer length in bytes
@@ -53,6 +57,7 @@ extern "C" {
  */
 int Base64Encode(uint8_t *pSrc, int SrcLen, char *pDest, int DstLen);
 
+/** @} End of group Utilities */
 
 #ifdef __cplusplus
 }

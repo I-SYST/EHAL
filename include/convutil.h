@@ -39,6 +39,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 #include <stdint.h>
 
+/** @addtogroup Utilities
+  * @{
+  */
+
 #ifdef _MSC_VER
 // Microsoft does not support C99 inline
 #ifndef inline
@@ -92,5 +96,7 @@ static inline int chex2i(char c) {
 #ifdef __cplusplus
 }
 #endif
+
+/** @} End of group Utilities */
 
 #endif // __CONVUTIL_H__
