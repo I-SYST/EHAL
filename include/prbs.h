@@ -1,9 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : prbs.h
+/**-------------------------------------------------------------------------
+@file	prbs.h
 
-Author : Hoang Nguyen Hoan          Aug. 31, 2016
+@brief	Pseudorandom binary sequence generator
 
-Desc   : Pseudorandom binary sequence generator
+@author	Hoang Nguyen Hoan
+@date	Aug. 31, 2016
+
+@license
 
 Copyright (c) 2016, I-SYST, all rights reserved
 
@@ -36,24 +39,29 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
+/** @addtogroup Utilities
+  * @{
+  */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * Brief
+ * @brief	Calculate next PRBS value
  *
  * 8-bit PRBS generator ( X^7 + X^6 + 1 ).  Repetition period = 127
  *
- * @param  CurVal : Current PRBS value
- * 					Initial value must be non zero
+ * @param	CurVal : Current PRBS value. Initial value must be non zero
  *
- * @return Next PRBS value
+ * @return	Next PRBS value
  */
 uint8_t Prbs8(uint8_t CurVal);
 
 #ifdef __cplusplus
 }
 #endif
+
+/** @} End of group Utilities */
 
 #endif //__PRBS_H__

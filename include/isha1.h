@@ -1,9 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : isha1.h
+/**-------------------------------------------------------------------------
+@file	isha1.h
 
-Author : Hoang Nguyen Hoan          Aug. 17, 2014
+@brief	SHA-1 computation.
 
-Desc   : SHA-1 computation.
+@author	Hoang Nguyen Hoan
+@date	Aug. 17, 2014
+
+@license
 
 Copyright (c) 2014, I-SYST inc., all rights reserved
 
@@ -27,15 +30,16 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 
 #ifndef __ISHA1_H__
 #define __ISHA1_H__
 
 #include <stdint.h>
+
+/** @addtogroup Utilities
+  * @{
+  */
 
 /*
  * Test cases
@@ -62,16 +66,18 @@ extern "C" {
 #include <stdbool.h>
 
 /*
- * Generate SHA digest code.  Call this function until all data are processed.
+ * @brief	Generate SHA digest code.
+ *
+ * Call this function until all data are processed.
  * set bLast parameter to true for last data packet to process.
  *
  * Make sure to have enough memory for returning results.  pRes must have at
  * least 33 bytes.
  *
  * @param 	pSrc 	: Pointer to source data
- * 			SrcLen	: Source data length in bytes
- *			bLast	: set true to indicate last data packet
- * 			pRes	: Pointer to buffer to store results of 32 characters
+ * @param	SrcLen	: Source data length in bytes
+ * @param	bLast	: set true to indicate last data packet
+ * @param	pRes	: Pointer to buffer to store results of 32 characters
  * 					  if NULL is passed, internal buffer will be used
  *
  * 	@return	Pointer to digest string. If pRes is NULL, internal buffer is returned
@@ -83,5 +89,6 @@ char *Sha1(uint8_t *pData, int DataLen, bool bLast, char *pRes);
 }
 #endif
 
+/** @} End of group Utilities */
 
 #endif // __ISHA1_H__

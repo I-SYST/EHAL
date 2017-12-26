@@ -44,6 +44,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdint.h>
 
+/** @addtogroup Utilities
+  * @{
+  */
+
 #ifdef _MSC_VER
 // Microsoft does not support C99 inline
 #ifndef inline
@@ -124,6 +128,8 @@ static inline int max(int x, int y) { return x > y ? x : y; }
 #ifdef __cplusplus
 }
 #endif
+
+/** @} End of group Utilities */
 
 #endif // __ISTDDEF_H__
 

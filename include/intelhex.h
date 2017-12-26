@@ -1,9 +1,13 @@
-/*--------------------------------------------------------------------------
-File   : intelhex.h
+/**-------------------------------------------------------------------------
+@file	intelhex.h
 
-Author : Hoang Nguyen Hoan          Feb. 8, 2015
+@brief	Intel Hex parser
 
-Desc   : Intel Hex parser
+
+@author	Hoang Nguyen Hoan
+@date	Feb. 8, 2015
+
+@license
 
 Copyright (c) 2015, I-SYST inc., all rights reserved
 
@@ -27,9 +31,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 
 #ifndef __INTELHEX_H__
@@ -38,6 +39,10 @@ Modified by          Date              Description
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+
+/** @addtogroup Utilities
+  * @{
+  */
 
 #define IHEX_RECTYPE_DATA		0
 #define IHEX_RECTYPE_EOF		1		// End of file
@@ -49,11 +54,12 @@ Modified by          Date              Description
 
 #define IHEX_MAX_RECSIZE	16
 
+/// Structure containing results of parsed HEX record line
 typedef struct {
-	int Count;		// Data count
-	int Offset;		// Address offset
-	int Type;		// Record type
-	int Checksum;	// Record checksum
+	int Count;		//!< Data count
+	int Offset;		//!< Address offset
+	int Type;		//!< Record type
+	int Checksum;	//!< Record checksum
 	uint8_t Data[IHEX_MAX_RECSIZE];
 } IHEXDATA;
 
@@ -62,12 +68,12 @@ extern "C" {
 #endif
 
 /*
- * Parse Intel Hex record (one line)
+ * @brief	Parse Intel Hex record (one line)
  *
  * @param	pRec : Pointer to text line of intel hex record
- * 			pData : Pointer to place holder for parsed record
+ * @param	pData : Pointer to place holder for parsed record
  *
- * @return	true - Success
+ * @return	true - Success\n
  * 			false - Bad in record data
  */
 bool IHexParseRecord(char *pRec, IHEXDATA *pData);
@@ -76,5 +82,7 @@ bool IHexParseRecord(char *pRec, IHEXDATA *pData);
 #ifdef __cplusplus
 }
 #endif
+
+/** @} End of group Utilities */
 
 #endif // __INTELHEX_H__

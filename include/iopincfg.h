@@ -1,9 +1,16 @@
-/*--------------------------------------------------------------------------
-File   : iopincfg.h
+/**-------------------------------------------------------------------------
+@file	iopincfg.h
 
-Author : Hoang Nguyen Hoan          Nov. 20, 2011
+@brief	Generic I/O pin configuration
 
-Desc   : Generic I/O pin config
+This file contains only generic I/O pin configuration.
+
+The I/O pin control is to be implemented per MCU device in iopinctrl.h
+
+@author	Hoang Nguyen Hoan
+@date	Nov. 20, 2011
+
+@license
 
 Copyright (c) 2011, I-SYST inc., all rights reserved
 
@@ -27,9 +34,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 #ifndef __IOPINCFG_H__
 #define __IOPINCFG_H__
@@ -38,54 +42,60 @@ Modified by          Date              Description
 #include <stdio.h>
 #include <stdbool.h>
 
-// I/O pin resistor config
+/// I/O pin resistor configuration
 typedef enum __iopin_resistor {
-	IOPINRES_NONE,
-	IOPINRES_PULLUP,
-	IOPINRES_PULLDOWN,
-	IOPINRES_FOLLOW		// Few MCUs support this mode
+	IOPINRES_NONE,		//!< No pullup or pulldown
+	IOPINRES_PULLUP,	//!< Pullup resistor
+	IOPINRES_PULLDOWN,	//!< Pulldown resistor
+	IOPINRES_FOLLOW		//!< Few MCUs support this mode
 } IOPINRES;
 
-// I/O pin direction config
+/// I/O pin direction configuration
 typedef enum __iopin_dir {
-    IOPINDIR_INPUT  = 0,
-    IOPINDIR_OUTPUT = 1,
-    IOPINDIR_BI     = 2,	// Bidirectional, few MCUs support this mode
+    IOPINDIR_INPUT  = 0,	//!< I/O pin as input
+    IOPINDIR_OUTPUT = 1,	//!< I/O pin as output
+    IOPINDIR_BI     = 2,	//!< Bidirectional, few MCUs support this mode
 } IOPINDIR;
 
-// I/O pin type
+/// I/O pin type
 typedef enum __iopin_type {
-	IOPINTYPE_NORMAL    = 0,
-	IOPINTYPE_OPENDRAIN = 1
+	IOPINTYPE_NORMAL    = 0,	//!< I/O pin normal type
+	IOPINTYPE_OPENDRAIN = 1		//<! I/O pin open drain type
 } IOPINTYPE;
 
-// I/O pin sense type
+/// I/O pin sense type
 typedef enum __iopin_sense {
-	IOPINSENSE_DISABLE,				// Disable pin sense
-	IOPINSENSE_LOW_TRANSITION,		// Event on falling edge
-	IOPINSENSE_HIGH_TRANSITION,		// Event on raising edge
-	IOPINSENSE_TOGGLE,				// Event on state change
+	IOPINSENSE_DISABLE,				//!< Disable pin sense
+	IOPINSENSE_LOW_TRANSITION,		//!< Event on falling edge
+	IOPINSENSE_HIGH_TRANSITION,		//!< Event on raising edge
+	IOPINSENSE_TOGGLE,				//!< Event on state change
 } IOPINSENSE;
 
-// I/O pin drive strength
+/// I/O pin drive strength
 typedef enum __iopin_drive_strength {
-	IOPINSTRENGTH_REGULAR,			// Regular driver strength (normal default)
-	IOPINSTRENGTH_STRONG,			// Stronger drive strength
+	IOPINSTRENGTH_REGULAR,			//!< Regular driver strength (normal default)
+	IOPINSTRENGTH_STRONG,			//!< Stronger drive strength
 } IOPINSTRENGTH;
 
 #pragma pack(push,4)
 
+/// I/O pin configuration data
 typedef struct __iopin_cfg {
-	int 		PortNo;		// Port number
-	int 		PinNo;		// Pin number
-	int 		PinOp;		// Pin function select index from 0, MCU dependent
-	IOPINDIR	PinDir;		// Pin direction
-	IOPINRES 	Res;		// Pin resistor setting
-	IOPINTYPE	Type;		// I/O type
+	int 		PortNo;		//!< Port number
+	int 		PinNo;		//!< Pin number
+	int 		PinOp;		//!< Pin function select index from 0, MCU dependent
+	IOPINDIR	PinDir;		//!< Pin direction
+	IOPINRES 	Res;		//!< Pin resistor setting
+	IOPINTYPE	Type;		//!< I/O type
 } IOPINCFG;
 
 #pragma pack(pop)
 
+/**
+ * @brief	I/O pin event callback
+ *
+ * @param	IntNo : Interrupt number to which the I/O pin sense was assigned to.
+ */
 typedef void (*IOPINEVT_CB)(int IntNo);
 
 #ifdef 	__cplusplus
@@ -95,23 +105,22 @@ extern "C" {
 /**
  * @brief Configure individual I/O pin.
  *
- * Note : This function is MCU dependent. Needs to be implemented per MCU
+ * This function is MCU dependent. Needs to be implemented per MCU
  *
  * @Param 	PortNo	: Port number
- * 			PinNo  	: Pin number
- * 			PinOp	: Pin function index from 0. MCU dependent
- * 			Dir     : I/O direction
- *			Resistor : Resistor config
- *			Type 	: I/O type
- *
+ * @Param	PinNo  	: Pin number
+ * @Param	PinOp	: Pin function index from 0. MCU dependent
+ * @Param	Dir     : I/O direction
+ * @Param	Resistor : Resistor config
+ * @Param	Type 	: I/O type
  */
 void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resistor, IOPINTYPE Type);
 
 /**
- * @brief Configure I/O pin with IOPIN_CFG data structure. Can be used for batch configuration
+ * @brief	Configure I/O pin with IOPIN_CFG data structure. Can be used for batch configuration
  *
- * @param   pCfg   : Pointer to an array gpio pin configuration
- *          NbPins : Number of gpio pins to configure 
+ * @param	pCfg   : Pointer to an array gpio pin configuration
+ * @Param	NbPins : Number of gpio pins to configure
  */
 static inline void IOPinCfg(const IOPINCFG *pCfg, int NbPins) {
 	if (pCfg == NULL || NbPins <= 0)
@@ -152,11 +161,13 @@ void IOPinDisbleInterrupt(int IntNo);
  *
  *
  * @param	IntNo	: Interrupt number.
- * 			IntPrio : Interrupt priority
- * 			PortNo  : Port number (up to 32 ports)
- * 			PinNo   : Pin number (up to 32 pins)
- * 			Sense   : Sense type of event on the I/O pin
- * 			pEvtCB	: Pointer to callback function when event occurs
+ * @Param	IntPrio : Interrupt priority
+ * @Param	PortNo  : Port number (up to 32 ports)
+ * @Param	PinNo   : Pin number (up to 32 pins)
+ * @Param	Sense   : Sense type of event on the I/O pin
+ * @Param	pEvtCB	: Pointer to callback function when event occurs
+ *
+ * @return	true - success
  */
 bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSENSE Sense, IOPINEVT_CB pEvtCB);
 
@@ -167,8 +178,8 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
  * requiring enabling interrupts. This requires the I/O already configured
  *
  * @param	PortNo : Port number (up to 32 ports)
- * 			PinNo   : Pin number (up to 32 pins)
- * 			Sense   : Sense type of event on the I/O pin
+ * @Param	PinNo   : Pin number (up to 32 pins)
+ * @Param	Sense   : Sense type of event on the I/O pin
  */
 void IOPinSetSense(int PortNo, int PinNo, IOPINSENSE Sense);
 
@@ -178,8 +189,8 @@ void IOPinSetSense(int PortNo, int PinNo, IOPINSENSE Sense);
  * Some hardware allow setting pin drive strength. This requires the I/O already configured
  *
  * @param	PortNo 	: Port number (up to 32 ports)
- * 			PinNo  	: Pin number (up to 32 pins)
- * 			Strength: Pin drive strength
+ * @Param	PinNo  	: Pin number (up to 32 pins)
+ * @Param	Strength: Pin drive strength
  */
 void IOPinSetStrength(int PortNo, int PinNo, IOPINSTRENGTH Strength);
 
