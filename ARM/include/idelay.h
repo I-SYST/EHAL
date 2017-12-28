@@ -44,13 +44,17 @@ Modified by         Date            Description
 
 extern uint32_t SystemMicroSecLoopCnt;
 
+/** @addtogroup Utilities
+  * @{
+  */
+
 /**
  * @brief	Microsecond delay.
  *
  * This function is based on a 16MHz clock. For higher clock
  * rate SystemMicroSecNopCnt needs to be adjusted.  Adjustment of this variable
  * should be done in the CMSIS SystemCoreCLockUpdate function.
- * This delay is only approximate, it is not 100% accurate.
+ * This delay is only approximate, it is NOT 100% accurate.
  *
  * @param	cnt : microsecond delay count
  */
@@ -105,6 +109,8 @@ static inline __attribute__((always_inline)) void nsDelay(uint32_t cnt) {
 		:"r1"
 		 );
 }
+
+/** @} End of group Utilities */
 
 #endif	// __IDELAY_H__
 
