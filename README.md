@@ -23,6 +23,7 @@ The way the EHAL folder is structure is simple.  The deeper you go inside the mo
  |   |   |-- converters  - Generic definition for ADV, DAC, etc...
  |   |   |-- miscdev     - Generic definition for other non categorized devices
  |   |   |-- sensors     - Generic definition for al sort of sensors (environmental, motion, etc...)
+ |   |   |-- usb         - Generic definition for USB
  |   |-- src         - Generic implementation source common to all platform
  |   |
  |   |-- ARM         - Cortex-M series based MCU

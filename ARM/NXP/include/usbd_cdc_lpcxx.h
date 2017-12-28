@@ -8,7 +8,7 @@
 #ifndef __LPC11UXX_USBCDC_H__
 #define __LPC11UXX_USBCDC_H__
 
-#include "usb_cdcdef.h"
+#include "usb/usb_cdcdef.h"
 #include "usbd_core_lpcxx.h"
 
 #pragma pack(push, 1)

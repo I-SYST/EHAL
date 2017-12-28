@@ -9,7 +9,7 @@
 #define __LPC11UXX_USBHW_H__
 
 #include <stdint.h>
-#include "usb_def.h"
+#include "usb/usb_def.h"
 #include "usbd_core_lpcxx.h"
 
 enum  USBD_EVENT_T {

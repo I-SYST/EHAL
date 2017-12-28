@@ -8,7 +8,7 @@
 #ifndef __LPC11UXX_USBHID_H__
 #define __LPC11UXX_USBHID_H__
 
-#include "usb_hiddef.h"
+#include "usb/usb_hiddef.h"
 #include "usbd_core_lpcxx.h"
 
 #pragma pack(push, 1)

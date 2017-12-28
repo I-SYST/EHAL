@@ -16,7 +16,7 @@ interface also exposes function to register custom endpoint interrupt handler.
 #ifndef __LPCUSBD_CORE_H__
 #define __LPCUSBD_CORE_H__
 
-#include "usb_def.h"
+#include "usb/usb_def.h"
 
 #define USB_FS_MAX_BULK_PACKET		64
 #define USB_HS_MAX_BULK_PACKET		512
