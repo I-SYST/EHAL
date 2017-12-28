@@ -1,10 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : tph_sensor.h
+/**-------------------------------------------------------------------------
+@file	tph_sensor.h
 
-Author : Hoang Nguyen Hoan          			Feb. 12, 2017
+@brief	Generic environment sensor abstraction : Temperature, Pressure, Humidity
 
-Desc   : Generic TPH environment sensor abstraction
-			- Temperature, Pressure, Humidity
+@author	Hoang Nguyen Hoan
+@date	Feb. 12, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -28,9 +30,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 #ifndef __TPH_SENSOR_H__
 #define __TPH_SENSOR_H__
@@ -45,91 +44,96 @@ Modified by          Date              Description
 #include "iopincfg.h"
 #include "sensor.h"
 
+/** @addtogroup Sensors
+  * @{
+  */
 
 #pragma pack(push, 1)
 
-//
-// TPH sensor data
-//
-// 2 decimals fixed point data
-// value 1234 means 12.34
-//
+
+/// @brief	TPH sensor data
+///
+/// Structure defining TPH sensor data
 typedef struct __TPHSensor_Data {
-	uint32_t Timestamp;		// Time stamp count in msec
-	uint32_t Pressure;		// Barometric pressure in Pa no decimal
-	int16_t  Temperature;	// Temperature in degree C, 2 decimals fixed point
-	uint16_t Humidity;		// Relative humidity in %, 2 decimals fixed point
+	uint32_t Timestamp;		//!< Time stamp count in millisecond
+	uint32_t Pressure;		//!< Barometric pressure in Pa no decimal
+	int16_t  Temperature;	//!< Temperature in degree C, 2 decimals fixed point
+	uint16_t Humidity;		//!< Relative humidity in %, 2 decimals fixed point
 } TPHSENSOR_DATA;
 
 #pragma pack(pop)
 
 #pragma pack(push, 4)
 
-//
-// PTH sensor configuration
-//
+
+/// @brief	TPH sensor configuration
+///
 typedef struct __TPHSensor_Config {
-	uint32_t		DevAddr;	// Either I2C dev address or CS index select if SPI is used
-	SENSOR_OPMODE 	OpMode;		// Operating mode
-	uint32_t		Freq;		// Sampling frequency in Hz if continuous mode is used
-	int				TempOvrs;	// Oversampling measurement for temperature
-	int				PresOvrs;	// Oversampling measurement for pressure
-	int 			HumOvrs;	// Oversampling measurement for humidity
-	uint32_t		FilterCoeff;// Filter coefficient select value (this value is device dependent)
+	uint32_t		DevAddr;	//!< Either I2C dev address or CS index select if SPI is used
+	SENSOR_OPMODE 	OpMode;		//!< Operating mode
+	uint32_t		Freq;		//!< Sampling frequency in Hz if continuous mode is used
+	int				TempOvrs;	//!< Oversampling measurement for temperature
+	int				PresOvrs;	//!< Oversampling measurement for pressure
+	int 			HumOvrs;	//!< Oversampling measurement for humidity
+	uint32_t		FilterCoeff;//!< Filter coefficient select value (this value is device dependent)
 } TPHSENSOR_CFG;
 
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-class TPHSensor : virtual public Sensor {
+/// TPH sensor base class.  Sensor implementation must derive form this class
+class TphSensor : virtual public Sensor {
 public:
 
 	/**
-	 * @brief	Initialize sensor
+	 * @brief	Initialize sensor (require implemetation).
 	 *
 	 * @param 	CfgData : Reference to configuration data
-	 * 			pIntrf 	: Pointer to interface to the sensor.
+	 * @param	pIntrf 	: Pointer to interface to the sensor.
 	 * 					  This pointer will be kept internally
 	 * 					  for all access to device.
 	 * 					  DONOT delete this object externally
-	 * 			pTimer	: Pointer to timer for retrieval of time stamp
+	 * @param	pTimer	: Pointer to timer for retrieval of time stamp
 	 * 					  This pointer will be kept internally
 	 * 					  for all access to device.
 	 * 					  DONOT delete this object externally
 	 *
-	 * @return	true - Success
+	 * @return
+	 * 			- true	: Success
+	 * 			- false	: Failed
 	 */
 	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL) = 0;
 
 	/**
-	 * @brief	Read TPH data
-	 * 			Read TPH data from device if available. If not
-	 * 			return previous data.
+	 * @brief	Read TPH data (require implemetation).
 	 *
-	 * @param 	TphData : TPH data to return
+	 * Read TPH value from device if available. If not return previous data.
 	 *
-	 * @return	true - new data
-	 * 			false - old data
+	 * @param 	TphData : Reference buffer to be filled with measured data
+	 *
+	 * @return
+	 * 			- true	: If new data is returned
+	 * 			- false	: If old data is returned
 	 */
 	virtual bool Read(TPHSENSOR_DATA &TphData) = 0;
 
 	/**
-	 * @brief	Read temperature
+	 * @brief	Read temperature (require implemetation).
 	 *
 	 * @return	Temperature in degree C
 	 */
 	virtual float ReadTemperature() = 0;
 
 	/**
-	 * @brief	Read barometric pressure
+	 * @brief	Read barometric pressure (require implemetation).
 	 *
 	 * @return	Barometric pressure in Pascal
 	 */
 	virtual float ReadPressure() = 0;
 
 	/**
-	 * @brief	Read relative humidity
+	 * @brief	Read relative humidity (require implemetation).
 	 *
 	 * @return	Relative humidity in %
 	 */
@@ -137,7 +141,7 @@ public:
 
 protected:
 
-	TPHSENSOR_DATA vTphData;	// Last measured data
+	TPHSENSOR_DATA vTphData;	//!< Last measured data
 };
 
 extern "C" {
@@ -147,5 +151,7 @@ extern "C" {
 }
 
 #endif	// __cplusplus
+
+/** @} End of group Sensors */
 
 #endif	// __TPH_SENSOR_H__

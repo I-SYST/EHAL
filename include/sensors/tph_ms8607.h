@@ -1,10 +1,24 @@
-/*--------------------------------------------------------------------------
-File   : tph_ms8607.h
+/**-------------------------------------------------------------------------
+@file	tph_ms8607.h
 
-Author : Hoang Nguyen Hoan          			Feb. 12, 2017
+@brief	TE Connectivity's MS8607-02BA01 PHT Combination Sensor.
 
-Desc   : MS8607 environment sensor implementation
-			- Temperature, Pressure, Humidity
+The MS8607 is the novel digital combination sensor of MEAS providing 3
+environmental physical measurements all-in-one: pressure, humidity and temperature (PHT).
+
+SPECIFICATIONS
+- Integrated pressure, humidity and temperature sensor
+- QFNpackage5x3x1mm3
+- Operating range: 10 to 2000 mbar, 0%RH to 100%RH, -40 to 85 °C
+- High-resolution module: 0.016 mbar, 0.04%RH, 0.01°C
+- Supply voltage: 1.5 to 3.6 V
+- Fully factory calibrated sensor
+- I2C interface
+
+@author	Hoang Nguyen Hoan
+@date	Feb. 12, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -28,9 +42,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 #ifndef __TPH_MS8607_H__
 #define __TPH_MS8607_H__
@@ -44,6 +55,10 @@ Modified by          Date              Description
 
 #include "iopincfg.h"
 #include "tph_sensor.h"
+
+/** @addtogroup Sensors
+  * @{
+  */
 
 // Device address
 #define MS8607_PTDEV_ADDR				0x76
@@ -67,10 +82,41 @@ Modified by          Date              Description
 
 #ifdef __cplusplus
 
-class TphMS8607 : public TPHSensor {
+/// @brief	TphSensor implementation class of TE Connectivity's MS8607-02BA01 PHT Combination Sensor.
+///
+/// The MS8607 is the novel digital combination sensor of MEAS providing 3
+/// environmental physical measurements all-in-one: pressure, humidity and temperature (PHT).
+///
+/// SPECIFICATIONS
+/// - Integrated pressure, humidity and temperature sensor
+/// - QFNpackage5x3x1mm3
+/// - Operating range: 10 to 2000 mbar, 0%RH to 100%RH, -40 to 85 °C
+/// - High-resolution module: 0.016 mbar, 0.04%RH, 0.01°C
+/// - Supply voltage: 1.5 to 3.6 V
+/// - Fully factory calibrated sensor
+/// - I2C interface
+class TphMS8607 : public TphSensor {
 public:
 	TphMS8607() {}
 	virtual ~TphMS8607() {}
+
+	/**
+	 * @brief	Initialize sensor.
+	 *
+	 * @param 	CfgData : Reference to configuration data
+	 * @param	pIntrf 	: Pointer to interface to the sensor.
+	 * 					  This pointer will be kept internally
+	 * 					  for all access to device.
+	 * 					  DONOT delete this object externally
+	 * @param	pTimer	: Pointer to timer for retrieval of time stamp
+	 * 					  This pointer will be kept internally
+	 * 					  for all access to device.
+	 * 					  DONOT delete this object externally
+	 *
+	 * @return
+	 * 			- true	: Success
+	 * 			- false	: Failed
+	 */
 	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer = NULL);
 
 	/**
@@ -152,5 +198,7 @@ extern "C" {
 }
 
 #endif	// __cplusplus
+
+/** @} End of group Sensors */
 
 #endif	// __TPH_MS8607_H__
