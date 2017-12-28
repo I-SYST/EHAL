@@ -5,6 +5,7 @@ This is a multi-archtecture multi-platform Hardware Abstraction Library. The mai
  
 See http://embeddedsoftdev.blogspot.ca/p/h.html for more detail installation and setup of development environment.
 
+Library documentation located here http://i-syst.github.io/docs/EHAL/
 
 The way the EHAL folder is structure is simple.  The deeper you go inside the more it is specific the the architecture or platform.  The parent folder contains all that is commonly available to the child fonder.  Which means, source file from child folder can access any source in the upper parent folder but not the other way around.  This is the way to keep the abstraction separated from implementation and easier to keep track of things.
 
