@@ -1,9 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : diskio.h
+/**-------------------------------------------------------------------------
+@file	diskio.h
 
-Author : Hoang Nguyen Hoan          Mar. 1, 2015
+@brief	Generic disk I/O driver class
 
-Desc   : Generic disk I/O driver class
+@author	Hoang Nguyen Hoan
+@date	Mar. 1, 2015
+
+@license
 
 Copyright (c) 2015, I-SYST, all rights reserved
 
@@ -36,23 +39,23 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
-#define DISKIO_SECT_SIZE		    512     // Disk sector size in bytes
-#define DISKIO_CACHE_SECT_MAX	    1       // Max number of cache sector
-#define DISKIO_CACHE_DIRTY_BIT      (1<<31) // This bit is set in the UseCnt if there was
-                                            // write to the cache
+#define DISKIO_SECT_SIZE		    512     //!< Disk sector size in bytes
+#define DISKIO_CACHE_SECT_MAX	    1       //!< Max number of cache sector
+#define DISKIO_CACHE_DIRTY_BIT      (1<<31) //!< This bit is set in the UseCnt if there was
+                                            //!< write to the cache
 
 #pragma pack(push, 1)
-typedef struct _DiskPartition {
-	uint8_t PartState;		// Current State of Partition (00h=Inactive, 80h=Active)
-	uint8_t	CHSStart[3];	// CHS Start partition
-	uint8_t Type;			// Partition type
-	uint8_t CHSEnd[3];		// CHS End partition
-	uint32_t LBAStart;		// LBA Start partition
-	uint32_t LBASize;		// Number of sectors in partition
+typedef struct __DiskPartition {
+	uint8_t PartState;		//!< Current State of Partition (00h=Inactive, 80h=Active)
+	uint8_t	CHSStart[3];	//!< CHS Start partition
+	uint8_t Type;			//!< Partition type
+	uint8_t CHSEnd[3];		//!< CHS End partition
+	uint32_t LBAStart;		//!< LBA Start partition
+	uint32_t LBASize;		//!< Number of sectors in partition
 } DISKPART;
 
-typedef struct _MasterBootRecord {
-	uint8_t Boostrap[446];		// All zeroes
+typedef struct __MasterBootRecord {
+	uint8_t Boostrap[446];	// All zeroes
 	DISKPART Part[4];
 	uint16_t Sig;
 } MBR;
@@ -62,39 +65,72 @@ typedef struct _MasterBootRecord {
 
 #pragma pack(push, 4)
 
-
-typedef struct _Cache_Desc {
-	volatile int UseCnt;		                // semaphore
-	uint32_t    SectNo;			                // sector number of this cache
-	//uint8_t     SectData[DISKIO_SECT_SIZE];		// sector data
-	uint8_t		*pSectData;		// Pointer to sector cache memory. Must be 1 sector size
+/// DiskIO cache descriptor
+typedef struct __DiskIO_Cache_Desc {
+	volatile int UseCnt;	//!< semaphore
+	uint32_t    SectNo;		//!< sector number of this cache
+	uint8_t		*pSectData;	//!< Pointer to sector cache memory. Must be at least 1 sector size
 } DISKIO_CACHE_DESC;
 
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
+/// DiskIO base class
 class DiskIO {
 public:
 	DiskIO();
 
-	virtual int GetSectSize(void) { return DISKIO_SECT_SIZE; }
-	virtual uint32_t GetNbSect(void) { return GetSize() / GetSectSize(); }
 	/**
+	 * @brief	Get the size of one sector.
 	 *
-	 * @return total disk size in BYTE
+	 * @return	Sector size in bytes.
+	 */
+	virtual int GetSectSize(void) { return DISKIO_SECT_SIZE; }
+
+	/**
+	 * @brief	Get total number of sect.
+	 *
+	 * @return	Number of sectors
+	 */
+	virtual uint32_t GetNbSect(void) { return GetSize() / GetSectSize(); }
+
+	/**
+	 * @brief	Get to=tal disk size in bytes.
+	 *
+	 * @return	Total disk size in bytes.
 	 */
 	virtual uint64_t GetSize(void) = 0;
 
 	/**
-	 * Read one sector from physical device
+	 * @brief	Read one sector from physical device.
+	 *
+	 * @param	SectNo	: Sector number to read
+	 * @param	pBuff	: Buffer to receive sector data. This buffer must be at least
+	 * 					  1 sector in size.
+	 *
+	 * @return
+	 * 			- true  : Success
+	 * 			- false : Failed
 	 */
-	virtual bool SectRead(uint32_t SectNo, uint8_t *pData) = 0;
+	virtual bool SectRead(uint32_t SectNo, uint8_t *pBuff) = 0;
 
 	/**
-	 * Write one sector to physical device
+	 * @brief	Write one sector to physical device.
+	 *
+	 * @param	SectNo	: Sector number to read
+	 * @param	pDate	: Sector data to write. This must be at least
+	 * 					  1 sector in size.
+	 *
+	 * @return
+	 * 			- true  : Success
+	 * 			- false : Failed
 	 */
 	virtual bool SectWrite(uint32_t SectNo, uint8_t *pData) = 0;
+
+	/**
+	 * @brief	Reset DiskIO to its default state
+	 */
 	virtual void Reset();
 
 	/**
@@ -109,9 +145,10 @@ public:
 	virtual int Write(uint64_t Offset, uint8_t *pBuff, uint32_t Len);
 
 	/**
-	 * Erase whole disk
+	 * @brief	Erase whole disk
 	 */
 	virtual void Erase() {}
+
 	int	GetCacheSect(uint32_t SectNo, bool bLock = false);
 	void SetCache(DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk);
 	void Flush();
@@ -119,9 +156,9 @@ public:
 protected:
 
 private:
-	int vLastIdx;	    // Last cache sector accessed
-	int vNbCache;       // Number of cache sector
-	DISKIO_CACHE_DESC *vpCacheSect;
+	int vLastIdx;	    //!< Last cache sector accessed
+	int vNbCache;       //!< Number of cache sector
+	DISKIO_CACHE_DESC *vpCacheSect;	//!< pointer to static disk cache
 };
 
 extern "C" {

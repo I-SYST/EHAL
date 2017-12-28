@@ -1,9 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : timer.h
+/**-------------------------------------------------------------------------
+@file	timer.h
 
-Author : Hoang Nguyen Hoan          				Sep. 7, 2017
+@brief	Generic timer class
 
-Desc   : Generic timer class
+@author	Hoang Nguyen Hoan
+@date	Sep. 7, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -27,9 +30,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 
 #ifndef __TIMER_H__
@@ -37,93 +37,117 @@ Modified by          Date              Description
 
 #include "device.h"
 
+/// Clock source used for the timer
 typedef enum __Timer_Clock_Src {
-	TIMER_CLKSRC_DEFAULT,
-    TIMER_CLKSRC_INTERNAL,
-    TIMER_CLKSRC_LFXTAL,
-    TIMER_CLKSRC_HFXTAL
+	TIMER_CLKSRC_DEFAULT,	//!< Device default clock source
+    TIMER_CLKSRC_INTERNAL,	//!< Internal RC oscillator
+    TIMER_CLKSRC_LFXTAL,	//!< Low frequency crystal
+    TIMER_CLKSRC_HFXTAL		//!< High frequency crystal
 } TIMER_CLKSRC;
 
+/// Timer interrupt enable type
 typedef enum __Timer_Interrupt_Enable {
-	TIMER_INTEN_NONE,
-	TIMER_INTEN_TICK,		// Enable tick count interrupt
-	TIMER_INTEN_OVR			// Enable tick count overflow interrupt
+	TIMER_INTEN_NONE,		//!< No interrupt
+	TIMER_INTEN_TICK,		//!< Enable tick count interrupt
+	TIMER_INTEN_OVR			//!< Enable tick count overflow interrupt
 } TIMER_INTEN;
 
+/// Timer trigger type
 typedef enum __Timer_Trigger_Type {
-    TIMER_TRIG_TYPE_SINGLE,
-    TIMER_TRIG_TYPE_CONTINUOUS
+    TIMER_TRIG_TYPE_SINGLE,		//!< Single shot trigger
+    TIMER_TRIG_TYPE_CONTINUOUS	//!< Continuous trigger
 } TIMER_TRIG_TYPE;
 
-#define TIMER_EVT_TICK                          (1<<0)   // Timer tick counter event
-#define TIMER_EVT_COUNTER_OVR                   (1<<1)   // Timer overflow event
-#define TIMER_EVT_TRIGGER0                		(1<<2)   // Periodic timer event start at this bit
+#define TIMER_EVT_TICK                          (1<<0)   //!< Timer tick counter event
+#define TIMER_EVT_COUNTER_OVR                   (1<<1)   //!< Timer overflow event
+#define TIMER_EVT_TRIGGER0                		(1<<2)   //!< Periodic timer event start at this bit
 
-#define TIMER_EVT_TRIGGER(n)              		(1<<(n+2))
+#define TIMER_EVT_TRIGGER(n)              		(1<<(n+2))	//!< Trigger event id
 
 class Timer;
 
-// Timer event handler callback
+/**
+ * @brief	Timer event handler type.
+ *
+ * @param	Timer	: Pointer reference to Timer class generating the event
+ * @param	Evt		: Event ID for which this callback is activated
+ */
 typedef void (*TIMER_EVTCB)(Timer *pTimer, uint32_t Evt);
+
+/**
+ * @brief	Timer trigger handler type
+ *
+ * @param	Timer	: Pointer reference to Timer class generating the event
+ * @param	TrigNo	: Trigger ID for which this callback is activated
+ */
 typedef void (*TIMER_TRIGCB)(Timer *pTimer, int TrigNo);
 
 #pragma pack(push, 4)
 
 typedef struct __Timer_Trigger_Info {
-	TIMER_TRIG_TYPE Type;		// Trigger type
-	uint64_t nsPeriod;			// Trigger period in nanosecond
-	TIMER_TRIGCB Handler;	// Trigger event callback
+	TIMER_TRIG_TYPE Type;	//!< Trigger type
+	uint64_t nsPeriod;		//!< Trigger period in nanosecond
+	TIMER_TRIGCB Handler;	//!< Trigger event callback
 } TIMER_TRIGGER;
 
-//
-// NOTE : Interrupt priority should be as high as possible
-// Timing precision would be lost if other interrupt preempt
-// the timer interrupt.  Adjust IntPrio base on requirement
-//
+/// @brief	Timer configuration data.
+///
+/// NOTE : Interrupt priority should be as high as possible
+/// Timing precision would be lost if other interrupt preempt
+/// the timer interrupt.  Adjust IntPrio base on requirement
+///
 typedef struct __Timer_Config {
-    int             DevNo;      // Device number.  Usually is the timer number indexed at 0
-    TIMER_CLKSRC    ClkSrc;     // Clock source.  Not all timer allows user select clock source
-    uint32_t        Freq;       // Frequency in Hz, 0 - to auto select max timer frequency
-    int             IntPrio;    // Interrupt priority. recommended to use highest
-    							// priority if precision timing is required
-    TIMER_EVTCB     EvtHandler; // Interrupt handler
+    int             DevNo;      //!< Device number.  Usually is the timer number indexed at 0
+    TIMER_CLKSRC    ClkSrc;     //!< Clock source.  Not all timer allows user select clock source
+    uint32_t        Freq;       //!< Frequency in Hz, 0 - to auto select max timer frequency
+    int             IntPrio;    //!< Interrupt priority. recommended to use highest
+    							//!< priority if precision timing is required
+    TIMER_EVTCB     EvtHandler; //!< Interrupt handler
 } TIMER_CFG;
 
 #pragma pack(pop)
 
-// *****
-// Timer base class
-//
+/// Timer base class
 class Timer {
 public:
 
     /**
-     * @brief   Timer initialization
-     *      This is specific to each architecture.
+     * @brief   Timer initialization.
+     *
+     * This is specific to each architecture.
+     *
+     * @param	Cfg	: Timer configuration data.
+     *
+     * @return
+     * 			- true 	: Scuccess
+     * 			- false : Otherwise
      */
     virtual bool Init(const TIMER_CFG &Cfg) = 0;
 
     /**
-     * @brief   Enable timer
-     *      This is used to re-enable timer after it was disabled for power
+     * @brief   Turn on timer.
+     *
+     * This is used to re-enable timer after it was disabled for power
      * saving.  It normally does not go through full initialization sequence
      */
     virtual bool Enable() = 0;
 
     /**
-     * @brief   Disable timer
-     *      This is used to disable timer for power saving. Call Enable() to
+     * @brief   Turn off timer.
+     *
+     * This is used to disable timer for power saving. Call Enable() to
      * re-enable timer instead of full initialization sequence
      */
     virtual void Disable() = 0;
 
     /**
-     * @brief   Reset timer
+     * @brief   Reset timer.
      */
     virtual void Reset() = 0;
 
     /**
      * @brief   Get the current tick count.
+     *
      * This function read the tick count with compensated overflow roll over
      *
      * @return  Total tick count since last reset
@@ -131,7 +155,8 @@ public:
 	virtual uint64_t TickCount() = 0;
 
 	/**
-	 * @brief	Set timer main frequency
+	 * @brief	Set timer main frequency.
+	 *
 	 * This function allows dynamically changing the timer frequency.  Timer
 	 * will be reset and restarted with new frequency
 	 *
@@ -142,93 +167,120 @@ public:
 	virtual uint32_t Frequency(uint32_t Freq) = 0;
 
 	/**
-	 * @brief	Get maximum available timer trigger event for the timer
+	 * @brief	Get maximum available timer trigger event for the timer.
 	 *
 	 * @return	count
 	 */
 	virtual int MaxTimerTrigger() = 0;
 
 	/**
-	 * @brief	Enable timer trigger event
+	 * @brief	Enable nanosecond timer trigger event.
+	 *
+	 * @param   nsPeriod : Trigger period in nsec.
+	 * @param   Type     : Trigger type single shot or continuous
+	 * @param	Handler	 : Optional Timer trigger user callback
+	 *
+	 * @return  Timer trigger ID on success
+	 * 			-1 : Failed
+	 */
+	virtual int EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+
+	/**
+	 * @brief	Enable a specific nanosecond timer trigger event.
 	 *
 	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
 	 * @param   nsPeriod : Trigger period in nsec.
 	 * @param   Type     : Trigger type single shot or continuous
+	 * @param	Handler	 : Optional Timer trigger user callback
 	 *
 	 * @return  real period in nsec based on clock calculation
 	 */
 	virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod,
 										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL) = 0;
-	int EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
 
 	/**
-	 * @brief	Enable timer trigger event
+	 * @brief	Enable millisecond timer trigger event.
+	 *
+	 * @param   msPeriod : Trigger period in msec.
+	 * @param   Type     : Trigger type single shot or continuous
+	 * @param	Handler	 : Optional Timer trigger user callback
+	 *
+	 * @return  Timer trigger ID on success
+	 * 			-1 : Failed
+	 */
+	int EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+
+	/**
+	 * @brief	Enable millisecond timer trigger event.
 	 *
 	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
 	 * @param   msPeriod : Trigger period in msec.
 	 * @param   Type     : Trigger type single shot or continuous
+	 * @param	Handler	 : Optional Timer trigger user callback
 	 *
 	 * @return  real period in nsec based on clock calculation
 	 */
 	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod,
 										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL) = 0;
-	int EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
 
 	/**
-	 * @brief   Disable timer trigger event
+	 * @brief   Disable timer trigger event.
 	 *
 	 * @param   TrigNo : Trigger number to disable. Index value starting at 0
 	 */
     virtual void DisableTimerTrigger(int TrigNo) = 0;
 
     /**
-     * @brief   Get current timer counter in msec
+     * @brief   Get current timer counter in millisecond.
+     *
      * This function return the current timer in msec since last reset.
      *
-     * @return  Counter in msec
+     * @return  Counter in millisecond
      */
 	virtual uint32_t mSecond() { return TickCount() * vnsPeriod / 1000000LL; }
 
 	/**
-	 * @brief   Convert tick count to msec
+	 * @brief   Convert tick count to millisecond.
 	 *
 	 * @param   Count : Timer tick count value
 	 *
-	 * @return  Converted count in msec
+	 * @return  Converted count in millisecond
 	 */
 	virtual uint32_t mSecond(uint64_t Count) { return Count * vnsPeriod / 1000000LL; }
 
 	/**
-     * @brief   Get current timer counter in usec
+     * @brief   Get current timer counter in microsecond.
+     *
      * This function return the current timer in usec since last reset.
      *
-     * @return  Counter in usec
+     * @return  Counter in microsecond
      */
 	virtual uint32_t uSecond() { return TickCount() * vnsPeriod / 1000LL; }
 
 	/**
-	 * @brief   Convert tick count to usec
+	 * @brief   Convert tick count to microsecond.
 	 *
 	 * @param   Count : Timer tick count value
 	 *
-	 * @return  Converted count in usec
+	 * @return  Converted count in microsecond
 	 */
 	virtual uint32_t uSecond(uint64_t Count) { return Count * vnsPeriod / 1000LL; }
 
 	/**
-     * @brief   Get current timer counter in nsec
+     * @brief   Get current timer counter in nanosecond.
+     *
      * This function return the current timer in nsec since last reset.
      *
-     * @return  Counter in nsec
+     * @return  Counter in nanosecond
      */
 	virtual uint32_t nSecond() { return TickCount() * vnsPeriod; }
 
 	/**
-     * @brief   Convert tick count to usec
+     * @brief   Convert tick count to nanosecond
      *
      * @param   Count : Timer tick count value
      *
-     * @return  Converted count in usec
+     * @return  Converted count in nanosecond
      */
 	virtual uint32_t nSecond(uint64_t Count) { return Count * vnsPeriod; }
 
@@ -240,7 +292,8 @@ public:
 	virtual uint32_t Frequency(void) { return vFreq; }
 
 	/**
-	 * @brief	Get first available timer trigger index
+	 * @brief	Get first available timer trigger index.
+	 *
 	 * This function returns the first available timer trigger to be used to with
 	 * EnableTimerTrigger
 	 *
@@ -251,13 +304,13 @@ public:
 
 protected:
 
-	TIMER_EVTCB vEvtHandler;
+	TIMER_EVTCB vEvtHandler;//!< Pointer to user event handler callback
 
-    int      vDevNo;
-	uint32_t vFreq;			// Frequency in Hz
-	uint64_t vnsPeriod;		// Period in nsec
-	uint64_t vRollover;     // Rollover counter adjustment
-	uint32_t vLastCount;	// Last counter read value
+    int      vDevNo;		//!< Timer device number
+	uint32_t vFreq;			//!< Frequency in Hz
+	uint64_t vnsPeriod;		//!< Period in nsec
+	uint64_t vRollover;     //!< Rollover counter adjustment
+	uint32_t vLastCount;	//!< Last counter read value
 private:
 };
 

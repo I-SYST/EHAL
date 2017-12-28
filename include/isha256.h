@@ -65,7 +65,7 @@ extern "C" {
 
 #include <stdbool.h>
 
-/*
+/**
  * @brief	Generate SHA-256 digest code.
  *
  * Call this function until all data are processed.

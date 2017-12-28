@@ -1,8 +1,7 @@
 /**-------------------------------------------------------------------------
 @file	intelhex.h
 
-@brief	Intel Hex parser
-
+@brief	Intel Hex parser.
 
 @author	Hoang Nguyen Hoan
 @date	Feb. 8, 2015
@@ -67,8 +66,8 @@ typedef struct {
 extern "C" {
 #endif
 
-/*
- * @brief	Parse Intel Hex record (one line)
+/**
+ * @brief	Parse Intel Hex record (one line).
  *
  * @param	pRec : Pointer to text line of intel hex record
  * @param	pData : Pointer to place holder for parsed record
