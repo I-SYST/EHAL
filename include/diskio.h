@@ -39,6 +39,10 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
+/** @addtogroup Storage
+  * @{
+  */
+
 #define DISKIO_SECT_SIZE		    512     //!< Disk sector size in bytes
 #define DISKIO_CACHE_SECT_MAX	    1       //!< Max number of cache sector
 #define DISKIO_CACHE_DIRTY_BIT      (1<<31) //!< This bit is set in the UseCnt if there was
@@ -167,6 +171,8 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
+/** @} End of group Storage */
 
 #endif	// __DISKIO_H__
 

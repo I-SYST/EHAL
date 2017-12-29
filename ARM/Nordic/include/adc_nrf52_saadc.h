@@ -44,11 +44,11 @@ Modified by          Date              Description
 
 extern "C" void SAADC_IRQHandler();
 
-class ADCnRF52 : public ADCDevice {
+class AdcnRF52 : public AdcDevice {
 public:
-	ADCnRF52();
-	virtual ~ADCnRF52();
-	ADCnRF52(ADCnRF52&);	// ctor not allowed
+	AdcnRF52();
+	virtual ~AdcnRF52();
+	AdcnRF52(AdcnRF52&);	// ctor not allowed
 
 	/**
 	 * @brief	ADC device initialization

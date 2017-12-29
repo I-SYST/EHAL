@@ -89,7 +89,7 @@ Modified by          Date              Description
 
 #define LTC2495_MAX_CHAN					16
 
-class ADCLTC2495 : public ADCDevice {
+class AdcLTC2495 : public AdcDevice {
 public:
 	/**
 	 * @brief	ADC device initialization

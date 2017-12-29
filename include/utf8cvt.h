@@ -1,9 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : utf8cvt.h
+/**-------------------------------------------------------------------------
+@file	utf8cvt.h
 
-Author : Hoang Nguyen Hoan          Nov. 10, 2006
+@brief	UTF8 codecvt facet
 
-Desc   : UTF8 codecvt facet
+@author	Hoang Nguyen Hoan
+@date	Nov. 10, 2006
+
+@license
 
 Copyright (c) 2006-2008, I-SYST, all rights reserved
 
@@ -27,9 +30,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF 
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 #ifndef __UTF8CVT_H__
 #define __UTF8CVT_H__
@@ -38,6 +38,7 @@ Modified by          Date              Description
 
 namespace std {
 
+/// locale utf8 code conversion
 class codecvt_utf8 : public codecvt<wchar_t, char, mbstate_t>
 {
 protected:

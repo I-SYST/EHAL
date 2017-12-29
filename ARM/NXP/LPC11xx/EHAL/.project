@@ -206,24 +206,9 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/uart_lpcxx.h</locationURI>
 		</link>
 		<link>
-			<name>include/usb_cdcdef.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/usb_cdcdef.h</locationURI>
-		</link>
-		<link>
-			<name>include/usb_def.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/usb_def.h</locationURI>
-		</link>
-		<link>
-			<name>include/usb_hiddef.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/usb_hiddef.h</locationURI>
-		</link>
-		<link>
-			<name>include/usb_mscdef.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/usb_mscdef.h</locationURI>
+			<name>include/usb</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>include/usbd_api_lpcxx.h</name>
@@ -264,11 +249,6 @@
 			<name>include/usbd_msc_lpcxx.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/usbd_msc_lpcxx.h</locationURI>
-		</link>
-		<link>
-			<name>include/usbhiddev.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/usbhiddev.h</locationURI>
 		</link>
 		<link>
 			<name>include/utf8.h</name>
@@ -529,6 +509,31 @@
 			<name>include/sys/dirent.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sys/dirent.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb/usb_cdcdef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb/usb_cdcdef.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb/usb_def.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb/usb_def.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb/usb_hiddef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb/usb_hiddef.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb/usb_hidhost.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb/usb_hidhost.h</locationURI>
+		</link>
+		<link>
+			<name>include/usb/usb_mscdef.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/usb/usb_mscdef.h</locationURI>
 		</link>
 		<link>
 			<name>src/converters/adc_device.cpp</name>

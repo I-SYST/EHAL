@@ -234,6 +234,7 @@ sig_atomic_t AtomicExchange(sig_atomic_t *pVar, sig_atomic_t NewVal);
 static inline bool AtomicTestAndSet(void *pVar) {
 
 #if defined(_WIN32) || defined(WIN32)
+	return InterlockedCompareExchange((LONG *)pVar, (LONG)true, true) != 0;
 
 #elif defined(__TCS__)
 

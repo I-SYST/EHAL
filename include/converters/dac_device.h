@@ -1,9 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : dac_device.h
+/**-------------------------------------------------------------------------
+@file	dac_device.h
 
-Author : Hoang Nguyen Hoan          June 16, 2017
+@brief	Generic DAC device
 
-Desc   : Generic DAC device
+@author	Hoang Nguyen Hoan
+@date	June 16, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -27,25 +30,22 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 #ifndef __DAC_DEVICE_H__
 #define __DAC_DEVICE_H__
 
 #include <stdint.h>
 
-typedef enum _DAC_Mode {
+typedef enum __DAC_Mode {
 	DAC_MODE_SINGLE_ENDED,
 	DAC_MODE_DIFFERENTIAL
 } DAC_MODE;
 
-typedef struct _ADC_Config {
+typedef struct __DAC_Config {
 	DAC_MODE Mode;			// ADC mode
 } DAC_CFG;
 
-class Dac : virtual public Device {
+class DacDevice : virtual public Device {
 public:
 	virtual bool Init(const DAC_CFG &CfgData, DeviceIntrf *pIntrf) = 0;
 

@@ -1,10 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : uart.h
+/**-------------------------------------------------------------------------
+@file	uart.h
 
-Author : Hoang Nguyen Hoan          Nov. 20, 2011
+@brief	Generic UART definitions
 
-Desc   : Generic uart definitions
-		 Current implementation
+@author	Hoang Nguyen Hoan
+@date	Nov. 20, 2011
+
+@license
 
 Copyright (c) 2011, I-SYST inc., all rights reserved
 
@@ -27,9 +29,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #ifndef __UART_H__
@@ -66,20 +65,20 @@ typedef enum {
 	UART_FLWCTRL_HW,
 } UART_FLWCTRL;
 
-#define UART_LINESTATE_DCD		(1<<0)		// Carrier detect
-#define UART_LINESTATE_DSR		(1<<1)		// Data Set Ready
-#define UART_LINESTATE_BRK		(1<<2)		// Break
-#define UART_LINESTATE_RI		(1<<3)		// Ring detect
-#define UART_LINESTATE_FRMERR	(1<<4)		// Frame error
-#define UART_LINESTATE_PARERR	(1<<5)		// Parity error
-#define UART_LINESTATE_OVR		(1<<6)		// Overrun
-#define UART_LINESTATE_CTS		(1<<7)      // Clear To Send
+#define UART_LINESTATE_DCD		(1<<0)		//!< Carrier detect
+#define UART_LINESTATE_DSR		(1<<1)		//!< Data Set Ready
+#define UART_LINESTATE_BRK		(1<<2)		//!< Break
+#define UART_LINESTATE_RI		(1<<3)		//!< Ring detect
+#define UART_LINESTATE_FRMERR	(1<<4)		//!< Frame error
+#define UART_LINESTATE_PARERR	(1<<5)		//!< Parity error
+#define UART_LINESTATE_OVR		(1<<6)		//!< Overrun
+#define UART_LINESTATE_CTS		(1<<7)      //!< Clear To Send
 #define UART_LINESTATE_RTS		(1<<8)
 #define UART_LINESTATE_DTR      (1<<9)
 
 #define UART_NB_PINS			8
 
-// I/O pin configuration list ordering
+/// I/O pin configuration list ordering
 #define UARTPIN_RX_IDX			0
 #define UARTPIN_TX_IDX			1
 #define UARTPIN_CTS_IDX			2
@@ -101,21 +100,18 @@ typedef enum {
 } UART_EVT;
 
 /**
- * @brief
- *
- * Event handler callback. This is normally being called within interrupts, avoid blocking
+ * @brief	Event handler callback. This is normally being called within interrupts, avoid blocking
  *
  * @param pDev : Device handle
  * @param EvtId : Event code
  * @param pBuffer : In/Out Buffer containing data
- * 					on UART_EVT_RXTIMEOUT & UART_EVT_RXDATA, buffer contains data received. If
+ * 					- on UART_EVT_RXTIMEOUT & UART_EVT_RXDATA, buffer contains data received. If
  * 					driver implements CFIFO, this parameter is NULL with BufferLen indicating total data
- * 					in fifo.
- * 					on UART_EVT_TXREADY, buffer allocated for data to be transmit with max length
- * 					BufferLen (fifo size). If driver implements CFIFO, this parameter is NULL and BufferLen
- * 					indicates max available space in fifo
- * 					on UART_EVT_LINESTATE, buffer contains 1 byte Line Status
- *
+ * 					in FIFO.
+ * 					- on UART_EVT_TXREADY, buffer allocated for data to be transmit with max length
+ * 					BufferLen (FIFO size). If driver implements CFIFO, this parameter is NULL and BufferLen
+ * 					indicates max available space in FIFO
+ * 					- on UART_EVT_LINESTATE, buffer contains 1 byte Line Status
  * @param BufferLen : Max buffer length.  See above description
  *
  * @return number of bytes written to pBuffer for transmit
@@ -124,52 +120,52 @@ typedef int (*UARTEVTCB)(UARTDEV*pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buf
 
 #pragma pack(push, 4)
 
-// Configuration data used to initialize device
+/// Configuration data used to initialize device
 typedef struct {
-	int DevNo;					// UART device number
-	const void *pIoMap;			// Pointer to IO mapping.  This can be either IOPINCFG array or device path string
-	int IoMapLen;				// Nb of elements in IOPINCFG array or string length of device path
-	int Rate;					// Baudrate, set to 0 for auto baudrate
-	int DataBits;				// Number of data bits
-	UART_PARITY Parity;			// Data parity
-	int StopBits;				// Number of stop bits
-	UART_FLWCTRL FlowControl;	// Flow control
-	bool bIntMode;				// Interrupt mode support
-	int IntPrio;				// Interrupt priority
-	UARTEVTCB EvtCallback;		// UART event callback
-	bool bFifoBlocking;			// CFIFO operating mode, false : drop when full
-	int RxMemSize;				// Memory size in bytes for Rx CFIFO
-	uint8_t *pRxMem;			// Pointer to memory allocated for RX CFIFO
-	int TxMemSize;				// Memory size in bytes for Tx CFIFO
-	uint8_t *pTxMem;			// Pointer to memory allocated for TX FIFO
-	bool bDMAMode;				// DMA transfer support
-	bool bIrDAMode;				// Enable IrDA
-	bool bIrDAInvert;			// IrDA input inverted
-	bool bIrDAFixPulse;			// Enable IrDA fix pulse
-	int	IrDAPulseDiv;			// Fix pulse divider
+	int DevNo;					//!< UART device number
+	const void *pIoMap;			//!< Pointer to IO mapping.  This can be either IOPINCFG array or device path string
+	int IoMapLen;				//!< Nb of elements in IOPINCFG array or string length of device path
+	int Rate;					//!< Baudrate, set to 0 for auto baudrate
+	int DataBits;				//!< Number of data bits
+	UART_PARITY Parity;			//!< Data parity
+	int StopBits;				//!< Number of stop bits
+	UART_FLWCTRL FlowControl;	//!< Flow control
+	bool bIntMode;				//!< Interrupt mode support
+	int IntPrio;				//!< Interrupt priority
+	UARTEVTCB EvtCallback;		//!< UART event callback
+	bool bFifoBlocking;			//!< CFIFO operating mode, false : drop when full
+	int RxMemSize;				//!< Memory size in bytes for Rx CFIFO
+	uint8_t *pRxMem;			//!< Pointer to memory allocated for RX CFIFO
+	int TxMemSize;				//!< Memory size in bytes for Tx CFIFO
+	uint8_t *pTxMem;			//!< Pointer to memory allocated for TX FIFO
+	bool bDMAMode;				//!< DMA transfer support
+	bool bIrDAMode;				//!< Enable IrDA
+	bool bIrDAInvert;			//!< IrDA input inverted
+	bool bIrDAFixPulse;			//!< Enable IrDA fix pulse
+	int	IrDAPulseDiv;			//!< Fix pulse divider
 } UARTCFG;
 
-// Device driver data require by low level functions
+/// Device driver data require by low level functions
 struct __Uart_Dev {
-	int Rate;					// Baudrate, set to 0 for auto baudrate
-	int DataBits;				// Number of data bits
-	UART_PARITY Parity;			// Data parity
-	int StopBits;				// Number of stop bits
-	UART_FLWCTRL FlowControl;	//
-	bool bIntMode;				// Interrupt mdoe
-	bool bIrDAMode;				// Enable IrDA
-	bool bIrDAInvert;			// IrDA input inverted
-	bool bIrDAFixPulse;			// Enable IrDA fix pulse
-	int	IrDAPulseDiv;			// Fix pulse divider
-	DEVINTRF DevIntrf;			// Device interface implementation
-	UARTEVTCB EvtCallback;		// UART event callback
-	void *pObj;					// Pointer to UART object instance
-	HCFIFO hRxFifo;				// Rx FIFO handle
-	HCFIFO hTxFifo;				// Tx Fifo handle
-	uint32_t LineState;			// Line state
-	int hStdIn;					// Handle to retarget stdin
-	int hStdOut;				// Handle to retarget stdout
-	uint32_t RxOECnt;			// Rx overrun error count
+	int Rate;					//!< Baudrate, set to 0 for auto baudrate
+	int DataBits;				//!< Number of data bits
+	UART_PARITY Parity;			//!< Data parity
+	int StopBits;				//!< Number of stop bits
+	UART_FLWCTRL FlowControl;	//!<
+	bool bIntMode;				//!< Interrupt mdoe
+	bool bIrDAMode;				//!< Enable IrDA
+	bool bIrDAInvert;			//!< IrDA input inverted
+	bool bIrDAFixPulse;			//!< Enable IrDA fix pulse
+	int	IrDAPulseDiv;			//!< Fix pulse divider
+	DEVINTRF DevIntrf;			//!< Device interface implementation
+	UARTEVTCB EvtCallback;		//!< UART event callback
+	void *pObj;					//!< Pointer to UART object instance
+	HCFIFO hRxFifo;				//!< Rx FIFO handle
+	HCFIFO hTxFifo;				//!< Tx Fifo handle
+	uint32_t LineState;			//!< Line state
+	int hStdIn;					//!< Handle to retarget stdin
+	int hStdOut;				//!< Handle to retarget stdout
+	uint32_t RxOECnt;			//!< Rx overrun error count
 };
 
 #pragma pack(pop)
@@ -198,7 +194,7 @@ void UARTRetargetDisable(UARTDEV *pDev, int FileNo);
 
 // C++ class wrapper
 
-// C++ class wrapper
+/// UART base class
 class UART: public DeviceIntrf {
 public:
 	UART() {

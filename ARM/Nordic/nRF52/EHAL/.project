@@ -256,11 +256,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/base64.c</locationURI>
 		</link>
 		<link>
-			<name>src/ble_app.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app.cpp</locationURI>
-		</link>
-		<link>
 			<name>src/ble_app_handler.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app_handler.c</locationURI>
@@ -357,6 +352,11 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -596,6 +596,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK_Mesh/mesh</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/sensors/agm_mpu9250.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/agm_mpu9250.cpp</locationURI>
@@ -782,6 +787,11 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK/softdevice/common</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/access</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -1096,6 +1106,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh_soc.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/access/src</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/ble_services/ble_bas/ble_bas.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_bas/ble_bas.c</locationURI>
@@ -1154,6 +1169,31 @@
 			<name>src/nRF5_SDK/libraries/experimental_log/src/nrf_log_str_formatter.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/experimental_log/src/nrf_log_str_formatter.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/access/src/access.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_Mesh/mesh/access/src/access.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/access/src/access_publish.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_Mesh/mesh/access/src/access_publish.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/access/src/access_reliable.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_Mesh/mesh/access/src/access_reliable.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/access/src/device_state_manager.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_Mesh/mesh/access/src/device_state_manager.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/access/src/nrf_mesh_node_config.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_Mesh/mesh/access/src/nrf_mesh_node_config.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdh.c</name>

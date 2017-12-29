@@ -1,9 +1,12 @@
-/*---------------------------------------------------------------------------
-File : usb_hidhost.h
+/**--------------------------------------------------------------------------
+@file	usb_hidhost.h
 
-Author : Hoang Nguyen Hoan          Jan. 16, 2009
+@brief	Generic class of Host side USB HID device access
 
-Desc :   Generic class of Host side USB HID device access
+@author	Hoang Nguyen Hoan
+@date	Jan. 16, 2009
+
+@license
 
 Copyright (c) 2009, I-SYST, all rights reserved
 
@@ -25,16 +28,17 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF 
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          		Date              Description
-Hoan						June 2009			Ekomini
 ----------------------------------------------------------------------------*/
 
-#ifndef __USBHIDDEV_H__
-#define __USBHIDDEV_H__
+#ifndef __USB_HIDHOST_H__
+#define __USB_HIDHOST_H__
 
 #include <string>
 #include <stdint.h>
+
+/** @addtogroup USB
+  * @{
+  */
 
 class UsbHidDevice {
 
@@ -60,5 +64,7 @@ protected:
 	
 private:
 };
+
+/** @} end group USB */
 
 #endif   // __USBHIDDEV_H__
