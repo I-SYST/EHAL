@@ -60,7 +60,6 @@ codecvt_base::result codecvt_utf8::do_out(mbstate_t &state, const wchar_t *from,
                                           const wchar_t *from_end, const wchar_t *&from_next,
                                           char *to, char *to_limit, char *&to_next) const
 {
-   result retval = codecvt_base::error;
    int srclen = from_end - from;
    int destsize = to_limit - to;
    int res = wcstoutf8(from, &srclen, to, &destsize);

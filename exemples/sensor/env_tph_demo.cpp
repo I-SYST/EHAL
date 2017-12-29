@@ -1,10 +1,40 @@
-//============================================================================
-// Name        : main.cpp
-// Author      : Nguyen Hoan Hoang
-// Version     :
-// Copyright   : Copyright (c) 2017, I-SYST
-// Description : Hello World in C++
-//============================================================================
+/**-------------------------------------------------------------------------
+@example	env_tph_demo.cpp
+
+@brief	Environmental sensor demo.
+
+This application demo shows how to use environmental driver (BME280, BME680, MS8607).
+Temperature, Pressure, Humidity (TPH). Support I2C or SPI interface.  Data is printed
+to UART.
+
+@author Hoang Nguyen Hoan
+@date	May 8, 2017
+
+@license
+
+Copyright (c) 2017, I-SYST inc., all rights reserved
+
+Permission to use, copy, modify, and distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright
+notice and this permission notice appear in all copies, and none of the
+names : I-SYST or its contributors may be used to endorse or
+promote products derived from this software without specific prior written
+permission.
+
+For info or contributing contact : hnhoan at i-syst dot com
+
+THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+----------------------------------------------------------------------------*/
 
 #include "i2c.h"
 #include "spi.h"
@@ -12,6 +42,7 @@
 #include "stddev.h"
 #include "sensors/tph_bme280.h"
 #include "sensors/tphg_bme680.h"
+#include "sensors/tph_ms8607.h"
 #include "blueio_board.h"
 #include "board.h"
 #include "idelay.h"
@@ -25,6 +56,7 @@
 
 uint8_t g_TxBuff[FIFOSIZE];
 
+// Assign UART pins
 static IOPINCFG s_UartPins[] = {
 	{UART_RX_PORT, UART_RX_PIN, UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
 	{UART_TX_PORT, UART_TX_PIN, UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
@@ -90,8 +122,8 @@ SPI g_Spi;
 static const I2CCFG s_I2cCfg = {
 	0,			// I2C device number
 	{
-		{I2C0_SDA_PORT, I2C0_SDA_PIN, I2C0_SDA_PINOP, IOPINDIR_BI, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},	// RX
-		{I2C0_SCL_PORT, I2C0_SCL_PIN, I2C0_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},	// TX
+		{I2C0_SDA_PORT, BLUEIO_TAG_BME280_I2C_SDA_PIN, I2C0_SDA_PINOP, IOPINDIR_BI, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},
+		{I2C0_SCL_PORT, BLUEIO_TAG_BME280_I2C_SCL_PIN, I2C0_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},
 	},
 	100000,	// Rate
 	I2CMODE_MASTER,
@@ -143,6 +175,7 @@ static const TPHSENSOR_CFG s_TphSensorCfg = {
 
 //TphBme280 g_EnvSensor;
 TphgBme680	g_EnvSensor;
+//TphMS8607	g_EnvSensor;
 
 //
 // Print a greeting message on standard output and exit.
@@ -152,14 +185,14 @@ TphgBme680	g_EnvSensor;
 // For example, for toolchains derived from GNU Tools for Embedded,
 // to enable semi-hosting, the following was added to the linker:
 //
-// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lc -lm -lrdimon -Wl,--end-group
+// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lm -lrdimon -Wl,--end-group
 //
 // Adjust it for other toolchains.
 //
 int main()
 {
 	TPHSENSOR_DATA tphdata;
-	GASSENSOR_DATA gdata;
+	//GASSENSOR_DATA gdata;
 	bool res = true;
 
 	res = g_Uart.Init(g_UartCfg);
@@ -173,7 +206,7 @@ int main()
 	g_Spi.Init(s_SpiCfg);
 #endif
 	res = g_EnvSensor.Init(s_TphSensorCfg, g_pIntrf, NULL);
-	g_EnvSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
+	//g_EnvSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
 
 	g_EnvSensor.Read(tphdata);
 	//g_EnvSensor.Read(gdata);

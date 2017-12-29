@@ -1,9 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : dirent.h
+/**-------------------------------------------------------------------------
+@file	dirent.h
 
-Author : Hoang Nguyen Hoan          Feb. 27, 2015
+@brief	Implementation of dirent for embedded
 
-Desc   : Implementation of dirent for embedded
+@author	Hoang Nguyen Hoan
+@date	Feb. 27, 2015
+
+@license
 
 Copyright (c) 2015, I-SYST inc., all rights reserved
 
@@ -26,9 +29,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
@@ -56,9 +56,10 @@ Modified by          Date              Description
 #define PATH_MAX	255
 #define OPEN_MAX	3
 
+
 struct dirent {
 	ino_t	d_fileno;			// File serial number
-	char 	d_name[NAME_MAX + 1];	// File name (full path)
+	char 	d_name[NAME_MAX + 1];// File name (full path)
 	unsigned char d_namelen;
 	unsigned char d_type;		// File type
 	uint8_t	d_att;				// File Attribute
@@ -69,7 +70,7 @@ struct dirent {
 	uint32_t FirstClus;			// Start data cluster
 };
 
-typedef struct _DIR {
+typedef struct __DIR {
 	struct dirent d_dirent;
 	char *d_dirname;			// Full path name of directory
 	int d_dirnamelen;

@@ -45,6 +45,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "device_intrf.h"
 #include "cfifo.h"
 
+/** @addtogroup device_intrf	Device Interface
+  * @{
+  */
+
 // Possible baudrate values
 // 110, 300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
 // 230400, 250000, 460800, 500000, 576000, 921600 1000000, 2000000,
@@ -257,5 +261,7 @@ private:
 
 
 #endif	// __cplusplus
+
+/** @} end group device_intrf */
 
 #endif	// __UART_H__

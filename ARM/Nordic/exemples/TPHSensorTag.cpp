@@ -1,12 +1,17 @@
-/*--------------------------------------------------------------------------
-File   : PTHSensorTag.cpp
+/**-------------------------------------------------------------------------
+@example	TPHSensorTag.cpp
 
-Author : Hoang Nguyen Hoan          May 8, 2017
+@brief	Environmental Sensor BLE demo (Supports BME280, BME680, MS8607).
 
-Desc   : Environmental Sensor BLE demo
-		 This application demo shows BLE connectionless using EHAL library
-		 It advertises Barometric Pressure, Temperature & Humidity data
-		 in manufacturer specific data
+This application demo shows BLE non-connectable using EHAL library. It advertises
+Temperature, Pressure, Humidity (TPH) data in BLE manufacturer specific data.
+Support I2C and SPI interface
+
+
+@author Hoang Nguyen Hoan
+@date	May 8, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -30,10 +35,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
+
 #include <string.h>
 
 #include "istddef.h"
@@ -55,7 +58,7 @@ Modified by          Date              Description
 #include "timer_nrf5x.h"
 #include "board.h"
 
-#define DEVICE_NAME                     "TPHSensorTag"                            /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "EnvSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
 //#define TPH_BME280
 #define TPH_BME680
@@ -65,7 +68,7 @@ Modified by          Date              Description
 //			Only RTC timer 2 is usable with Softdevice for nRF52, not avail on nRF51
 //
 #ifdef NRF52
-#define USE_TIMER_UPDATE
+//#define USE_TIMER_UPDATE
 //#define NEBLINA_MODULE
 #endif
 
@@ -76,30 +79,23 @@ Modified by          Date              Description
 #define APP_ADV_TIMEOUT_IN_SECONDS      0                                         /**< The advertising timeout (in units of seconds). */
 #else
 // Use advertisement timeout to update data
-#define APP_ADV_TIMEOUT_IN_SECONDS      1                                         /**< The advertising timeout (in units of seconds). */
+#define APP_ADV_TIMEOUT_IN_SECONDS      2                                         /**< The advertising timeout (in units of seconds). */
 #endif
 
 void TimerHandler(Timer *pTimer, uint32_t Evt);
 
-#pragma pack(push, 1)
-typedef struct __EnvData {
-	uint32_t Pressure;		// Barometric pressure in Pa no decimal
-	int16_t  Temperature;	// Temperature in degree C, 2 decimals fixed point
-	uint16_t Humidity;		// Relative humidity in %, 2 decimals fixed point
-} ENVSENSOR_DATA;
-#pragma pop(pop)
-
-uint8_t g_AdvDataBuff[sizeof(ENVSENSOR_DATA) + 1] = {
-	BLEAPP_ADV_MANDATA_TYPE_TPH,
+uint8_t g_AdvDataBuff[9] = {
+	BLEADV_MANDATA_TYPE_TPH,
 };
 
-BLEAPP_ADV_MANDATA &g_AdvData = *(BLEAPP_ADV_MANDATA*)g_AdvDataBuff;
+BLEADV_MANDATA &g_AdvData = *(BLEADV_MANDATA*)g_AdvDataBuff;
 
 // Evironmental Sensor Data to advertise
-ENVSENSOR_DATA &g_TPHData = *(ENVSENSOR_DATA *)g_AdvData.Data;
+BLEADV_MANDATA_TPHSENSOR &g_TPHData = *(BLEADV_MANDATA_TPHSENSOR *)g_AdvData.Data;
+BLEADV_MANDATA_GASSENSOR &g_GasData = *(BLEADV_MANDATA_GASSENSOR *)g_AdvData.Data;
 
 const static TIMER_CFG s_TimerCfg = {
-    .DevNo = 2,
+    .DevNo = 1,
 	.ClkSrc = TIMER_CLKSRC_DEFAULT,
 	.Freq = 0,			// 0 => Default highest frequency
 	.IntPrio = APP_IRQ_PRIORITY_LOW,
@@ -142,6 +138,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	0,
 	-1,    // Led port nuber
 	-1,     // Led pin number
+	0, 		// Tx power
 	NULL						// RTOS Softdevice handler
 };
 
@@ -185,12 +182,13 @@ static const I2CCFG s_I2cCfg = {
 	0,			// I2C device number
 	{
 
-#ifdef TPH_BME280
-		{I2C0_SDA_PORT, I2C0_SDA_PIN, I2C0_SDA_PINOP, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-		{I2C0_SCL_PORT, I2C0_SCL_PIN, I2C0_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
+#if defined(TPH_BME280) || defined(TPH_BME680)
+		{I2C0_SDA_PORT, I2C0_SDA_PIN, I2C0_SDA_PINOP, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},
+		{I2C0_SCL_PORT, I2C0_SCL_PIN, I2C0_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
 #else
-		{0, 4, 0, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-		{0, 3, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
+		// Custom board with MS8607
+		{0, 4, 0, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},
+		{0, 3, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
 #endif
 	},
 	100000,	// Rate
@@ -212,14 +210,14 @@ static TPHSENSOR_CFG s_TphSensorCfg = {
 #ifdef NEBLINA_MODULE
     0,      // SPI CS index 0
 #else
-	BME280_I2C_DEV_ADDR0,   // I2C device address
+	BME680_I2C_DEV_ADDR0,   // I2C device address
 #endif
 	SENSOR_OPMODE_SINGLE,
 	100,						// Sampling frequency in Hz
 	1,
 	1,
 	1,
-	0
+	1
 };
 
 // Environmental sensor instance
@@ -229,11 +227,11 @@ TphMS8607 g_MS8607Sensor;
 
 
 #ifdef TPH_BME280
-TPHSensor &g_TphSensor = g_Bme280Sensor;
+TphSensor &g_TphSensor = g_Bme280Sensor;
 #elif defined(TPH_BME680)
-TPHSensor &g_TphSensor = g_Bme680Sensor;
+TphSensor &g_TphSensor = g_Bme680Sensor;
 #else
-TPHSensor &g_TphSensor = g_MS8607Sensor;
+TphSensor &g_TphSensor = g_MS8607Sensor;
 #endif
 
 void ReadPTHData()
@@ -243,11 +241,14 @@ void ReadPTHData()
 	TPHSENSOR_DATA data;
 
 	g_TphSensor.Read(data);
+	g_TphSensor.StartSampling();
+
+	g_AdvData.Type = BLEADV_MANDATA_TYPE_TPH;
 
 	// NOTE : M0 does not access unaligned data
 	// use local 4 bytes align stack variable then mem copy
 	// skip timestamp as advertising pack is limited in size
-	memcpy(&g_TPHData, ((uint8_t*)&data) + 4, sizeof(ENVSENSOR_DATA));
+	memcpy(&g_TPHData, ((uint8_t*)&data) + 4, sizeof(BLEADV_MANDATA_TPHSENSOR));
 
 	// Update advertisement data
 	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
@@ -288,15 +289,17 @@ void HardwareInit()
 #endif
 
 	// Inititalize sensor
-    g_TphSensor.Init(s_TphSensorCfg, g_pIntrf);
+    g_TphSensor.Init(s_TphSensorCfg, g_pIntrf, NULL);
+    //g_TphSensor.StartSampling();
 
     // Update sensor data
     TPHSENSOR_DATA tphdata;
 	g_TphSensor.Read(tphdata);
 
+	g_AdvData.Type = BLEADV_MANDATA_TYPE_TPH;
 	// Do memcpy to adv data. Due to byte alignment, cannot read directly into
 	// adv data
-	memcpy(g_AdvData.Data, ((uint8_t*)&tphdata) + 4, sizeof(ENVSENSOR_DATA));
+	memcpy(g_AdvData.Data, ((uint8_t*)&tphdata) + 4, sizeof(BLEADV_MANDATA_TPHSENSOR));
 
 	g_pIntrf->Disable();
 

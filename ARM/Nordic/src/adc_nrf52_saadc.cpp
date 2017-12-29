@@ -45,7 +45,7 @@ Modified by          Date              Description
 #include "adc_nrf52_saadc.h"
 
 typedef struct __ADC_nRF52_Data {
-	ADCnRF52 *pDevObj;
+	AdcnRF52 *pDevObj;
 	ADC_EVTCB EvtHandler;
 	int NbChanAct;
     int SampleCnt;
@@ -174,12 +174,12 @@ bool nRF52ADCWaitForStop(int32_t Timeout)
 	return false;
 }
 
-ADCnRF52::ADCnRF52()
+AdcnRF52::AdcnRF52()
 {
 	memset(&s_AdcnRF52DevData, 0, sizeof(s_AdcnRF52DevData));
 }
 
-ADCnRF52::~ADCnRF52()
+AdcnRF52::~AdcnRF52()
 {
 	s_AdcnRF52DevData.pDevObj = NULL;
 }
@@ -189,7 +189,7 @@ ADCnRF52::~ADCnRF52()
  *
  * @return	true - success
  */
-bool ADCnRF52::Calibrate()
+bool AdcnRF52::Calibrate()
 {
 	nRF52ADCWaitBusy(1000000);
 
@@ -228,7 +228,7 @@ bool ADCnRF52::Calibrate()
 	return false;
 }
 
-bool ADCnRF52::Init(const ADC_CFG &Cfg, Timer *pTimer, DeviceIntrf *pIntrf)
+bool AdcnRF52::Init(const ADC_CFG &Cfg, Timer *pTimer, DeviceIntrf *pIntrf)
 {
 	if (s_AdcnRF52DevData.pDevObj != NULL && s_AdcnRF52DevData.pDevObj != this)
 		return false;
@@ -310,7 +310,7 @@ bool ADCnRF52::Init(const ADC_CFG &Cfg, Timer *pTimer, DeviceIntrf *pIntrf)
 	return true;
 }
 
-bool ADCnRF52::Enable()
+bool AdcnRF52::Enable()
 {
     NRF_SAADC->RESULT.PTR = 0;
     NRF_SAADC->RESULT.MAXCNT = 0;
@@ -340,7 +340,7 @@ bool ADCnRF52::Enable()
 	return true;
 }
 
-void ADCnRF52::Disable()
+void AdcnRF52::Disable()
 {
     NRF_SAADC->TASKS_STOP = 1;
     nRF52ADCWaitForStop(10000);
@@ -372,7 +372,7 @@ void ADCnRF52::Disable()
 	NRF_SAADC->ENABLE = 0;
 }
 
-void ADCnRF52::Reset()
+void AdcnRF52::Reset()
 {
 	StopConversion();
 
@@ -380,7 +380,7 @@ void ADCnRF52::Reset()
 	Enable();
 }
 
-uint32_t ADCnRF52::Rate(uint32_t Val)
+uint32_t AdcnRF52::Rate(uint32_t Val)
 {
 	if (vMode == ADC_CONV_MODE_CONTINUOUS)
 	{
@@ -403,7 +403,7 @@ uint32_t ADCnRF52::Rate(uint32_t Val)
 	return vRate;
 }
 
-uint16_t ADCnRF52::Resolution(uint16_t Val)
+uint16_t AdcnRF52::Resolution(uint16_t Val)
 {
 	if (Val < 10)
 	{
@@ -433,7 +433,7 @@ uint16_t ADCnRF52::Resolution(uint16_t Val)
 	return vResolution;
 }
 
-bool ADCnRF52::OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan)
+bool AdcnRF52::OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan)
 {
 	if (pChanCfg == NULL || NbChan == 0)
 		return false;
@@ -582,7 +582,7 @@ bool ADCnRF52::OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan)
  * @brief	Close ADC channel
  * @param 	Chan : Channel number
  */
-void ADCnRF52::CloseChannel(int Chan)
+void AdcnRF52::CloseChannel(int Chan)
 {
 	NRF_SAADC->CH[Chan].PSELP = 0;
 	NRF_SAADC->CH[Chan].PSELN = 0;
@@ -592,7 +592,7 @@ void ADCnRF52::CloseChannel(int Chan)
 }
 
 
-bool ADCnRF52::StartConversion()
+bool AdcnRF52::StartConversion()
 {
 	if (nRF52ADCWaitBusy(10000) == false)
 		return false;
@@ -613,7 +613,7 @@ bool ADCnRF52::StartConversion()
 	return true;
 }
 
-void ADCnRF52::StopConversion()
+void AdcnRF52::StopConversion()
 {
 	NRF_SAADC->TASKS_STOP = 1;
 
@@ -622,7 +622,7 @@ void ADCnRF52::StopConversion()
 	NRF_SAADC->RESULT.MAXCNT = 0;
 }
 
-int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
+int AdcnRF52::Read(ADC_DATA *pBuff, int Len)
 {
 	int cnt = 0;
 
@@ -702,7 +702,7 @@ int ADCnRF52::Read(ADC_DATA *pBuff, int Len)
  *
  * @return	true - data available
  */
-bool ADCnRF52::Read(int Chan, ADC_DATA *pBuff)
+bool AdcnRF52::Read(int Chan, ADC_DATA *pBuff)
 {
 	if (pBuff == NULL || Chan < 0 || Chan >= SAADC_NRF52_MAX_CHAN)
 		return false;

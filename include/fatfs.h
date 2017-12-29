@@ -86,7 +86,7 @@ typedef enum __FATFS_FAT_Entry_Value {
 	FATFS_FATENTRY_ALLOCATED = 0xFFFFFFFF
 } FATFS_FATENTRY;
 
-typedef struct _FATFS_BootSector_BPB {
+typedef struct __FATFS_BootSector_BPB {
 	uint8_t 	JmpBoot[3]; 	//!< Jump instruction to boot code. This field has two allowed forms:
 								//!< jmpBoot[0] = 0xEB, jmpBoot[1] = 0x??, jmpBoot[2] = 0x90
 								//!< and jmpBoot[0] = 0xE9, jmpBoot[1] = 0x??, jmpBoot[2] = 0x??
@@ -186,8 +186,8 @@ typedef enum __DIR_Attr {
 			 FATFS_DIRATTR_VOLUME_ID)
 } FATFS_DIRATTR;
 
-// FAT32 File System Info
-typedef struct _FATFS_FSInfo {
+/// FAT32 File System Info
+typedef struct __FATFS_FSInfo {
 	uint32_t	LeadSig;			//!< Value = 0x41615252. This lead signature is used to validate
 									//!< the beginning of the FSInfo structure in the sector.
 	uint8_t		Reserved1[480];		//!< Reserved. Must be set to 0.

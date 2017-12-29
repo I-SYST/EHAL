@@ -42,6 +42,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 #include "atomic.h"
 
+/** @addtogroup device_intrf	Device Interface
+  * @{
+  */
 
 /// Device interface event types.
 typedef enum {
@@ -720,5 +723,7 @@ public:
 };
 
 #endif
+
+/** @} end group device_intrf */
 
 #endif	// __DEVICEINTRF_H__

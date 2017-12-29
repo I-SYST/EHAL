@@ -1,9 +1,12 @@
-/*--------------------------------------------------------------------------
-File	: BleAdvertiser.cpp
+/**-------------------------------------------------------------------------
+@example	BleAdvertiser.cpp
 
-Author : Hoang Nguyen Hoan          					Dec. 19, 2017
+@brief	BLE non-connectable, advertising incremental counter. Counter increments every second.
 
-Desc   : BLE non-connectable, advertising incremental counter.
+@author	Hoang Nguyen Hoan
+@date	Dec. 19, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -26,9 +29,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #include <string.h>
@@ -93,6 +93,7 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
     	// for re-advertisement
     	g_AdvCnt++;
 
+    	// U
     	BleAppAdvManDataSet((uint8_t*)&g_AdvCnt, sizeof(g_AdvCnt));
     }
 }
@@ -105,7 +106,7 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 // For example, for toolchains derived from GNU Tools for Embedded,
 // to enable semi-hosting, the following was added to the linker:
 //
-// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lc -lm -lrdimon -Wl,--end-group
+// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lm -lrdimon -Wl,--end-group
 //
 // Adjust it for other toolchains.
 //

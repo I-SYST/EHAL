@@ -110,23 +110,25 @@ int DeviceIntrfRead(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
 }
 
 int DeviceIntrfWrite(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
-                  uint8_t *pTxData, int TxLen)
+                  uint8_t *pData, int DataLen)
 {
     int count = 0;
     int nrtry = pDev->MaxRetry;
-    uint8_t d[AdCmdLen + TxLen];
+//    uint8_t d[AdCmdLen + TxLen];
 
-    if (pTxData == NULL || pAdCmd == NULL)
+    if (pData == NULL || pAdCmd == NULL)
         return 0;
 
-    memcpy(d, pAdCmd, AdCmdLen);
-    memcpy(&d[AdCmdLen], pTxData, TxLen);
+//    memcpy(d, pAdCmd, AdCmdLen);
+//    memcpy(&d[AdCmdLen], pData, DataLen);
 
     do {
         if (DeviceIntrfStartTx(pDev, DevAddr))
         {
-            count = pDev->TxData(pDev, d, AdCmdLen + TxLen);
-            DeviceIntrfStopTx(pDev);
+            //count = pDev->TxData(pDev, d, AdCmdLen + TxLen);
+			count = pDev->TxData(pDev, pAdCmd, AdCmdLen);
+			count = pDev->TxData(pDev, pData, DataLen);
+			DeviceIntrfStopTx(pDev);
         }
     } while (count <= 0 && nrtry-- > 0);
 

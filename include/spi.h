@@ -1,12 +1,16 @@
-/*--------------------------------------------------------------------------
-File   : spi.h
+/**-------------------------------------------------------------------------
+@file	spi.h
 
-Author : Hoang Nguyen Hoan          Nov. 20, 2011
+@brief	Generic SPI definitions.
 
-Desc   : Generic SPI definitions
 		 Current implementation
-		 	 Master mode
-		 	 Polling
+		 	 - Master mode
+		 	 - Polling
+
+@author	Hoang Nguyen Hoan
+@date	Nov. 20, 2011
+
+@license
 
 Copyright (c) 2011, I-SYST inc., all rights reserved
 
@@ -30,9 +34,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by         Date            Description
-Hoan				Feb. 20, 2015	New EHAL
 ----------------------------------------------------------------------------*/
 #ifndef __SPI_H__
 #define __SPI_H__
@@ -47,34 +48,37 @@ Hoan				Feb. 20, 2015	New EHAL
 #include "iopincfg.h"
 #include "device_intrf.h"
 
+/** @addtogroup device_intrf	Device Interface
+  * @{
+  */
 
 
 // SPI Status code
-typedef enum _SPI_Status {
+typedef enum __SPI_Status {
 	SPISTATUS_OK
 } SPISTATUS;
 
-typedef enum _SPI_Mode {
+typedef enum __SPI_Mode {
 	SPIMODE_MASTER,
 	SPIMODE_SLAVE
 } SPIMODE;
 
-typedef enum _SPI_Clk_Polarity {
+typedef enum __SPI_Clk_Polarity {
 	SPICLKPOL_HIGH,
 	SPICLKPOL_LOW
 } SPICLKPOL;
 
-typedef enum _SPI_Data_Phase {
-	SPIDATAPHASE_FIRST_CLK,		// Data phase starts on first clock
-	SPIDATAPHASE_SECOND_CLK		// Data phase starts on 2nd clock
+typedef enum __SPI_Data_Phase {
+	SPIDATAPHASE_FIRST_CLK,		//!< Data phase starts on first clock
+	SPIDATAPHASE_SECOND_CLK		//!< Data phase starts on 2nd clock
 } SPIDATAPHASE;
 
-typedef enum _SPI_Data_Bit_Order {
-	SPIDATABIT_MSB,				// Most significant bit first
-	SPIDATABIT_LSB				// Least significant bit first
+typedef enum __SPI_Data_Bit_Order {
+	SPIDATABIT_MSB,				//!< Most significant bit first
+	SPIDATABIT_LSB				//!< Least significant bit first
 } SPIDATABIT;
 
-typedef enum _SPI_Chip_Select {
+typedef enum __SPI_Chip_Select {
 	SPICSEL_AUTO,	// Select control by hardware
 	SPICSEL_MAN,		// Select control by software
 	SPICSEL_EXT,		// Select control externally by application
@@ -85,35 +89,35 @@ typedef enum _SPI_Chip_Select {
 #define SPI_SCK_IOPIN_IDX		0
 #define SPI_MISO_IOPIN_IDX		1
 #define SPI_MOSI_IOPIN_IDX		2
-#define SPI_SS_IOPIN_IDX		3	// Starting index for SPI chip select. This can
-									// grow to allows multiple devices on same SPI.
+#define SPI_SS_IOPIN_IDX		3	//!< Starting index for SPI chip select. This can
+									//!< grow to allows multiple devices on same SPI.
 
 #pragma pack(push, 4)
 
 // Configuration data used to initialize device
-typedef struct _SPI_Config {
-	int DevNo;				// SPI interface number identify by chip select (CS0, CS1,..,CSn)
-	SPIMODE Mode;			// Master/Slave mode
-	const IOPINCFG *pIOPinMap;	// Define I/O pins used by SPI
-	int NbIOPins;			// Total number of I/O pins
-	int Rate;				// Speed in Hz
-	uint32_t DataSize; 		// Data Size 4-16 bits
-	int MaxRetry;			// Max number of retry
-	SPIDATABIT BitOrder;	// Data bit ordering
-	SPIDATAPHASE DataPhase;	// Data Out Phase.
-	SPICLKPOL ClkPol;		// Clock Out Polarity.
-	SPICSEL ChipSel;		// Chip select mode
-	int IntPrio;			// Interrupt priority
-	DEVINTRF_EVTCB EvtCB;		// Event callback
+typedef struct __SPI_Config {
+	int DevNo;				//!< SPI interface number identify by chip select (CS0, CS1,..,CSn)
+	SPIMODE Mode;			//!< Master/Slave mode
+	const IOPINCFG *pIOPinMap;	//!< Define I/O pins used by SPI
+	int NbIOPins;			//!< Total number of I/O pins
+	int Rate;				//!< Speed in Hz
+	uint32_t DataSize; 		//!< Data Size 4-16 bits
+	int MaxRetry;			//!< Max number of retry
+	SPIDATABIT BitOrder;	//!< Data bit ordering
+	SPIDATAPHASE DataPhase;	//!< Data Out Phase.
+	SPICLKPOL ClkPol;		//!< Clock Out Polarity.
+	SPICSEL ChipSel;		//!< Chip select mode
+	int IntPrio;			//!< Interrupt priority
+	DEVINTRF_EVTCB EvtCB;	//!< Event callback
 } SPICFG;
 
 // Device driver data require by low level fonctions
 typedef struct {
-	SPICFG 		Cfg;		// Config data
-	DEVINTRF	DevIntrf;	// device interface implementation
-	int			FirstRdData;// This is to keep the first dummy read data of SPI
-							// there are devices that may return a status code through this
-	int			CurDevCs;	// Current active device CS
+	SPICFG 		Cfg;		//!< Config data
+	DEVINTRF	DevIntrf;	//!< device interface implementation
+	int			FirstRdData;//!< This is to keep the first dummy read data of SPI
+							//!< there are devices that may return a status code through this
+	int			CurDevCs;	//!< Current active device CS
 } SPIDEV;
 
 #pragma pack(pop)
@@ -165,7 +169,7 @@ public:
 	}
 
 	virtual ~SPI() {
-		Disable();
+//		Disable();
 	}
 
 	SPI(SPI&);	// Copy ctor not allowed
@@ -206,5 +210,7 @@ private:
 };
 
 #endif	// __cplusplus
+
+/** @} end group device_intrf */
 
 #endif	// __SPI_H__
