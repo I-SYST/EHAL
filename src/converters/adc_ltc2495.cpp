@@ -38,12 +38,12 @@ Modified by          Date              Description
  *
  * @return	true - success
  */
-bool ADCLTC2495::Calibrate()
+bool AdcLTC2495::Calibrate()
 {
 	return true;
 }
 
-bool ADCLTC2495::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
+bool AdcLTC2495::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 {
 	Interface(pIntrf);
 	DeviceAddess(Cfg.DevAddr);
@@ -62,7 +62,7 @@ bool ADCLTC2495::Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf)
 	return true;
 }
 
-bool ADCLTC2495::OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan)
+bool AdcLTC2495::OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan)
 {
 	uint8_t d[2];
 
@@ -95,12 +95,12 @@ bool ADCLTC2495::OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan)
 	}
 }
 
-void ADCLTC2495::CloseChannel(int Chan)
+void AdcLTC2495::CloseChannel(int Chan)
 {
 
 }
 
-bool ADCLTC2495::StartConversion()
+bool AdcLTC2495::StartConversion()
 {
 	uint8_t d[4];
 /*
@@ -156,7 +156,7 @@ int AdcLtc2495::Read(float *pBuff, int Len)
 	return 0;
 }
 */
-int ADCLTC2495::Read(ADC_DATA *pBuff, int Len)
+int AdcLTC2495::Read(ADC_DATA *pBuff, int Len)
 {
 
 }
