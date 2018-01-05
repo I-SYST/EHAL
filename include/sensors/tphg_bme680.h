@@ -260,8 +260,9 @@ typedef struct {
 /// - Offset temperature coefficient ±1.3 Pa/K, equiv. to ±10.9 cm at 1 °C temperature change
 class TphgBme680 : public TphSensor, public GasSensor {
 public:
-	TphgBme680() : vbMeasGas(false), vbSampling(false),
-				   vbGasData(false), vbSpi(false) {}
+	TphgBme680() : vbMeasGas(false),
+				   vbGasData(false),
+				   vbSpi(false) {}
 	virtual ~TphgBme680() {}
 
 	/**
@@ -452,7 +453,7 @@ private:
 	bool vbSpi;				// Set to true if SPI interfacing
 	int vRegPage;			// Current register page, SPI interface only
 	bool vbMeasGas;			// Do gas measurement
-	bool vbSampling;
+	//bool vbSampling;
 	bool vbGasData;
 	int vNbHeatPoint;		// Number of heating points
 	GASSENSOR_HEAT vHeatPoints[BME680_GAS_HEAT_PROFILE_MAX];

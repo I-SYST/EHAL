@@ -95,6 +95,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BME280_REG_CTRL_MEAS_OSRS_T_MASK	(7 << BME280_REG_CTRL_MEAS_OSRS_T_BITPOS)
 
 #define BME280_REG_STATUS				0xF3
+
+#define BME280_REG_STATUS_MEASURING			(1<<3)
+#define BME280_REG_STATUS_IM_UPDATE			(1<<0)
+
 #define BME280_REG_CTRL_HUM				0xF2
 #define BME280_REG_CALIB_26_41_START	0xE1
 #define BME280_REG_RESET				0xE0
@@ -279,7 +283,7 @@ private:
 	uint32_t CompenHum(int32_t RawHum);
 	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
-	bool UpdateData() {}
+	bool UpdateData();
 
 	int32_t vCalibTFine;	// For internal calibration use only
 	BME280_CALIB_DATA vCalibData;

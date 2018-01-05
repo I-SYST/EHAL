@@ -313,13 +313,35 @@ uint32_t TphBme280::SamplingFrequency(uint32_t FreqHz)
  * @brief	Start sampling data
  *
  * @return	true - success
+ * 			false - Busy
  */
 bool TphBme280::StartSampling()
 {
-	uint8_t regaddr = BME280_REG_CTRL_MEAS;
-	uint8_t d = vCtrlReg | BME280_REG_CTRL_MEAS_MODE_NORMAL;
+	uint8_t regaddr = BME280_REG_STATUS;
+	uint8_t d;
+
+	d = Read8(&regaddr, 1);
+
+	if (d & (BME280_REG_STATUS_MEASURING | BME280_REG_STATUS_IM_UPDATE))
+	{
+		return false;
+	}
+
+	regaddr = BME280_REG_CTRL_MEAS;
+	d = vCtrlReg | BME280_REG_CTRL_MEAS_MODE_NORMAL;
 
 	Write(&regaddr, 1, &d, 1);
+
+	vbSampling = true;
+
+	if (vpTimer)
+	{
+		vSampleTime = vpTimer->mSecond();
+	}
+	else
+	{
+		vSampleTime = 0;
+	}
 
 	return true;
 }
@@ -344,27 +366,16 @@ void TphBme280::Reset()
 	Write(&addr, 1, &d, 1);
 }
 
-bool TphBme280::Read(TPHSENSOR_DATA &TphData)
+bool TphBme280::UpdateData()
 {
 	uint8_t addr = BME280_REG_STATUS;
 	uint8_t status = 0;
 	bool retval = false;
 	int timeout = 20;
-/*
-	if (vOpMode == SENSOR_OPMODE_SINGLE)
-	{
-		StartSampling();
-		usDelay(20000);
-	}
-*/
-	do {
-		Read(&addr, 1, &status, 1);
-		usDelay(1000);
-	} while ((status & 9) != 0 && timeout-- > 0);
 
-//	Read(&addr, 1, &status, 1);
+	Read(&addr, 1, &status, 1);
 
-	if ((status & 9)== 0)
+	if ((status & (BME280_REG_STATUS_MEASURING | BME280_REG_STATUS_IM_UPDATE))== 0)
 	{
 		uint8_t d[8];
 		addr = BME280_REG_PRESS_MSB;
@@ -379,14 +390,29 @@ bool TphBme280::Read(TPHSENSOR_DATA &TphData)
 			vTphData.Pressure = CompenPress(p);
 			vTphData.Humidity = CompenHum(h);
 
+			vSampleCnt++;
+
 			if (vpTimer)
 			{
 				vTphData.Timestamp = vpTimer->mSecond();
 			}
+			else
+			{
+				vTphData.Timestamp = vSampleCnt;
+			}
+
+			vbSampling = false;
 
 			retval = true;
 		}
 	}
+
+	return retval;
+}
+
+bool TphBme280::Read(TPHSENSOR_DATA &TphData)
+{
+	bool retval = UpdateData();
 
 	memcpy(&TphData, &vTphData, sizeof(TPHSENSOR_DATA));
 

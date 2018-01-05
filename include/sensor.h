@@ -190,7 +190,9 @@ protected:
 	SENSOR_OPMODE vOpMode;		//!< Current operating mode
 	uint32_t vSampFreq;			//!< Sampling frequency in Hz, relevant to CONTINUOUS mode
 	Timer *vpTimer;				//!< Timer to use for time stamping data
+	bool vbSampling;			//!< true - measurement in progress
 	uint64_t vSampleCnt;		//!< Keeping sample count
+	uint32_t vSampleTime;		//!< Time stamp when sampling is started
 };
 
 extern "C" {
