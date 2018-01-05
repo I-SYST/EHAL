@@ -93,7 +93,7 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
     	// for re-advertisement
     	g_AdvCnt++;
 
-    	// U
+    	//
     	BleAppAdvManDataSet((uint8_t*)&g_AdvCnt, sizeof(g_AdvCnt));
     }
 }

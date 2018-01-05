@@ -78,6 +78,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/api&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/bearer/api&quot;"/>
@@ -189,6 +190,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/api&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/bearer/api&quot;"/>
@@ -359,6 +361,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/api&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/bearer/api&quot;"/>
@@ -470,6 +473,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/api&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/bearer/api&quot;"/>
@@ -641,6 +645,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/api&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/bearer/api&quot;"/>
@@ -752,6 +757,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/api&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/bearer/api&quot;"/>
@@ -923,6 +929,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/api&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/bearer/api&quot;"/>
@@ -1034,6 +1041,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/api&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/dfu/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nrf5_SDK_Mesh/mesh/bearer/api&quot;"/>
