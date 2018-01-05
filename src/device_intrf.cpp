@@ -112,22 +112,27 @@ int DeviceIntrfRead(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
 int DeviceIntrfWrite(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
                   uint8_t *pData, int DataLen)
 {
-    int count = 0;
+    int count = 0, txlen = AdCmdLen;
     int nrtry = pDev->MaxRetry;
-//    uint8_t d[AdCmdLen + TxLen];
+    uint8_t d[AdCmdLen + DataLen > 0 ? DataLen : 0];
 
-    if (pData == NULL || pAdCmd == NULL)
+    if (pAdCmd == NULL)
         return 0;
 
-//    memcpy(d, pAdCmd, AdCmdLen);
-//    memcpy(&d[AdCmdLen], pData, DataLen);
+    // NOTE : Some I2C devices that uses DMA transfer may require that the tx to be combined
+    // into single tx. Because it may generate a end condition at the end of the DMA
+    memcpy(d, pAdCmd, AdCmdLen);
+
+    if (pData != NULL && DataLen > 0)
+    {
+    	memcpy(&d[AdCmdLen], pData, DataLen);
+    	txlen += DataLen;
+    }
 
     do {
         if (DeviceIntrfStartTx(pDev, DevAddr))
         {
-            //count = pDev->TxData(pDev, d, AdCmdLen + TxLen);
-			count = pDev->TxData(pDev, pAdCmd, AdCmdLen);
-			count = pDev->TxData(pDev, pData, DataLen);
+            count = pDev->TxData(pDev, d, txlen);
 			DeviceIntrfStopTx(pDev);
         }
     } while (count <= 0 && nrtry-- > 0);
