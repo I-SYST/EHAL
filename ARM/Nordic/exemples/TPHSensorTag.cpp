@@ -60,26 +60,27 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DEVICE_NAME                     "EnvSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
-//#define TPH_BME280
+#ifdef NEBLINA_MODULE
+#define TPH_BME280
+#else
 #define TPH_BME680
+#endif
 
+#ifdef NRF52
 // Use timer to update data
 // NOTE :	RTC timer 0 used by radio, RTC Timer 1 used by SDK
 //			Only RTC timer 2 is usable with Softdevice for nRF52, not avail on nRF51
 //
-#ifdef NRF52
 //#define USE_TIMER_UPDATE
-//#define NEBLINA_MODULE
 #endif
 
-// NOTE : Min advertisement interval for S130 v2 is 100 ms
-#define APP_ADV_INTERVAL                MSEC_TO_UNITS(100, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
+#define APP_ADV_INTERVAL                MSEC_TO_UNITS(200, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #ifdef USE_TIMER_UPDATE
 // Use timer to update date
 #define APP_ADV_TIMEOUT_IN_SECONDS      0                                         /**< The advertising timeout (in units of seconds). */
 #else
 // Use advertisement timeout to update data
-#define APP_ADV_TIMEOUT_IN_SECONDS      2                                         /**< The advertising timeout (in units of seconds). */
+#define APP_ADV_TIMEOUT_IN_SECONDS      1                                         /**< The advertising timeout (in units of seconds). */
 #endif
 
 void TimerHandler(Timer *pTimer, uint32_t Evt);
@@ -111,7 +112,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 		1, 1, 0
 #else
 		NRF_CLOCK_LF_SRC_XTAL,	// Source 32KHz XTAL
-		0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM// NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM
+		0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM
 #endif
 
 	},
@@ -136,7 +137,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 								// slow interval on adv timeout and advertise until connected
 	0,
 	0,
-	-1,    // Led port nuber
+	-1,		// Led port nuber
 	-1,     // Led pin number
 	0, 		// Tx power
 	NULL						// RTOS Softdevice handler
@@ -208,7 +209,7 @@ DeviceIntrf *g_pIntrf = &g_I2c;
 // Configure environmental sensor
 static TPHSENSOR_CFG s_TphSensorCfg = {
 #ifdef NEBLINA_MODULE
-    0,      // SPI CS index 0
+    0,      // SPI CS index 0 connected to BME280
 #else
 	BME680_I2C_DEV_ADDR0,   // I2C device address
 #endif
@@ -236,8 +237,6 @@ TphSensor &g_TphSensor = g_MS8607Sensor;
 
 void ReadPTHData()
 {
-    g_pIntrf->Enable();
-
 	TPHSENSOR_DATA data;
 
 	g_TphSensor.Read(data);
@@ -252,8 +251,6 @@ void ReadPTHData()
 
 	// Update advertisement data
 	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
-
-	g_pIntrf->Disable();
 }
 
 void TimerHandler(Timer *pTimer, uint32_t Evt)
@@ -290,7 +287,7 @@ void HardwareInit()
 
 	// Inititalize sensor
     g_TphSensor.Init(s_TphSensorCfg, g_pIntrf, NULL);
-    //g_TphSensor.StartSampling();
+    g_TphSensor.StartSampling();
 
     // Update sensor data
     TPHSENSOR_DATA tphdata;
@@ -300,8 +297,6 @@ void HardwareInit()
 	// Do memcpy to adv data. Due to byte alignment, cannot read directly into
 	// adv data
 	memcpy(g_AdvData.Data, ((uint8_t*)&tphdata) + 4, sizeof(BLEADV_MANDATA_TPHSENSOR));
-
-	g_pIntrf->Disable();
 
 #ifdef USE_TIMER_UPDATE
 	// Only with SDK14

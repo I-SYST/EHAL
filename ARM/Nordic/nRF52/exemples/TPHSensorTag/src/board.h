@@ -61,9 +61,9 @@
 #define SPI_SCK_PIN          		11
 #define SPI_SCK_PINOP        		1
 
-#define SPI_BME280_CS_PORT         	0
-#define SPI_BME280_CS_PIN          	26
-#define SPI_BME280_CS_PINOP        	1
+#define BME280_CS_PORT         	0
+#define BME280_CS_PIN          	26
+#define BME280_CS_PINOP        	1
 
 #else
 
