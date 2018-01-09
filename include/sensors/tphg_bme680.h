@@ -334,19 +334,11 @@ public:
 	 * @param OpMode : Operating mode
 	 * 					- TPHSENSOR_OPMODE_SINGLE
 	 * 					- TPHSENSOR_OPMODE_CONTINUOUS
-	 * @param Freq : Sampling frequency in Hz for continuous mode
+	 * @param Freq : Sampling frequency in mHz for continuous mode
 	 *
 	 * @return true- if success
 	 */
 	virtual bool Mode(SENSOR_OPMODE OpMode, uint32_t Freq);
-
-	/**
-	 * @brief	Set sampling frequency.
-	 * 		The sampling frequency is relevant only in continuous mode.
-	 *
-	 * @return	Frequency in Hz
-	 */
-	virtual uint32_t SamplingFrequency(uint32_t FreqHz);
 
 	/**
 	 * @brief	Start sampling data
@@ -433,6 +425,8 @@ public:
 		return (float)tphdata.Humidity / 100.0;
 	}
 
+	uint32_t vGasResInt;
+
 private:
 
 	BME680_CALIB_DATA vCalibData;
@@ -440,6 +434,7 @@ private:
 	uint32_t CalcPressure(int32_t RawPress);
 	int32_t CalcTemperature(int32_t RawTemp);
 	uint32_t CalcHumidity(int32_t RawHum);
+	//float fCalcGas(uint16_t RawGas, uint8_t Range);
 	uint32_t CalcGas(uint16_t RawGas, uint8_t Range);
 	uint8_t CalcHeaterResistance(uint16_t Temp);
 	bool UpdateData();
@@ -453,7 +448,6 @@ private:
 	bool vbSpi;				// Set to true if SPI interfacing
 	int vRegPage;			// Current register page, SPI interface only
 	bool vbMeasGas;			// Do gas measurement
-	//bool vbSampling;
 	bool vbGasData;
 	int vNbHeatPoint;		// Number of heating points
 	GASSENSOR_HEAT vHeatPoints[BME680_GAS_HEAT_PROFILE_MAX];

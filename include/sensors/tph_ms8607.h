@@ -146,7 +146,7 @@ public:
 	 * @param OpMode : Operating mode
 	 * 					- SENSOR_OPMODE_SINGLE
 	 * 					- SENSOR_OPMODE_CONTINUOUS
-	 * @param Freq : Sampling frequency in Hz for continuous mode
+	 * @param Freq : Sampling frequency in mHz for continuous mode
 	 *
 	 * @return true- if success
 	 */
@@ -156,9 +156,9 @@ public:
 	 * @brief	Set sampling frequency.
 	 * 		The sampling frequency is relevant only in continuous mode.
 	 *
-	 * @return	Frequency in Hz
+	 * @return	Frequency in mHz
 	 */
-	virtual uint32_t SamplingFrequency(uint32_t FreqHz);
+	virtual uint32_t SamplingFrequency(uint32_t Freq);
 
 	/**
 	 * @brief	Start sampling data

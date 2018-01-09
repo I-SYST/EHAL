@@ -131,10 +131,17 @@ public:
 	virtual SENSOR_OPMODE Mode() { return vOpMode; }
 
 	/**
+	 * @brief	Get sampling period.
+	 *
+	 * @return	Sampling period in usec
+	 */
+	virtual uint64_t SamplingPeriod() { return vSampPeriod; }
+
+	/**
 	 * @brief	Get sampling frequency.
 	 * 		The sampling frequency is relevant only in continuous mode
 	 *
-	 * @return	Frequency in Hz
+	 * @return	Frequency in mHz (milliHerz)
 	 */
 	virtual uint32_t SamplingFrequency() { return vSampFreq; }
 
@@ -143,9 +150,14 @@ public:
 	 *
 	 * The sampling frequency is relevant only in continuous mode.
 	 *
-	 * @return	Frequency in Hz
+	 * @return	Frequency in mHz (milliHerz)
 	 */
-	virtual uint32_t SamplingFrequency(uint32_t FreqHz) = 0;
+	virtual uint32_t SamplingFrequency(uint32_t Freq) {
+		vSampFreq = Freq;
+		vSampPeriod = 1000000000LL / vSampFreq;
+
+		return vSampFreq;
+	}
 
 	/**
 	 * @brief	Set current sensor state
@@ -188,11 +200,12 @@ protected:
 
 	SENSOR_STATE vState;		//!< Current sensor state
 	SENSOR_OPMODE vOpMode;		//!< Current operating mode
-	uint32_t vSampFreq;			//!< Sampling frequency in Hz, relevant to CONTINUOUS mode
+	uint32_t vSampFreq;			//!< Sampling frequency in milliHerz, relevant to CONTINUOUS mode
+	uint64_t vSampPeriod;		//!< Sampling period in microsecond.
 	Timer *vpTimer;				//!< Timer to use for time stamping data
 	bool vbSampling;			//!< true - measurement in progress
 	uint64_t vSampleCnt;		//!< Keeping sample count
-	uint32_t vSampleTime;		//!< Time stamp when sampling is started
+	uint64_t vSampleTime;		//!< Time stamp when sampling is started
 };
 
 extern "C" {

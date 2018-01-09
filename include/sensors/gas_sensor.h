@@ -54,15 +54,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /// @brief	Gas sensor data
 typedef struct __GasSensor_Data {
-	uint32_t Timestamp;		//!< Time stamp in msec
+	uint64_t Timestamp;			//!< Time stamp in usec
 	uint32_t GasRes[GASSENSOR_MEASUREMENT_POINT_MAX];	//!< Gas resistance value
-	int		 MeasIdx;		//!< Latest measure point index
+	int		 MeasIdx;			//!< Latest measure point index
+	float	 AirQualIdx;		//!< Air Quality Index
 } GASSENSOR_DATA;
 
 /// @brief	Heating temperature setting point for the heating profile
 typedef struct __GasSensor_Heater {
-	int16_t	Temp;			//!< Heater temperature in Celsius in 2 decimal fix point (3145 = 31.45 Degree)
-	int16_t Dur;			//!< heating duration in msec
+	int16_t	Temp;				//!< Heater temperature in Celsius in 2 decimal fix point (3145 = 31.45 Degree)
+	int16_t Dur;				//!< heating duration in msec
 } GASSENSOR_HEAT;
 
 #pragma pack(pop)
@@ -71,10 +72,10 @@ typedef struct __GasSensor_Heater {
 
 /// @brief	Gas sensor configuration data
 typedef struct __GasSensor_Config {
-	uint32_t		DevAddr;		//!< Either I2C dev address or CS index select if SPI is used
-	SENSOR_OPMODE 	OpMode;			//!< Operating mode
-	uint32_t		Freq;			//!< Sampling frequency in Hz if continuous mode is used
-	int				NbHeatPoint;	//!< Number of heating point in profile
+	uint32_t		DevAddr;	//!< Either I2C dev address or CS index select if SPI is used
+	SENSOR_OPMODE 	OpMode;		//!< Operating mode
+	uint32_t		Freq;		//!< Sampling frequency in Hz if continuous mode is used
+	int				NbHeatPoint;//!< Number of heating point in profile
 	const GASSENSOR_HEAT *pHeatProfile;	//!< Pointer to array of heating temperature profile
 } GASSENSOR_CFG;
 

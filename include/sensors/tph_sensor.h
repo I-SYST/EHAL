@@ -55,7 +55,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///
 /// Structure defining TPH sensor data
 typedef struct __TPHSensor_Data {
-	uint32_t Timestamp;		//!< Time stamp count in millisecond
+	uint64_t Timestamp;		//!< Time stamp count in usec
 	uint32_t Pressure;		//!< Barometric pressure in Pa no decimal
 	int16_t  Temperature;	//!< Temperature in degree C, 2 decimals fixed point
 	uint16_t Humidity;		//!< Relative humidity in %, 2 decimals fixed point
@@ -71,7 +71,7 @@ typedef struct __TPHSensor_Data {
 typedef struct __TPHSensor_Config {
 	uint32_t		DevAddr;	//!< Either I2C dev address or CS index select if SPI is used
 	SENSOR_OPMODE 	OpMode;		//!< Operating mode
-	uint32_t		Freq;		//!< Sampling frequency in Hz if continuous mode is used
+	uint32_t		Freq;		//!< Sampling frequency in mHz (milliHerz) if continuous mode is used
 	int				TempOvrs;	//!< Oversampling measurement for temperature
 	int				PresOvrs;	//!< Oversampling measurement for pressure
 	int 			HumOvrs;	//!< Oversampling measurement for humidity
@@ -87,7 +87,7 @@ class TphSensor : virtual public Sensor {
 public:
 
 	/**
-	 * @brief	Initialize sensor (require implemetation).
+	 * @brief	Initialize sensor (require implementation).
 	 *
 	 * @param 	CfgData : Reference to configuration data
 	 * @param	pIntrf 	: Pointer to interface to the sensor.
@@ -106,7 +106,7 @@ public:
 	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL) = 0;
 
 	/**
-	 * @brief	Read TPH data (require implemetation).
+	 * @brief	Read TPH data (require implementation).
 	 *
 	 * Read TPH value from device if available. If not return previous data.
 	 *
@@ -119,21 +119,21 @@ public:
 	virtual bool Read(TPHSENSOR_DATA &TphData) = 0;
 
 	/**
-	 * @brief	Read temperature (require implemetation).
+	 * @brief	Read temperature (require implementation).
 	 *
 	 * @return	Temperature in degree C
 	 */
 	virtual float ReadTemperature() = 0;
 
 	/**
-	 * @brief	Read barometric pressure (require implemetation).
+	 * @brief	Read barometric pressure (require implementation).
 	 *
 	 * @return	Barometric pressure in Pascal
 	 */
 	virtual float ReadPressure() = 0;
 
 	/**
-	 * @brief	Read relative humidity (require implemetation).
+	 * @brief	Read relative humidity (require implementation).
 	 *
 	 * @return	Relative humidity in %
 	 */

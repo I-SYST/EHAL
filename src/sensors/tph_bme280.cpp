@@ -235,7 +235,7 @@ SENSOR_STATE TphBme280::State(SENSOR_STATE State) {
  * @param OpMode : Operating mode
  * 					- TPHSENSOR_OPMODE_SINGLE
  * 					- TPHSENSOR_OPMODE_CONTINUOUS
- * @param Freq : Sampling frequency in Hz for continuous mode
+ * @param Freq : Sampling frequency in mHz for continuous mode
  *
  * @return true- if success
  */
@@ -245,7 +245,8 @@ bool TphBme280::Mode(SENSOR_OPMODE OpMode, uint32_t Freq)
 	uint8_t d = 0;
 
 	vOpMode = OpMode;
-	vSampFreq = Freq;
+
+	Sensor::SamplingFrequency(Freq);
 
 	// read current ctrl_meas register
 	regaddr = BME280_REG_CTRL_MEAS;
@@ -299,17 +300,6 @@ bool TphBme280::Mode(SENSOR_OPMODE OpMode, uint32_t Freq)
 }
 
 /**
- * @brief	Set sampling frequency.
- * 		The sampling frequency is relevant only in continuous mode.
- *
- * @return	Frequency in Hz
- */
-uint32_t TphBme280::SamplingFrequency(uint32_t FreqHz)
-{
-
-}
-
-/**
  * @brief	Start sampling data
  *
  * @return	true - success
@@ -336,11 +326,11 @@ bool TphBme280::StartSampling()
 
 	if (vpTimer)
 	{
-		vSampleTime = vpTimer->mSecond();
+		vSampleTime = vpTimer->uSecond();
 	}
 	else
 	{
-		vSampleTime = 0;
+		vSampleTime += vSampPeriod;
 	}
 
 	return true;
@@ -389,17 +379,9 @@ bool TphBme280::UpdateData()
 			vTphData.Temperature = CompenTemp(t);
 			vTphData.Pressure = CompenPress(p);
 			vTphData.Humidity = CompenHum(h);
+			vTphData.Timestamp = vSampleTime;
 
 			vSampleCnt++;
-
-			if (vpTimer)
-			{
-				vTphData.Timestamp = vpTimer->mSecond();
-			}
-			else
-			{
-				vTphData.Timestamp = vSampleCnt;
-			}
 
 			vbSampling = false;
 

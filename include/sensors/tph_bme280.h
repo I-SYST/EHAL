@@ -204,19 +204,11 @@ public:
 	 * @param OpMode : Operating mode
 	 * 					- TPHSENSOR_OPMODE_SINGLE
 	 * 					- TPHSENSOR_OPMODE_CONTINUOUS
-	 * @param Freq : Sampling frequency in Hz for continuous mode
+	 * @param Freq : Sampling frequency in mHz for continuous mode
 	 *
 	 * @return true- if success
 	 */
 	virtual bool Mode(SENSOR_OPMODE OpMode, uint32_t Freq);
-
-	/**
-	 * @brief	Set sampling frequency.
-	 * 		The sampling frequency is relevant only in continuous mode.
-	 *
-	 * @return	Frequency in Hz
-	 */
-	virtual uint32_t SamplingFrequency(uint32_t FreqHz);
 
 	/**
 	 * @brief	Start sampling data

@@ -36,6 +36,9 @@ Modified by          Date              Description
 #define __TIMER_NRF5x_H__
 
 #include <stdint.h>
+
+#include "nrf.h"
+
 #include "timer.h"
 
 // *****

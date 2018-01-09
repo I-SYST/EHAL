@@ -112,9 +112,9 @@ void TphMS8607::ReadPtProm()
  * @brief	Set sampling frequency.
  * 		The sampling frequency is relevant only in continuous mode.
  *
- * @return	Frequency in Hz
+ * @return	Frequency in mHz
  */
-uint32_t TphMS8607::SamplingFrequency(uint32_t FreqHz)
+uint32_t TphMS8607::SamplingFrequency(uint32_t Freq)
 {
 
 }
@@ -130,7 +130,7 @@ bool TphMS8607::StartSampling()
  * @param OpMode : Operating mode
  * 					- TPHSENSOR_OPMODE_SINGLE
  * 					- TPHSENSOR_OPMODE_CONTINUOUS
- * @param Freq : Sampling frequency in Hz for continuous mode
+ * @param Freq : Sampling frequency in mHz for continuous mode
  *
  * @return true- if success
  */
