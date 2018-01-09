@@ -14,12 +14,14 @@ The way the EHAL folder is structure is simple.  The deeper you go inside the mo
 ```
 /your_root     - Development root directory
  |-- external        - Contains downloaded SDKs from silicon vendors
- |   |-- CMSIS           - ARM CMSIS SDK for all ARM platform (download from ARM)
- |   |-- nRF5_SDK        - Latest Nordic SDK (download from nordicsemi.com)
+ |   |-- CMSIS           - ARM CMSIS SDK for all ARM platform (https://github.com/ARM-software/CMSIS_5)
+ |   |-- nRF5_SDK        - Latest Nordic SDK (https://developer.nordicsemi.com)
  |   |-- KSDK            - Kinetis SDK
- |   |......
+ |   |-- BSEC            - Bosch Sensortec Environmental Cluster (BSEC) Software (https://www.bosch-sensortec.com/bst/products/all_products/bsec)		
+ |   |...
+ |   |
  |-- EHAL      - Put the EHAL here
- |   |-- docs        - Contains EHAL Doxygen documentations. (http://i-syst.github.io/docs/EHAL/)
+ |   |-- docs        - Contains EHAL Doxygen documentations. (https://i-syst.github.io/docs/EHAL/)
  |   |-- include     - Generic include common to all platform
  |   |   |-- bluetooth   - Generic definition for Bluetooth
  |   |   |-- converters  - Generic definition for ADV, DAC, etc...
