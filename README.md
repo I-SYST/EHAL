@@ -3,9 +3,9 @@ EHAL (Embedded Hardware Abstraction Library)
  
 This is a multi-archtecture multi-platform Hardware Abstraction Library. The main purpose is to create a layer of generic peripherals and devices interface (drivers) that is common across MCU architectures and platforms. This will allow creation of more reusable and portable applications (firmware for most part) that can be moved form on MCU to an other with minimal changes.      
  
-See http://embeddedsoftdev.blogspot.ca/p/h.html for more detail installation and setup of development environment.
+See https://embeddedsoftdev.blogspot.ca/p/h.html for more detail installation and setup of development environment.
 
-Library online documentation located here http://i-syst.github.io/docs/EHAL/ 
+Library online documentation located here https://i-syst.github.io/docs/EHAL/ 
  
 Library source code on GitHub at https://github.com/I-SYST/EHAL 
 
