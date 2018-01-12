@@ -59,6 +59,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/CMSIS//CMSIS/Core/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/BSEC/algo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/examples/bsp&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/gpiote&quot;"/>
@@ -81,12 +82,15 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/CMSIS//CMSIS/Core/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/BSEC/algo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/examples/bsp&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/gpiote&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/delay&quot;"/>
 								</option>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.340424484" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.691007979" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.908574483" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker.1820389467" name="Cross ARM GNU C Linker" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker">
@@ -96,26 +100,33 @@
 									<listOptionValue builtIn="false" value="&quot;../../../src/gcc_nrf52_xxaa.ld&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs.24453377" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs" valueType="libs">
+									<listOptionValue builtIn="false" value="algobsec"/>
 									<listOptionValue builtIn="false" value="EHAL"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.paths.1795902337" name="Library search path (-L)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;../../../CMSIS/Release&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../EHAL/Release&quot;"/>
 								</option>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.usenewlibnano.1534957053" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.usenewlibnano" value="true" valueType="boolean"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.useprintffloat.1973999182" name="Use float with nano printf (-u _printf_float)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.useprintffloat" value="true" valueType="boolean"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.636311090" name="Cross ARM GNU C++ Linker" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.gcsections.390508451" name="Remove unused sections (-Xlinker --gc-sections)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.gcsections" value="true" valueType="boolean"/>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.other.1071742931" name="Other linker flags" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.other" value="-Wl,--start-group -lgcc -lc -lm -Wl,--end-group" valueType="string"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.other.1071742931" name="Other linker flags" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.other" useByScannerDiscovery="false" value="-Wl,--start-group -lgcc -lc -lm -Wl,--end-group" valueType="string"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.scriptfile.1781928908" name="Script files (-T)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.scriptfile" useByScannerDiscovery="false" valueType="stringList">
 									<listOptionValue builtIn="false" value="&quot;../../../src/gcc_nrf52_xxaa.ld&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs.684321595" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="algobsec"/>
 									<listOptionValue builtIn="false" value="EHAL"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.paths.105056526" name="Library search path (-L)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/BSEC/algo/bin/ARM_CORTEX/GCC/IAQ_OUT/Cortex_M4&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../CMSIS/Debug&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../EHAL/Debug&quot;"/>
 								</option>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano.1174384645" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano" value="true" valueType="boolean"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.useprintffloat.1160309094" name="Use float with nano printf (-u _printf_float)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.useprintffloat" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input.1017909567" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -200,6 +211,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/CMSIS//CMSIS/Core/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/BSEC/algo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/examples/bsp&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/gpiote&quot;"/>
@@ -222,12 +234,15 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/CMSIS//CMSIS/Core/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/BSEC/algo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/examples/bsp&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/gpiote&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/delay&quot;"/>
 								</option>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.1897484978" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.953726949" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.1644605456" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker.1442902485" name="Cross ARM GNU C Linker" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker">
@@ -237,12 +252,15 @@
 									<listOptionValue builtIn="false" value="&quot;../../../src/gcc_nrf52_xxaa.ld&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs.249905702" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs" valueType="libs">
+									<listOptionValue builtIn="false" value="algobsec"/>
 									<listOptionValue builtIn="false" value="EHAL"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.paths.776145832" name="Library search path (-L)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;../../../CMSIS/Release&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../EHAL/Release&quot;"/>
 								</option>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.usenewlibnano.1808061126" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.usenewlibnano" value="true" valueType="boolean"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.useprintffloat.1465660182" name="Use float with nano printf (-u _printf_float)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.useprintffloat" value="true" valueType="boolean"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.1932844025" name="Cross ARM GNU C++ Linker" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.gcsections.172213435" name="Remove unused sections (-Xlinker --gc-sections)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.gcsections" value="true" valueType="boolean"/>
@@ -251,12 +269,16 @@
 									<listOptionValue builtIn="false" value="&quot;../../../src/gcc_nrf52_xxaa.ld&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs.418671371" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs" valueType="libs">
+									<listOptionValue builtIn="false" value="algobsec"/>
 									<listOptionValue builtIn="false" value="EHAL"/>
 								</option>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.paths.289595606" name="Library search path (-L)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.paths" valueType="libPaths">
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.paths.289595606" name="Library search path (-L)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/BSEC/algo/bin/ARM_CORTEX/GCC/IAQ_OUT/Cortex_M4&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../CMSIS/Release&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../EHAL/Release&quot;"/>
 								</option>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano.1704870278" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.useprintffloat.79399929" name="Use float with nano printf (-u _printf_float)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.useprintffloat" value="true" valueType="boolean"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input.1765917237" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>

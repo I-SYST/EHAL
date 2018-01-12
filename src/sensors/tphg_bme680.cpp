@@ -313,13 +313,6 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 
 	Mode(CfgData.OpMode, CfgData.Freq);
 
-	if (vOpMode == SENSOR_OPMODE_SINGLE)
-	{
-		StartSampling();
-	}
-
-	usDelay(10000);
-
 	return true;
 }
 
@@ -338,18 +331,21 @@ bool TphgBme680::Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 		vpTimer = pTimer;
 	}
 
-	bsec_library_return_t bsec_status = bsec_init();
+	bsec_library_return_t bsec_status;
+
+/*	bsec_status = bsec_init();
 
 	if (bsec_status != BSEC_OK)
 	{
 		return false;
-	}
+	}*/
 
 	bsec_sensor_configuration_t requested_virtual_sensors[1];
 	uint8_t n_requested_virtual_sensors = 1;
 
 	requested_virtual_sensors[0].sensor_id = BSEC_OUTPUT_IAQ_ESTIMATE;
-	requested_virtual_sensors[0].sample_rate = CfgData.Freq / 1000.0;// BSEC_SAMPLE_RATE_LP;
+	// the BSEC library does not seems to work with any other setting than BSEC_SAMPLE_RATE_LP
+	requested_virtual_sensors[0].sample_rate = BSEC_SAMPLE_RATE_LP;
 
 	// Allocate a struct for the returned phyisical sensor settings
 	bsec_sensor_configuration_t required_sensor_settings[BSEC_MAX_PHYSICAL_SENSOR];
@@ -373,11 +369,6 @@ bool TphgBme680::Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	vCtrlGas1Reg = BME680_REG_CTRL_GAS1_RUN_GAS | ((vNbHeatPoint - 1) & BME680_REG_CTRL_GAS1_NB_CONV_MASK);
 
 	Write(&reg, 1, &vCtrlGas1Reg, 1);
-
-	if (vOpMode == SENSOR_OPMODE_SINGLE)
-	{
-		StartSampling();
-	}
 
 	return true;
 }
@@ -607,8 +598,8 @@ bool TphgBme680::UpdateData()
 		{
 			int32_t grange = d[1] & BME680_REG_GAS_R_LSB_GAS_RANGE_R;
 			int32_t gadc = (d[1] >> 5) | (d[0] << 2);
-			if ((d[1] & BME680_REG_GAS_R_LSB_GAS_VALID_R) != 0 )// |BME680_REG_GAS_R_LSB_HEAT_STAB_R)) ==
-//					(BME680_REG_GAS_R_LSB_GAS_VALID_R |BME680_REG_GAS_R_LSB_HEAT_STAB_R))
+			if (d[1] & BME680_REG_GAS_R_LSB_GAS_VALID_R)// | BME680_REG_GAS_R_LSB_HEAT_STAB_R)) ==
+//					(BME680_REG_GAS_R_LSB_GAS_VALID_R | BME680_REG_GAS_R_LSB_HEAT_STAB_R))
 			{
 				vGasData.GasRes[gasidx] = CalcGas(gadc, grange);
 				vGasData.MeasIdx = gasidx;
@@ -625,7 +616,7 @@ bool TphgBme680::UpdateData()
 		}
 
 		vSampleCnt++;
-#if 1
+
 		bsec_library_return_t bsec_status = bsec_do_steps(inputs, icnt, outputs, &ocnt);
 		if (bsec_status == BSEC_OK)
 		{
@@ -634,11 +625,11 @@ bool TphgBme680::UpdateData()
 	            if (outputs[i].sensor_id == BSEC_OUTPUT_IAQ_ESTIMATE)
 	            {
 					vGasData.AirQualIdx = outputs[i].signal;
-	                   // iaq_accuracy = bsec_outputs[index].accuracy;
+                   // iaq_accuracy = bsec_outputs[index].accuracy;
 	            }
 	        }
 		}
-#endif
+
 		vbSampling = false;
 
 		return true;

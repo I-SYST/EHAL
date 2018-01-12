@@ -7,6 +7,16 @@ This application demo shows how to use environmental driver (BME280, BME680, MS8
 Temperature, Pressure, Humidity (TPH). Support I2C or SPI interface.  Data is printed
 to UART.
 
+The BME680 Air Quality Index is undocumented.  It requires the library
+Bosch Sensortec Environmental Cluster (BSEC) Software. Download from
+https://www.bosch-sensortec.com/bst/products/all_products/bsec and put in
+external folder as indicated on the folder tree.
+
+The BSEC library must be initialized in the main application prior to initializing
+this driver by calling the function
+
+bsec_library_return_t res = bsec_init();
+
 @author Hoang Nguyen Hoan
 @date	May 8, 2017
 
@@ -40,6 +50,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "spi.h"
 #include "uart.h"
 #include "stddev.h"
+#include "timer_nrf5x.h"
 #include "sensors/tph_bme280.h"
 #include "sensors/tphg_bme680.h"
 #include "sensors/tph_ms8607.h"
@@ -47,7 +58,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "board.h"
 #include "idelay.h"
 
-#define TPH_I2C
+#include "bsec_interface.h"
+
+#define TPH_I2C		// To use I2C interface
+
+#define BME680		// To use Bosch BME680 with Air Quality Index
+
+void TimerHandler(Timer *pTimer, uint32_t Evt);
+
+const static TIMER_CFG s_TimerCfg = {
+    .DevNo = 1,
+	.ClkSrc = TIMER_CLKSRC_DEFAULT,
+	.Freq = 0,			// 0 => Default highest frequency
+	.IntPrio = 7,
+	.EvtHandler = NULL,//TimerHandler
+};
+
+TimerLFnRF5x g_Timer;
 
 //********** UART **********
 //int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
@@ -122,8 +149,8 @@ SPI g_Spi;
 static const I2CCFG s_I2cCfg = {
 	0,			// I2C device number
 	{
-		{I2C0_SDA_PORT, BLUEIO_TAG_BME280_I2C_SDA_PIN, I2C0_SDA_PINOP, IOPINDIR_BI, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},
-		{I2C0_SCL_PORT, BLUEIO_TAG_BME280_I2C_SCL_PIN, I2C0_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},
+		{I2C0_SDA_PORT, BLUEIO_TAG_BME680_I2C_SDA_PIN, I2C0_SDA_PINOP, IOPINDIR_BI, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},
+		{I2C0_SCL_PORT, BLUEIO_TAG_BME680_I2C_SCL_PIN, I2C0_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},
 	},
 	100000,	// Rate
 	I2CMODE_MASTER,
@@ -143,7 +170,7 @@ DeviceIntrf *g_pIntrf = &g_Spi;
 
 //********** SENSOR **********
 static const GASSENSOR_HEAT s_HeaterProfile[] = {
-	{ 320, 150 },
+	{ 375, 125 },
 };
 
 static const GASSENSOR_CFG s_GasSensorCfg = {
@@ -153,7 +180,7 @@ static const GASSENSOR_CFG s_GasSensorCfg = {
 	0,
 #endif
 	SENSOR_OPMODE_SINGLE,	// Operating mode
-	100,
+	500,
 	sizeof(s_HeaterProfile) / sizeof(GASSENSOR_HEAT),
 	s_HeaterProfile
 };
@@ -166,16 +193,20 @@ static const TPHSENSOR_CFG s_TphSensorCfg = {
 	0,		// SPI CS index
 #endif
 	SENSOR_OPMODE_SINGLE,	// Operating mode
-	100,						// Sampling frequency in Hz
-	1,
+	1000,						// Sampling frequency in Hz
+	2,
 	1,
 	1,
 	1
 };
 
-//TphBme280 g_EnvSensor;
+
+#ifdef BME680
 TphgBme680	g_EnvSensor;
+#else
+TphBme280 g_EnvSensor;
 //TphMS8607	g_EnvSensor;
+#endif
 
 //
 // Print a greeting message on standard output and exit.
@@ -192,7 +223,8 @@ TphgBme680	g_EnvSensor;
 int main()
 {
 	TPHSENSOR_DATA tphdata;
-	//GASSENSOR_DATA gdata;
+	GASSENSOR_DATA gdata;
+
 	bool res = true;
 
 	res = g_Uart.Init(g_UartCfg);
@@ -200,31 +232,62 @@ int main()
 	// retarget print to UART
 	UARTRetargetEnable(g_Uart, STDOUT_FILENO);
 
+    g_Timer.Init(s_TimerCfg);
+
 #ifdef	TPH_I2C
 	g_I2c.Init(s_I2cCfg);
 #else
 	g_Spi.Init(s_SpiCfg);
 #endif
-	res = g_EnvSensor.Init(s_TphSensorCfg, g_pIntrf, NULL);
-	//g_EnvSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
 
-	g_EnvSensor.Read(tphdata);
-	//g_EnvSensor.Read(gdata);
-	g_EnvSensor.StartSampling();
+#ifdef BME680
+	bsec_library_return_t bsec_status;
 
- 	while (res == true) {
- 		// Gas sensor takes a long time to sample
-		usDelay(200000);
-		g_EnvSensor.Read(tphdata);
-		//g_EnvSensor.Read(gdata);
+	// NOTE : For BME680 air quality calculation, this library is require to be initialized
+	// before initializing the sensor driver.
+	bsec_status = bsec_init();
+
+	if (bsec_status != BSEC_OK)
+	{
+		printf("BSEC init failed\r\n");
+
+		return 1;
+	}
+#endif
+
+	res = g_EnvSensor.Init(s_TphSensorCfg, g_pIntrf, &g_Timer);
+
+
+#ifdef BME680
+	g_EnvSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
+#endif
+
+	float lastiaq = -1;
+
+	while (1)
+	{
 		g_EnvSensor.StartSampling();
 
-		printf("%u : Temp : %.2f C, Press : %.3f KPa, Humi : %.2f %%\r\n",
-				tphdata.Timestamp,
+
+        // Gas sensor takes a long time to sample
+		usDelay(1000000);
+
+		g_EnvSensor.Read(tphdata);
+#ifdef BME680
+		g_EnvSensor.Read(gdata);
+
+		if (lastiaq != gdata.AirQualIdx)
+		{
+			printf("Gas = %d %.2f\r\n", gdata.GasRes[gdata.MeasIdx], gdata.AirQualIdx);
+			lastiaq = gdata.AirQualIdx;
+		}
+#endif
+		printf("Temp : %.2f C, Press : %.3f KPa, Humi : %.2f %%\r\n",
 				(float)tphdata.Temperature / 100.0,
 				(float)tphdata.Pressure / 1000.0,
-				(float)tphdata.Humidity / 100.0
-				);
+				(float)tphdata.Humidity / 100.0);
+
  	}
+
 	return 0;
 }

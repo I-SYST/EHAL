@@ -3,6 +3,18 @@
 
 @brief	Implementation of Bosch #BME680 low power gas, pressure, temperature & humidity sensor.
 
+The Air Quality Index is undocumented.  It requires the library
+Bosch Sensortec Environmental Cluster (BSEC) Software. Download from
+https://www.bosch-sensortec.com/bst/products/all_products/bsec and put in
+external folder as indicated on the folder tree.
+
+The BSEC library must be initialized in the main application prior to initializing
+this driver by calling the function
+
+bsec_library_return_t res = bsec_init();
+
+Specs:
+
 The BME680 is a digital 4-in-1 sensor with gas, humidity, pressure and temperature
 measurement based on proven sensing principles. The sensor module is housed in an
 extremely compact metal-lid LGA package with a footprint of only 3.0 × 3.0 mm2 with
