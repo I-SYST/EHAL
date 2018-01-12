@@ -8,6 +8,16 @@ Temperature, Pressure, Humidity (TPH) data in BLE manufacturer specific data.
 Support I2C and SPI interface
 
 
+NOTE : The BME680 Air Quality Index is undocumented.  It requires the library
+Bosch Sensortec Environmental Cluster (BSEC) Software. Download from
+https://www.bosch-sensortec.com/bst/products/all_products/bsec and put in
+external folder as indicated on the folder tree.
+
+The BSEC library must be initialized in the main application prior to initializing
+this driver by calling the function
+
+bsec_library_return_t res = bsec_init();
+
 @author Hoang Nguyen Hoan
 @date	May 8, 2017
 
@@ -44,6 +54,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ble_service.h"
 #include "nrf_power.h"
 
+#include "bsec_interface.h"
+
 #include "blueio_board.h"
 #include "uart.h"
 #include "i2c.h"
@@ -57,6 +69,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tphg_bme680.h"
 #include "timer_nrf5x.h"
 #include "board.h"
+#include "idelay.h"
 
 #define DEVICE_NAME                     "EnvSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
@@ -96,7 +109,7 @@ BLEADV_MANDATA_TPHSENSOR &g_TPHData = *(BLEADV_MANDATA_TPHSENSOR *)g_AdvData.Dat
 BLEADV_MANDATA_GASSENSOR &g_GasData = *(BLEADV_MANDATA_GASSENSOR *)g_AdvData.Data;
 
 const static TIMER_CFG s_TimerCfg = {
-    .DevNo = 1,
+    .DevNo = 2,
 	.ClkSrc = TIMER_CLKSRC_DEFAULT,
 	.Freq = 0,			// 0 => Default highest frequency
 	.IntPrio = APP_IRQ_PRIORITY_LOW,
@@ -214,11 +227,23 @@ static TPHSENSOR_CFG s_TphSensorCfg = {
 	BME680_I2C_DEV_ADDR0,   // I2C device address
 #endif
 	SENSOR_OPMODE_SINGLE,
-	100,						// Sampling frequency in Hz
+	100,						// Sampling frequency in mHz
 	1,
 	1,
 	1,
 	1
+};
+
+static const GASSENSOR_HEAT s_HeaterProfile[] = {
+	{ 375, 125 },
+};
+
+static const GASSENSOR_CFG s_GasSensorCfg = {
+	BME680_I2C_DEV_ADDR0,	// Device address
+	SENSOR_OPMODE_SINGLE,	// Operating mode
+	500,
+	sizeof(s_HeaterProfile) / sizeof(GASSENSOR_HEAT),
+	s_HeaterProfile
 };
 
 // Environmental sensor instance
@@ -230,27 +255,49 @@ TphMS8607 g_MS8607Sensor;
 #ifdef TPH_BME280
 TphSensor &g_TphSensor = g_Bme280Sensor;
 #elif defined(TPH_BME680)
-TphSensor &g_TphSensor = g_Bme680Sensor;
+TphgBme680 &g_TphSensor = g_Bme680Sensor;
 #else
 TphSensor &g_TphSensor = g_MS8607Sensor;
 #endif
 
 void ReadPTHData()
 {
+	static uint32_t gascnt = 0;
 	TPHSENSOR_DATA data;
+	GASSENSOR_DATA gdata;
 
 	g_TphSensor.Read(data);
+    if (g_TphSensor.DeviceID() == BME680_ID)
+    {
+    	g_TphSensor.Read(gdata);
+    }
+
 	g_TphSensor.StartSampling();
 
-	g_AdvData.Type = BLEADV_MANDATA_TYPE_TPH;
 
-	// NOTE : M0 does not access unaligned data
-	// use local 4 bytes align stack variable then mem copy
-	// skip timestamp as advertising pack is limited in size
-	memcpy(&g_TPHData, ((uint8_t*)&data) + 4, sizeof(BLEADV_MANDATA_TPHSENSOR));
+	if (g_TphSensor.DeviceID() == BME680_ID && (gascnt & 0x3) == 0)
+	{
+		BLEADV_MANDATA_GASSENSOR gas;
 
+		g_AdvData.Type = BLEADV_MANDATA_TYPE_GAS;
+		gas.GasRes = gdata.GasRes[gdata.MeasIdx];
+		gas.AirQIdx = gdata.AirQualIdx;
+
+		memcpy(&g_GasData, &gas, sizeof(BLEADV_MANDATA_GASSENSOR));
+	}
+	else
+	{
+		g_AdvData.Type = BLEADV_MANDATA_TYPE_TPH;
+
+		// NOTE : M0 does not access unaligned data
+		// use local 4 bytes align stack variable then mem copy
+		// skip timestamp as advertising pack is limited in size
+		memcpy(&g_TPHData, ((uint8_t*)&data) + 8, sizeof(BLEADV_MANDATA_TPHSENSOR));
+	}
 	// Update advertisement data
 	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
+
+	gascnt++;
 }
 
 void TimerHandler(Timer *pTimer, uint32_t Evt)
@@ -278,20 +325,54 @@ void HardwareInit()
 	// Set this only if nRF is power at 2V or more
 	nrf_power_dcdcen_set(true);
 
+    g_Timer.Init(s_TimerCfg);
+
 	// Initialize I2C
 #ifdef NEBLINA_MODULE
     g_Spi.Init(s_SpiCfg);
 #else
     g_I2c.Init(s_I2cCfg);
+
+	bsec_library_return_t bsec_status;
+
+	// NOTE : For BME680 air quality calculation, this library is require to be initialized
+	// before initializing the sensor driver.
+	bsec_status = bsec_init();
+
+	if (bsec_status != BSEC_OK)
+	{
+		printf("BSEC init failed\r\n");
+
+		return;
+	}
+
 #endif
 
+
 	// Inititalize sensor
-    g_TphSensor.Init(s_TphSensorCfg, g_pIntrf, NULL);
-    g_TphSensor.StartSampling();
+    g_TphSensor.Init(s_TphSensorCfg, g_pIntrf, &g_Timer);
+
+    if (g_TphSensor.DeviceID() == BME680_ID)
+    {
+    	g_TphSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
+    }
+
+	g_TphSensor.StartSampling();
+
+	usDelay(200000);
 
     // Update sensor data
     TPHSENSOR_DATA tphdata;
-	g_TphSensor.Read(tphdata);
+
+    g_TphSensor.Read(tphdata);
+
+    if (g_TphSensor.DeviceID() == BME680_ID)
+    {
+    	GASSENSOR_DATA gdata;
+    	g_TphSensor.Read(gdata);
+    }
+
+	g_TphSensor.StartSampling();
 
 	g_AdvData.Type = BLEADV_MANDATA_TYPE_TPH;
 	// Do memcpy to adv data. Due to byte alignment, cannot read directly into
@@ -300,7 +381,6 @@ void HardwareInit()
 
 #ifdef USE_TIMER_UPDATE
 	// Only with SDK14
-    g_Timer.Init(s_TimerCfg);
 	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS);
 #endif
 }
