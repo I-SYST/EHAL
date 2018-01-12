@@ -85,6 +85,49 @@ public:
 	//
 
 	/**
+	 * @brief	Set device's map address
+	 *
+	 * Device address is dependent of interface and device type. For I2C type it
+	 * would be the 7 bits address, SPI would be CS pin index, other memory mapped
+	 * would be a 32bit address.
+	 *
+	 * @param 	Addr : Device's address or zero based chip select index
+	 */
+	virtual void DeviceAddess(uint32_t Addr) { vDevAddr =  Addr; }
+
+	/**
+	 * @brief	Get device's map address
+	 *
+	 * @return	Address or chip select pin zero based index
+	 */
+	virtual uint32_t DeviceAddress() { return vDevAddr; }
+
+	/**
+	 * @brief	Get device id.
+	 *
+	 * This device id value is implementation specific.  It can store hardware
+	 * device identifier or serial number at the discretion of the implementor
+	 *
+	 * @return	64 Bits device id value
+	 */
+	virtual uint64_t DeviceID() { return vDevId; }
+
+	/**
+	 * @brief	Store device id.
+	 *
+	 * This device id value is implementation specific.  It can store hardware
+	 * device identifier or serial number at the discretion of the implementor
+	 *
+	 * @param	DevId : Device id value to store
+	 *
+	 * @return	64 Bits device id value
+	 */
+	virtual uint64_t DeviceID(uint64_t DevId) {
+		vDevId = DevId;
+		return vDevId;
+	}
+
+	/**
 	 * @brief	Read device's register/memory block
 	 *
 	 * @param 	pCmdAddr 	: Buffer containing command or address to be written
@@ -219,26 +262,11 @@ protected:
 	 */
 	DeviceIntrf *Interface() { return vpIntrf; }
 
-	/**
-	 * @brief	Set device's map address
-	 *
-	 * Device address is dependent of interface and device type. For I2C type it
-	 * would be the 7 bits address, SPI would be CS pin index, other memory mapped
-	 * would be a 32bit address.
-	 *
-	 * @param 	Addr : Device's address or zero based chip select index
-	 */
-	void DeviceAddess(uint32_t Addr) { vDevAddr =  Addr; }
-
-	/**
-	 * @brief	Get device's map address
-	 *
-	 * @return	Address or chip select pin zero based index
-	 */
-	uint32_t DeviceAddress() { return vDevAddr; }
 
 	uint32_t 	vDevAddr;		//!< Device address or chip select
 	DeviceIntrf *vpIntrf;		//!< Device's interface
+	uint64_t	vDevId;			//!< This is implementation specific data for device identifier
+	 	 	 	 	 	 	 	//!< could be value reg from hardware register or serial number
 };
 
 extern "C" {

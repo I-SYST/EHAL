@@ -7,8 +7,21 @@ See http://embeddedsoftdev.blogspot.ca/p/h.html for more detail installation and
 
 Library online documentation located here http://i-syst.github.io/docs/EHAL/ 
  
-Library source code on GitHub at https://github.com/I-SYST/EHAL
+Library source code on GitHub at https://github.com/I-SYST/EHAL 
 
+external vendors' SDK and library needed :
+--- 
+ 
+CMSIS     : [ARM CMSIS SDK for all ARM platform](https://github.com/ARM-software/CMSIS_5)
+
+nRF5_SDK  : [Latest Nordic SDK](https://developer.nordicsemi.com)
+
+KSDK      : Kinetis SDK
+
+BSEC      : [Bosch Sensortec Environmental Cluster (BSEC) Software](https://www.bosch-sensortec.com/bst/products/all_products/bsec) for #BME680 environmental sensor  
+
+  
+ 
 The way the EHAL folder is structure is simple.  The deeper you go inside the more it is specific the the architecture or platform.  The parent folder contains all that is commonly available to the child fonder.  Which means, source file from child folder can access any source in the upper parent folder but not the other way around.  This is the way to keep the abstraction separated from implementation and easier to keep track of things.
 
 ```
@@ -17,7 +30,7 @@ The way the EHAL folder is structure is simple.  The deeper you go inside the mo
  |   |-- CMSIS           - ARM CMSIS SDK for all ARM platform (https://github.com/ARM-software/CMSIS_5)
  |   |-- nRF5_SDK        - Latest Nordic SDK (https://developer.nordicsemi.com)
  |   |-- KSDK            - Kinetis SDK
- |   |-- BSEC            - Bosch Sensortec Environmental Cluster (BSEC) Software (https://www.bosch-sensortec.com/bst/products/all_products/bsec)		
+ |   |-- BSEC            - Bosch Sensortec Environmental Cluster (BSEC) Software (https://www.bosch-sensortec.com/bst/products/all_products/bsec) for #BME680		
  |   |...
  |   |
  |-- EHAL      - Put the EHAL here

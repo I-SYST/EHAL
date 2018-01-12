@@ -7,7 +7,7 @@ This application demo shows how to use environmental driver (BME280, BME680, MS8
 Temperature, Pressure, Humidity (TPH). Support I2C or SPI interface.  Data is printed
 to UART.
 
-The BME680 Air Quality Index is undocumented.  It requires the library
+NOTE : The BME680 Air Quality Index is undocumented.  It requires the library
 Bosch Sensortec Environmental Cluster (BSEC) Software. Download from
 https://www.bosch-sensortec.com/bst/products/all_products/bsec and put in
 external folder as indicated on the folder tree.
@@ -193,7 +193,7 @@ static const TPHSENSOR_CFG s_TphSensorCfg = {
 	0,		// SPI CS index
 #endif
 	SENSOR_OPMODE_SINGLE,	// Operating mode
-	1000,						// Sampling frequency in Hz
+	1000,						// Sampling frequency in mHz
 	2,
 	1,
 	1,

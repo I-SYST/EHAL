@@ -142,9 +142,11 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 
 	Read((uint8_t*)&regaddr, 1, &d, 1);
 
-	if (d == BME280_ID || d == 0x61)
+	if (d == BME280_ID)
 	{
 		found  = true;
+
+		DeviceID(d);
 
 		Reset();
 

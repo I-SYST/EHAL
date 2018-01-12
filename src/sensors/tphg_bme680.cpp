@@ -240,6 +240,8 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 
 	// Device found
 
+	DeviceID(d);
+
 	Reset();
 
 	usDelay(30000);
