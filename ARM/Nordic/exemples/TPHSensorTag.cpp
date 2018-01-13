@@ -264,22 +264,19 @@ void ReadPTHData()
 {
 	static uint32_t gascnt = 0;
 	TPHSENSOR_DATA data;
-	GASSENSOR_DATA gdata;
 
 	g_TphSensor.Read(data);
-    if (g_TphSensor.DeviceID() == BME680_ID)
-    {
-    	g_TphSensor.Read(gdata);
-    }
 
-	g_TphSensor.StartSampling();
 
 
 	if (g_TphSensor.DeviceID() == BME680_ID && (gascnt & 0x3) == 0)
 	{
+		GASSENSOR_DATA gdata;
 		BLEADV_MANDATA_GASSENSOR gas;
 
-		g_AdvData.Type = BLEADV_MANDATA_TYPE_GAS;
+    	g_TphSensor.Read(gdata);
+
+    	g_AdvData.Type = BLEADV_MANDATA_TYPE_GAS;
 		gas.GasRes = gdata.GasRes[gdata.MeasIdx];
 		gas.AirQIdx = gdata.AirQualIdx;
 
@@ -294,6 +291,9 @@ void ReadPTHData()
 		// skip timestamp as advertising pack is limited in size
 		memcpy(&g_TPHData, ((uint8_t*)&data) + 8, sizeof(BLEADV_MANDATA_TPHSENSOR));
 	}
+
+	g_TphSensor.StartSampling();
+
 	// Update advertisement data
 	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
 
