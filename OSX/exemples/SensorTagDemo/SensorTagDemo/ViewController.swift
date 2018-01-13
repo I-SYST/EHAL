@@ -33,6 +33,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate {
     @IBOutlet weak var humiLabel : NSTextField!
     @IBOutlet weak var pressLabel : NSTextField!
     @IBOutlet weak var rssiLabel : NSTextField!
+    @IBOutlet weak var aqiLabel : NSTextField!
     
     // MARK: BLE Central
     
@@ -58,7 +59,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate {
             return
         }
         
-        print("PERIPHERAL NAME: \(String(describing: peripheral.name))\n AdvertisementData: \(advertisementData)\n RSSI: \(RSSI)\n")
+       // print("PERIPHERAL NAME: \(String(describing: peripheral.name))\n AdvertisementData: \(advertisementData)\n RSSI: \(RSSI)\n")
 		//print("UUID DESCRIPTION: \(peripheral.identifier.uuidString)\n")
         var type = UInt8(0)
         (advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData).getBytes(&type, range: NSMakeRange(2, 1))
@@ -77,12 +78,18 @@ class ViewController: NSViewController, CBCentralManagerDelegate {
             humiLabel.stringValue = String(format:"%d%%", humi / 100)
             break
         case 2: // Gas sensor data
+            var gasResistance = UInt32(0)
+            var gasAQI = UInt16(0)
+            (advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData).getBytes(&gasResistance, range: NSMakeRange(3, 4))
+            (advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData).getBytes(&gasAQI, range: NSMakeRange(7, 2))
+            aqiLabel.stringValue = String(format:"%d", gasAQI)
+            
+            print("Gas resistance value : \(gasResistance) AQI \(gasAQI)")
+            break
+        case 10:
+            print("Motion detected")
             break
         default:
-            var gasResistance = UInt32(0)
-            (advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData).getBytes(&gasResistance, range: NSMakeRange(3, 4))
-
-            print("Gas resistance value : \(gasResistance)")
             break
         }
         rssiLabel.stringValue = String( describing: RSSI)
