@@ -40,7 +40,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate {
                         didDiscover peripheral: CBPeripheral,
                         advertisementData : [String : Any],
                         rssi RSSI: NSNumber) {
-        print("PERIPHERAL NAME: \(String(describing: peripheral.name))\n AdvertisementData: \(advertisementData)\n RSSI: \(RSSI)\n")
+ //       print("PERIPHERAL NAME: \(String(describing: peripheral.name))\n AdvertisementData: \(advertisementData)\n RSSI: \(RSSI)\n")
         
         //print("UUID DESCRIPTION: \(peripheral.identifier.uuidString)\n")
         
@@ -49,6 +49,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate {
         if advertisementData[CBAdvertisementDataManufacturerDataKey] == nil {
             return
         }
+   //     print("PERIPHERAL NAME: \(String(describing: peripheral.name))\n AdvertisementData: \(advertisementData)\n RSSI: \(RSSI)\n")
         
         //sensorData.text = sensorData.text + "FOUND PERIPHERALS: \(peripheral) AdvertisementData: \(advertisementData) RSSI: \(RSSI)\n"
         var manId = UInt16(0)
@@ -57,24 +58,33 @@ class ViewController: NSViewController, CBCentralManagerDelegate {
             return
         }
         
+        print("PERIPHERAL NAME: \(String(describing: peripheral.name))\n AdvertisementData: \(advertisementData)\n RSSI: \(RSSI)\n")
+		//print("UUID DESCRIPTION: \(peripheral.identifier.uuidString)\n")
         var type = UInt8(0)
         (advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData).getBytes(&type, range: NSMakeRange(2, 1))
-        if (type != 1) {
-            return
+        switch (type) {
+        case 1:	// TPH sensor data
+	        var press = Int32(0)
+    	    (advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData).getBytes(&press, range: NSMakeRange(3, 4))
+        	pressLabel.stringValue = String(format:"%.3f KPa", Float(press) / 1000.0)
+        
+            var temp = Int16(0)
+            (advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData).getBytes(&temp, range: NSMakeRange(7, 2))
+            tempLabel.stringValue = String(format:"%.2f C", Float(temp) / 100.0)
+            
+            var humi = UInt16(0)
+            (advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData).getBytes(&humi, range: NSMakeRange(9, 2))
+            humiLabel.stringValue = String(format:"%d%%", humi / 100)
+            break
+        case 2: // Gas sensor data
+            break
+        default:
+            var gasResistance = UInt32(0)
+            (advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData).getBytes(&gasResistance, range: NSMakeRange(3, 4))
+
+            print("Gas resistance value : \(gasResistance)")
+            break
         }
-        
-        var press = Int32(0)
-        (advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData).getBytes(&press, range: NSMakeRange(3, 4))
-        pressLabel.stringValue = String(format:"%.3f KPa", Float(press) / 1000.0)
-        
-        var temp = Int16(0)
-        (advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData).getBytes(&temp, range: NSMakeRange(7, 2))
-        tempLabel.stringValue = String(format:"%.2f C", Float(temp) / 100.0)
-        
-        var humi = UInt16(0)
-        (advertisementData[CBAdvertisementDataManufacturerDataKey] as! NSData).getBytes(&humi, range: NSMakeRange(9, 2))
-        humiLabel.stringValue = String(format:"%d%%", humi / 100)
-        
         rssiLabel.stringValue = String( describing: RSSI)
         //graphView.add(double3(Double(temp) / 100.0, Double(press) / 100000.0, Double(humi) / 100.0))
     }
@@ -101,7 +111,7 @@ class ViewController: NSViewController, CBCentralManagerDelegate {
     func scanPeripheral(_ sender: CBCentralManager)
     {
         print("Scan for peripherals")
-        bleCentral.scanForPeripherals(withServices: nil, options: nil)
+        sender.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey:true])
     }
     
     @objc func centralManagerDidUpdateState(_ central: CBCentralManager) {
