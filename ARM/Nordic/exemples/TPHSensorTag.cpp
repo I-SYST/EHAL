@@ -255,10 +255,12 @@ TphMS8607 g_MS8607Sensor;
 #ifdef TPH_BME280
 TphSensor &g_TphSensor = g_Bme280Sensor;
 #elif defined(TPH_BME680)
-TphgBme680 &g_TphSensor = g_Bme680Sensor;
+TphSensor &g_TphSensor = g_Bme680Sensor;
 #else
 TphSensor &g_TphSensor = g_MS8607Sensor;
 #endif
+
+GasSensor &g_GasSensor = g_Bme680Sensor;
 
 void ReadPTHData()
 {
@@ -274,7 +276,7 @@ void ReadPTHData()
 		GASSENSOR_DATA gdata;
 		BLEADV_MANDATA_GASSENSOR gas;
 
-    	g_TphSensor.Read(gdata);
+    	g_GasSensor.Read(gdata);
 
     	g_AdvData.Type = BLEADV_MANDATA_TYPE_GAS;
 		gas.GasRes = gdata.GasRes[gdata.MeasIdx];
@@ -332,6 +334,7 @@ void HardwareInit()
     g_Spi.Init(s_SpiCfg);
 #else
     g_I2c.Init(s_I2cCfg);
+#endif
 
 	bsec_library_return_t bsec_status;
 
@@ -346,15 +349,13 @@ void HardwareInit()
 		return;
 	}
 
-#endif
-
 
 	// Inititalize sensor
     g_TphSensor.Init(s_TphSensorCfg, g_pIntrf, &g_Timer);
 
     if (g_TphSensor.DeviceID() == BME680_ID)
     {
-    	g_TphSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
+    	g_GasSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
     }
 
 	g_TphSensor.StartSampling();
@@ -369,7 +370,7 @@ void HardwareInit()
     if (g_TphSensor.DeviceID() == BME680_ID)
     {
     	GASSENSOR_DATA gdata;
-    	g_TphSensor.Read(gdata);
+    	g_GasSensor.Read(gdata);
     }
 
 	g_TphSensor.StartSampling();
