@@ -1388,14 +1388,16 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     else
     	g_BleAppData.MaxMtu = NRF_BLE_MAX_MTU_SIZE;
 
+    app_timer_init();
+
     switch (g_BleAppData.AppMode)
     {
     	case BLEAPP_MODE_LOOP:
     	case BLEAPP_MODE_NOCONNECT:
-    	    app_timer_init();
+    //	    app_timer_init();
     		break;
     	case BLEAPP_MODE_APPSCHED:
-    		app_timer_init();
+    	//	app_timer_init();
     		APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
     		break;
     	case BLEAPP_MODE_RTOS:
