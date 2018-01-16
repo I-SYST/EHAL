@@ -124,7 +124,7 @@ public:
 	}
     virtual void DisableTimerTrigger(int TrigNo);
 
-    int GetFreeTimerTrigger(void);
+    int FindAvailTimerTrigger(void);
 
     void IRQHandler();
 

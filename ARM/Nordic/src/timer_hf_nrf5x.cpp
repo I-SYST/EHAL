@@ -439,7 +439,7 @@ void TimerHFnRF5x::DisableTimerTrigger(int TrigNo)
 
 }
 
-int TimerHFnRF5x::GetFreeTimerTrigger(void)
+int TimerHFnRF5x::FindAvailTimerTrigger(void)
 {
 	for (int i = 0; i < TIMER_NRF5X_HF_MAX_TRIGGER_EVT; i++)
 	{
