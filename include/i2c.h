@@ -1,11 +1,11 @@
 /**-------------------------------------------------------------------------
 @file	i2c.h
 
-@brief	Generic I2C definitions
+@brief	Generic I2C driver definitions
 
-		 Current implementation
-		 	 - Master mode
-		 	 - Polling
+Current implementation
+ 	 - Master mode
+ 	 - Polling
 
 
 @author	Hoang Nguyen Hoan

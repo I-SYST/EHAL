@@ -1,11 +1,11 @@
 /**-------------------------------------------------------------------------
 @file	spi.h
 
-@brief	Generic SPI definitions.
+@brief	Generic SPI driver definitions.
 
-		 Current implementation
-		 	 - Master mode
-		 	 - Polling
+Current implementation
+ 	 - Master mode
+ 	 - Polling
 
 @author	Hoang Nguyen Hoan
 @date	Nov. 20, 2011

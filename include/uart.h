@@ -1,7 +1,7 @@
 /**-------------------------------------------------------------------------
 @file	uart.h
 
-@brief	Generic UART definitions
+@brief	Generic UART driver definitions
 
 @author	Hoang Nguyen Hoan
 @date	Nov. 20, 2011
