@@ -5,6 +5,8 @@
 @brief	Uart BLE demo
 
 This application demo shows UART Rx/Tx over BLE custom service using EHAL library.
+For evaluating power consumption of the UART, the button 1 is used to enable/disable it.
+This example also demonstrates passkey paring mode.
 
 @author	Hoang Nguyen Hoan
 @date	Feb. 4, 2017
@@ -47,24 +49,26 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "iopincfg.h"
 #include "iopinctrl.h"
 
-#define DEVICE_NAME                     "UARTDemo"                            /**< Name of device. Will be included in the advertising data. */
+#include "board.h"
+
+#define DEVICE_NAME                     "UARTDemo"                          /**< Name of device. Will be included in the advertising data. */
 
 #define MANUFACTURER_NAME               "I-SYST inc."                       /**< Manufacturer. Will be passed to Device Information Service. */
 
 #ifdef NRF52
-#define MODEL_NAME                      "IMM-NRF52x"                            /**< Model number. Will be passed to Device Information Service. */
+#define MODEL_NAME                      "IMM-NRF52x"                        /**< Model number. Will be passed to Device Information Service. */
 #else
-#define MODEL_NAME                      "IMM-NRF51x"                            /**< Model number. Will be passed to Device Information Service. */
+#define MODEL_NAME                      "IMM-NRF51x"                        /**< Model number. Will be passed to Device Information Service. */
 #endif
 
-#define MANUFACTURER_ID                 ISYST_BLUETOOTH_ID                               /**< Manufacturer ID, part of System ID. Will be passed to Device Information Service. */
-#define ORG_UNIQUE_ID                   ISYST_BLUETOOTH_ID                               /**< Organizational Unique ID, part of System ID. Will be passed to Device Information Service. */
+#define MANUFACTURER_ID                 ISYST_BLUETOOTH_ID                  /**< Manufacturer ID, part of System ID. Will be passed to Device Information Service. */
+#define ORG_UNIQUE_ID                   ISYST_BLUETOOTH_ID                  /**< Organizational Unique ID, part of System ID. Will be passed to Device Information Service. */
 
-#define APP_ADV_INTERVAL                MSEC_TO_UNITS(64, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
-#define APP_ADV_TIMEOUT_IN_SECONDS      180                                         /**< The advertising timeout (in units of seconds). */
+#define APP_ADV_INTERVAL                MSEC_TO_UNITS(64, UNIT_0_625_MS)	/**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
+#define APP_ADV_TIMEOUT_IN_SECONDS      180                                 /**< The advertising timeout (in units of seconds). */
 
-#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)             /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
-#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)             /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
+#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)     /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
+#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)     /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
 
 void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
 
@@ -173,15 +177,15 @@ const BLEAPP_CFG s_BleAppCfg = {
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 
-/// UART configuration data
-
+/// UART pins definitions
 static IOPINCFG s_UartPins[] = {
-	{BLUEIO_UART_RX_PORT, BLUEIO_UART_RX_PIN, BLUEIO_UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-	{BLUEIO_UART_TX_PORT, BLUEIO_UART_TX_PIN, BLUEIO_UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
-	{BLUEIO_UART_CTS_PORT, BLUEIO_UART_CTS_PIN, BLUEIO_UART_CTS_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// CTS
-	{BLUEIO_UART_RTS_PORT, BLUEIO_UART_RTS_PIN, BLUEIO_UART_RTS_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// RTS
+	{UART_RX_PORT, UART_RX_PIN, UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
+	{UART_TX_PORT, UART_TX_PIN, UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
+	{UART_CTS_PORT, UART_CTS_PIN, UART_CTS_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// CTS
+	{UART_RTS_PORT, UART_RTS_PIN, UART_RTS_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// RTS
 };
 
+/// UART configuration
 const UARTCFG g_UartCfg = {
 	0,
 	s_UartPins,
@@ -209,13 +213,14 @@ static const IOPINCFG s_LedPins[] = {
 static int s_NbLedPins = sizeof(s_LedPins) / sizeof(IOPINCFG);
 
 static const IOPINCFG s_ButPins[] = {
-	{BLUEIO_BUT1_PORT, BLUEIO_BUT1_PIN, BLUEIO_BUT1_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// LED1 (Blue)
-	{BLUEIO_BUT2_PORT, BLUEIO_BUT2_PIN, BLUEIO_BUT2_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// LED2 (Green)
+	{BUTTON1_PORT, BUTTON1_PIN, 0, IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},// Button 1
+	{BUTTON2_PORT, BUTTON2_PIN, 0, IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},// Button 2
 };
 
 static int s_NbButPins = sizeof(s_ButPins) / sizeof(IOPINCFG);
 
 int g_DelayCnt = 0;
+volatile bool g_bUartState = false;
 
 void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len)
 {
@@ -235,9 +240,28 @@ void BleAppInitUserServices()
     APP_ERROR_CHECK(err_code);
 }
 
+void ButEvent(int IntNo)
+{
+	if (IntNo == 0)
+	{
+		if (g_bUartState == false)
+		{
+			g_Uart.Enable();
+			g_bUartState = true;
+		}
+		else
+		{
+			g_Uart.Disable();
+			g_bUartState = false;
+		}
+	}
+}
+
 void HardwareInit()
 {
 	g_Uart.Init(g_UartCfg);
+
+	IOPinCfg(s_ButPins, s_NbButPins);
 
 	IOPinCfg(s_LedPins, s_NbLedPins);
 	IOPinSet(BLUEIO_LED_BLUE_PORT, BLUEIO_LED_BLUE_PIN);
@@ -246,10 +270,12 @@ void HardwareInit()
 
 	IOPinCfg(s_ButPins, s_NbButPins);
 
+	IOPinEnableInterrupt(0, APP_IRQ_PRIORITY_LOW, s_ButPins[0].PortNo, s_ButPins[0].PinNo, IOPINSENSE_LOW_TRANSITION, ButEvent);
 }
 
 void BleAppInitUserData()
 {
+	// Add passkey pairing
     ble_opt_t opt;
     opt.gap_opt.passkey.p_passkey = (uint8_t*)"123456";
 	uint32_t err_code =  sd_ble_opt_set(BLE_GAP_OPT_PASSKEY, &opt);
@@ -297,7 +323,7 @@ int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buffe
 // For example, for toolchains derived from GNU Tools for Embedded,
 // to enable semi-hosting, the following was added to the linker:
 //
-// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lc -lm -lrdimon -Wl,--end-group
+// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lm -lrdimon -Wl,--end-group
 //
 // Adjust it for other toolchains.
 //
@@ -305,6 +331,8 @@ int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buffe
 int main()
 {
     HardwareInit();
+
+    //g_Uart.Disable();
 
     BleAppInit((const BLEAPP_CFG *)&s_BleAppCfg, true);
 
