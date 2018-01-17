@@ -1,11 +1,14 @@
-/*--------------------------------------------------------------------------
-File   : ble_service.h
+/**-------------------------------------------------------------------------
+@file	ble_service.h
 
-Author : Hoang Nguyen Hoan          Mar. 25, 2014
+@brief	Implementation allow the creation of generic custom Bluetooth LE
+service with multiple user defined characteristics. This implementation is to be used with Nordic SDK
 
-Desc   : Implementation allow the creation of generic custom Bluetooth Smart
-		 service with multiple user defined characteristics.
-		 This implementation is to be used with Nordic SDK
+
+@author	Hoang Nguyen Hoan
+@date	Mar. 25, 2014
+
+@license
 
 Copyright (c) 2014, I-SYST inc., all rights reserved
 
@@ -28,9 +31,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
@@ -79,41 +79,41 @@ typedef void (*BLESRVC_TXCOMPLETE) (BLESRVC *pBlueIOSvc, int CharIdx);
 
 // Service connection security types
 typedef enum {
-	BLESRVC_SECTYPE_NONE,				// open, no security
-	BLESRVC_SECTYPE_STATICKEY_NO_MITM,	// Bonding static pass key without Man In The Middle
-	BLESRVC_SECTYPE_STATICKEY_MITM,		// Bonding static pass key with MITM
-	BLESRVC_SECTYPE_LESC_MITM,			// LE secure encryption
-	BLESRVC_SECTYPE_SIGNED_NO_MITM,		// AES signed encryption without MITM
-	BLESRVC_SECTYPE_SIGNED_MITM,			// AES signed encryption with MITM
+	BLESRVC_SECTYPE_NONE,				//!< open, no security
+	BLESRVC_SECTYPE_STATICKEY_NO_MITM,	//!< Bonding static pass key without Man In The Middle
+	BLESRVC_SECTYPE_STATICKEY_MITM,		//!< Bonding static pass key with MITM
+	BLESRVC_SECTYPE_LESC_MITM,			//!< LE secure encryption
+	BLESRVC_SECTYPE_SIGNED_NO_MITM,		//!< AES signed encryption without MITM
+	BLESRVC_SECTYPE_SIGNED_MITM,		//!< AES signed encryption with MITM
 } BLESRVC_SECTYPE;
 
 #pragma pack(push,4)
 
 typedef struct __BLE_Service_Char_Data {
-    uint16_t Uuid;                          // char UUID
-    int MaxDataLen;                         // char max data length
-    uint32_t Property;                      // char properties define by BLUEIOSVC_CHAR_PROP_...
-    const char *pDesc;                      // char UTF-8 description string
-    BLESRVC_WRCB WrCB;                      // Callback for write char, set to NULL for read char
-    BLESRVC_SETNOTCB SetNotifCB;			// Callback on set notification
-    BLESRVC_TXCOMPLETE TxCompleteCB;		// Callback when TX is completed
-    uint8_t *pDefValue;						// pointer to char default values
-    uint16_t ValueLen;						// Default value length in bytes
-    ble_gatts_char_handles_t Hdl;           // char handle
-    bool bNotify;                           // Notify flag for read characteristic
+    uint16_t Uuid;                          //!< char UUID
+    int MaxDataLen;                         //!< char max data length
+    uint32_t Property;                      //!< char properties define by BLUEIOSVC_CHAR_PROP_...
+    const char *pDesc;                      //!< char UTF-8 description string
+    BLESRVC_WRCB WrCB;                      //!< Callback for write char, set to NULL for read char
+    BLESRVC_SETNOTCB SetNotifCB;			//!< Callback on set notification
+    BLESRVC_TXCOMPLETE TxCompleteCB;		//!< Callback when TX is completed
+    uint8_t *pDefValue;						//!< pointer to char default values
+    uint16_t ValueLen;						//!< Default value length in bytes
+    ble_gatts_char_handles_t Hdl;           //!< char handle
+    bool bNotify;                           //!< Notify flag for read characteristic
 } BLESRVC_CHAR;
 
 /*
  * User configuration for the service to be created
  */
 typedef struct __BLE_Service_Config {
-	BLESRVC_SECTYPE SecType;				// Secure or Open service/char
-	ble_uuid128_t	UuidBase;				// Base UUID
-	uint16_t		UuidSvc;				// Service UUID
-	int             NbChar;                 // Total number of characteristics for the service
-	BLESRVC_CHAR *pCharArray;            // Pointer a an array of characteristic
-    uint8_t			*pLongWrBuff;			// pointer to user long write buffer
-    int				LongWrBuffSize;			// long write buffer size
+	BLESRVC_SECTYPE SecType;				//!< Secure or Open service/char
+	ble_uuid128_t	UuidBase;				//!< Base UUID
+	uint16_t		UuidSvc;				//!< Service UUID
+	int             NbChar;                 //!< Total number of characteristics for the service
+	BLESRVC_CHAR *pCharArray;            	//!< Pointer a an array of characteristic
+    uint8_t			*pLongWrBuff;			//!< pointer to user long write buffer
+    int				LongWrBuffSize;			//!< long write buffer size
 } BLESRVC_CFG;
 
 /*
@@ -123,14 +123,14 @@ typedef struct __BLE_Service_Config {
  *
  */
 struct __BLE_Service_Data {
-    int             NbChar;                 // Number of characteristic defined for this service
-    BLESRVC_CHAR 	*pCharArray;            // Pointer to array of characteristics
-    uint16_t        SrvcHdl;                // Service handle
-    uint16_t        ConnHdl;				// Connection handle
-    uint16_t        UuidSvc;                // Service UUID
+    int             NbChar;                 //!< Number of characteristic defined for this service
+    BLESRVC_CHAR 	*pCharArray;            //!< Pointer to array of characteristics
+    uint16_t        SrvcHdl;                //!< Service handle
+    uint16_t        ConnHdl;				//!< Connection handle
+    uint16_t        UuidSvc;                //!< Service UUID
     uint8_t         UuidType;
-    uint8_t			*pLongWrBuff;			// pointer to user long write buffer
-    int				LongWrBuffSize;			// long write buffer size
+    uint8_t			*pLongWrBuff;			//!< pointer to user long write buffer
+    int				LongWrBuffSize;			//!< long write buffer size
     void			*pContext;
 };
 
@@ -141,7 +141,7 @@ extern "C" {
 #endif
 
 /**
- * Create BLE custom service
+ * @brief	Create BLE custom service
  *
  * @param	pSrvc	: Pointer to Blue IO service data to be filled when service
  * 					  is created
@@ -152,7 +152,7 @@ extern "C" {
 uint32_t BleSrvcInit(BLESRVC *pSrvc, const BLESRVC_CFG *pCfg);
 
 /**
- * Notify characteristic data
+ * @brief	Notify characteristic data
  *
  * @param	pSrvc : Pointer to Blue IO service data (Service Handle)
  * 			Idx   : Characteristic index to notify
@@ -164,7 +164,7 @@ uint32_t BleSrvcInit(BLESRVC *pSrvc, const BLESRVC_CFG *pCfg);
 uint32_t BleSrvcCharNotify(BLESRVC *pSrvc, int Idx, uint8_t *pData, uint16_t DataLen);
 
 /**
- * Update characteristic data
+ * @brief	Update characteristic data
  *
  * @param	pSrvc : Pointer to Blue IO service data (Service Handle)
  * 			Idx   : Characteristic index to update

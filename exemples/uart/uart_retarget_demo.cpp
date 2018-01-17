@@ -1,12 +1,16 @@
-/*--------------------------------------------------------------------------
-File   : uart_retarget_demo.cpp
+/**-------------------------------------------------------------------------
+@example	uart_retarget_demo.cpp
 
-Author : Hoang Nguyen Hoan          Nov. 16, 2016
+@brief	UART retarget demo
 
-Desc   : UART retarget demo
-		 Demo code using EHAL library to show how to remap stdio in/out
-		 over UART.  This is to allow using the standard printf/scanf
-		 functionality through UART interface.
+Demo code using EHAL library to show how to remap stdio in/out over UART.
+This is to allow using the standard printf/scanf functionality through UART interface.
+
+
+@author	Hoang Nguyen Hoan
+@date	Nov. 16, 2016
+
+@license
 
 Copyright (c) 2016, I-SYST inc., all rights reserved
 
@@ -29,9 +33,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
@@ -66,7 +67,7 @@ const UARTCFG g_UartCfg = {
 	8,
 	UART_PARITY_NONE,
 	1,					// Stop bit
-	UART_FLWCTRL_NONE,
+	UART_FLWCTRL_HW,
 	true,
 	1, 					// use APP_IRQ_PRIORITY_LOW with Softdevice
 	nRFUartEvthandler,

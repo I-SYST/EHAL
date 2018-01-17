@@ -1,9 +1,13 @@
-/*--------------------------------------------------------------------------
-File   : ble_app.h
+/**-------------------------------------------------------------------------
+@file	ble_app.h
 
-Author : Hoang Nguyen Hoan          Dec 26, 2016
+@brief	Nordic SDK based BLE peripheral application creation helper
 
-Desc   : Nordic SDK based BLE peripheral application creation helper
+
+@author	Hoang Nguyen Hoan
+@date	Dec 26, 2016
+
+@license
 
 Copyright (c) 2016, I-SYST inc., all rights reserved
 
@@ -26,9 +30,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #ifndef __BLE_APP_H__
@@ -59,31 +60,31 @@ Modified by          Date              Description
 
 #endif
 
-typedef enum __BleAppAdvMode {
-	BLEAPP_ADVMODE_IDLE,			// no connectable advertising is ongoing.
-	BLEAPP_ADVMODE_DIRECTED,		// Directed advertising attempts to connect to the most recently disconnected peer.
-	BLEAPP_ADVMODE_DIRECTED_SLOW,	// Directed advertising (low duty cycle) attempts to connect to the most recently disconnected peer.
-	BLEAPP_ADVMODE_FAST,			// Fast advertising will connect to any peer device, or filter with a whitelist if one exists.
-	BLEAPP_ADVMODE_SLOW				// Slow advertising is similar to fast advertising. By default, it uses a longer
-									// advertising interval and time-out than fast advertising. However, these options are defined by the user.
+typedef enum __BleApp_AdvMode {
+	BLEAPP_ADVMODE_IDLE,			//!< no connectable advertising is ongoing.
+	BLEAPP_ADVMODE_DIRECTED,		//!< Directed advertising attempts to connect to the most recently disconnected peer.
+	BLEAPP_ADVMODE_DIRECTED_SLOW,	//!< Directed advertising (low duty cycle) attempts to connect to the most recently disconnected peer.
+	BLEAPP_ADVMODE_FAST,			//!< Fast advertising will connect to any peer device, or filter with a whitelist if one exists.
+	BLEAPP_ADVMODE_SLOW				//!< Slow advertising is similar to fast advertising. By default, it uses a longer
+									//!< advertising interval and time-out than fast advertising. However, these options are defined by the user.
 } BLEAPP_ADVMODE;
 
-typedef enum _BleAppMode {
-	BLEAPP_MODE_LOOP,		// just main loop (event mode), No scheduler, no RTOS
-	BLEAPP_MODE_APPSCHED,	// use app_cheduler
-	BLEAPP_MODE_RTOS,		// use RTOS
-	BLEAPP_MODE_NOCONNECT,	// Connectionless beacon type of app.
-	BLEAPP_MODE_IBEACON		// Apple iBeacon
+typedef enum __BleApp_Mode {
+	BLEAPP_MODE_LOOP,		//!< just main loop (event mode), No scheduler, no RTOS
+	BLEAPP_MODE_APPSCHED,	//!< use app_cheduler
+	BLEAPP_MODE_RTOS,		//!< use RTOS
+	BLEAPP_MODE_NOCONNECT,	//!< Connectionless beacon type of app.
+	BLEAPP_MODE_IBEACON		//!< Apple iBeacon
 } BLEAPP_MODE;
 
 // Service connection security types
-typedef enum {
-	BLEAPP_SECTYPE_NONE,				// open, no security
-	BLEAPP_SECTYPE_STATICKEY_NO_MITM,	// Bonding static pass key without Man In The Middle
-	BLEAPP_SECTYPE_STATICKEY_MITM,		// Bonding static pass key with MITM
-	BLEAPP_SECTYPE_LESC_MITM,			// LE secure encryption
-	BLEAPP_SECTYPE_SIGNED_NO_MITM,		// AES signed encryption without MITM
-	BLEAPP_SECTYPE_SIGNED_MITM,			// AES signed encryption with MITM
+typedef enum __BleApp_SecurityType {
+	BLEAPP_SECTYPE_NONE,				//!< open, no security
+	BLEAPP_SECTYPE_STATICKEY_NO_MITM,	//!< Bonding static pass key without Man In The Middle
+	BLEAPP_SECTYPE_STATICKEY_MITM,		//!< Bonding static pass key with MITM
+	BLEAPP_SECTYPE_LESC_MITM,			//!< LE secure encryption
+	BLEAPP_SECTYPE_SIGNED_NO_MITM,		//!< AES signed encryption without MITM
+	BLEAPP_SECTYPE_SIGNED_MITM,			//!< AES signed encryption with MITM
 } BLEAPP_SECTYPE;
 
 #define BLEAPP_SECEXCHG_NONE		    0
@@ -99,50 +100,50 @@ typedef void (*BLEEVTHANDLER)(ble_evt_t *pEvt);
 
 #pragma pack(push, 4)
 
-typedef struct _BleAppPeripheral {
+typedef struct __BleApp_PeripheralData {
 	uint16_t ConnHdl;	// Connection handle
     uint8_t SrvcCnt;	// Number of services
     ble_gatt_db_srv_t Srvc[BLE_DB_DISCOVERY_MAX_SRV];  // service data
 } BLEAPP_PERIPH;
 
-typedef struct _BleAppDevInfo {
-	const char ModelName[BLEAPP_INFOSTR_MAX_SIZE];	// Model name
-	const char ManufName[BLEAPP_INFOSTR_MAX_SIZE];	// Manufacturer name
-	const char *pSerialNoStr;// Serial number string
-	const char *pFwVerStr;	// Firmware version string
-	const char *pHwVerStr;	// Hardware version string
+typedef struct __BleApp_DevInfo {
+	const char ModelName[BLEAPP_INFOSTR_MAX_SIZE];	//!< Model name
+	const char ManufName[BLEAPP_INFOSTR_MAX_SIZE];	//!< Manufacturer name
+	const char *pSerialNoStr;	//!< Serial number string
+	const char *pFwVerStr;		//!< Firmware version string
+	const char *pHwVerStr;		//!< Hardware version string
 } BLEAPP_DEVDESC;
 
-typedef struct _BleAppConfig {
-	nrf_clock_lf_cfg_t ClkCfg;	// Clock config
-	int CentLinkCount;			// Number of central link
-	int	PeriLinkCount;			// Number of peripheral link
-	BLEAPP_MODE AppMode;		// App use scheduler, rtos
-	const char *pDevName;		// Device name
-	uint16_t VendorID;			// PnP Bluetooth/USB vendor id. iBeacon mode, this is Major value
-	uint16_t ProductId;			// PnP product ID. iBeacon mode, this is Minor value
-	uint16_t ProductVer;		// PnP product version
-	bool bEnDevInfoService;		// Enable device information service (DIS)
-	const BLEAPP_DEVDESC *pDevDesc;	// Pointer device info descriptor
-	const uint8_t *pManData;	// Manufacture specific data to advertise
-	int ManDataLen;				// Length of manufacture specific data
-	BLEAPP_SECTYPE SecType;		// Secure connection type
-	uint8_t SecExchg;			// Sec key exchange
-	const ble_uuid_t *pAdvUuids;// Service uuids to advertise
-	int NbAdvUuid;				// Total number of uuids
-	uint32_t AdvInterval;		// In msec
-	uint32_t AdvTimeout;		// In sec
-	uint32_t AdvSlowInterval;	// Slow advertising interval, if > 0, fallback to
-								// slow interval on adv timeout and advertise until connected
-	uint32_t ConnIntervalMin;   // Min. connection interval
-	uint32_t ConnIntervalMax;   // Max connection interval
-	int ConnLedPort;			// Connection LED port & pin number
-	int ConnLedPin;
-	int TxPower;				// Tx power in dBm
-	uint32_t (*SDEvtHandler)(void) ;// Require for BLEAPP_MODE_RTOS
-	int	MaxMtu;					// Max MTU size or 0 for default
-	int PeriphDevCnt;			// Max number of peripheral connection
-	BLEAPP_PERIPH *pPeriphDev;	// Connected peripheral data table
+typedef struct __BleApp_Config {
+	nrf_clock_lf_cfg_t ClkCfg;		//!< Clock config
+	int CentLinkCount;				//!< Number of central link
+	int	PeriLinkCount;				//!< Number of peripheral link
+	BLEAPP_MODE AppMode;			//!< App use scheduler, rtos
+	const char *pDevName;			//!< Device name
+	uint16_t VendorID;				//!< PnP Bluetooth/USB vendor id. iBeacon mode, this is Major value
+	uint16_t ProductId;				//!< PnP product ID. iBeacon mode, this is Minor value
+	uint16_t ProductVer;			//!< PnP product version
+	bool bEnDevInfoService;			//!< Enable device information service (DIS)
+	const BLEAPP_DEVDESC *pDevDesc;	//!< Pointer device info descriptor
+	const uint8_t *pManData;		//!< Manufacture specific data to advertise
+	int ManDataLen;					//!< Length of manufacture specific data
+	BLEAPP_SECTYPE SecType;			//!< Secure connection type
+	uint8_t SecExchg;				//!< Sec key exchange
+	const ble_uuid_t *pAdvUuids;	//!< Service uuids to advertise
+	int NbAdvUuid;					//!< Total number of uuids
+	uint32_t AdvInterval;			//!< In msec
+	uint32_t AdvTimeout;			//!< In sec
+	uint32_t AdvSlowInterval;		//!< Slow advertising interval, if > 0, fallback to
+									//!< slow interval on adv timeout and advertise until connected
+	uint32_t ConnIntervalMin;   	//!< Min. connection interval
+	uint32_t ConnIntervalMax;   	//!< Max connection interval
+	int ConnLedPort;				//!< Connection LED port number
+	int ConnLedPin;					//!< Connection LED pin number
+	int TxPower;					//!< Tx power in dBm
+	uint32_t (*SDEvtHandler)(void) ;//!< Require for BLEAPP_MODE_RTOS
+	int	MaxMtu;						//!< Max MTU size or 0 for default
+	int PeriphDevCnt;				//!< Max number of peripheral connection
+	BLEAPP_PERIPH *pPeriphDev;		//!< Connected peripheral data table
 } BLEAPP_CFG;
 
 #pragma pack(pop)

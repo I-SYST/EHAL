@@ -1,10 +1,15 @@
-/*--------------------------------------------------------------------------
-File   : uart_prbs_tx.cpp
+/**-------------------------------------------------------------------------
+@example	uart_prbs_tx.cpp
 
-Author : Hoang Nguyen Hoan          Aug. 31, 2016
+@brief	UART PRBS transmit test
 
-Desc   : UART PRBS transmit test
-		 Demo code using EHAL library to do PRBS transmit test using UART
+Demo code using EHAL library to do PRBS transmit test using UART
+
+
+@author	Hoang Nguyen Hoan
+@date	Aug. 31, 2016
+
+@license
 
 Copyright (c) 2016, I-SYST inc., all rights reserved
 
@@ -27,9 +32,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
@@ -121,6 +123,7 @@ int main()
 #ifdef DEMO_C
 		if (UARTTx(&g_UartDev, &d, 1) > 0)
 #else
+//			g_Uart.Tx((uint8_t*)"0123456789abcdefghijklmnopqrstuvwxyz\r\n", 38);
 		if (g_Uart.Tx(&d, 1) > 0)
 #endif
 		{

@@ -1,9 +1,13 @@
-/*--------------------------------------------------------------------------
-File   : sdcard.h
+/**-------------------------------------------------------------------------
+@file	sdcard.h
 
-Author : Hoang Nguyen Hoan          June 9, 2011
+@brief	SD card driver
 
-Desc   : SD card driver
+
+@author	Hoang Nguyen Hoan
+@date	June 9, 2011
+
+@license
 
 Copyright (c) 2011, I-SYST, all rights reserved
 
@@ -26,9 +30,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #ifndef __SDCARD_H__

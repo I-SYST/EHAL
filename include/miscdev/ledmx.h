@@ -1,9 +1,7 @@
-/*--------------------------------------------------------------------------
-File   : ledmx.h
+/**-------------------------------------------------------------------------
+@file	ledmx.h
 
-Author : Hoang Nguyen Hoan          Feb. 28, 2011
-
-Desc   : LED Matrix control for IDM-LMX3208 series display
+@brief	LED Matrix control for IDM-LMX3208 series display
 
 This module requires each platform to implement the following :
 
@@ -21,6 +19,11 @@ void LedMxStartTx(LEDMXDEV *pDev, int PanelAddr);
 void LedMxStopTx(LEDMXDEV *pDev);
 void LedMxTxData(LEDMXDEV *pDev, uint32_t Data, int NbBits);
 
+
+@author	Hoang Nguyen Hoan
+@date	Feb. 28, 2011
+
+@license
 
 Copyright (c) 2011, I-SYST inc., all rights reserved
 
@@ -44,9 +47,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by         Date         	Description
-Hoan				Sep. 14, 2014	Add support for IBB-LMXBLUE with 16 displays
 ----------------------------------------------------------------------------*/
 #ifndef __LEDMX_H__
 #define __LEDMX_H__
@@ -82,16 +82,16 @@ typedef enum {
 
 // CS mapping type
 typedef enum {
-	LEDMX_CSTYPE_GPIO, 		// Direct map to GPIO pin
-	LEDMX_CSTYPE_BIN,		// Through a binary decoder, i.e. using 74AHCT138 style
-    LEDMX_CSTYPE_SER		// Through serial shift register
+	LEDMX_CSTYPE_GPIO, 		//!< Direct map to GPIO pin
+	LEDMX_CSTYPE_BIN,		//!< Through a binary decoder, i.e. using 74AHCT138 style
+    LEDMX_CSTYPE_SER		//!< Through serial shift register
 } LEDMX_CSTYPE;
 
 #pragma pack(push, 4)
 
 // LED matrix data
 typedef struct {
-	void *pIOCfg;	// Pointer to private I/O config data (platform dependent)
+	void *pIOCfg;	//!< Pointer to private I/O config data (platform dependent)
     int NbPanel;
     int PanelAddr[LEDMX_MAX_PANEL];
     int FontLen;

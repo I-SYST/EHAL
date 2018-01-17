@@ -1,10 +1,14 @@
-/*--------------------------------------------------------------------------
-File   : ledmxio.h
+/**-------------------------------------------------------------------------
+@file	ledmxio.h
 
-Author : Hoang Nguyen Hoan          Aug. 21, 2014
+@brief		This is platform specific I/O control interface for IDM-LMX3208
+series LED matrix display
 
-Desc   : This is platform specific I/O control interface for
-         IDM-LMX3208 series LED matrix display
+
+@author	Hoang Nguyen Hoan
+@date	Aug. 21, 2014
+
+@license
 
 Copyright (c) 2014, I-SYST inc., all rights reserved
 
@@ -27,9 +31,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 

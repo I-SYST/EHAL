@@ -1,9 +1,13 @@
-/*---------------------------------------------------------------------------
-File : ledmxfont.h
+/**--------------------------------------------------------------------------
+@file : ledmxfont.h
 
-Author : Hoang Nguyen Hoan          Feb. 28, 2011
+@brief	Font definitions for use with IDM-LMX3208 series LED matrix display
 
-Desc : Font definitions for use with IDM-LMX3208 series LED matrix display
+
+@author	Hoang Nguyen Hoan
+@date	Feb. 28, 2011
+
+@license
 
 Copyright (c) 2011, I-SYST inc, all rights reserved
 
@@ -27,8 +31,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF 
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #ifndef __LEDMXFONT_H__
 #define __LEDMXFONT_H__

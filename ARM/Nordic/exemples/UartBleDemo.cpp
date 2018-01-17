@@ -1,13 +1,17 @@
-/*--------------------------------------------------------------------------
-File   : UartBleDemo.cpp
+/**-------------------------------------------------------------------------
+@example	UartBleDemo.cpp
 
-Author : Hoang Nguyen Hoan          Feb. 4, 2017
 
-Desc   : Uart BLE demo
-		 This application demo shows UART Rx/Tx over BLE custom service
-		 using EHAL library.
+@brief	Uart BLE demo
 
-Copyright (c) 2016, I-SYST inc., all rights reserved
+This application demo shows UART Rx/Tx over BLE custom service using EHAL library.
+
+@author	Hoang Nguyen Hoan
+@date	Feb. 4, 2017
+
+@license
+
+Copyright (c) 2017, I-SYST inc., all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -28,9 +32,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
@@ -81,6 +82,7 @@ static const char s_TxCharDescString[] = {
 
 uint8_t g_ManData[8];
 
+/// Characteristic definitions
 BLESRVC_CHAR g_UartChars[] = {
 	{
 		// Read characteristic
@@ -110,6 +112,7 @@ BLESRVC_CHAR g_UartChars[] = {
 
 uint8_t g_LWrBuffer[512];
 
+/// Service definition
 const BLESRVC_CFG s_UartSrvcCfg = {
 	BLESRVC_SECTYPE_NONE,	// Secure or Open service/char
 	BLUEIO_UUID_BASE,           // Base UUID
@@ -170,12 +173,12 @@ const BLEAPP_CFG s_BleAppCfg = {
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 
-// UART configuration data
+/// UART configuration data
 
 static IOPINCFG s_UartPins[] = {
 	{BLUEIO_UART_RX_PORT, BLUEIO_UART_RX_PIN, BLUEIO_UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
 	{BLUEIO_UART_TX_PORT, BLUEIO_UART_TX_PIN, BLUEIO_UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
-	{BLUEIO_UART_CTS_PORT, BLUEIO_UART_CTS_PIN, BLUEIO_UART_CTS_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// CTS
+	{BLUEIO_UART_CTS_PORT, BLUEIO_UART_CTS_PIN, BLUEIO_UART_CTS_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// CTS
 	{BLUEIO_UART_RTS_PORT, BLUEIO_UART_RTS_PIN, BLUEIO_UART_RTS_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// RTS
 };
 
@@ -194,7 +197,7 @@ const UARTCFG g_UartCfg = {
 	false,
 };
 
-// UART object instance
+/// UART object instance
 UART g_Uart;
 
 static const IOPINCFG s_LedPins[] = {
