@@ -16,7 +16,7 @@ CMSIS     : [ARM CMSIS SDK for all ARM platform](https://github.com/ARM-software
 
 nRF5_SDK  : [Latest Nordic SDK](https://developer.nordicsemi.com)
 
-micro-ecc : [Micro-ECC](download from https://github.com/kmackay/micro-ecc)
+Micro-ECC : [Micro-ECC](download from https://github.com/kmackay/micro-ecc)
 
 KSDK      : Kinetis SDK
 
@@ -31,6 +31,7 @@ The way the EHAL folder is structure is simple.  The deeper you go inside the mo
  |-- external        - Contains downloaded SDKs from silicon vendors
  |   |-- CMSIS           - ARM CMSIS SDK for all ARM platform (https://github.com/ARM-software/CMSIS_5)
  |   |-- nRF5_SDK        - Latest Nordic SDK (https://developer.nordicsemi.com)
+ |   |-- Micro-ECC       - Micro-ECC (download from https://github.com/kmackay/micro-ecc)
  |   |-- KSDK            - Kinetis SDK
  |   |-- BSEC            - Bosch Sensortec Environmental Cluster (BSEC) Software (https://www.bosch-sensortec.com/bst/products/all_products/bsec) for #BME680		
  |   |...
