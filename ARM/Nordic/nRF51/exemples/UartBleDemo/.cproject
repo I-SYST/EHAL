@@ -76,7 +76,6 @@
 									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>
 									<listOptionValue builtIn="false" value="IMM_NRF51822"/>
-									<listOptionValue builtIn="false" value="SVCALL_AS_NORMAL_FUNCTION"/>
 									<listOptionValue builtIn="false" value="NRF51"/>
 									<listOptionValue builtIn="false" value="NRF51822"/>
 								</option>
@@ -112,7 +111,6 @@
 									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>
 									<listOptionValue builtIn="false" value="IMM_NRF51822"/>
-									<listOptionValue builtIn="false" value="SVCALL_AS_NORMAL_FUNCTION"/>
 									<listOptionValue builtIn="false" value="NRF51"/>
 									<listOptionValue builtIn="false" value="NRF51822"/>
 								</option>
@@ -243,7 +241,6 @@
 									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>
 									<listOptionValue builtIn="false" value="IMM_NRF51822"/>
-									<listOptionValue builtIn="false" value="SVCALL_AS_NORMAL_FUNCTION"/>
 									<listOptionValue builtIn="false" value="NRF51"/>
 									<listOptionValue builtIn="false" value="NRF51822"/>
 								</option>

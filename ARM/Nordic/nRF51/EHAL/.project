@@ -381,6 +381,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sysstatus.c</locationURI>
 		</link>
 		<link>
+			<name>src/timer.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/timer.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/timer_hf_nrf5x.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/timer_hf_nrf5x.cpp</locationURI>
