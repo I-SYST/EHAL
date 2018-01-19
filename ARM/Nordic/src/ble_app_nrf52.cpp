@@ -1482,6 +1482,13 @@ void BleAppRun()
 
     while (1)
     {
+    	// Set bit 7 and bits 4..0 in the mask to one (0x ...00 1001 1111)
+		#define FPU_EXCEPTION_MASK 0x0000009F
+    	// Clear exceptions and PendingIRQ from the FPU unit
+		__set_FPSCR(__get_FPSCR()  & ~(FPU_EXCEPTION_MASK));
+		(void) __get_FPSCR();
+		NVIC_ClearPendingIRQ(FPU_IRQn);
+
 		if (g_BleAppData.AppMode == BLEAPP_MODE_RTOS)
 		{
 			BleAppRtosWaitEvt();
