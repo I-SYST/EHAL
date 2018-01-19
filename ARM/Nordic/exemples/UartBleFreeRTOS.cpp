@@ -77,10 +77,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define NRF_BLE_FREERTOS_SDH_TASK_STACK 256
 
-static TaskHandle_t g_Task;  //!< Reference to SoftDevice FreeRTOS task.
-QueueHandle_t g_QueHandle = NULL;
-
 void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
+
+static TaskHandle_t g_BleTask;  //!< Reference to SoftDevice FreeRTOS task.
+static TaskHandle_t g_RxTask;
+QueueHandle_t g_QueHandle = NULL;
 
 static const ble_uuid_t  s_AdvUuids[] = {
 	{BLUEIO_UUID_UART_SERVICE, BLE_UUID_TYPE_VENDOR_BEGIN}
@@ -204,7 +205,7 @@ const UARTCFG g_UartCfg = {
 	8,
 	UART_PARITY_NONE,
 	1,	// Stop bit
-	UART_FLWCTRL_HW,
+	UART_FLWCTRL_NONE,
 	true,
 	APP_IRQ_PRIORITY_LOW,
 	nRFUartEvthandler,
@@ -292,27 +293,17 @@ void BleAppInitUserData()
 
 }
 
-void UartRxChedHandler(void * p_event_data, uint16_t event_size)
-{
-	uint8_t buff[128];
-
-	int l = g_Uart.Rx(buff, 128);
-	if (l > 0)
-	{
-		BleSrvcCharNotify(&g_UartBleSrvc, 0, buff, l);
-	}
-}
-
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen)
 {
 	int cnt = 0;
 	uint8_t buff[20];
+	BaseType_t yield_req = pdFALSE;
 
 	switch (EvtId)
 	{
 		case UART_EVT_RXTIMEOUT:
 		case UART_EVT_RXDATA:
-			app_sched_event_put(NULL, 0, UartRxChedHandler);
+		    vTaskNotifyGiveFromISR(g_RxTask, &yield_req);
 			break;
 		case UART_EVT_TXREADY:
 			break;
@@ -331,7 +322,7 @@ uint32_t SD_FreeRTOS_Handler(void)
     uint32_t item;
     BaseType_t lError = xQueueSendToBackFromISR( g_QueHandle, &item, &yield_req );
 #else
-    vTaskNotifyGiveFromISR(g_Task, &yield_req);
+    vTaskNotifyGiveFromISR(g_BleTask, &yield_req);
 #endif
 }
 
@@ -349,6 +340,23 @@ void BleAppRtosWaitEvt(void)
 #endif
     nrf_sdh_evts_poll();                    /* let the handlers run first, incase the EVENT occured before creating this task */
 
+}
+
+static void RxTask(void * pvParameter)
+{
+    while (1)
+    {
+        ulTaskNotifyTake(pdTRUE,         /* Clear the notification value before exiting (equivalent to the binary semaphore). */
+                         portMAX_DELAY); /* Block indefinitely (INCLUDE_vTaskSuspend has to be enabled).*/
+
+        uint8_t buff[128];
+
+        int l = g_Uart.Rx(buff, 128);
+        if (l > 0)
+        {
+            BleSrvcCharNotify(&g_UartBleSrvc, 0, buff, l);
+        }
+    }
 }
 
 /* This function gets events from the SoftDevice and processes them. */
@@ -369,11 +377,17 @@ void FreeRTOSInit()
                                        NRF_BLE_FREERTOS_SDH_TASK_STACK,
                                        g_QueHandle,
                                        2,
-                                       &g_Task);
+                                       &g_BleTask);
     if (xReturned != pdPASS)
     {
         APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
     }
+
+    xReturned = xTaskCreate(RxTask, "RX",
+                            NRF_BLE_FREERTOS_SDH_TASK_STACK,
+                                       NULL,
+                              2,
+                             &g_RxTask);
 }
 
 //
