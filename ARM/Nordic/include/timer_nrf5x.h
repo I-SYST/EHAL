@@ -1,9 +1,13 @@
-/*--------------------------------------------------------------------------
-File   : timer_nrf5x.h
+/**-------------------------------------------------------------------------
+@file	timer_nrf5x.h
 
-Author : Hoang Nguyen Hoan          				Sep. 7, 2017
+@brief	Timer class implementation on Nordic nRF51 & nRF52 series
 
-Desc   : timer class implementation on Nordic nRF5x series
+
+@author	Hoang Nguyen Hoan
+@date	Sep. 7, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -27,9 +31,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 
 #ifndef __TIMER_NRF5x_H__
@@ -41,17 +42,18 @@ Modified by          Date              Description
 
 #include "timer.h"
 
-// *****
-// Low frequency timer using Real Time Counter (RTC) 32768 Hz clock source
-//
+/// Low frequency timer using Real Time Counter (RTC) 32768 Hz clock source.
+///
 #define TIMER_NRF5X_RTC_BASE_FREQ   		32768
 #ifdef NRF52
-#define TIMER_NRF5X_RTC_MAX                 3           // 3 RTC available on nRF52
+#define TIMER_NRF5X_RTC_MAX                 3           //!< 3 RTC available on nRF52
 #else
-#define TIMER_NRF5X_RTC_MAX                 2           // 2 RTC available on nRF51
+#define TIMER_NRF5X_RTC_MAX                 2           //!< 2 RTC available on nRF51
 #endif
-#define TIMER_NRF5X_RTC_MAX_TRIGGER_EVT     4           // Max number of supported counter trigger event
+#define TIMER_NRF5X_RTC_MAX_TRIGGER_EVT     4           //!< Max number of supported counter trigger event
 
+/// Low frequency timer implementation class.
+///
 class TimerLFnRF5x : public Timer {
 public:
 	TimerLFnRF5x();
@@ -77,23 +79,22 @@ protected:
 private:
     NRF_RTC_Type *vpReg;
     uint32_t vCC[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
-    //TIMER_TRIG_TYPE vTrigType[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
     TIMER_TRIGGER vTrigger[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
 };
 
-// *****
-// High frequency timer using Timer 16MHz clock source
-//
+/// High frequency timer using Timer 16MHz clock source.
+///
 #define TIMER_NRF5X_HF_BASE_FREQ   			16000000
 #ifdef NRF52
-#define TIMER_NRF5X_HF_MAX              	5           // 5 high frequency timer available on nRF52
-#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	6           // Max number of supported counter trigger event
+#define TIMER_NRF5X_HF_MAX              	5           //!< 5 high frequency timer available on nRF52
+#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	6           //!< Max number of supported counter trigger event
 #else
-#define TIMER_NRF5X_HF_MAX              	3           // 3 high frequency timer available on nRF51
-#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	4           // Max number of supported counter trigger event
+#define TIMER_NRF5X_HF_MAX              	3           //!< 3 high frequency timer available on nRF51
+#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	4           //!< Max number of supported counter trigger event
 #endif
 
-
+/// High frequency timer implementation class
+///
 class TimerHFnRF5x : public Timer {
 public:
     TimerHFnRF5x();
@@ -124,16 +125,9 @@ protected:
 private:
 
     NRF_TIMER_Type *vpReg;
-    int vMaxNbTrigEvt;		// Number of trigger is not the same for all timers.
-//#ifdef NRF52
-//    uint32_t vCC[TIMER_NRF5X_HF_MAX_TRIGGER_EVT + 2];
-    //TIMER_TRIG_TYPE vTrigType[TIMER_NRF5X_HF_MAX_TRIGGER_EVT + 2];
-//    TIMER_TRIGGER vTrigger[TIMER_NRF5X_HF_MAX_TRIGGER_EVT + 2];
-//#else
+    int vMaxNbTrigEvt;		//!< Number of trigger is not the same for all timers.
     uint32_t vCC[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
-//    TIMER_TRIG_TYPE vTrigType[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
     TIMER_TRIGGER vTrigger[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
-//#endif
 };
 
 #endif // __TIMER_NRF5x_H__

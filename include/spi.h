@@ -1,7 +1,7 @@
 /**-------------------------------------------------------------------------
 @file	spi.h
 
-@brief	Generic SPI driver definitions.
+@brief	Generic SPI (Serial Peripheral Interface) driver definitions.
 
 Current implementation
  	 - Master mode
