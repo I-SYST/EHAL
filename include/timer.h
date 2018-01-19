@@ -174,18 +174,6 @@ public:
 	virtual int MaxTimerTrigger() = 0;
 
 	/**
-	 * @brief	Enable nanosecond timer trigger event.
-	 *
-	 * @param   nsPeriod : Trigger period in nsec.
-	 * @param   Type     : Trigger type single shot or continuous
-	 * @param	Handler	 : Optional Timer trigger user callback
-	 *
-	 * @return  Timer trigger ID on success
-	 * 			-1 : Failed
-	 */
-	virtual int EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
-
-	/**
 	 * @brief	Enable a specific nanosecond timer trigger event.
 	 *
 	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
@@ -197,6 +185,18 @@ public:
 	 */
 	virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod,
 										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL) = 0;
+
+	/**
+	 * @brief	Enable nanosecond timer trigger event.
+	 *
+	 * @param   nsPeriod : Trigger period in nsec.
+	 * @param   Type     : Trigger type single shot or continuous
+	 * @param	Handler	 : Optional Timer trigger user callback
+	 *
+	 * @return  Timer trigger ID on success
+	 * 			-1 : Failed
+	 */
+	virtual int EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
 
 	/**
 	 * @brief	Enable millisecond timer trigger event.
@@ -221,7 +221,7 @@ public:
 	 * @return  real period in nsec based on clock calculation
 	 */
 	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod,
-										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL) = 0;
+										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
 
 	/**
 	 * @brief   Disable timer trigger event.
