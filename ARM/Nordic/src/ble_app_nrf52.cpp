@@ -1459,6 +1459,13 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     BleAppAdvInit(pBleAppCfg);
 
+#if (__FPU_USED == 1)
+    // Patch for softdevice & FreeRTOS to sleep properly when FPU is in used
+    NVIC_SetPriority(FPU_IRQn, APP_IRQ_PRIORITY_LOW);
+    NVIC_ClearPendingIRQ(FPU_IRQn);
+    NVIC_EnableIRQ(FPU_IRQn);
+#endif
+
     return true;
 }
 
@@ -1482,13 +1489,6 @@ void BleAppRun()
 
     while (1)
     {
-    	// Set bit 7 and bits 4..0 in the mask to one (0x ...00 1001 1111)
-		#define FPU_EXCEPTION_MASK 0x0000009F
-    	// Clear exceptions and PendingIRQ from the FPU unit
-		__set_FPSCR(__get_FPSCR()  & ~(FPU_EXCEPTION_MASK));
-		(void) __get_FPSCR();
-		NVIC_ClearPendingIRQ(FPU_IRQn);
-
 		if (g_BleAppData.AppMode == BLEAPP_MODE_RTOS)
 		{
 			BleAppRtosWaitEvt();
@@ -1553,4 +1553,5 @@ NRF_SDH_STACK_OBSERVER(m_nrf_sdh_soc_evts_poll, NRF_SDH_SOC_STACK_OBSERVER_PRIO)
     .handler   = nrf_sdh_soc_evts_poll,
     .p_context = NULL,
 };
+
 
