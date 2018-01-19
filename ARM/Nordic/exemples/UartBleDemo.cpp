@@ -92,7 +92,7 @@ BLESRVC_CHAR g_UartChars[] = {
 		// Read characteristic
 		BLUEIO_UUID_UART_RX_CHAR,
 		20,
-		BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY,
+		BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN,
 		s_RxCharDescString,         // char UTF-8 description string
 		NULL,                       // Callback for write char, set to NULL for read char
 		NULL,						// Callback on set notification
