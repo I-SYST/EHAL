@@ -1,15 +1,15 @@
 /**-------------------------------------------------------------------------
-@example	UartBleDemo.cpp
+@example    UartBleFreeRTOS.cpp
 
 
-@brief	Uart BLE demo
+@brief  UART over BLE with FreeRTOS demo
 
 This application demo shows UART Rx/Tx over BLE custom service using EHAL library.
 For evaluating power consumption of the UART, the button 1 is used to enable/disable it.
 This example also demonstrates passkey paring mode.
 
-@author	Hoang Nguyen Hoan
-@date	Feb. 4, 2017
+@author Hoang Nguyen Hoan
+@date   Feb. 4, 2017
 
 @license
 
@@ -39,6 +39,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "app_util_platform.h"
 #include "app_scheduler.h"
+#include "nrf_sdh.h"
+#include "nrf_sdh_freertos.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "timers.h"
 
 #include "istddef.h"
 #include "ble_app.h"
@@ -48,27 +54,31 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "custom_board.h"
 #include "iopincfg.h"
 #include "iopinctrl.h"
-
 #include "board.h"
 
-#define DEVICE_NAME                     "UARTDemo"                          /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "UARTFreeRTOS"                            /**< Name of device. Will be included in the advertising data. */
 
 #define MANUFACTURER_NAME               "I-SYST inc."                       /**< Manufacturer. Will be passed to Device Information Service. */
 
 #ifdef NRF52
-#define MODEL_NAME                      "IMM-NRF52x"                        /**< Model number. Will be passed to Device Information Service. */
+#define MODEL_NAME                      "IMM-NRF52x"                            /**< Model number. Will be passed to Device Information Service. */
 #else
-#define MODEL_NAME                      "IMM-NRF51x"                        /**< Model number. Will be passed to Device Information Service. */
+#define MODEL_NAME                      "IMM-NRF51x"                            /**< Model number. Will be passed to Device Information Service. */
 #endif
 
-#define MANUFACTURER_ID                 ISYST_BLUETOOTH_ID                  /**< Manufacturer ID, part of System ID. Will be passed to Device Information Service. */
-#define ORG_UNIQUE_ID                   ISYST_BLUETOOTH_ID                  /**< Organizational Unique ID, part of System ID. Will be passed to Device Information Service. */
+#define MANUFACTURER_ID                 ISYST_BLUETOOTH_ID                               /**< Manufacturer ID, part of System ID. Will be passed to Device Information Service. */
+#define ORG_UNIQUE_ID                   ISYST_BLUETOOTH_ID                               /**< Organizational Unique ID, part of System ID. Will be passed to Device Information Service. */
 
-#define APP_ADV_INTERVAL                MSEC_TO_UNITS(64, UNIT_0_625_MS)	/**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
-#define APP_ADV_TIMEOUT_IN_SECONDS      180                                 /**< The advertising timeout (in units of seconds). */
+#define APP_ADV_INTERVAL                MSEC_TO_UNITS(64, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
+#define APP_ADV_TIMEOUT_IN_SECONDS      180                                         /**< The advertising timeout (in units of seconds). */
 
-#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)     /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
-#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)     /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
+#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)             /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
+#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)             /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
+
+#define NRF_BLE_FREERTOS_SDH_TASK_STACK 256
+
+static TaskHandle_t g_Task;  //!< Reference to SoftDevice FreeRTOS task.
+QueueHandle_t g_QueHandle = NULL;
 
 void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
 
@@ -86,7 +96,6 @@ static const char s_TxCharDescString[] = {
 
 uint8_t g_ManData[8];
 
-/// Characteristic definitions
 BLESRVC_CHAR g_UartChars[] = {
 	{
 		// Read characteristic
@@ -116,7 +125,6 @@ BLESRVC_CHAR g_UartChars[] = {
 
 uint8_t g_LWrBuffer[512];
 
-/// Service definition
 const BLESRVC_CFG s_UartSrvcCfg = {
 	BLESRVC_SECTYPE_NONE,	    // Secure or Open service/char
 	BLUEIO_UUID_BASE,           // Base UUID
@@ -137,6 +145,8 @@ const BLEAPP_DEVDESC s_UartBleDevDesc {
 	"0.0",                  // Hardware version string
 };
 
+uint32_t SD_FreeRTOS_Handler(void);
+
 const BLEAPP_CFG s_BleAppCfg = {
 	{ // Clock config nrf_clock_lf_cfg_t
 #ifdef IMM_NRF51822
@@ -150,7 +160,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	},
 	0, 						// Number of central link
 	1, 						// Number of peripheral link
-	BLEAPP_MODE_APPSCHED,   // Use scheduler
+	BLEAPP_MODE_RTOS,//BLEAPP_MODE_APPSCHED,   // Use scheduler
 	DEVICE_NAME,                 // Device name
 	ISYST_BLUETOOTH_ID,     // PnP Bluetooth/USB vendor id
 	1,                      // PnP Product ID
@@ -172,20 +182,20 @@ const BLEAPP_CFG s_BleAppCfg = {
 	BLUEIO_CONNECT_LED_PORT,    // Led port nuber
 	BLUEIO_CONNECT_LED_PIN,     // Led pin number
 	0,							// Tx power
-	NULL						// RTOS Softdevice handler
+	SD_FreeRTOS_Handler,		// RTOS Softdevice handler
 };
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 
-/// UART pins definitions
+// UART configuration data
+
 static IOPINCFG s_UartPins[] = {
-	{UART_RX_PORT, UART_RX_PIN, UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-	{UART_TX_PORT, UART_TX_PIN, UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
-	{UART_CTS_PORT, UART_CTS_PIN, UART_CTS_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// CTS
-	{UART_RTS_PORT, UART_RTS_PIN, UART_RTS_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// RTS
+    {UART_RX_PORT, UART_RX_PIN, UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},    // RX
+    {UART_TX_PORT, UART_TX_PIN, UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},   // TX
+    {UART_CTS_PORT, UART_CTS_PIN, UART_CTS_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL}, // CTS
+    {UART_RTS_PORT, UART_RTS_PIN, UART_RTS_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// RTS
 };
 
-/// UART configuration
 const UARTCFG g_UartCfg = {
 	0,
 	s_UartPins,
@@ -201,7 +211,7 @@ const UARTCFG g_UartCfg = {
 	false,
 };
 
-/// UART object instance
+// UART object instance
 UART g_Uart;
 
 static const IOPINCFG s_LedPins[] = {
@@ -213,8 +223,8 @@ static const IOPINCFG s_LedPins[] = {
 static int s_NbLedPins = sizeof(s_LedPins) / sizeof(IOPINCFG);
 
 static const IOPINCFG s_ButPins[] = {
-	{BUTTON1_PORT, BUTTON1_PIN, 0, IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},// Button 1
-	{BUTTON2_PORT, BUTTON2_PIN, 0, IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},// Button 2
+    {BUTTON1_PORT, BUTTON1_PIN, 0, IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},// Button 1
+    {BUTTON2_PORT, BUTTON2_PIN, 0, IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},// Button 2
 };
 
 static int s_NbButPins = sizeof(s_ButPins) / sizeof(IOPINCFG);
@@ -242,38 +252,39 @@ void BleAppInitUserServices()
 
 void ButEvent(int IntNo)
 {
-	if (IntNo == 0)
-	{
-		if (g_bUartState == false)
-		{
-			g_Uart.Enable();
-			g_bUartState = true;
-		}
-		else
-		{
-			g_Uart.Disable();
-			g_bUartState = false;
-		}
-	}
+    if (IntNo == 0)
+    {
+        if (g_bUartState == false)
+        {
+            g_Uart.Enable();
+            g_bUartState = true;
+        }
+        else
+        {
+            g_Uart.Disable();
+            g_bUartState = false;
+        }
+    }
 }
 
 void HardwareInit()
 {
 	g_Uart.Init(g_UartCfg);
 
-	IOPinCfg(s_LedPins, s_NbLedPins);
+    IOPinCfg(s_ButPins, s_NbButPins);
+
+    IOPinCfg(s_LedPins, s_NbLedPins);
 	IOPinSet(BLUEIO_LED_BLUE_PORT, BLUEIO_LED_BLUE_PIN);
 	IOPinSet(BLUEIO_LED_GREEN_PORT, BLUEIO_LED_GREEN_PIN);
 	IOPinSet(BLUEIO_LED_RED_PORT, BLUEIO_LED_RED_PIN);
 
 	IOPinCfg(s_ButPins, s_NbButPins);
 
-	IOPinEnableInterrupt(0, APP_IRQ_PRIORITY_LOW, s_ButPins[0].PortNo, s_ButPins[0].PinNo, IOPINSENSE_LOW_TRANSITION, ButEvent);
+    IOPinEnableInterrupt(0, APP_IRQ_PRIORITY_LOW, s_ButPins[0].PortNo, s_ButPins[0].PinNo, IOPINSENSE_LOW_TRANSITION, ButEvent);
 }
 
 void BleAppInitUserData()
 {
-	// Add passkey pairing
     ble_opt_t opt;
     opt.gap_opt.passkey.p_passkey = (uint8_t*)"123456";
 	uint32_t err_code =  sd_ble_opt_set(BLE_GAP_OPT_PASSKEY, &opt);
@@ -312,6 +323,58 @@ int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buffe
 	return cnt;
 }
 
+uint32_t SD_FreeRTOS_Handler(void)
+{
+    BaseType_t yield_req = pdFALSE;
+
+#ifdef RTOS_QUEUE
+    uint32_t item;
+    BaseType_t lError = xQueueSendToBackFromISR( g_QueHandle, &item, &yield_req );
+#else
+    vTaskNotifyGiveFromISR(g_Task, &yield_req);
+#endif
+}
+
+
+void BleAppRtosWaitEvt(void)
+{
+
+#ifdef RTOS_QUEUE
+    uint32_t item;
+    BaseType_t lError = xQueueReceive( g_QueHandle, &item, -1 );
+#else
+
+    ulTaskNotifyTake(pdTRUE,         /* Clear the notification value before exiting (equivalent to the binary semaphore). */
+                     portMAX_DELAY); /* Block indefinitely (INCLUDE_vTaskSuspend has to be enabled).*/
+#endif
+    nrf_sdh_evts_poll();                    /* let the handlers run first, incase the EVENT occured before creating this task */
+
+}
+
+/* This function gets events from the SoftDevice and processes them. */
+static void BleTask(void * pvParameter)
+{
+    BleAppRun();
+}
+
+
+void FreeRTOSInit()
+{
+#ifdef RTOS_QUEUE
+    g_QueHandle = xQueueCreate( 2, 4 );
+#endif
+
+    BaseType_t xReturned = xTaskCreate(BleTask,
+                                       "BLE",
+                                       NRF_BLE_FREERTOS_SDH_TASK_STACK,
+                                       g_QueHandle,
+                                       2,
+                                       &g_Task);
+    if (xReturned != pdPASS)
+    {
+        APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+    }
+}
 
 //
 // Print a greeting message on standard output and exit.
@@ -321,7 +384,7 @@ int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buffe
 // For example, for toolchains derived from GNU Tools for Embedded,
 // to enable semi-hosting, the following was added to the linker:
 //
-// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lm -lrdimon -Wl,--end-group
+// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lc -lm -lrdimon -Wl,--end-group
 //
 // Adjust it for other toolchains.
 //
@@ -330,11 +393,12 @@ int main()
 {
     HardwareInit();
 
-    //g_Uart.Disable();
-
     BleAppInit((const BLEAPP_CFG *)&s_BleAppCfg, true);
 
-    BleAppRun();
+    FreeRTOSInit();
 
-	return 0;
+    // Start FreeRTOS scheduler.
+    vTaskStartScheduler();
+
+    return 0;
 }
