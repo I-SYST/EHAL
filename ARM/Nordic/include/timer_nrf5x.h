@@ -67,6 +67,29 @@ public:
 	virtual uint32_t Frequency(void) { return vFreq; }
 	virtual uint64_t TickCount();
     int MaxTimerTrigger() { return TIMER_NRF5X_RTC_MAX_TRIGGER_EVT; }
+    /**
+	 * @brief	Enable millisecond timer trigger event.
+	 *
+	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
+	 * @param   msPeriod : Trigger period in msec.
+	 * @param   Type     : Trigger type single shot or continuous
+	 * @param	Handler	 : Optional Timer trigger user callback
+	 *
+	 * @return  real period in nsec based on clock calculation
+	 */
+	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod,
+										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+
+	/**
+	 * @brief	Enable a specific nanosecond timer trigger event.
+	 *
+	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
+	 * @param   nsPeriod : Trigger period in nsec.
+	 * @param   Type     : Trigger type single shot or continuous
+	 * @param	Handler	 : Optional Timer trigger user callback
+	 *
+	 * @return  real period in nsec based on clock calculation
+	 */
     virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod,
     									TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
     virtual void DisableTimerTrigger(int TrigNo);
@@ -113,8 +136,33 @@ public:
     	return TIMER_NRF5X_HF_MAX_TRIGGER_EVT;
 #endif
     }
+
+    /**
+	 * @brief	Enable millisecond timer trigger event.
+	 *
+	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
+	 * @param   msPeriod : Trigger period in msec.
+	 * @param   Type     : Trigger type single shot or continuous
+	 * @param	Handler	 : Optional Timer trigger user callback
+	 *
+	 * @return  real period in nsec based on clock calculation
+	 */
+	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod,
+										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+
+	/**
+	 * @brief	Enable a specific nanosecond timer trigger event.
+	 *
+	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
+	 * @param   nsPeriod : Trigger period in nsec.
+	 * @param   Type     : Trigger type single shot or continuous
+	 * @param	Handler	 : Optional Timer trigger user callback
+	 *
+	 * @return  real period in nsec based on clock calculation
+	 */
     virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod,
     									TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+
     virtual void DisableTimerTrigger(int TrigNo);
 
     int FindAvailTimerTrigger(void);
