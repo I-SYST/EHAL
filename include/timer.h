@@ -211,19 +211,6 @@ public:
 	int EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
 
 	/**
-	 * @brief	Enable millisecond timer trigger event.
-	 *
-	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
-	 * @param   msPeriod : Trigger period in msec.
-	 * @param   Type     : Trigger type single shot or continuous
-	 * @param	Handler	 : Optional Timer trigger user callback
-	 *
-	 * @return  real period in nsec based on clock calculation
-	 */
-	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod,
-										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
-
-	/**
 	 * @brief   Disable timer trigger event.
 	 *
 	 * @param   TrigNo : Trigger number to disable. Index value starting at 0

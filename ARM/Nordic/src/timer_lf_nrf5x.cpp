@@ -323,6 +323,11 @@ uint64_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
     return vnsPeriod * (uint64_t)cc; // Return real period in nsec
 }
 
+uint32_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler)
+{
+	return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type, Handler) / 1000000ULL);
+}
+
 void TimerLFnRF5x::DisableTimerTrigger(int TrigNo)
 {
     if (TrigNo < 0 || TrigNo >= TIMER_NRF5X_RTC_MAX_TRIGGER_EVT)
