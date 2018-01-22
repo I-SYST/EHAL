@@ -79,8 +79,9 @@ typedef void (*TIMER_EVTCB)(Timer *pTimer, uint32_t Evt);
  *
  * @param	Timer	: Pointer reference to Timer class generating the event
  * @param	TrigNo	: Trigger ID for which this callback is activated
+ * @param   pContext: Pointer to user context (user private data, could be a class or structure)
  */
-typedef void (*TIMER_TRIGCB)(Timer *pTimer, int TrigNo);
+typedef void (*TIMER_TRIGCB)(Timer *pTimer, int TrigNo, void *pContext);
 
 #pragma pack(push, 4)
 
@@ -88,6 +89,7 @@ typedef struct __Timer_Trigger_Info {
 	TIMER_TRIG_TYPE Type;	//!< Trigger type
 	uint64_t nsPeriod;		//!< Trigger period in nanosecond
 	TIMER_TRIGCB Handler;	//!< Trigger event callback
+	void *pContext;         //!<< Pointer to user private data to be passed to callback
 } TIMER_TRIGGER;
 
 /// @brief	Timer configuration data.
@@ -180,11 +182,13 @@ public:
 	 * @param   nsPeriod : Trigger period in nsec.
 	 * @param   Type     : Trigger type single shot or continuous
 	 * @param	Handler	 : Optional Timer trigger user callback
+	 * @param   pContext : Optional pointer to user private data to be passed
+	 *                     to the callback. This could be a class or structure pointer.
 	 *
 	 * @return  real period in nsec based on clock calculation
 	 */
-	virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod,
-										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL) = 0;
+	virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type,
+	                                    TIMER_TRIGCB Handler = NULL, void *pContext = NULL) = 0;
 
 	/**
 	 * @brief	Enable nanosecond timer trigger event.
@@ -192,11 +196,14 @@ public:
 	 * @param   nsPeriod : Trigger period in nsec.
 	 * @param   Type     : Trigger type single shot or continuous
 	 * @param	Handler	 : Optional Timer trigger user callback
+     * @param   pContext : Optional pointer to user private data to be passed
+     *                     to the callback. This could be a class or structure pointer.
 	 *
 	 * @return  Timer trigger ID on success
 	 * 			-1 : Failed
 	 */
-	virtual int EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+	virtual int EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type,
+	                               TIMER_TRIGCB Handler = NULL, void *pContext = NULL);
 
 	/**
 	 * @brief	Enable millisecond timer trigger event.
@@ -204,11 +211,14 @@ public:
 	 * @param   msPeriod : Trigger period in msec.
 	 * @param   Type     : Trigger type single shot or continuous
 	 * @param	Handler	 : Optional Timer trigger user callback
+     * @param   pContext : Optional pointer to user private data to be passed
+     *                     to the callback. This could be a class or structure pointer.
 	 *
 	 * @return  Timer trigger ID on success
 	 * 			-1 : Failed
 	 */
-	int EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+	int EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type,
+	                       TIMER_TRIGCB Handler = NULL, void *pContext = NULL);
 
 	/**
 	 * @brief   Disable timer trigger event.

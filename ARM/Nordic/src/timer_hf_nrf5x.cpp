@@ -62,7 +62,7 @@ void TimerHFnRF5x::IRQHandler()
             }
             if (vTrigger[i].Handler)
             {
-            	vTrigger[i].Handler(this, i);
+            	vTrigger[i].Handler(this, i, vTrigger[i].pContext);
             }
         }
 
@@ -384,7 +384,8 @@ uint64_t TimerHFnRF5x::TickCount()
 	return (uint64_t)vLastCount + vRollover;
 }
 
-uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler)
+uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type,
+                                          TIMER_TRIGCB Handler, void *pContext)
 {
     if (TrigNo < 0 || TrigNo >= vMaxNbTrigEvt)
         return 0;
@@ -412,7 +413,7 @@ uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
 
     if (count < vLastCount)
     {
-        // Counter wrap arround
+        // Counter wrap around
         vRollover += vFreq;
     }
 
@@ -420,13 +421,15 @@ uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
 
     vTrigger[TrigNo].nsPeriod = vnsPeriod * (uint64_t)cc / 10ULL;
     vTrigger[TrigNo].Handler = Handler;
+    vTrigger[TrigNo].pContext = pContext;
 
     return vnsPeriod * (uint64_t)cc / 10ULL; // Return real period in nsec
 }
 
-uint32_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler)
+uint32_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type,
+                                          TIMER_TRIGCB Handler, void *pContext)
 {
-	return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type, Handler) / 1000000ULL);
+	return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type, Handler, pContext) / 1000000ULL);
 }
 
 void TimerHFnRF5x::DisableTimerTrigger(int TrigNo)
@@ -440,6 +443,7 @@ void TimerHFnRF5x::DisableTimerTrigger(int TrigNo)
 
     vTrigger[TrigNo].Type = TIMER_TRIG_TYPE_SINGLE;
     vTrigger[TrigNo].Handler = NULL;
+    vTrigger[TrigNo].pContext = NULL;
     vTrigger[TrigNo].nsPeriod = 0;
 
 }

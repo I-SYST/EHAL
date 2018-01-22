@@ -67,8 +67,10 @@ public:
 	virtual uint32_t Frequency(void) { return vFreq; }
 	virtual uint64_t TickCount();
     int MaxTimerTrigger() { return TIMER_NRF5X_RTC_MAX_TRIGGER_EVT; }
-    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod,
-    									TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type,
+                                        TIMER_TRIGCB Handler = NULL, void *pContext = NULL);
+    virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type,
+                                        TIMER_TRIGCB Handler = NULL, void *pContext = NULL);
     virtual void DisableTimerTrigger(int TrigNo);
 
     int FindAvailTimerTrigger(void);
@@ -113,8 +115,10 @@ public:
     	return TIMER_NRF5X_HF_MAX_TRIGGER_EVT;
 #endif
     }
-    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod,
-    									TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type,
+                                        TIMER_TRIGCB Handler = NULL, void *pContext = NULL);
+    virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type,
+                                        TIMER_TRIGCB Handler = NULL, void *pContext = NULL);
     virtual void DisableTimerTrigger(int TrigNo);
 
     int FindAvailTimerTrigger(void);
