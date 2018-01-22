@@ -117,7 +117,13 @@ public:
 	virtual bool Mode(SENSOR_OPMODE OpMode, uint32_t Freq) {
 		vOpMode = OpMode;
 		vSampFreq = Freq;
+        vSampPeriod = 1000000000LL / vSampFreq;
 
+		if (vpTimer && OpMode == SENSOR_OPMODE_CONTINUOUS)
+		{
+		    vTimerTrigId = vpTimer->EnableTimerTrigger(vSampPeriod, TIMER_TRIG_TYPE_CONTINUOUS,
+		                                               TimerTrigHandler, (void*)this);
+		}
 		return true;
 	}
 
@@ -196,16 +202,24 @@ public:
 	 */
 	virtual bool UpdateData() = 0;
 
+	static void TimerTrigHandler(Timer *pTimer, int TrigNo, void *pContext) {
+	    Sensor *sensor = (Sensor*)pContext;
+
+	    sensor->UpdateData();
+	    sensor->StartSampling();
+	}
+
 protected:
 
 	SENSOR_STATE vState;		//!< Current sensor state
 	SENSOR_OPMODE vOpMode;		//!< Current operating mode
 	uint32_t vSampFreq;			//!< Sampling frequency in milliHerz, relevant to CONTINUOUS mode
-	uint64_t vSampPeriod;		//!< Sampling period in microsecond.
+	uint64_t vSampPeriod;		//!< Sampling period in nanosecond.
 	Timer *vpTimer;				//!< Timer to use for time stamping data
 	bool vbSampling;			//!< true - measurement in progress
 	uint64_t vSampleCnt;		//!< Keeping sample count
 	uint64_t vSampleTime;		//!< Time stamp when sampling is started
+	int vTimerTrigId;
 };
 
 extern "C" {

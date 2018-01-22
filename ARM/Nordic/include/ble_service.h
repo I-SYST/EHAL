@@ -189,12 +189,14 @@ class BleService {
 	virtual ~BleService() {}
 
 	virtual uint32_t Init(BLESRVC_CFG &Cfg) {
+	    vSrvc.pContext = (void*)this;
+
 		return BleSrvcInit(&vSrvc, &Cfg);
 	}
 	virtual uint32_t CharNotify(int Idx, uint8_t *pData, int DataLen) {
 		return BleSrvcCharNotify(&vSrvc, Idx, pData, DataLen);
 	}
-	virtual uint32_t CharUpdate(int Idx, uint8_t *pData, int DataLen) {
+	virtual uint32_t CharSetValue(int Idx, uint8_t *pData, int DataLen) {
 		return BleSrvcCharSetValue(&vSrvc, Idx, pData, DataLen);
 	}
 	virtual operator BLESRVC* () { return &vSrvc; }

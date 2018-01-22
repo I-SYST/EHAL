@@ -74,11 +74,13 @@ public:
 	 * @param   msPeriod : Trigger period in msec.
 	 * @param   Type     : Trigger type single shot or continuous
 	 * @param	Handler	 : Optional Timer trigger user callback
+	 * @param   pContext : Optional pointer to user private data to be passed
+	 *                     to the callback. This could be a class or structure pointer.
 	 *
 	 * @return  real period in nsec based on clock calculation
 	 */
-	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod,
-										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+    virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type,
+                                        TIMER_TRIGCB Handler = NULL, void *pContext = NULL);
 
 	/**
 	 * @brief	Enable a specific nanosecond timer trigger event.
@@ -87,11 +89,13 @@ public:
 	 * @param   nsPeriod : Trigger period in nsec.
 	 * @param   Type     : Trigger type single shot or continuous
 	 * @param	Handler	 : Optional Timer trigger user callback
+	 * @param   pContext : Optional pointer to user private data to be passed
+	 *                     to the callback. This could be a class or structure pointer.
 	 *
 	 * @return  real period in nsec based on clock calculation
 	 */
-    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod,
-    									TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type,
+                                        TIMER_TRIGCB Handler = NULL, void *pContext = NULL);
     virtual void DisableTimerTrigger(int TrigNo);
 
     int FindAvailTimerTrigger(void);
@@ -136,7 +140,6 @@ public:
     	return TIMER_NRF5X_HF_MAX_TRIGGER_EVT;
 #endif
     }
-
     /**
 	 * @brief	Enable millisecond timer trigger event.
 	 *
@@ -144,11 +147,13 @@ public:
 	 * @param   msPeriod : Trigger period in msec.
 	 * @param   Type     : Trigger type single shot or continuous
 	 * @param	Handler	 : Optional Timer trigger user callback
+	 * @param   pContext : Optional pointer to user private data to be passed
+	 *                     to the callback. This could be a class or structure pointer.
 	 *
 	 * @return  real period in nsec based on clock calculation
 	 */
-	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod,
-										TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
+    virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type,
+                                        TIMER_TRIGCB Handler = NULL, void *pContext = NULL);
 
 	/**
 	 * @brief	Enable a specific nanosecond timer trigger event.
@@ -157,12 +162,13 @@ public:
 	 * @param   nsPeriod : Trigger period in nsec.
 	 * @param   Type     : Trigger type single shot or continuous
 	 * @param	Handler	 : Optional Timer trigger user callback
+	 * @param   pContext : Optional pointer to user private data to be passed
+	 *                     to the callback. This could be a class or structure pointer.
 	 *
 	 * @return  real period in nsec based on clock calculation
 	 */
-    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod,
-    									TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler = NULL);
-
+    virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type,
+                                        TIMER_TRIGCB Handler = NULL, void *pContext = NULL);
     virtual void DisableTimerTrigger(int TrigNo);
 
     int FindAvailTimerTrigger(void);

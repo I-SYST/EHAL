@@ -34,24 +34,24 @@ Modified by          Date              Description
 
 #include "timer.h"
 
-int Timer::EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler)
+int Timer::EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler, void *pContext)
 {
 	int idx = FindAvailTimerTrigger();
 	if (idx < 0)
 		return 0;
 
-	uint64_t period = EnableTimerTrigger(idx, nsPeriod, Type, Handler);
+	uint64_t period = EnableTimerTrigger(idx, nsPeriod, Type, Handler, pContext);
 
 	return idx;
 }
 
-int Timer::EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler)
+int Timer::EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler, void *pContext)
 {
 	int idx = FindAvailTimerTrigger();
 	if (idx < 0)
 		return 0;
 
-	uint32_t period = EnableTimerTrigger(idx, msPeriod, Type, Handler);
+	uint32_t period = EnableTimerTrigger(idx, msPeriod, Type, Handler, pContext);
 
 	return idx;
 }
