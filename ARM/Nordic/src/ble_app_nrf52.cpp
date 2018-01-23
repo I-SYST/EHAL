@@ -119,6 +119,7 @@ typedef struct _BleAppData {
 	uint32_t (*SDEvtHandler)(void) ;
 	ble_advdata_t SRData;
 	int MaxMtu;
+	bool bSecure;
 } BLEAPP_DATA;
 
 #pragma pack(pop)
@@ -438,6 +439,10 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
            // APP_ERROR_CHECK(err_code);
         	break;
 
+        case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
+            {
+            }
+            break;
         case BLE_GAP_EVT_PASSKEY_DISPLAY:
         {
             //char passkey[8 + 1];
@@ -659,9 +664,13 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
 			break;
 
         case PM_EVT_CONN_SEC_FAILED:
-            err_code = sd_ble_gap_disconnect(g_BleAppData.ConnHdl,
-                                             BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-            APP_ERROR_CHECK(err_code);
+            //if (g_BleAppData.ConnHdl != BLE_CONN_HANDLE_INVALID)
+            if (g_BleAppData.bSecure && g_BleAppData.ConnHdl != BLE_CONN_HANDLE_INVALID)
+            {
+                err_code = sd_ble_gap_disconnect(g_BleAppData.ConnHdl,
+                                                 BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+                APP_ERROR_CHECK(err_code);
+            }
             break;
 
         case PM_EVT_CONN_SEC_CONFIG_REQ:
@@ -683,15 +692,16 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
             break;
 
         case PM_EVT_PEERS_DELETE_SUCCEEDED:
-        {
-        	ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
-        } break;
+
+            ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
+
+            break;
 
         case PM_EVT_LOCAL_DB_CACHE_APPLY_FAILED:
-        {
             // The local database has likely changed, send service changed indications.
             pm_local_database_has_changed();
-        } break;
+
+            break;
 
         case PM_EVT_PEER_DATA_UPDATE_FAILED:
         {
@@ -1447,6 +1457,15 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     }
 
 	BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
+
+	if (pBleAppCfg->SecType != BLEAPP_SECTYPE_NONE)
+	{
+	    g_BleAppData.bSecure = true;
+	}
+	else
+	{
+	    g_BleAppData.bSecure = false;
+	}
 
    // err_code = fds_register(fds_evt_handler);
    // APP_ERROR_CHECK(err_code);
