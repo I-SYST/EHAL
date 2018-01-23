@@ -200,7 +200,7 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 
 		Mode(CfgData.OpMode, CfgData.Freq);
 
-		State(SENSOR_STATE_SLEEP);
+		//State(SENSOR_STATE_SLEEP);
 
 		usDelay(10000);
 	}
@@ -296,7 +296,7 @@ bool TphBme280::Mode(SENSOR_OPMODE OpMode, uint32_t Freq)
 		Write(&regaddr, 1, &d, 1);
 	}
 
-	StartSampling();
+	//StartSampling();
 
 	return true;
 }
@@ -314,10 +314,14 @@ bool TphBme280::StartSampling()
 
 	d = Read8(&regaddr, 1);
 
-	if (d & (BME280_REG_STATUS_MEASURING | BME280_REG_STATUS_IM_UPDATE))
+	if (d == 0xff)
 	{
-		return false;
+		State(SENSOR_STATE_IDLE);
+		d = Read8(&regaddr, 1);
 	}
+
+	if (d & (BME280_REG_STATUS_MEASURING | BME280_REG_STATUS_IM_UPDATE))
+		return false;
 
 	regaddr = BME280_REG_CTRL_MEAS;
 	d = vCtrlReg | BME280_REG_CTRL_MEAS_MODE_NORMAL;

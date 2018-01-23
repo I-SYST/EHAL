@@ -220,6 +220,8 @@ bool BleIntrfNotify(BLEINTRF *pIntrf)
             }
         } while (pkt != NULL);
     }
+
+    return true;
 }
 
 /**
@@ -240,7 +242,6 @@ int BleIntrfTxData(DEVINTRF *pDevIntrf, uint8_t *pData, int DataLen)
     BLEINTRF_PKT *pkt;
     int maxlen = intrf->hTxFifo->BlkSize - sizeof(pkt->Len);
 	int cnt = 0;
-	uint32_t res;
 
 	while (DataLen > 0)
 	{
@@ -303,7 +304,7 @@ void BleIntrfRxWrCB(BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len)
 {
 	BLEINTRF *intrf = (BLEINTRF*)pBleSvc->pContext;
     BLEINTRF_PKT *pkt;
-    int maxlen = intrf->hTxFifo->BlkSize - sizeof(pkt->Len);
+    //int maxlen = intrf->hTxFifo->BlkSize - sizeof(pkt->Len);
 
 	while (Len > 0) {
 		pkt = (BLEINTRF_PKT *)CFifoPut(intrf->hRxFifo);

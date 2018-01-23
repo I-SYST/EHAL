@@ -444,7 +444,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
                     (req.request.write.op == BLE_GATTS_OP_EXEC_WRITE_REQ_NOW) ||
                     (req.request.write.op == BLE_GATTS_OP_EXEC_WRITE_REQ_CANCEL))
                 {
-                	printf("BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST\r\n");
+                	//printf("BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST\r\n");
                     if (req.type == BLE_GATTS_AUTHORIZE_TYPE_WRITE)
                     {
                         auth_reply.type = BLE_GATTS_AUTHORIZE_TYPE_WRITE;

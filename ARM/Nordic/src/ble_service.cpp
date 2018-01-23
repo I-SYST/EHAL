@@ -55,6 +55,12 @@ typedef struct {
 
 uint32_t BleSrvcCharNotify(BLESRVC *pSrvc, int Idx, uint8_t *pData, uint16_t DataLen)
 {
+	if (pSrvc->ConnHdl == BLE_CONN_HANDLE_INVALID)
+		return NRF_ERROR_INVALID_STATE;
+
+	if (pSrvc->pCharArray[Idx].bNotify == false)
+		return NRF_ERROR_INVALID_STATE;
+
     ble_gatts_hvx_params_t params;
 
     memset(&params, 0, sizeof(params));
@@ -70,7 +76,7 @@ uint32_t BleSrvcCharNotify(BLESRVC *pSrvc, int Idx, uint8_t *pData, uint16_t Dat
 
 uint32_t BleSrvcCharSetValue(BLESRVC *pSrvc, int Idx, uint8_t *pData, uint16_t DataLen)
 {
-    ble_gatts_value_t value;
+	ble_gatts_value_t value;
 
     memset(&value, 0, sizeof(ble_gatts_value_t));
 
@@ -213,7 +219,8 @@ static void BleSrvcEncSec(ble_gap_conn_sec_mode_t *pSecMode, BLESRVC_SECTYPE Sec
     }
 }
 
-/**@brief Add control characteristic.
+/**
+ * @brief Add control characteristic.
  *
  * @param[in]   	pSrvc   : Service data.
  * @param[in/out]   pChar   : characteristic to initialize.

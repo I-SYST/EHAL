@@ -315,6 +315,9 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 
 	Mode(CfgData.OpMode, CfgData.Freq);
 
+	if (CfgData.DataRdyCB != NULL)
+		TphSensor::vDataRdyHandler = CfgData.DataRdyCB;
+
 	return true;
 }
 
