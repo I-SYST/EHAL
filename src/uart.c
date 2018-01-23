@@ -42,31 +42,29 @@ Modified by          Date              Description
 extern char s_Buffer[];	// defined in sbuffer.c
 extern int s_BufferSize;
 
-//#define UARTPRINTF_BUFFMAX		128
-//char s_Buffer[UARTPRINTF_BUFFMAX];	// defined in sbuffer.c
-//int s_BufferSize = UARTPRINTF_BUFFMAX;
-//char g_UARTPrintfBuffer[UARTPRINTF_BUFFMAX] = {0,};
-
 int UARTRx(UARTDEV *pDev, uint8_t *pBuff, int Bufflen)
 {
 	int len = 0;
 
-    pDev->DevIntrf.StartRx(&pDev->DevIntrf, 0);
+    return DeviceIntrfRx(&pDev->DevIntrf, 0, pBuff, Bufflen);
+/*    pDev->DevIntrf.StartRx(&pDev->DevIntrf, 0);
     len = pDev->DevIntrf.RxData(&pDev->DevIntrf, pBuff, Bufflen);
     pDev->DevIntrf.StopRx(&pDev->DevIntrf);
 
-    return len;
+    return len;*/
 }
 
 int UARTTx(UARTDEV *pDev, uint8_t *pData, int Datalen)
 {
 	int len = 0;
 
+	return DeviceIntrfTx(&pDev->DevIntrf, 0, pData, Datalen);
+/*
     pDev->DevIntrf.StartTx(&pDev->DevIntrf, 0);
     len = pDev->DevIntrf.TxData(&pDev->DevIntrf, pData, Datalen);
     pDev->DevIntrf.StopTx(&pDev->DevIntrf);
 
-    return len;
+    return len;*/
 }
 
 void UARTprintf(UARTDEV *pDev, const char *pFormat, ...)
@@ -82,7 +80,7 @@ void UARTvprintf(UARTDEV *pDev, const char *pFormat, va_list vl)
     vsnprintf(s_Buffer, s_BufferSize, pFormat, vl);
     int len = strlen(s_Buffer);
     uint8_t *p = (uint8_t*)s_Buffer;
-    int to = 1000;
+    int to = 20;
     while (len > 0 && to > 0)
     {
     	int l;
