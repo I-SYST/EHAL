@@ -113,16 +113,6 @@ SECTIONS
 
 SECTIONS
 {
-	.fs_data :
-	{
-		PROVIDE(__start_fs_data = .);
-		KEEP(*(.fs_data))
-		PROVIDE(__stop_fs_data = .);
-	} > RAM AT > FLASH
-} INSERT AFTER .data;
-
-SECTIONS
-{
 	. = ALIGN(4);
 	.svc_data :
 	{
@@ -137,7 +127,8 @@ SECTIONS
 		KEEP(*(.fs_data))
 		PROVIDE(__stop_fs_data = .);
 	} > RAM AT > FLASH
-	 .log_dynamic_data :
+	
+	.log_dynamic_data :
 	{
 		PROVIDE(__start_log_dynamic_data = .);
 		KEEP(*(.log_dynamic_data))
