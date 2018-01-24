@@ -256,6 +256,7 @@ extern "C" {
 static inline void DeviceIntrfDisable(DEVINTRF *pDev) {
 	if (AtomicDec(&pDev->EnCnt) < 1) {
     	pDev->Disable(pDev);
+    	AtomicAssign(&pDev->EnCnt, 0);
     }
 }
 
