@@ -525,7 +525,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
   //          APP_ERROR_CHECK(err_code);
   //          break; // BLE_EVT_USER_MEM_REQUEST
 
-        case BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST:
+/*        case BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST:
         {
             ble_gatts_evt_rw_authorize_request_t  req;
             ble_gatts_rw_authorize_reply_params_t auth_reply;
@@ -554,6 +554,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
                 }
             }
         } break; // BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST
+        */
 
         case BLE_GAP_EVT_LESC_DHKEY_REQUEST:
         //    NRF_LOG_INFO("%s: BLE_GAP_EVT_LESC_DHKEY_REQUEST\r\n", nrf_log_push(roles_str[role]));

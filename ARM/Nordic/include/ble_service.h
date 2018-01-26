@@ -56,26 +56,37 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLESVC_CHAR_PROP_WRITEWORESP	(1<<2)
 #define BLESVC_CHAR_PROP_WRITE			(1<<3)
 #define BLESVC_CHAR_PROP_VARLEN			(1<<4)
+#define BLESVC_CHAR_PROP_RDAUTH			(1<<5)
+#define BLESVC_CHAR_PROP_WRAUTH			(1<<6)
+
 
 typedef struct __BLE_Service_Data BLESRVC;
 
 /**
- * Callback on write
+ * @brief	Callback on write
  */
-typedef void (*BLESRVC_WRCB) (BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
+typedef void (*BLESRVC_WRCB) (BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len);
 
 /**
- * Callback on set notification
+ * @brief	Callback on set notification
  */
-typedef void (*BLESRVC_SETNOTCB) (BLESRVC *pBlueIOSvc, bool bEnable);
+typedef void (*BLESRVC_SETNOTCB) (BLESRVC *pBleSvc, bool bEnable);
 
 /**
- * Callback when transmission is completed
+ * @brief	Callback when transmission is completed
  *
- * @param pBlueIOSvc
- * @param CharIdx
+ * @param	pBlueIOSvc
+ * @param	CharIdx
  */
-typedef void (*BLESRVC_TXCOMPLETE) (BLESRVC *pBlueIOSvc, int CharIdx);
+typedef void (*BLESRVC_TXCOMPLETE) (BLESRVC *pBleSvc, int CharIdx);
+
+/**
+ * @brief	Callback on authorization request
+ *
+ * @param	pBlueIOSvc
+ * @param	p_ble_evt
+ */
+typedef void (*BLESRVC_AUTHREQ)(BLESRVC *pBleSvc, ble_evt_t * p_ble_evt);
 
 // Service connection security types
 typedef enum {
@@ -114,6 +125,7 @@ typedef struct __BLE_Service_Config {
 	BLESRVC_CHAR *pCharArray;           //!< Pointer a an array of characteristic
     uint8_t			*pLongWrBuff;		//!< pointer to user long write buffer
     int				LongWrBuffSize;		//!< long write buffer size
+    BLESRVC_AUTHREQ	AuthReqCB;			//!< Authorization request callback
 } BLESRVC_CFG;
 
 /*
@@ -132,6 +144,7 @@ struct __BLE_Service_Data {
     uint8_t			*pLongWrBuff;		//!< pointer to user long write buffer
     int				LongWrBuffSize;		//!< long write buffer size
     void			*pContext;
+    BLESRVC_AUTHREQ	AuthReqCB;			//!< Authorization request callback
 };
 
 #pragma pack(pop)

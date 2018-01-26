@@ -169,6 +169,13 @@ void BleSrvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt)
         	}
         	break;
 
+        case BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST:
+        	if (pSrvc->AuthReqCB)
+        	{
+        		pSrvc->AuthReqCB(pSrvc, pBleEvt);
+        	}
+        	break;
+
 #if (NRF_SD_BLE_API_VERSION > 3)
         case BLE_GATTS_EVT_HVN_TX_COMPLETE:
 #else
@@ -288,22 +295,30 @@ static uint32_t BlueIOBleSrvcCharAdd(BLESRVC *pSrvc, BLESRVC_CHAR *pChar,
     {
         BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.write_perm);
     }
-/*
-    if (pChar->Property & BLESVC_CHAR_PROP_WRITEWORESP)
-	{
-		char_md.char_props.write_wo_resp = 1;
-    	BleSrvcEncSec(&attr_md.write_perm, SecType);
-		BleSrvcEncSec(&attr_md.read_perm, SecType);
-	}
-*/
+
     ble_uuid.type = pSrvc->UuidType;
     ble_uuid.uuid = pChar->Uuid;
 
-
-
     attr_md.vloc       = BLE_GATTS_VLOC_STACK;
-    attr_md.rd_auth    = 0;
-    attr_md.wr_auth    = 0;
+
+    if (pChar->Property & BLESVC_CHAR_PROP_RDAUTH)
+    {
+    	attr_md.rd_auth    = 1;
+    }
+    else
+    {
+    	attr_md.rd_auth    = 0;
+    }
+
+    if (pChar->Property & BLESVC_CHAR_PROP_WRAUTH)
+    {
+    	attr_md.wr_auth    = 1;
+    }
+    else
+    {
+    	attr_md.wr_auth    = 0;
+    }
+
     if (pChar->Property & BLESVC_CHAR_PROP_VARLEN)
     {
     	attr_md.vlen       = 1;	// Variable length
@@ -371,6 +386,7 @@ uint32_t BleSrvcInit(BLESRVC *pSrvc, const BLESRVC_CFG *pCfg)
 
     pSrvc->pLongWrBuff = pCfg->pLongWrBuff;
     pSrvc->LongWrBuffSize = pCfg->LongWrBuffSize;
+    pSrvc->AuthReqCB = pCfg->AuthReqCB;
 
     return NRF_SUCCESS;
 }
