@@ -39,18 +39,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ble_srv_common.h"
 
-/// Default BlueIO UUID.  User should use privately generated UUID
-/// UUID : 00000000-287c-11e4-ab74-0002a5d5c51b
-#define BLUEIO_UUID_BASE { 	0x1b, 0xc5, 0xd5, 0xa5, 0x02, 0x00, 0x74, 0xab, \
-							0xe4, 0x11, 0x7c, 0x28, 0x00, 0x00, 0x00, 0x00 }
-#define BLUEIO_UUID_SERVICE 		0x1
-#define BLUEIO_UUID_RDCHAR 			0x2
-#define BLUEIO_UUID_WRCHAR 			0x3
-
-#define BLUEIO_UUID_UART_SERVICE 	0x101
-#define BLUEIO_UUID_UART_RX_CHAR	0x102
-#define BLUEIO_UUID_UART_TX_CHAR	0x103
-
 #define BLESVC_CHAR_PROP_READ			(1<<0)
 #define BLESVC_CHAR_PROP_NOTIFY			(1<<1)
 #define BLESVC_CHAR_PROP_WRITEWORESP	(1<<2)

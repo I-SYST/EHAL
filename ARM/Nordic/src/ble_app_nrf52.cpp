@@ -498,11 +498,11 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
         case BLE_GAP_EVT_TIMEOUT:
             if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
             {
-            	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
-            	{
-            		//err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
-                  //APP_ERROR_CHECK(err_code);
-            	}
+            		if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+				{
+					//err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
+            			//APP_ERROR_CHECK(err_code);
+				}
             }
             break;
 
@@ -841,52 +841,6 @@ static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
     ble_db_discovery_on_ble_evt(p_ble_evt, p_context);
 }
 
-/**@brief Function for dispatching a system event to interested modules.
- *
- * @details This function is called from the System event interrupt handler after a system
- *          event has been received.
- *
- * @param[in] sys_evt  System stack event.
- */
-static void sys_evt_dispatch(uint32_t sys_evt, void *pContext)
-{
-/*    switch (sys_evt)
-    {
-        case NRF_EVT_FLASH_OPERATION_SUCCESS:
-            flash_operation_success_run();
-            break;
-
-        case NRF_EVT_FLASH_OPERATION_ERROR:
-            if (!(m_flags & MASK_FLASH_API_ERR_BUSY))
-            {
-                flash_operation_failure_run();
-            }
-            else
-            {
-                // As our last flash operation request was rejected by the flash API reissue the
-                // request by doing same code execution path as for flash operation sucess
-                // event. This will promote code reuse in the implementation.
-                flash_operation_success_run();
-            }
-            break;
-
-        default:
-            // No implementation needed.
-            break;
-    }
-*/
-    // Dispatch the system event to the fstorage module, where it will be
-    // dispatched to the Flash Data Storage (FDS) module.
-  //  fs_sys_event_handler(sys_evt);
-
-    // Dispatch to the Advertising module last, since it will check if there are any
-    // pending flash operations in fstorage. Let fstorage process system events first,
-    // so that it can report correctly to the Advertising module.
-    //ble_advertising_on_sys_evt(sys_evt);
-}
-
-
-
 /**@brief Function for the Peer Manager initialization.
  *
  * @param[in] erase_bonds  Indicates whether bonding information should be cleared from
@@ -1124,17 +1078,17 @@ void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
     // Initialize Device Information Service.
     memset(&dis_init, 0, sizeof(dis_init));
 
-    if (pBleAppCfg->pDevDesc)
-    {
-    	ble_srv_ascii_to_utf8(&dis_init.manufact_name_str, (char*)pBleAppCfg->pDevDesc->ManufName);
-    	ble_srv_ascii_to_utf8(&dis_init.model_num_str, (char*)pBleAppCfg->pDevDesc->ModelName);
-    	if (pBleAppCfg->pDevDesc->pSerialNoStr)
-    		ble_srv_ascii_to_utf8(&dis_init.serial_num_str, (char*)pBleAppCfg->pDevDesc->pSerialNoStr);
-    	if (pBleAppCfg->pDevDesc->pFwVerStr)
-    		ble_srv_ascii_to_utf8(&dis_init.fw_rev_str, (char*)pBleAppCfg->pDevDesc->pFwVerStr);
-    	if (pBleAppCfg->pDevDesc->pHwVerStr)
-    		ble_srv_ascii_to_utf8(&dis_init.hw_rev_str, (char*)pBleAppCfg->pDevDesc->pHwVerStr);
-    }
+	if (pBleAppCfg->pDevDesc)
+	{
+		ble_srv_ascii_to_utf8(&dis_init.manufact_name_str, (char*)pBleAppCfg->pDevDesc->ManufName);
+		ble_srv_ascii_to_utf8(&dis_init.model_num_str, (char*)pBleAppCfg->pDevDesc->ModelName);
+		if (pBleAppCfg->pDevDesc->pSerialNoStr)
+			ble_srv_ascii_to_utf8(&dis_init.serial_num_str, (char*)pBleAppCfg->pDevDesc->pSerialNoStr);
+		if (pBleAppCfg->pDevDesc->pFwVerStr)
+			ble_srv_ascii_to_utf8(&dis_init.fw_rev_str, (char*)pBleAppCfg->pDevDesc->pFwVerStr);
+		if (pBleAppCfg->pDevDesc->pHwVerStr)
+			ble_srv_ascii_to_utf8(&dis_init.hw_rev_str, (char*)pBleAppCfg->pDevDesc->pHwVerStr);
+	}
 
     pnp_id.vendor_id  = pBleAppCfg->VendorID;
     pnp_id.product_id = pBleAppCfg->ProductId;
@@ -1193,25 +1147,21 @@ bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 {
 	uint32_t err_code;
 
-
     //BleAppInitUserData();
 
-    BleAppGapParamInit(pBleAppCfg);
+	BleAppGapParamInit(pBleAppCfg);
 
-    gatt_init();
+	gatt_init();
 
-    if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
-    	conn_params_init();
+	if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
+		conn_params_init();
 
-    BleAppInitUserServices();
+	BleAppInitUserServices();
 
-    if (pBleAppCfg->bEnDevInfoService)
-    	BleAppDisInit(pBleAppCfg);
+	if (pBleAppCfg->bEnDevInfoService)
+		BleAppDisInit(pBleAppCfg);
 
-
-
-
-    return true;
+	return true;
 }
 
 bool BleAppStackInit(int CentLinkCount, int PeriLinkCount, bool bConnectable)
@@ -1366,7 +1316,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
     {
-    	BleAppConnectable(pBleAppCfg, bEraseBond);
+    		BleAppConnectable(pBleAppCfg, bEraseBond);
     }
 
     if (pBleAppCfg->CentLinkCount > 0)

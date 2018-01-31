@@ -46,34 +46,34 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLUEIO_DATA_TYPE_APP			0		//!< Application custom data
 #define BLUEIO_DATA_TYPE_TPH			1		//!< Environmental sensor data (Temperature, Pressure, Humidity)
 #define BLUEIO_DATA_TYPE_GAS			2		//!< Gas sensor data
-#define BLUEIO_DATA_TYPE_ACCEL			3		//!< Accelerometer sensor data
-#define BLUEIO_DATA_TYPE_GYRO			4		//!< Gyroscope sensor data
+#define BLUEIO_DATA_TYPE_ACCEL		3		//!< Accelerometer sensor data
+#define BLUEIO_DATA_TYPE_GYRO		4		//!< Gyroscope sensor data
 #define BLUEIO_DATA_TYPE_MAG			5		//!< Magnetometer sensor data
-#define BLUEIO_DATA_TYPE_PROXY			6		//!< Proximity sensor data
+#define BLUEIO_DATA_TYPE_PROXY		6		//!< Proximity sensor data
 #define BLUEIO_DATA_TYPE_ADC			7		//!< Analog converter data
-#define BLUEIO_DATA_TYPE_GPIO			8		//!< GPIO pins state
+#define BLUEIO_DATA_TYPE_GPIO		8		//!< GPIO pins state
 #define BLUEIO_DATA_TYPE_BUT			9		//!< Button/Switch state
 #define BLUEIO_DATA_TYPE_MOT			10		//!< Motion detection
 #define BLUEIO_DATA_TYPE_I2C			11		//!< I2C interface data
 #define BLUEIO_DATA_TYPE_SPI			12		//!< SPI interface data
-#define BLUEIO_DATA_TYPE_UART			13		//!< UART interface data
+#define BLUEIO_DATA_TYPE_UART		13		//!< UART interface data
 #define BLUEIO_DATA_TYPE_PPI			14		//!< PPI interface data
-#define BLUEIO_DATA_TYPE_AUDIO			15		//!< Audio data
+#define BLUEIO_DATA_TYPE_AUDIO		15		//!< Audio data
 
 #pragma pack(push, 1)
 
 /// Temperature, Pressure, Humidity sensor data
 typedef struct __BlueIO_Data_TPH {
-	uint32_t Pressure;		//!< Barometric pressure in Pa no decimal
-	int16_t  Temperature;	//!< Temperature in degree C, 2 decimals fixed point
-	uint16_t Humidity;		//!< Relative humidity in %, 2 decimals fixed point
+	uint32_t Pressure;			//!< Barometric pressure in Pa no decimal
+	int16_t  Temperature;		//!< Temperature in degree C, 2 decimals fixed point
+	uint16_t Humidity;			//!< Relative humidity in %, 2 decimals fixed point
 } BLUEIO_DATA_TPH;
 
 /// Gas sensor data
 typedef struct __BlueIO_Data_Gas {
-	uint32_t GasRes;		//!< Gas resistance
-	uint16_t AirQIdx;		//!< Air quality index
-	uint8_t	AirQuality;		//!< Indicate air quality
+	uint32_t GasRes;				//!< Gas resistance
+	uint16_t AirQIdx;			//!< Air quality index
+	uint8_t	AirQuality;			//!< Indicate air quality
 } BLUEIO_DATA_GAS;
 
 /// Accelerometer data
@@ -99,73 +99,81 @@ typedef struct __BlueIO_Data_Mag {
 
 /// Proximity sensor data
 typedef struct __BlueIO_Data_Proxy {
-	uint32_t Id;			//!< Sensor ID
-	uint32_t Val;			//!< Range value
+	uint32_t Id;					//!< Sensor ID
+	uint32_t Val;				//!< Range value
 } BLUEIO_DATA_PROXY;
 
 /// ADC data
 typedef struct __BlueIO_Data_Adc {
-	uint32_t ChanId;		//!< ADC channel id
-	float	 Voltage;		//!< Voltage measured
+	uint32_t ChanId;				//!< ADC channel id
+	float	 Voltage;			//!< Voltage measured
 } BLUEIO_DATA_ADC;
 
 /// GPIO data
 typedef struct __BlueIO_Data_Gpio {
-	uint8_t PortNo;			//!< Port number
-	uint32_t PinVal;		//!< Bit field pin values (bit0 = Pin0, bit1 = Pin1, etc..)
+	uint8_t PortNo;				//!< Port number
+	uint32_t PinVal;				//!< Bit field pin values (bit0 = Pin0, bit1 = Pin1, etc..)
 } BLUEIO_DATA_GPIO;
 
 #define BLUEIO_BUTTON_ARRAY_MAX		8
 
+/// Button or switch state
+typedef enum __BlueIO_But_State {
+	BLUEIO_BUT_STATE_OFF,		//!< State OFF
+	BLUEIO_BUT_STATE_ON,			//!< State ON
+	BLUEIO_BUT_STATE_PRESSED,	//!< State transition from OFF to ON
+	BLUEIO_BUT_STATE_RELEASED	//!< State transition from ON to OFF
+} BLUEIO_BUT_STATE;
+
 /// Button data
 typedef struct __BlueIO_Data_Button {
-	uint8_t ButStates[BLUEIO_BUTTON_ARRAY_MAX];		//!< Bit field button states
+	BLUEIO_BUT_STATE ButState[BLUEIO_BUTTON_ARRAY_MAX];	//!< Buttons state
 } BLUEIO_DATA_BUT;
 
 /// Motion sensor data
 typedef struct __BlueIO_Data_Motiont {
-	uint32_t Id;			//!< Sensor ID
-	uint32_t Val;			//!< Detection state (0 - no motion, 1 - motion
+	uint32_t Id;					//!< Sensor ID
+	uint32_t Val;				//!< Detection state (0 - no motion, 1 - motion
 } BLUEIO_DATA_MOTION;
 
 #define BLUEIO_I2C_DATA_LEN_MAX		6
 /// I2C data
 typedef struct __BlueIO_Data_I2C {
-	uint8_t	Id;				//!< interace ID
-	uint8_t Len;			//!< data length
+	uint8_t	Id;					//!< interace ID
+	uint8_t Len;					//!< data length
 	uint8_t Data[BLUEIO_I2C_DATA_LEN_MAX];	//!< data array
 } BLUEIO_DATA_I2C;
 
 #define BLUEIO_SPI_DATA_LEN_MAX		6
 /// SPI data
 typedef struct __BlueIO_Data_SPI {
-	uint8_t	Id;				//!< interace ID
-	uint8_t Len;			//!< data length
+	uint8_t	Id;					//!< interace ID
+	uint8_t Len;					//!< data length
 	uint8_t Data[BLUEIO_I2C_DATA_LEN_MAX];	//!< data array
 } BLUEIO_DATA_SPI;
 
 #define BLUEIO_UART_DATA_LEN_MAX		6
 /// UART data
 typedef struct __BlueIO_Data_UART {
-	uint8_t	Id;				//!< interace ID
-	uint8_t Len;			//!< data length
+	uint8_t	Id;					//!< interace ID
+	uint8_t Len;					//!< data length
 	uint8_t Data[BLUEIO_I2C_DATA_LEN_MAX];	//!< data array
 } BLUEIO_DATA_UART;
 
 /// PPI data
 typedef struct __BlueIO_Data_PPI {
-	uint8_t	Id;				//!< interace ID
-	uint8_t Len;			//!< data length
-	uint8_t Data[1];		//!< data array, variable length
+	uint8_t	Id;					//!< interace ID
+	uint8_t Len;					//!< data length
+	uint8_t Data[1];				//!< data array, variable length
 } BLUEIO_DATA_PPI;
 
 
 /// Audio data, this structure has variable length
 typedef struct __BlueIO_Data_Audio {
-	uint8_t Chan;			//!< Chan number
-	uint8_t CodeType;		//!< Encoding type
-	uint16_t Len;			//!< Data length
-	uint8_t Data[1];		// !< Audio data variable length
+	uint8_t Chan;				//!< Chan number
+	uint8_t CodeType;			//!< Encoding type
+	uint16_t Len;				//!< Data length
+	uint8_t Data[1];				// !< Audio data variable length
 } BLUEIO__DATAAUDIO;
 
 #pragma pack(pop)
