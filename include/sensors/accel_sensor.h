@@ -69,7 +69,7 @@ public:
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf *pIntrf, Timer *pTimer) = 0;
 	virtual bool Read(ACCELSENSOR_DATA *pData) = 0;
 	virtual uint8_t Scale() { return vScale; }
-	virtual uint8_t Scale(uint8_t Value) { vScale = Value; }
+	virtual uint8_t Scale(uint8_t Value) { vScale = Value; return vScale; }
 
 protected:
 	virtual bool UpdateData() = 0;

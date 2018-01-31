@@ -84,6 +84,8 @@ bool TphMS8607::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 
 	Reset();
 
+	Valid(true);
+
 	ReadPtProm();
 
 	return true;

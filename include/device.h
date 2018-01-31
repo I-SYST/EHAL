@@ -57,7 +57,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// data via it's DeviceIntrf object.
 class Device {
 public:
-	Device() : vDevAddr(0), vpIntrf(NULL) {}
+	Device() : vDevAddr(0), vpIntrf(NULL), vbValid(false), vDevId(-1) {}
 
 	//
 	// *** Require implementations ***
@@ -111,21 +111,6 @@ public:
 	 * @return	64 Bits device id value
 	 */
 	virtual uint64_t DeviceID() { return vDevId; }
-
-	/**
-	 * @brief	Store device id.
-	 *
-	 * This device id value is implementation specific.  It can store hardware
-	 * device identifier or serial number at the discretion of the implementor
-	 *
-	 * @param	DevId : Device id value to store
-	 *
-	 * @return	64 Bits device id value
-	 */
-	virtual uint64_t DeviceID(uint64_t DevId) {
-		vDevId = DevId;
-		return vDevId;
-	}
 
 	/**
 	 * @brief	Read device's register/memory block
@@ -246,7 +231,33 @@ public:
 		return Write(pRegAddr, RegAddrLen, (uint8_t*)&Data, 1) > 3;
 	}
 
+	/**
+	 * @brief	Return availability of the device
+	 *
+	 * This function return true if the device has been detected and ready to use.
+	 *
+	 * @return	true - Device is valid.
+	 */
+	bool Valid() { return vbValid; }
+
 protected:
+	/**
+	 * @brief	Store device id.
+	 *
+	 * This device id value is implementation specific.  It can store hardware
+	 * device identifier or serial number at the discretion of the implementor
+	 *
+	 * @param	DevId : Device id value to store
+	 */
+	void DeviceID(uint64_t DevId) { vDevId = DevId; }
+
+	/**
+	 * @brief	Set device validity.
+	 *
+	 * Set valid to true if device is detect and initialized.  Otherwise set it to false
+	 *
+	 */
+	void Valid(bool bVal) { vbValid = bVal; }
 
 	/**
 	 * @brief	Set device's communication interface
@@ -262,10 +273,10 @@ protected:
 	 */
 	DeviceIntrf *Interface() { return vpIntrf; }
 
-
+	bool			vbValid;			//!< Device is valid ready to use (passed detection)
 	uint32_t 	vDevAddr;		//!< Device address or chip select
 	DeviceIntrf *vpIntrf;		//!< Device's interface
-	uint64_t	vDevId;			//!< This is implementation specific data for device identifier
+	uint64_t		vDevId;			//!< This is implementation specific data for device identifier
 	 	 	 	 	 	 	 	//!< could be value reg from hardware register or serial number
 };
 

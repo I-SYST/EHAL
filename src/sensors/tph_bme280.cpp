@@ -147,6 +147,7 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 		found  = true;
 
 		DeviceID(d);
+		Valid(true);
 
 		Reset();
 

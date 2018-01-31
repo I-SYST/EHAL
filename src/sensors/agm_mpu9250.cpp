@@ -78,6 +78,9 @@ bool AgmMpu9250::InitDefault(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTime
 
 	Reset();
 
+	DeviceID(d);
+
+
 	// NOTE : require delay for reset to stabilize
 	// the chip would not respond properly to motion detection
 	usDelay(200000);
@@ -154,6 +157,7 @@ bool AgmMpu9250::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer
 		vSampFreq = 500;
 	}
 
+	Valid(true);
 
 	return true;
 }

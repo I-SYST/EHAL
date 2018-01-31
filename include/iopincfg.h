@@ -44,49 +44,49 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /// I/O pin resistor configuration
 typedef enum __iopin_resistor {
-	IOPINRES_NONE,		//!< No pullup or pulldown
-	IOPINRES_PULLUP,	//!< Pullup resistor
-	IOPINRES_PULLDOWN,	//!< Pulldown resistor
-	IOPINRES_FOLLOW		//!< Few MCUs support this mode
+	IOPINRES_NONE,				//!< No pullup or pulldown
+	IOPINRES_PULLUP,				//!< Pullup resistor
+	IOPINRES_PULLDOWN,			//!< Pulldown resistor
+	IOPINRES_FOLLOW				//!< Few MCUs support this mode
 } IOPINRES;
 
 /// I/O pin direction configuration
 typedef enum __iopin_dir {
-    IOPINDIR_INPUT  = 0,	//!< I/O pin as input
-    IOPINDIR_OUTPUT = 1,	//!< I/O pin as output
-    IOPINDIR_BI     = 2,	//!< Bidirectional, few MCUs support this mode
+    IOPINDIR_INPUT  = 0,			//!< I/O pin as input
+    IOPINDIR_OUTPUT = 1,			//!< I/O pin as output
+    IOPINDIR_BI     = 2,			//!< Bidirectional, few MCUs support this mode
 } IOPINDIR;
 
 /// I/O pin type
 typedef enum __iopin_type {
-	IOPINTYPE_NORMAL    = 0,	//!< I/O pin normal type
+	IOPINTYPE_NORMAL    = 0,		//!< I/O pin normal type
 	IOPINTYPE_OPENDRAIN = 1		//<! I/O pin open drain type
 } IOPINTYPE;
 
 /// I/O pin sense type
 typedef enum __iopin_sense {
-	IOPINSENSE_DISABLE,				//!< Disable pin sense
-	IOPINSENSE_LOW_TRANSITION,		//!< Event on falling edge
-	IOPINSENSE_HIGH_TRANSITION,		//!< Event on raising edge
-	IOPINSENSE_TOGGLE,				//!< Event on state change
+	IOPINSENSE_DISABLE,			//!< Disable pin sense
+	IOPINSENSE_LOW_TRANSITION,	//!< Event on falling edge
+	IOPINSENSE_HIGH_TRANSITION,	//!< Event on raising edge
+	IOPINSENSE_TOGGLE,			//!< Event on state change
 } IOPINSENSE;
 
 /// I/O pin drive strength
 typedef enum __iopin_drive_strength {
-	IOPINSTRENGTH_REGULAR,			//!< Regular driver strength (normal default)
-	IOPINSTRENGTH_STRONG,			//!< Stronger drive strength
+	IOPINSTRENGTH_REGULAR,		//!< Regular driver strength (normal default)
+	IOPINSTRENGTH_STRONG,		//!< Stronger drive strength
 } IOPINSTRENGTH;
 
 #pragma pack(push,4)
 
 /// I/O pin configuration data
 typedef struct __iopin_cfg {
-	int 		PortNo;		//!< Port number
-	int 		PinNo;		//!< Pin number
-	int 		PinOp;		//!< Pin function select index from 0, MCU dependent
-	IOPINDIR	PinDir;		//!< Pin direction
-	IOPINRES 	Res;		//!< Pin resistor setting
-	IOPINTYPE	Type;		//!< I/O type
+	int 			PortNo;			//!< Port number
+	int 			PinNo;			//!< Pin number
+	int 			PinOp;			//!< Pin function select index from 0, MCU dependent
+	IOPINDIR		PinDir;			//!< Pin direction
+	IOPINRES 	Res;				//!< Pin resistor setting
+	IOPINTYPE	Type;			//!< I/O type
 } IOPINCFG;
 
 #pragma pack(pop)
