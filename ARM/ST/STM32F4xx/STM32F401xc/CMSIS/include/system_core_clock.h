@@ -36,7 +36,7 @@ Modified by          Date              Description
 #ifndef __SYSTEM_CORE_CLOCK_H__
 #define __SYSTEM_CORE_CLOCK_H__
 
-#define SYSTEM_CORE_CLOCK				64000000UL		// nRF52 has fixed core frequency
+#define SYSTEM_CORE_CLOCK				84000000UL		// nRF52 has fixed core frequency
 #define SYSTEM_NSDELAY_CORE_FACTOR		(47UL)
 
 

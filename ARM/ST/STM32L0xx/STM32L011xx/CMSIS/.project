@@ -25,14 +25,34 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/ResetEntry.c</name>
+			<name>include/stm32l011xx.h</name>
 			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/src/ResetEntry.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/stm32l011xx.h</locationURI>
 		</link>
 		<link>
-			<name>src/Vectors_nRF52.c</name>
+			<name>include/stm32l0xx.h</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/src/Vectors_nRF52.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/stm32l0xx.h</locationURI>
+		</link>
+		<link>
+			<name>include/system_core_clock.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/system_core_clock.h</locationURI>
+		</link>
+		<link>
+			<name>include/system_stm32l0xx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/system_stm32l0xx.h</locationURI>
+		</link>
+		<link>
+			<name>src/ResetEntry.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/ResetEntry.c</locationURI>
+		</link>
+		<link>
+			<name>src/system_stm32l0xx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/system_stm32l0xx.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
