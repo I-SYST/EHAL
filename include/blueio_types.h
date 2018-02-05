@@ -153,6 +153,7 @@ typedef struct __BlueIO_Data_SPI {
 } BLUEIO_DATA_SPI;
 
 #define BLUEIO_UART_DATA_LEN_MAX		6
+
 /// UART data
 typedef struct __BlueIO_Data_UART {
 	uint8_t	Id;					//!< interace ID

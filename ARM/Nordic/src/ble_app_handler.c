@@ -47,6 +47,11 @@ __WEAK void BleAppInitUserServices()
 
 }
 
+__WEAK void BleAppAdvTimeoutHandler()
+{
+
+}
+
 __WEAK void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 {
 
@@ -61,5 +66,6 @@ __WEAK void BleAppRtosWaitEvt(void)
 {
 
 }
+
 
 

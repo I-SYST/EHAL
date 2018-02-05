@@ -43,13 +43,15 @@ Modified by          Date              Description
 
 #define IOPIN_MAX_INT			(GPIOTE_CH_NUM)
 
+#pragma pack(push, 4)
 typedef struct {
 	IOPINSENSE Sense;
 	IOPINEVT_CB SensEvtCB;
     uint16_t PortPinNo;
 } IOPINSENS_EVTHOOK;
+#pragma pack(pop)
 
-IOPINSENS_EVTHOOK s_GpIOSenseEvt[IOPIN_MAX_INT + 1] = { {0, NULL}, };
+static IOPINSENS_EVTHOOK s_GpIOSenseEvt[IOPIN_MAX_INT + 1] = { {0, NULL}, };
 
 /**
  * @brief Configure individual I/O pin. nRF51 only have 1 port so PortNo is not used

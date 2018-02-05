@@ -391,13 +391,13 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
             break;
         case BLE_ADV_EVT_IDLE:
         {
-        	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+/*        	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
         	{
 //        		uint32_t ret = ble_advdata_set(&(g_AdvInstance.advdata), &g_BleAppData.SRData);
         		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams, BLEAPP_CONN_CFG_TAG);
         	}
         	else
-        	   ret_code_t err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_SLOW);
+        	   ret_code_t err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_SLOW);*/
           //  APP_ERROR_CHECK(err_code);
         }
            // sleep_mode_enter();
@@ -498,6 +498,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
         case BLE_GAP_EVT_TIMEOUT:
             if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
             {
+            		BleAppAdvTimeoutHandler();
             		if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
 				{
 					//err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
@@ -958,8 +959,21 @@ void BleAppAdvManDataSet(uint8_t *pData, int Len)
 
 void BleAppAdvStart(BLEAPP_ADVMODE AdvMode)
 {
-    uint32_t err_code = ble_advertising_start(&g_AdvInstance, (ble_adv_mode_t)AdvMode);
-    APP_ERROR_CHECK(err_code);
+	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+	{
+//	       		uint32_t ret = ble_advdata_set(&(g_AdvInstance.advdata), &g_BleAppData.SRData);
+		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams, BLEAPP_CONN_CFG_TAG);
+	}
+	else
+	{
+		uint32_t err_code = ble_advertising_start(&g_AdvInstance, (ble_adv_mode_t)AdvMode);
+	    APP_ERROR_CHECK(err_code);
+	}
+}
+
+void BleAppAdvStop()
+{
+	sd_ble_gap_adv_stop();
 }
 
 /**@brief Overloadable function for initializing the Advertising functionality.
@@ -1045,9 +1059,9 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     else
     {
 		//memset(&options, 0, sizeof(options));
-    	initdata.config.ble_adv_fast_enabled  = true;
-    	initdata.config.ble_adv_fast_interval = pCfg->AdvInterval;
-    	initdata.config.ble_adv_fast_timeout  = pCfg->AdvTimeout;
+		initdata.config.ble_adv_fast_enabled  = true;
+		initdata.config.ble_adv_fast_interval = pCfg->AdvInterval;
+		initdata.config.ble_adv_fast_timeout  = pCfg->AdvTimeout;
 
 		if (pCfg->AdvSlowInterval > 0)
 		{
