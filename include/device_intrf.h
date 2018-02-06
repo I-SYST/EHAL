@@ -99,7 +99,7 @@ typedef int (*DEVINTRF_EVTCB)(DEVINTRF *pDev, DEVINTRF_EVT EvtId, uint8_t *pBuff
 ///
 struct __device_intrf {
 	void *pDevData;			//!< Private device interface implementation data
-	int	IntPrio;			//!< Interrupt priority.  Value is implementation specific
+	int	IntPrio;				//!< Interrupt priority.  Value is implementation specific
 	DEVINTRF_EVTCB EvtCB;	//!< Interrupt based event callback function pointer. Must be set to NULL if not used
 	bool Busy;		        //!< Busy flag to be set check and set at start and reset at end of transmission
 	int MaxRetry;			//!< Max retry when data could not be transfered (Rx/Tx returns zero count)

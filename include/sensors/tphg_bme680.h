@@ -272,9 +272,7 @@ typedef struct {
 /// - Offset temperature coefficient ±1.3 Pa/K, equiv. to ±10.9 cm at 1 °C temperature change
 class TphgBme680 : public TphSensor, public GasSensor {
 public:
-	TphgBme680() : vbMeasGas(false),
-				   vbGasData(false),
-				   vbSpi(false) {}
+	TphgBme680();
 	virtual ~TphgBme680() {}
 
 	/**

@@ -1,9 +1,16 @@
-/*--------------------------------------------------------------------------
-File   : device.cpp
+/**-------------------------------------------------------------------------
+@file	device.cpp
 
-Author : Hoang Nguyen Hoan          			Feb. 12, 2017
+@brief	Generic device base class
 
-Desc   : Generic device base class
+This is the base class to implement all sort devices, hardware or software.
+For example a sensor device or a software audio decoder.  The device can transfer
+data via it's DeviceIntrf object.
+
+@author	Hoang Nguyen Hoan
+@date	Feb. 12, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -27,52 +34,15 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 
 #include "device.h"
 
-uint8_t Device::ReadReg8(uint8_t *pRegAddr, int RegAddrLen)
+Device::Device()
 {
-	uint8_t val = 0;
-
-	Read(pRegAddr, RegAddrLen, &val, 1);
-
-	return val;
-}
-
-uint16_t Device::ReadReg16(uint8_t *pRegAddr, int RegAddrLen)
-{
-	uint16_t val = 0;
-
-	Read(pRegAddr, RegAddrLen,(uint8_t*) &val, 2);
-
-	return val;
-}
-
-uint32_t Device::ReadReg32(uint8_t *pRegAddr, int RegAddrLen)
-{
-	uint32_t val = 0;
-
-	Read(pRegAddr, RegAddrLen, (uint8_t*)&val, 4);
-
-	return val;
-}
-
-bool Device::WriteReg(uint8_t *pRegAddr, int RegAddrLen, uint8_t Data)
-{
-	return Write(pRegAddr, RegAddrLen, &Data, 1) > 0;
-}
-
-bool Device::WriteReg(uint8_t *pRegAddr, int RegAddrLen, uint16_t Data)
-{
-	return Write(pRegAddr, RegAddrLen, (uint8_t*)&Data, 2) > 1;
-}
-
-bool Device::WriteReg(uint8_t *pRegAddr, int RegAddrLen, uint32_t Data)
-{
-	return Write(pRegAddr, RegAddrLen, (uint8_t*)&Data, 1) > 3;
+	vDevAddr = 0;
+	vpIntrf = NULL;
+	vbValid = false;
+	vDevId = -1;
 }
 

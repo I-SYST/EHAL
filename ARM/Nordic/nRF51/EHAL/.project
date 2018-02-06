@@ -56,6 +56,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_board.h</locationURI>
 		</link>
 		<link>
+			<name>include/bluetooth</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>include/cfifo.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-WORKSPACE_LOC/include/cfifo.h</locationURI>
@@ -419,6 +424,16 @@
 			<name>src/utf8cvt.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/utf8cvt.cpp</locationURI>
+		</link>
+		<link>
+			<name>include/bluetooth/bleadv_mandata.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/bluetooth/bleadv_mandata.h</locationURI>
+		</link>
+		<link>
+			<name>include/bluetooth/blesrvc_blueio.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/bluetooth/blesrvc_blueio.h</locationURI>
 		</link>
 		<link>
 			<name>include/converters/adc_device.h</name>

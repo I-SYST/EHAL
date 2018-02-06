@@ -1,10 +1,58 @@
-/*--------------------------------------------------------------------------
-File   : tphg_bme680.cpp
+/**-------------------------------------------------------------------------
+@file	tphg_bme680.cpp
 
-Author : Hoang Nguyen Hoan          			Oct. 15, 2017
+@brief	Implementation of Bosch #BME680 low power gas, pressure, temperature & humidity sensor.
 
-Desc   : BME680 environment sensor implementation
-			- Temperature, Humidity, Barometric pressure, Gas
+The Air Quality Index is undocumented.  It requires the library
+Bosch Sensortec Environmental Cluster (BSEC) Software. Download from
+https://www.bosch-sensortec.com/bst/products/all_products/bsec and put in
+external folder as indicated on the folder tree.
+
+The BSEC library must be initialized in the main application prior to initializing
+this driver by calling the function
+
+bsec_library_return_t res = bsec_init();
+
+Specs:
+
+The BME680 is a digital 4-in-1 sensor with gas, humidity, pressure and temperature
+measurement based on proven sensing principles. The sensor module is housed in an
+extremely compact metal-lid LGA package with a footprint of only 3.0 × 3.0 mm2 with
+a maximum height of 1.00 mm (0.93 ± 0.07 mm). Its small dimensions and its low power
+consumption enable the integration in battery-powered or frequency-coupled devices,
+such as handsets or wearables.
+
+Key features
+
+- Package : 3.0 mm x 3.0 mm x 0.93 mm metal lid LGA
+- Digital interface : I2C (up to 3.4 MHz) and SPI (3 and 4 wire, up to 10 MHz)
+- Supply voltage : VDD main supply voltage range: 1.71 V to 3.6 V. VDDIO interface voltage range: 1.2 V to 3.6 V
+- Current consumption : 2.1 μA at 1 Hz humidity and temperature. 3.1 μA at 1 Hz pressure and temperature
+3.7 μA at 1 Hz humidity, pressure and temperature. 0.09‒12 mA for p/h/T/gas depending on operation mode. 0.15 μA in sleep mode
+- Operating range : -40‒+85 °C, 0‒100% r.H., 300‒1100 hPa
+- Individual humidity, pressure and gas sensors can be independently enabled/disabled
+
+Key parameters for gas sensor
+
+- Response time (𝜏33−63%) : < 1 s (for new sensors)
+- Power consumption : < 0.1 mA in ultra-low power mode
+- Output data processing : direct indoor air quality (IAQ) index output
+
+Key parameters for humidity sensor
+
+- Response time (𝜏0−63%) : ~8 s
+- Accuracy tolerance : ±3% r.H.
+- Hysteresis : ±1.5% r.H.
+
+Key parameters for pressure sensor
+
+- RMS Noise 0.12 Pa, equiv. to 1.7 cm
+- Offset temperature coefficient ±1.3 Pa/K, equiv. to ±10.9 cm at 1 °C temperature change
+
+@author	Hoang Nguyen Hoan
+@date	Oct. 15, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -27,9 +75,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #include <stdint.h>
@@ -69,6 +114,13 @@ const float s_fBme860GasCalib2[16] = {
 	31281.28128, 15625.0, 7812.5, 3906.25, 1953.125, 976.5625, 488.28125, 244.140625
 };
 #endif
+
+TphgBme680::TphgBme680()
+{
+	vbMeasGas = false;
+	vbGasData = false;
+	vbSpi = false;
+}
 
 // Returns temperature in DegC, resolution is 0.01 DegC. Output value of “5123” equals 51.23 DegC.
 // t_fine carries fine temperature as global value
@@ -467,7 +519,7 @@ SENSOR_STATE TphgBme680::State(SENSOR_STATE State) {
  */
 bool TphgBme680::Mode(SENSOR_OPMODE OpMode, uint32_t Freq)
 {
-	uint8_t regaddr;
+//	uint8_t regaddr;
 	//uint8_t d = 0;
 
 	vOpMode = OpMode;

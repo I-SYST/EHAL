@@ -57,7 +57,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// data via it's DeviceIntrf object.
 class Device {
 public:
-	Device() : vDevAddr(0), vpIntrf(NULL), vbValid(false), vDevId(-1) {}
+	Device();
 
 	//
 	// *** Require implementations ***

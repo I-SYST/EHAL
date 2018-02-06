@@ -1,11 +1,16 @@
-/*--------------------------------------------------------------------------
-File   : device_intrf.cpp
+/**-------------------------------------------------------------------------
+@file	device_intrf.h
 
-Author : Hoang Nguyen Hoan          				Dec. 25, 2011
+@brief	Generic data transfer interface class
 
-Desc   : Generic device interface class
-		 This class is used to implement serial communication interfaces
-		 such as I2C, UART, etc...  Not limited to wired interface
+This class is used to implement device communication interfaces such as I2C, UART, etc...
+Not limited to wired or physical interface.  It could be soft interface as well such
+as SLIP protocol or any mean of transferring data between 2 entities.
+
+@author	Hoang Nguyen Hoan
+@date	Nov. 25, 2011
+
+@license
 
 Copyright (c) 2011, I-SYST inc., all rights reserved
 
@@ -29,9 +34,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              	Description
-Hoan				Mar. 3, 2017		Rename to DevIntrf
 ----------------------------------------------------------------------------*/
 #include <string.h>
 

@@ -368,7 +368,6 @@ bool TphBme280::UpdateData()
 	uint8_t addr = BME280_REG_STATUS;
 	uint8_t status = 0;
 	bool retval = false;
-	int timeout = 20;
 
 	Read(&addr, 1, &status, 1);
 
