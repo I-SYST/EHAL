@@ -22,9 +22,14 @@ KSDK      : Kinetis SDK
 
 BSEC      : [Bosch Sensortec Environmental Cluster (BSEC) Software](https://www.bosch-sensortec.com/bst/products/all_products/bsec) for #BME680 environmental sensor  
 
-  
+EHAL folder structure
+---
  
-The way the EHAL folder is structure is simple.  The deeper you go inside the more it is specific the the architecture or platform.  The parent folder contains all that is commonly available to the child fonder.  Which means, source file from child folder can access any source in the upper parent folder but not the other way around.  This is the way to keep the abstraction separated from implementation and easier to keep track of things.
+The way the EHAL folder is structure is simple.  The deeper you go inside the more it is specific the the architecture or platform.  The parent folder contains all that is commonly available to the child folder.  Which means, source file from child folder can access any source in the upper parent folder but not the other way around.  This is the way to keep the abstraction separated from implementation and easier to keep track of things.
+
+There are 2 main libraries in the EHAL for each ARM based MCU.  
+- CMSIS : This contains the startup code, main interrupt vector and RTOS if available.  This lib is required for all firmware
+- EHAL : This is the main hardware abstraction library. It contains all peripheral drivers, SPI, I2C, UART, Timer, BLE,...
 
 ```
 /your_root     - Development root directory
