@@ -90,11 +90,11 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 {
     if (p_ble_evt->header.evt_id == BLE_GAP_EVT_TIMEOUT)
     {
-    	// for re-advertisement
-    	g_AdvCnt++;
+    		// for re-advertisement
+    		g_AdvCnt++;
 
-    	//
-    	BleAppAdvManDataSet((uint8_t*)&g_AdvCnt, sizeof(g_AdvCnt));
+    		BleAppAdvManDataSet((uint8_t*)&g_AdvCnt, sizeof(g_AdvCnt));
+    		BleAppAdvStart(BLEAPP_ADVMODE_FAST);
     }
 }
 
