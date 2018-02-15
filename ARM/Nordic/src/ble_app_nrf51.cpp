@@ -840,6 +840,21 @@ void BleAppAdvManDataSet(uint8_t *pData, int Len)
    APP_ERROR_CHECK(ret);
 }
 
+void BleAppAdvStart(BLEAPP_ADVMODE AdvMode)
+{
+	uint32_t err_code;
+
+	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+	{
+		 err_code = sd_ble_gap_adv_start(&s_AdvParams);
+	}
+	else
+	{
+		err_code = ble_advertising_start((ble_adv_mode_t)AdvMode);
+	}
+    APP_ERROR_CHECK(err_code);
+}
+
 /**@brief Overloadable function for initializing the Advertising functionality.
  */
 __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
