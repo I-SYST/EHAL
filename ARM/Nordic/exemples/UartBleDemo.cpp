@@ -43,6 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "istddef.h"
 #include "ble_app.h"
 #include "ble_service.h"
+#include "bluetooth/blesrvc_blueio.h"
 #include "blueio_board.h"
 #include "uart.h"
 #include "custom_board.h"
@@ -150,10 +151,10 @@ const BLEAPP_CFG s_BleAppCfg = {
 	},
 	0, 						// Number of central link
 	1, 						// Number of peripheral link
-	BLEAPP_MODE_APPSCHED,   // Use scheduler
-	DEVICE_NAME,                 // Device name
-	ISYST_BLUETOOTH_ID,     // PnP Bluetooth/USB vendor id
-	1,                      // PnP Product ID
+	BLEAPP_MODE_APPSCHED,	// Use scheduler
+	DEVICE_NAME,				// Device name
+	ISYST_BLUETOOTH_ID,		// PnP Bluetooth/USB vendor id
+	1,						// PnP Product ID
 	0,						// Pnp prod version
 	true,					// Enable device information service (DIS)
 	&s_UartBleDevDesc,
@@ -163,15 +164,16 @@ const BLEAPP_CFG s_BleAppCfg = {
 	BLEAPP_SECEXCHG_NONE,   // Security key exchange
 	NULL,      				// Service uuids to advertise
 	0, 						// Total number of uuids
-	APP_ADV_INTERVAL,       // Advertising interval in msec
+	APP_ADV_INTERVAL,		// Advertising interval in msec
 	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
-	0,                          // Slow advertising interval, if > 0, fallback to
-								// slow interval on adv timeout and advertise until connected
+	0,						// Slow advertising interval, if > 0, fallback to
+							// slow interval on adv timeout and advertise until connected
+	NULL,
 	MIN_CONN_INTERVAL,
 	MAX_CONN_INTERVAL,
-	BLUEIO_CONNECT_LED_PORT,    // Led port nuber
-	BLUEIO_CONNECT_LED_PIN,     // Led pin number
-	0,							// Tx power
+	BLUEIO_CONNECT_LED_PORT,	// Led port nuber
+	BLUEIO_CONNECT_LED_PIN,	// Led pin number
+	0,						// Tx power
 	NULL						// RTOS Softdevice handler
 };
 
