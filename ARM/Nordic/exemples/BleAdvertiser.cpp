@@ -59,31 +59,31 @@ const BLEAPP_CFG s_BleAppCfg = {
 #endif
 #endif
 	},
-	0, 						// Number of central link
-	0, 						// Number of peripheral link
-	BLEAPP_MODE_NOCONNECT,  // Connectionless beacon type
-	DEVICE_NAME,            // Device name
-	ISYST_BLUETOOTH_ID,     // PnP Bluetooth/USB vendor id
-	1,                      // PnP Product ID
+	0,						// Number of central link
+	0,						// Number of peripheral link
+	BLEAPP_MODE_NOCONNECT,	// Connectionless beacon type
+	DEVICE_NAME,				// Device name
+	ISYST_BLUETOOTH_ID,		// PnP Bluetooth/USB vendor id
+	1,                      	// PnP Product ID
 	0,						// Pnp prod version
 	false,					// Enable device information service (DIS)
 	NULL,					// Pointer device info descriptor
 	(uint8_t*)&g_AdvCnt,   	// Manufacture specific data to advertise
 	sizeof(g_AdvCnt),      	// Length of manufacture specific data
-	BLEAPP_SECTYPE_NONE,    // Secure connection type
-	BLEAPP_SECEXCHG_NONE,   // Security key exchange
+	BLEAPP_SECTYPE_NONE,    	// Secure connection type
+	BLEAPP_SECEXCHG_NONE,   	// Security key exchange
 	NULL,      				// Service uuids to advertise
 	0, 						// Total number of uuids
-	APP_ADV_INTERVAL,       // Advertising interval in msec
+	APP_ADV_INTERVAL,       	// Advertising interval in msec
 	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
-	100,                        // Slow advertising interval, if > 0, fallback to
+	0,							// Slow advertising interval, if > 0, fallback to
 								// slow interval on adv timeout and advertise until connected
 	0,		// Min. connection interval
 	0,		// Max. connection interval
-	-1,    	// Led port nuber
-	-1,     // Led pin number
-	0, 		// Tx power
-	NULL						// RTOS Softdevice handler
+	-1,		// Led port nuber
+	-1,		// Led pin number
+	0,		// Tx power
+	NULL		// RTOS Softdevice handler
 };
 
 void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
