@@ -1,3 +1,11 @@
+![I-SYST inc.](docs/I-SYST_Logo180.png) 
+ 
+![nRF5x product line](docs/image/nRF5_Products_1024.png)
+<p align="center">
+[Nordic nRF51 & nRF52 product line](https://www.tindie.com/stores/hnhoan/)
+</p> 
+ 
+
 EHAL (Embedded Hardware Abstraction Library)
 ====
  
@@ -22,10 +30,12 @@ KSDK      : Kinetis SDK
 
 BSEC      : [Bosch Sensortec Environmental Cluster (BSEC) Software](https://www.bosch-sensortec.com/bst/products/all_products/bsec) for #BME680 environmental sensor  
 
-![IBK-BME680](docs/IBK-BME680_PinOut.png) 
+![IBK-BME680](docs/image/IBK-BME680_PinOut_640.png) 
+<p align="center">
 [Available @Tindie](https://www.tindie.com/products/hnhoan/bme680-temperature-pressure-humidity-gas-sensor/)
-
-
+</p>
+ 
+ 
 EHAL folder structure
 ---
  
