@@ -22,9 +22,10 @@ KSDK      : Kinetis SDK
 
 BSEC      : [Bosch Sensortec Environmental Cluster (BSEC) Software](https://www.bosch-sensortec.com/bst/products/all_products/bsec) for #BME680 environmental sensor  
 
+<p align="center">
 ![IBK-BME680](docs/IBK-BME680_PinOut.png) 
 [Available @Tindie](https://www.tindie.com/products/hnhoan/bme680-temperature-pressure-humidity-gas-sensor/)
-
+</p>
 
 EHAL folder structure
 ---
