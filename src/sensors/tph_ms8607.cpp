@@ -107,7 +107,7 @@ void TphMS8607::ReadPtProm()
 	}
 
 
-	int crc = crc4_PT(vPTProm);
+//	int crc = crc4_PT(vPTProm);
 }
 
 /**
@@ -118,7 +118,7 @@ void TphMS8607::ReadPtProm()
  */
 uint32_t TphMS8607::SamplingFrequency(uint32_t Freq)
 {
-
+	return 0;
 }
 
 bool TphMS8607::StartSampling()
