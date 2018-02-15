@@ -41,6 +41,7 @@ Modified by          Date              Description
 #include "ble_app.h"
 #include "ble_service.h"
 #include "ble_intrf.h"
+#include "bluetooth/blesrvc_blueio.h"
 #include "blueio_board.h"
 #include "uart.h"
 #include "custom_board.h"
@@ -86,8 +87,8 @@ BLESRVC_CHAR g_UartChars[] = {
 		BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN,
 		s_RxCharDescString,         // char UTF-8 description string
 		NULL,                       // Callback for write char, set to NULL for read char
-		true,                       // Notify flag for read characteristic
 		NULL,						// Callback on set notification
+		NULL,						// Tx completed callback
 		NULL,						// pointer to char default values
 		0,							// Default value length in bytes
 	},
@@ -97,9 +98,9 @@ BLESRVC_CHAR g_UartChars[] = {
 		20,                         // char max data length
 		BLESVC_CHAR_PROP_WRITEWORESP | BLESVC_CHAR_PROP_VARLEN,	// char properties define by BLUEIOSVC_CHAR_PROP_...
 		s_TxCharDescString,			// char UTF-8 description string
-		NULL,         // Callback for write char, set to NULL for read char
-		false,                      // Notify flag for read characteristic
+		NULL,         				// Callback for write char, set to NULL for read char
 		NULL,						// Callback on set notification
+		NULL,						// Tx completed callback
 		NULL,						// pointer to char default values
 		0							// Default value length in bytes
 	},
