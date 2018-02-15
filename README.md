@@ -37,7 +37,7 @@ BSEC      : [Bosch Sensortec Environmental Cluster (BSEC) Software](https://www.
  
 <p align="center"> 
   
-[Available @Tindie](https://www.tindie.com/products/hnhoan/bme680-temperature-pressure-humidity-gas-sensor/)
+[Bosch BME680 breakout board](https://www.tindie.com/products/hnhoan/bme680-temperature-pressure-humidity-gas-sensor/)
  
 </p> 
  
