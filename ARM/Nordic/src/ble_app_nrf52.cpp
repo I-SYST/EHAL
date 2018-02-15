@@ -634,15 +634,15 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
 //    printf("pm_evt_handler %x\r\n", p_evt->evt_id);
     switch (p_evt->evt_id)
     {
-        case PM_EVT_BONDED_PEER_CONNECTED:
+		case PM_EVT_BONDED_PEER_CONNECTED:
 			{
 				// Start Security Request timer.
 				//err_code = app_timer_start(g_SecReqTimerId, SECURITY_REQUEST_DELAY, NULL);
 				//APP_ERROR_CHECK(err_code);
 			}
-        	break;
+			break;
 
-        case PM_EVT_CONN_SEC_SUCCEEDED:
+			case PM_EVT_CONN_SEC_SUCCEEDED:
 			{
 				pm_conn_sec_status_t conn_sec_status;
 
@@ -666,7 +666,6 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
 			break;
 
         case PM_EVT_CONN_SEC_FAILED:
-            //if (g_BleAppData.ConnHdl != BLE_CONN_HANDLE_INVALID)
             if (g_BleAppData.bSecure && g_BleAppData.ConnHdl != BLE_CONN_HANDLE_INVALID)
             {
                 err_code = sd_ble_gap_disconnect(g_BleAppData.ConnHdl,
@@ -676,12 +675,12 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
             break;
 
         case PM_EVT_CONN_SEC_CONFIG_REQ:
-        	{
-        		// Reject pairing request from an already bonded peer.
-        		pm_conn_sec_config_t conn_sec_config = {.allow_repairing = false};
-        		pm_conn_sec_config_reply(p_evt->conn_handle, &conn_sec_config);
-        	}
-        	break;
+			{
+				// Reject pairing request from an already bonded peer.
+				pm_conn_sec_config_t conn_sec_config = {.allow_repairing = false};
+				pm_conn_sec_config_reply(p_evt->conn_handle, &conn_sec_config);
+			}
+			break;
 
         case PM_EVT_STORAGE_FULL:
             // Run garbage collection on the flash.
@@ -757,10 +756,10 @@ static void BleAppDBDiscoveryHandler(ble_db_discovery_evt_t * p_evt)
     // Check if the NUS was discovered.
     if (p_evt->evt_type == BLE_DB_DISCOVERY_COMPLETE)
     {
-    	g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].ConnHdl = p_evt->conn_handle;
-    	g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].SrvcCnt = s_DbDiscovery.srv_count;
-    	memcpy(g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].Srvc, s_DbDiscovery.services,
-    		   s_DbDiscovery.srv_count * sizeof(ble_gatt_db_srv_t));
+    		g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].ConnHdl = p_evt->conn_handle;
+    		g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].SrvcCnt = s_DbDiscovery.srv_count;
+    		memcpy(g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].Srvc, s_DbDiscovery.services,
+    				s_DbDiscovery.srv_count * sizeof(ble_gatt_db_srv_t));
 
         uint32_t i;
 
@@ -878,11 +877,11 @@ static void BleAppPeerMngrInit(BLEAPP_SECTYPE SecType, uint8_t SecKeyExchg, bool
 		case BLEAPP_SECTYPE_STATICKEY_NO_MITM:
 			break;
 		case BLEAPP_SECTYPE_STATICKEY_MITM:
-	    	sec_param.mitm = 1;
+			sec_param.mitm = 1;
 			break;
 		case BLEAPP_SECTYPE_LESC_MITM:
 		case BLEAPP_SECTYPE_SIGNED_MITM:
-	    	sec_param.mitm = 1;
+			sec_param.mitm = 1;
 		    sec_param.lesc = 1;
 			break;
 		case BLEAPP_SECTYPE_SIGNED_NO_MITM:
@@ -900,14 +899,15 @@ static void BleAppPeerMngrInit(BLEAPP_SECTYPE SecType, uint8_t SecKeyExchg, bool
     int type = SecKeyExchg & (BLEAPP_SECEXCHG_KEYBOARD | BLEAPP_SECEXCHG_DISPLAY);
     switch (type)
     {
-    	case BLEAPP_SECEXCHG_KEYBOARD:
-    		sec_param.keypress = 1;
-    		sec_param.io_caps  = BLE_GAP_IO_CAPS_KEYBOARD_ONLY;
-    		break;
-    	case BLEAPP_SECEXCHG_DISPLAY:
-    		sec_param.io_caps  = BLE_GAP_IO_CAPS_DISPLAY_ONLY;
-    		break;
-    	case (BLEAPP_SECEXCHG_KEYBOARD | BLEAPP_SECEXCHG_DISPLAY):
+		case BLEAPP_SECEXCHG_KEYBOARD:
+			sec_param.keypress = 1;
+			sec_param.io_caps  = BLE_GAP_IO_CAPS_KEYBOARD_ONLY;
+			break;
+
+		case BLEAPP_SECEXCHG_DISPLAY:
+			sec_param.io_caps  = BLE_GAP_IO_CAPS_DISPLAY_ONLY;
+    			break;
+		case (BLEAPP_SECEXCHG_KEYBOARD | BLEAPP_SECEXCHG_DISPLAY):
 			sec_param.keypress = 1;
 			sec_param.io_caps  = BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY;
 			break;
@@ -915,7 +915,7 @@ static void BleAppPeerMngrInit(BLEAPP_SECTYPE SecType, uint8_t SecKeyExchg, bool
 
     if (SecKeyExchg & BLEAPP_SECEXCHG_OOB)
     {
-    	sec_param.oob = 1;
+    		sec_param.oob = 1;
     }
 
     err_code = pm_sec_params_set(&sec_param);
@@ -1007,15 +1007,15 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     }
     else
     {
-    	initdata.advdata.name_type = BLE_ADVDATA_NO_NAME;
+    		initdata.advdata.name_type = BLE_ADVDATA_NO_NAME;
     }
 
     if (initdata.advdata.name_type == BLE_ADVDATA_NO_NAME)
     {
         if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
         {
-        	initdata.advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-        	initdata.advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+        		initdata.advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+        		initdata.advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
 			if (pCfg->pManData != NULL)
 			{
 				initdata.srdata.p_manuf_specific_data = &mdata;
@@ -1033,12 +1033,12 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     {
         if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
         {
-        	initdata.srdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-        	initdata.srdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+        		initdata.srdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+        		initdata.srdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
         }
         if (pCfg->pManData != NULL)
         {
-        	initdata.advdata.p_manuf_specific_data = &mdata;
+        		initdata.advdata.p_manuf_specific_data = &mdata;
         }
     }
 
@@ -1277,9 +1277,9 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
 	if (pBleAppCfg->ConnLedPort != -1 && pBleAppCfg->ConnLedPin != -1)
     {
-    	IOPinConfig(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin, 0,
-    				IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
-    	IOPinSet(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin);
+		IOPinConfig(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin, 0,
+					IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
+		IOPinSet(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin);
     }
 
 
@@ -1288,29 +1288,29 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
 
     if (pBleAppCfg->MaxMtu > NRF_BLE_MAX_MTU_SIZE)
-    	g_BleAppData.MaxMtu = pBleAppCfg->MaxMtu;
+		g_BleAppData.MaxMtu = pBleAppCfg->MaxMtu;
     else
-    	g_BleAppData.MaxMtu = NRF_BLE_MAX_MTU_SIZE;
+    		g_BleAppData.MaxMtu = NRF_BLE_MAX_MTU_SIZE;
 
     app_timer_init();
 
     switch (g_BleAppData.AppMode)
     {
-    	case BLEAPP_MODE_LOOP:
-    	case BLEAPP_MODE_NOCONNECT:
-    //	    app_timer_init();
-    		break;
-    	case BLEAPP_MODE_APPSCHED:
-    	//	app_timer_init();
-    		APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
-    		break;
-    	case BLEAPP_MODE_RTOS:
-    		if (pBleAppCfg->SDEvtHandler == NULL)
-    			return false;
+		case BLEAPP_MODE_LOOP:
+		case BLEAPP_MODE_NOCONNECT:
+			// app_timer_init();
+			break;
+		case BLEAPP_MODE_APPSCHED:
+			// app_timer_init();
+			APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+			break;
+		case BLEAPP_MODE_RTOS:
+			if (pBleAppCfg->SDEvtHandler == NULL)
+				return false;
 
-    		g_BleAppData.SDEvtHandler = pBleAppCfg->SDEvtHandler;
+			g_BleAppData.SDEvtHandler = pBleAppCfg->SDEvtHandler;
 
-    		break;
+			break;
     }
 
 	// initializing the cryptography module
@@ -1451,8 +1451,6 @@ extern "C" void SD_EVT_IRQHandler(void)
              if (g_BleAppData.SDEvtHandler)
              {
                  g_BleAppData.SDEvtHandler();
-             //SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, pBleAppCfg->SDEvtHandler);
-   //          NRF_SDH_BLE_OBSERVER(g_BleRtosObserver, BLEAPP_OBSERVER_PRIO, ble_rtos_evt_dispatch, NULL);
              }
              break;
      }
@@ -1461,8 +1459,7 @@ extern "C" void SD_EVT_IRQHandler(void)
 // We need this here in order for the Linker to keep the nrf_sdh_soc.c
 // which is require for Softdevice to function properly
 // Create section set "sdh_soc_observers".
-NRF_SDH_STACK_OBSERVER(m_nrf_sdh_soc_evts_poll, NRF_SDH_SOC_STACK_OBSERVER_PRIO) =
-{
+NRF_SDH_STACK_OBSERVER(m_nrf_sdh_soc_evts_poll, NRF_SDH_SOC_STACK_OBSERVER_PRIO) = {
     .handler   = nrf_sdh_soc_evts_poll,
     .p_context = NULL,
 };
