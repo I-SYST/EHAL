@@ -78,7 +78,7 @@ static inline __attribute__((always_inline)) void usDelay(uint32_t cnt) {
 		"2:\n"
 		".syntax divided\n"
 		:
-		: [ucnt] "r" (cnt * SystemMicroSecLoopCnt)
+		: [ucnt] "l" (cnt * SystemMicroSecLoopCnt)
 		:"r0"
 		 );
 }
@@ -103,7 +103,7 @@ static inline __attribute__((always_inline)) void nsDelay(uint32_t cnt) {
 		"2:\n"
 		".syntax divided\n"
 		:
-		: [ucnt] "r" ((cnt + (SYSTEM_NSDELAY_CORE_FACTOR >> 1)) / SYSTEM_NSDELAY_CORE_FACTOR)
+		: [ucnt] "l" ((cnt + (SYSTEM_NSDELAY_CORE_FACTOR >> 1)) / SYSTEM_NSDELAY_CORE_FACTOR)
 		:"r1"
 		 );
 }
