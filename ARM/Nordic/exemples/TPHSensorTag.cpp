@@ -76,6 +76,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef NEBLINA_MODULE
 #define TPH_BME280
 #else
+//#define TPH_BME280
 #define TPH_BME680
 #endif
 
@@ -93,7 +94,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define APP_ADV_TIMEOUT_IN_SECONDS      0                                         /**< The advertising timeout (in units of seconds). */
 #else
 // Use advertisement timeout to update data
-#define APP_ADV_TIMEOUT_IN_SECONDS      1                                         /**< The advertising timeout (in units of seconds). */
+#define APP_ADV_TIMEOUT_IN_SECONDS      10                                         /**< The advertising timeout (in units of seconds). */
 #endif
 
 void TimerHandler(Timer *pTimer, uint32_t Evt);
@@ -276,9 +277,9 @@ void ReadPTHData()
 		GASSENSOR_DATA gdata;
 		BLEADV_MANDATA_GASSENSOR gas;
 
-    	g_GasSensor.Read(gdata);
+		g_GasSensor.Read(gdata);
 
-    	g_AdvData.Type = BLEADV_MANDATA_TYPE_GAS;
+    		g_AdvData.Type = BLEADV_MANDATA_TYPE_GAS;
 		gas.GasRes = gdata.GasRes[gdata.MeasIdx];
 		gas.AirQIdx = gdata.AirQualIdx;
 
@@ -306,7 +307,7 @@ void TimerHandler(Timer *pTimer, uint32_t Evt)
 {
     if (Evt & TIMER_EVT_TRIGGER(0))
     {
-    	ReadPTHData();
+    		ReadPTHData();
     }
 }
 
@@ -317,17 +318,21 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
     {
     	// Update environmental sensor data every time advertisement timeout
     	// for re-advertisement
-    	ReadPTHData();
+   // 	ReadPTHData();
     }
 #endif
+}
+
+void BleAppAdvTimeoutHandler()
+{
+	ReadPTHData();
+	BleAppAdvStart(BLEAPP_ADVMODE_FAST);
 }
 
 void HardwareInit()
 {
 	// Set this only if nRF is power at 2V or more
 	nrf_power_dcdcen_set(true);
-
-    g_Timer.Init(s_TimerCfg);
 
 	// Initialize I2C
 #ifdef NEBLINA_MODULE
@@ -355,12 +360,12 @@ void HardwareInit()
 
     if (g_TphSensor.DeviceID() == BME680_ID)
     {
-    	g_GasSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
+    		g_GasSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
     }
 
 	g_TphSensor.StartSampling();
 
-	usDelay(200000);
+	usDelay(300000);
 
     // Update sensor data
     TPHSENSOR_DATA tphdata;
@@ -369,8 +374,8 @@ void HardwareInit()
 
     if (g_TphSensor.DeviceID() == BME680_ID)
     {
-    	GASSENSOR_DATA gdata;
-    	g_GasSensor.Read(gdata);
+    		GASSENSOR_DATA gdata;
+    		g_GasSensor.Read(gdata);
     }
 
 	g_TphSensor.StartSampling();
@@ -382,6 +387,8 @@ void HardwareInit()
 
 #ifdef USE_TIMER_UPDATE
 	// Only with SDK14
+    g_Timer.Init(s_TimerCfg);
+
 	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS);
 #endif
 }
@@ -391,6 +398,8 @@ int main()
     HardwareInit();
 
     BleAppInit((const BLEAPP_CFG *)&s_BleAppCfg, true);
+
+	//uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS);
 
     BleAppRun();
 
