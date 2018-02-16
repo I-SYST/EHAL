@@ -168,7 +168,6 @@ const BLEAPP_CFG s_BleAppCfg = {
 	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
 	0,						// Slow advertising interval, if > 0, fallback to
 							// slow interval on adv timeout and advertise until connected
-	NULL,
 	MIN_CONN_INTERVAL,
 	MAX_CONN_INTERVAL,
 	BLUEIO_CONNECT_LED_PORT,	// Led port nuber

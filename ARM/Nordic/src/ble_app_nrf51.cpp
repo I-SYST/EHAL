@@ -1127,7 +1127,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
 	if (pBleAppCfg->ConnLedPort != -1 && pBleAppCfg->ConnLedPin != -1)
     {
-    	IOPinConfig(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin, 0,
+		IOPinConfig(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin, 0,
     				IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
     }
 
@@ -1139,23 +1139,23 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     switch (pBleAppCfg->AppMode)
     {
-    	case BLEAPP_MODE_LOOP:
-    	case BLEAPP_MODE_NOCONNECT:
-    	case BLEAPP_MODE_IBEACON:
-    		APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
-        	//APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
-            SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, NULL);
-    		break;
-    	case BLEAPP_MODE_APPSCHED:
-    		APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
-    		APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
-            SOFTDEVICE_HANDLER_APPSH_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, true);
-    		break;
-    	case BLEAPP_MODE_RTOS:
-    		if (pBleAppCfg->SDEvtHandler == NULL)
-    			return false;
-            SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, pBleAppCfg->SDEvtHandler);
-    		break;
+		case BLEAPP_MODE_LOOP:
+		case BLEAPP_MODE_NOCONNECT:
+		case BLEAPP_MODE_IBEACON:
+			APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, NULL);
+			//APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+			SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, NULL);
+			break;
+		case BLEAPP_MODE_APPSCHED:
+			APP_TIMER_APPSH_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, true);
+			APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+			SOFTDEVICE_HANDLER_APPSH_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, true);
+			break;
+		case BLEAPP_MODE_RTOS:
+			if (pBleAppCfg->SDEvtHandler == NULL)
+				return false;
+			SOFTDEVICE_HANDLER_INIT((nrf_clock_lf_cfg_t*)&pBleAppCfg->ClkCfg, pBleAppCfg->SDEvtHandler);
+			break;
     }
 
 
@@ -1178,7 +1178,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     APP_ERROR_CHECK(err_code);
     if (pBleAppCfg->PeriLinkCount > 0 && pBleAppCfg->AdvInterval > 0)
     {
-    	g_BleAppData.AppRole |= BLEAPP_ROLE_PERIPHERAL;
+    		g_BleAppData.AppRole |= BLEAPP_ROLE_PERIPHERAL;
     }
     if (pBleAppCfg->CentLinkCount > 0)
     {
@@ -1189,7 +1189,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
     {
-    	BleAppConnectable(pBleAppCfg, bEraseBond);
+    		BleAppConnectable(pBleAppCfg, bEraseBond);
     }
 
     BleAppInitUserData();
