@@ -403,12 +403,13 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
         case BLE_GAP_EVT_TIMEOUT:
             if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
             {
-            	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+            		BleAppAdvTimeoutHandler();
+/*            	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
             	{
                     err_code = ble_advdata_set(&g_BleAppData.AdvData, &g_BleAppData.SRData);
                     err_code = sd_ble_gap_adv_start(&s_AdvParams);
             		APP_ERROR_CHECK(err_code);
-            	}
+            	}*/
             }
             break;
 
