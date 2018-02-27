@@ -1,6 +1,17 @@
 /* Linker script to configure memory regions. */
 
 SEARCH_DIR(.)
+SEARCH_DIR("../../../../src")
+SEARCH_DIR("../../../../../src")
+SEARCH_DIR("../../../../../../src")
+SEARCH_DIR("../../EHAL/ARM/src")
+SEARCH_DIR("../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../EHAL/ARM/nRF51/CMSIS/Release")
+SEARCH_DIR("../../../../../EHAL/ARM/nRF51/CMSIS/Release")
+SEARCH_DIR("../../../../../../EHAL/ARM/nRF51/CMSIS/Release")
 GROUP(-lgcc -lc -lnosys)
 
 MEMORY

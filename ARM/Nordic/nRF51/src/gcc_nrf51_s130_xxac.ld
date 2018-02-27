@@ -7,6 +7,14 @@ SEARCH_DIR(.)
 SEARCH_DIR("../../../../src")
 SEARCH_DIR("../../../../../src")
 SEARCH_DIR("../../../../../../src")
+SEARCH_DIR("../../EHAL/ARM/src")
+SEARCH_DIR("../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../EHAL/ARM/nRF51/CMSIS/Release")
+SEARCH_DIR("../../../../../EHAL/ARM/nRF51/CMSIS/Release")
+SEARCH_DIR("../../../../../../EHAL/ARM/nRF51/CMSIS/Release")
 GROUP(-lgcc -lc -lnosys -lCMSIS)
 
 MEMORY
@@ -17,12 +25,12 @@ MEMORY
 
 SECTIONS
 {
-.fs_data : ALIGN(4)
-{
-	PROVIDE( __start_fs_data = .);
-	KEEP(*(.fs_data))
-	PROVIDE( __stop_fs_data = .);
-} > RAM AT > FLASH
+	.fs_data : ALIGN(4)
+	{
+		PROVIDE( __start_fs_data = .);
+		KEEP(*(.fs_data))
+		PROVIDE( __stop_fs_data = .);
+	} > RAM AT > FLASH
 } INSERT AFTER .data
 
 INCLUDE "gcc_arm_flash.ld"

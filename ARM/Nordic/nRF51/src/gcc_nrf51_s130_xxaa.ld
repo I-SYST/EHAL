@@ -3,6 +3,14 @@ SEARCH_DIR(.)
 SEARCH_DIR("../../../../src")
 SEARCH_DIR("../../../../../src")
 SEARCH_DIR("../../../../../../src")
+SEARCH_DIR("../../EHAL/ARM/src")
+SEARCH_DIR("../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../../../EHAL/ARM/src")
+SEARCH_DIR("../../../../EHAL/ARM/nRF51/CMSIS/Release")
+SEARCH_DIR("../../../../../EHAL/ARM/nRF51/CMSIS/Release")
+SEARCH_DIR("../../../../../../EHAL/ARM/nRF51/CMSIS/Release")
 GROUP(-lgcc -lc -lnosys -lCMSIS)
 
 MEMORY
@@ -21,9 +29,9 @@ SECTIONS
 	} > RAM AT > FLASH
 	.pwr_mgmt_data :
 	{
-    	PROVIDE(__start_pwr_mgmt_data = .);
-    	KEEP(*(.pwr_mgmt_data))
-    	PROVIDE(__stop_pwr_mgmt_data = .);
+    		PROVIDE(__start_pwr_mgmt_data = .);
+    		KEEP(*(.pwr_mgmt_data))
+    		PROVIDE(__stop_pwr_mgmt_data = .);
 	} > RAM AT > FLASH
 } INSERT AFTER .data
 
