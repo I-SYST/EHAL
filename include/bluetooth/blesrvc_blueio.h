@@ -39,20 +39,43 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <inttypes.h>
 #include "blueio_types.h"
 
+/// Nordic custom UUID
+/// UART UUID :
+#define NUS_BASE_UUID	{ 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, \
+						  0x93, 0xF3, 0xA3, 0xB5, 0x00, 0x00, 0x40, 0x6E } /**< Used vendor specific UUID. */
+#define BLE_UUID_NUS_SERVICE				0x0001	/**< The UUID of the Nordic UART Service. */
+#define BLE_UUID_NUS_TX_CHARACTERISTIC	0x0003	/**< The UUID of the TX Characteristic. */
+#define BLE_UUID_NUS_RX_CHARACTERISTIC	0x0002	 /**< The UUID of the RX Characteristic. */
+
+#define OPCODE_LENGTH 1
+#define HANDLE_LENGTH 2
+
+/**@brief   Maximum length of data (in bytes) that can be transmitted to the peer by the Nordic UART service module. */
+#if defined(NRF_SDH_BLE_GATT_MAX_MTU_SIZE) && (NRF_SDH_BLE_GATT_MAX_MTU_SIZE != 0)
+    #define BLE_NUS_MAX_DATA_LEN (NRF_SDH_BLE_GATT_MAX_MTU_SIZE - OPCODE_LENGTH - HANDLE_LENGTH)
+#else
+    #define BLE_NUS_MAX_DATA_LEN (BLE_GATT_MTU_SIZE_DEFAULT - OPCODE_LENGTH - HANDLE_LENGTH)
+    #warning NRF_SDH_BLE_GATT_MAX_MTU_SIZE is not defined.
+#endif
+
+#define BLE_NUS_MAX_RX_CHAR_LEN        BLE_NUS_MAX_DATA_LEN	/**< Maximum length of the RX Characteristic (in bytes). */
+#define BLE_NUS_MAX_TX_CHAR_LEN        BLE_NUS_MAX_DATA_LEN	/**< Maximum length of the TX Characteristic (in bytes). */
+
+
 /// Default BlueIO custom UUID.  User should use privately generated UUID
 /// UUID : 00000000-287c-11e4-ab74-0002a5d5c51b
 #define BLUEIO_UUID_BASE { 	0x1b, 0xc5, 0xd5, 0xa5, 0x02, 0x00, 0x74, 0xab, \
 							0xe4, 0x11, 0x7c, 0x28, 0x00, 0x00, 0x00, 0x00 }
 
 /// Default BlueIO control/data service UUID
-#define BLUEIO_UUID_SERVICE 			0x1
+#define BLUEIO_UUID_SERVICE 			0x1		//!< BlueIO default service
 #define BLUEIO_UUID_RDCHAR 			0x2		//!< Data characteristic
 #define BLUEIO_UUID_WRCHAR 			0x3		//!< Command control characteristic
 
 /// Default BLueIO UART service UUID
-#define BLUEIO_UUID_UART_SERVICE 	0x101
-#define BLUEIO_UUID_UART_RX_CHAR	0x102		//!< UART Rx characteristic
-#define BLUEIO_UUID_UART_TX_CHAR	0x103		//!< UART Tx characteristic
+#define BLUEIO_UUID_UART_SERVICE 	0x101		//!< BlueIO Uart service
+#define BLUEIO_UUID_UART_RX_CHAR		0x102		//!< UART Rx characteristic
+#define BLUEIO_UUID_UART_TX_CHAR		0x103		//!< UART Tx characteristic
 
 /// BlueIO data type
 #define BLUEIOSRVC_DATA_ID_BLECFG			0							//!< BLE configuration settings
@@ -83,6 +106,27 @@ typedef struct __BlueioSrvc_Data {
 #define DEVICE_NAME_LEN_MAX					10
 
 // BLE configuration
+
+typedef enum __Config_Cmd {
+	CFGCMD_SET_ADV,
+	CFGCMD_SET_DEVNAME
+} CFGCMD;
+
+typedef struct __Config_Data_Write {
+	CFGCMD Cmd;
+	uint8_t Param[1];	//!< Variable length parameters
+} CFG_WR;
+
+typedef struct __Config_Cmd_Param_Adv {
+	uint32_t AdvIntervalmSec;	//!< Advertisement interval in msec
+	uint32_t AdvTimeoutSec;		//!< Advertisement timeout in sec.
+} CFGCMD_PARAM_ADV;
+
+#define BLE_CFG_DEVNAME_LEN_MAX	13
+
+typedef struct __Config_Cmd_Param_DevName {
+	char Name[BLE_CFG_DEVNAME_LEN_MAX];
+} CFGMD_PARAM_DEVNAME;
 
 // GPIO
 // Write data format
