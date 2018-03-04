@@ -180,40 +180,36 @@ bool TimerHFnRF5x::Init(const TIMER_CFG &Cfg)
     vpReg->MODE = TIMER_MODE_MODE_Timer;
     vpReg->BITMODE = TIMER_BITMODE_BITMODE_32Bit;
 
-    if (Cfg.EvtHandler)
-    {
-        switch (Cfg.DevNo)
-        {
-            case 0:
-                NVIC_ClearPendingIRQ(TIMER0_IRQn);
-                NVIC_SetPriority(TIMER0_IRQn, Cfg.IntPrio);
-                NVIC_EnableIRQ(TIMER0_IRQn);
-                break;
-            case 1:
-                NVIC_ClearPendingIRQ(TIMER1_IRQn);
-                NVIC_SetPriority(TIMER1_IRQn, Cfg.IntPrio);
-                NVIC_EnableIRQ(TIMER1_IRQn);
-                break;
-            case 2:
-                NVIC_ClearPendingIRQ(TIMER2_IRQn);
-                NVIC_SetPriority(TIMER2_IRQn, Cfg.IntPrio);
-                NVIC_EnableIRQ(TIMER2_IRQn);
-                break;
+	switch (Cfg.DevNo)
+	{
+		case 0:
+			NVIC_ClearPendingIRQ(TIMER0_IRQn);
+			NVIC_SetPriority(TIMER0_IRQn, Cfg.IntPrio);
+			NVIC_EnableIRQ(TIMER0_IRQn);
+			break;
+		case 1:
+			NVIC_ClearPendingIRQ(TIMER1_IRQn);
+			NVIC_SetPriority(TIMER1_IRQn, Cfg.IntPrio);
+			NVIC_EnableIRQ(TIMER1_IRQn);
+			break;
+		case 2:
+			NVIC_ClearPendingIRQ(TIMER2_IRQn);
+			NVIC_SetPriority(TIMER2_IRQn, Cfg.IntPrio);
+			NVIC_EnableIRQ(TIMER2_IRQn);
+			break;
 #ifdef NRF52
-            case 3:
-                NVIC_ClearPendingIRQ(TIMER3_IRQn);
-                NVIC_SetPriority(TIMER3_IRQn, Cfg.IntPrio);
-                NVIC_EnableIRQ(TIMER3_IRQn);
-                break;
-            case 4:
-                NVIC_ClearPendingIRQ(TIMER4_IRQn);
-                NVIC_SetPriority(TIMER4_IRQn, Cfg.IntPrio);
-                NVIC_EnableIRQ(TIMER4_IRQn);
-                break;
+		case 3:
+			NVIC_ClearPendingIRQ(TIMER3_IRQn);
+			NVIC_SetPriority(TIMER3_IRQn, Cfg.IntPrio);
+			NVIC_EnableIRQ(TIMER3_IRQn);
+			break;
+		case 4:
+			NVIC_ClearPendingIRQ(TIMER4_IRQn);
+			NVIC_SetPriority(TIMER4_IRQn, Cfg.IntPrio);
+			NVIC_EnableIRQ(TIMER4_IRQn);
+			break;
 #endif
-        }
-
-    }
+	}
 
     // Clock source not available.  Only 64MHz XTAL
 
@@ -261,34 +257,30 @@ bool TimerHFnRF5x::Enable()
 
     vpReg->TASKS_START = 1;
 
-    if (vEvtHandler)
-    {
-        switch (vDevNo)
-        {
-            case 0:
-                NVIC_ClearPendingIRQ(TIMER0_IRQn);
-                NVIC_EnableIRQ(TIMER0_IRQn);
-                break;
-            case 1:
-                NVIC_ClearPendingIRQ(TIMER1_IRQn);
-                NVIC_EnableIRQ(TIMER1_IRQn);
-                break;
-            case 2:
-                NVIC_ClearPendingIRQ(TIMER2_IRQn);
-                NVIC_EnableIRQ(TIMER2_IRQn);
-                break;
+	switch (vDevNo)
+	{
+		case 0:
+			NVIC_ClearPendingIRQ(TIMER0_IRQn);
+			NVIC_EnableIRQ(TIMER0_IRQn);
+			break;
+		case 1:
+			NVIC_ClearPendingIRQ(TIMER1_IRQn);
+			NVIC_EnableIRQ(TIMER1_IRQn);
+			break;
+		case 2:
+			NVIC_ClearPendingIRQ(TIMER2_IRQn);
+			NVIC_EnableIRQ(TIMER2_IRQn);
+			break;
 #ifdef NRF52
-            case 3:
-                NVIC_ClearPendingIRQ(TIMER3_IRQn);
-                NVIC_EnableIRQ(TIMER3_IRQn);
-                break;
-            case 4:
-                NVIC_ClearPendingIRQ(TIMER4_IRQn);
-                NVIC_EnableIRQ(TIMER4_IRQn);
-                break;
+		case 3:
+			NVIC_ClearPendingIRQ(TIMER3_IRQn);
+			NVIC_EnableIRQ(TIMER3_IRQn);
+			break;
+		case 4:
+			NVIC_ClearPendingIRQ(TIMER4_IRQn);
+			NVIC_EnableIRQ(TIMER4_IRQn);
+			break;
 #endif
-        }
-
     }
 
     vpReg->TASKS_START = 1;
@@ -404,10 +396,7 @@ uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
 
     uint32_t count = vpReg->CC[TrigNo];
 
-    if (vEvtHandler)
-    {
-        vpReg->INTENSET = TIMER_INTENSET_COMPARE0_Msk << TrigNo;
-    }
+	vpReg->INTENSET = TIMER_INTENSET_COMPARE0_Msk << TrigNo;
 
     vpReg->CC[TrigNo] = count + cc - INTERRUPT_LATENCY;
 

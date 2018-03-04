@@ -66,11 +66,11 @@ void TimerLFnRF5x::IRQHandler()
             vpReg->EVENTS_COMPARE[i] = 0;
             if (vTrigger[i].Type == TIMER_TRIG_TYPE_CONTINUOUS)
             {
-            	vpReg->CC[i] = count + vCC[i];
+            		vpReg->CC[i] = count + vCC[i];
             }
             if (vTrigger[i].Handler)
             {
-            	vTrigger[i].Handler(this, i, vTrigger[i].pContext);
+            		vTrigger[i].Handler(this, i, vTrigger[i].pContext);
             }
         }
     }
@@ -124,17 +124,17 @@ bool TimerLFnRF5x::Init(const TIMER_CFG &Cfg)
     switch (Cfg.DevNo)
     {
         case 0:
-        	s_pnRF5xRTC[0] = this;
-        	vpReg = NRF_RTC0;
+			s_pnRF5xRTC[0] = this;
+			vpReg = NRF_RTC0;
             break;
         case 1:
-        	s_pnRF5xRTC[1] = this;
-        	vpReg = NRF_RTC1;
+			s_pnRF5xRTC[1] = this;
+			vpReg = NRF_RTC1;
             break;
 #ifdef NRF52
         case 2:
-        	s_pnRF5xRTC[2] = this;
-        	vpReg = NRF_RTC2;
+			s_pnRF5xRTC[2] = this;
+			vpReg = NRF_RTC2;
             break;
 #endif
     }
@@ -176,34 +176,29 @@ bool TimerLFnRF5x::Init(const TIMER_CFG &Cfg)
 
     vDevNo = Cfg.DevNo;
 
-    if (Cfg.EvtHandler)
-    {
-        switch (Cfg.DevNo)
-        {
-            case 0:
-                NVIC_ClearPendingIRQ(RTC0_IRQn);
-                NVIC_SetPriority(RTC0_IRQn, Cfg.IntPrio);
-                NVIC_EnableIRQ(RTC0_IRQn);
-                break;
-            case 1:
-                NVIC_ClearPendingIRQ(RTC1_IRQn);
-                NVIC_SetPriority(RTC1_IRQn, Cfg.IntPrio);
-                NVIC_EnableIRQ(RTC1_IRQn);
-                break;
+	switch (Cfg.DevNo)
+	{
+		case 0:
+			NVIC_ClearPendingIRQ(RTC0_IRQn);
+			NVIC_SetPriority(RTC0_IRQn, Cfg.IntPrio);
+			NVIC_EnableIRQ(RTC0_IRQn);
+			break;
+		case 1:
+			NVIC_ClearPendingIRQ(RTC1_IRQn);
+			NVIC_SetPriority(RTC1_IRQn, Cfg.IntPrio);
+			NVIC_EnableIRQ(RTC1_IRQn);
+			break;
 #ifdef NRF52
-            case 2:
-                NVIC_ClearPendingIRQ(RTC2_IRQn);
-                NVIC_SetPriority(RTC2_IRQn, Cfg.IntPrio);
-                NVIC_EnableIRQ(RTC2_IRQn);
-                break;
+		case 2:
+			NVIC_ClearPendingIRQ(RTC2_IRQn);
+			NVIC_SetPriority(RTC2_IRQn, Cfg.IntPrio);
+			NVIC_EnableIRQ(RTC2_IRQn);
+			break;
 #endif
-        }
+	}
 
-        // Enable tick & overflow interrupt
-        vpReg->INTENSET = RTC_INTENSET_OVRFLW_Msk;
-    }
-
-
+	// Enable tick & overflow interrupt
+	vpReg->INTENSET = RTC_INTENSET_OVRFLW_Msk;
     vpReg->EVTENSET = RTC_EVTEN_OVRFLW_Msk;
 
     Frequency(Cfg.Freq);
@@ -311,10 +306,7 @@ uint64_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
     vCC[TrigNo] = cc;
     vpReg->EVTENSET = RTC_EVTEN_COMPARE0_Msk << TrigNo;
 
-    if (vEvtHandler)
-    {
-        vpReg->INTENSET = RTC_INTENSET_COMPARE0_Msk << TrigNo;
-    }
+	vpReg->INTENSET = RTC_INTENSET_COMPARE0_Msk << TrigNo;
 
     vpReg->CC[TrigNo] = vCC[TrigNo] + vpReg->COUNTER;
 

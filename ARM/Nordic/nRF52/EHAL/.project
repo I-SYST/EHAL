@@ -231,6 +231,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/timer_nrf5x.h</locationURI>
 		</link>
 		<link>
+			<name>include/timer_nrf_app_timer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/timer_nrf_app_timer.h</locationURI>
+		</link>
+		<link>
 			<name>include/uart.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/uart.h</locationURI>
@@ -269,11 +274,6 @@
 			<name>src/ble_app_handler.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app_handler.c</locationURI>
-		</link>
-		<link>
-			<name>src/ble_app_nrf52.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/ble_app_nrf52.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/ble_intrf.cpp</name>
@@ -424,6 +424,11 @@
 			<name>src/timer_lf_nrf5x.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/timer_lf_nrf5x.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/timer_nrf_app_timer.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_nrf_app_timer.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/uart.c</name>
