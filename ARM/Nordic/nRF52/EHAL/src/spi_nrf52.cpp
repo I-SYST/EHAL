@@ -335,6 +335,8 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
 
 	reg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
+
+	return true;
 }
 
 
