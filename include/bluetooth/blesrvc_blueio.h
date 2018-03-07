@@ -120,6 +120,7 @@ typedef struct __Config_Data_Write {
 typedef struct __Config_Cmd_Param_Adv {
 	uint32_t AdvIntervalmSec;	//!< Advertisement interval in msec
 	uint32_t AdvTimeoutSec;		//!< Advertisement timeout in sec.
+	uint32_t SleepTimeSec;		//!< Sleep time in sec.
 } CFGCMD_PARAM_ADV;
 
 #define BLE_CFG_DEVNAME_LEN_MAX	13

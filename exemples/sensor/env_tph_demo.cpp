@@ -55,7 +55,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sensors/tphg_bme680.h"
 #include "sensors/tph_ms8607.h"
 #include "blueio_board.h"
-#include "board.h"
 #include "idelay.h"
 
 #include "bsec_interface.h"
@@ -63,6 +62,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TPH_I2C		// To use I2C interface
 
 #define BME680		// To use Bosch BME680 with Air Quality Index
+#include "board.h"
 
 void TimerHandler(Timer *pTimer, uint32_t Evt);
 
@@ -149,8 +149,8 @@ SPI g_Spi;
 static const I2CCFG s_I2cCfg = {
 	0,			// I2C device number
 	{
-		{I2C0_SDA_PORT, BLUEIO_TAG_BME680_I2C_SDA_PIN, I2C0_SDA_PINOP, IOPINDIR_BI, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},
-		{I2C0_SCL_PORT, BLUEIO_TAG_BME680_I2C_SCL_PIN, I2C0_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},
+		{I2C0_SDA_PORT, I2C0_SDA_PIN, I2C0_SDA_PINOP, IOPINDIR_BI, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},
+		{I2C0_SCL_PORT, I2C0_SCL_PIN, I2C0_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},
 	},
 	100000,	// Rate
 	I2CMODE_MASTER,
@@ -278,9 +278,9 @@ int main()
 
 		if (lastiaq != gdata.AirQualIdx)
 		{
-			printf("Gas = %d %.2f\r\n", gdata.GasRes[gdata.MeasIdx], gdata.AirQualIdx);
 			lastiaq = gdata.AirQualIdx;
 		}
+		printf("Gas = %d %.2f, ", gdata.GasRes[gdata.MeasIdx], gdata.AirQualIdx);
 #endif
 		printf("Temp : %.2f C, Press : %.3f KPa, Humi : %.2f %%\r\n",
 				(float)tphdata.Temperature / 100.0,

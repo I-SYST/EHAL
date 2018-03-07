@@ -91,7 +91,7 @@ typedef struct {
 } VERS;
 #pragma pack(pop)
 
-#define APPINFO_NAMESIZE_MAX		16		//!< Max size in bytes for application name
+#define APPINFO_NAMESIZE_MAX			16		//!< Max size in bytes for application name
 #define APPINFO_PRIVATESIZE_MAX		16		//!< Max size in bytes for private data
 
 #pragma pack(push, 4)
@@ -104,8 +104,8 @@ typedef struct {
 /// access to validate.
 typedef struct {
 	char Name[APPINFO_NAMESIZE_MAX];			//!< Application signature
-	VERS Vers;									//!< Version number
-	uint8_t Private[APPINFO_PRIVATESIZE_MAX];	//!< APPINFO_PRIVATESIZE_MAX bytes private data
+	VERS Vers;								//!< Version number
+	uint8_t Private[APPINFO_PRIVATESIZE_MAX];//!< APPINFO_PRIVATESIZE_MAX bytes private data
 } APP_INFO;
 #pragma pack(pop)
 

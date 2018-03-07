@@ -1,5 +1,5 @@
 /**-------------------------------------------------------------------------
-@example	TPHThingy.cpp
+@example	BlueIOThingy.cpp
 
 @brief	Environmental Sensor BLE demo (Supports BME280, BME680, MS8607).
 
@@ -68,11 +68,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tph_ms8607.h"
 #include "tphg_bme680.h"
 #include "timer_nrf5x.h"
+#include "timer_nrf_app_timer.h"
 #include "board.h"
 #include "idelay.h"
-#include "ble_service.h"
 
-#define DEVICE_NAME                     "EnvThingy"                            /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "BlueIOThingy"                            /**< Name of device. Will be included in the advertising data. */
 
 #define MANUFACTURER_NAME               "I-SYST inc."                       /**< Manufacturer. Will be passed to Device Information Service. */
 
@@ -95,13 +95,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TPH_BME680
 #endif
 
-#ifdef NRF52
+//#ifdef NRF52
 // Use timer to update data
 // NOTE :	RTC timer 0 used by radio, RTC Timer 1 used by SDK
 //			Only RTC timer 2 is usable with Softdevice for nRF52, not avail on nRF51
 //
 #define USE_TIMER_UPDATE
-#endif
+//#endif
 
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(200, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #ifdef USE_TIMER_UPDATE
@@ -117,20 +117,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // TCS (Configuration service characteristics)
 
-#define BLE_UUID_TCS_SERVICE 			0x0100                      /**< The UUID of the Thingy Configuration Service. */
+#define BLE_UUID_TCS_SERVICE				0x0100                      /**< The UUID of the Thingy Configuration Service. */
 
-#define BLE_UUID_TCS_DEVICE_NAME_CHAR   0x0101                      /**< The UUID of the device name Characteristic. */
-#define BLE_UUID_TCS_ADV_PARAMS_CHAR    0x0102                      /**< The UUID of the advertising parameters Characteristic. */
-#define BLE_UUID_TCS_APPEARANCE_CHAR    0x0103                      /**< The UUID of the appearance Characteristic. */
-#define BLE_UUID_TCS_CONN_PARAM_CHAR    0x0104                      /**< The UUID of the connection parameters Characteristic. */
-#define BLE_UUID_TCS_BEACON_PARAM_CHAR  0x0105                      /**< The UUID of the beacon Characteristic. */
-#define BLE_UUID_TCS_CLOUD_PARAM_CHAR   0x0106                      /**< The UUID of the cloud token Characteristic. */
-#define BLE_UUID_TCS_FW_VERSION_CHAR    0x0107                      /**< The UUID of the FW version Characteristic. */
-#define BLE_UUID_TCS_MTU_CHAR           0x0108                      /**< The UUID of the MTU Characteristic. */
+#define BLE_UUID_TCS_DEVICE_NAME_CHAR	0x0101                      /**< The UUID of the device name Characteristic. */
+#define BLE_UUID_TCS_ADV_PARAMS_CHAR		0x0102                      /**< The UUID of the advertising parameters Characteristic. */
+#define BLE_UUID_TCS_APPEARANCE_CHAR		0x0103                      /**< The UUID of the appearance Characteristic. */
+#define BLE_UUID_TCS_CONN_PARAM_CHAR		0x0104                      /**< The UUID of the connection parameters Characteristic. */
+#define BLE_UUID_TCS_BEACON_PARAM_CHAR	0x0105                      /**< The UUID of the beacon Characteristic. */
+#define BLE_UUID_TCS_CLOUD_PARAM_CHAR	0x0106                      /**< The UUID of the cloud token Characteristic. */
+#define BLE_UUID_TCS_FW_VERSION_CHAR		0x0107                      /**< The UUID of the FW version Characteristic. */
+#define BLE_UUID_TCS_MTU_CHAR			0x0108                      /**< The UUID of the MTU Characteristic. */
 
 #define THINGY_TCS_FW_VERSIO_CHAR_IDX   	0//5
 
-#define BLE_TCS_MAX_DATA_LEN (BLE_GATT_ATT_MTU_DEFAULT - 3) /**< Maximum length of data (in bytes) that can be transmitted to the peer by the Thingy Configuration service module. */
+#define BLE_TCS_MAX_DATA_LEN (NRF_BLE_MAX_MTU_SIZE - 3) /**< Maximum length of data (in bytes) that can be transmitted to the peer by the Thingy Configuration service module. */
 
 #pragma pack(push, 1)
 typedef struct {
@@ -174,21 +174,21 @@ const BLESRVC_CFG s_ConfSrvcCfg = {
 /// TCS instance
 BLESRVC g_ConfSrvc;
 
-#define BLE_UUID_TES_SERVICE          0x0200
+#define BLE_UUID_TES_SERVICE          	0x0200
 
-#define BLE_UUID_TES_TEMPERATURE_CHAR 0x0201                      /**< The UUID of the temperature Characteristic. */
-#define BLE_UUID_TES_PRESSURE_CHAR    0x0202                      /**< The UUID of the pressure Characteristic. */
-#define BLE_UUID_TES_HUMIDITY_CHAR    0x0203                      /**< The UUID of the humidity Characteristic. */
-#define BLE_UUID_TES_GAS_CHAR         0x0204                      /**< The UUID of the gas Characteristic. */
-#define BLE_UUID_TES_COLOR_CHAR       0x0205                      /**< The UUID of the gas Characteristic. */
-#define BLE_UUID_TES_CONFIG_CHAR      0x0206                      /**< The UUID of the config Characteristic. */
+#define BLE_UUID_TES_TEMPERATURE_CHAR	0x0201                      /**< The UUID of the temperature Characteristic. */
+#define BLE_UUID_TES_PRESSURE_CHAR    	0x0202                      /**< The UUID of the pressure Characteristic. */
+#define BLE_UUID_TES_HUMIDITY_CHAR    	0x0203                      /**< The UUID of the humidity Characteristic. */
+#define BLE_UUID_TES_GAS_CHAR         	0x0204                      /**< The UUID of the gas Characteristic. */
+#define BLE_UUID_TES_COLOR_CHAR       	0x0205                      /**< The UUID of the gas Characteristic. */
+#define BLE_UUID_TES_CONFIG_CHAR      	0x0206                      /**< The UUID of the config Characteristic. */
 
 //#define THINGY_TES_CONFIGCHAR_IDX   0
 #define THINGY_TES_TEMPCHAR_IDX     0
 #define THINGY_TES_PRESCHAR_IDX     1
 #define THINGY_TES_HUMICHAR_IDX     2
 
-#define BLE_TES_MAX_DATA_LEN (BLE_GATT_ATT_MTU_DEFAULT - 3)       /**< Maximum length of data (in bytes) that can be transmitted to the peer by the Thingy Environment service module. */
+#define BLE_TES_MAX_DATA_LEN (NRF_BLE_MAX_MTU_SIZE - 3)       /**< Maximum length of data (in bytes) that can be transmitted to the peer by the Thingy Environment service module. */
 
 #pragma pack(push, 1)
 typedef struct {
@@ -293,11 +293,15 @@ const static TIMER_CFG s_TimerCfg = {
 	.ClkSrc = TIMER_CLKSRC_DEFAULT,
 	.Freq = 0,			// 0 => Default highest frequency
 	.IntPrio = APP_IRQ_PRIORITY_LOW,
-	.EvtHandler = TimerHandler
+	.EvtHandler = NULL,//TimerHandler
 };
 
+#ifdef NRF51
+TimerAppTimer g_Timer;
+#else
 TimerLFnRF5x g_Timer;
-
+//TimerAppTimer g_Timer;
+#endif
 
 static const ble_uuid_t  s_AdvUuids[] = {
     {BLE_UUID_TCS_SERVICE, BLE_UUID_TYPE_VENDOR_BEGIN}
@@ -317,10 +321,10 @@ const BLEAPP_CFG s_BleAppCfg = {
 	},
 	0, 						// Number of central link
 	1, 						// Number of peripheral link
-	BLEAPP_MODE_APPSCHED,   // Connectionless beacon type
-	DEVICE_NAME,                 // Device name
-	ISYST_BLUETOOTH_ID,     // PnP Bluetooth/USB vendor id
-	1,                      // PnP Product ID
+	BLEAPP_MODE_APPSCHED,   	// Connectionless beacon type
+	DEVICE_NAME,         	// Device name
+	ISYST_BLUETOOTH_ID,    	// PnP Bluetooth/USB vendor id
+	1,                     	// PnP Product ID
 	0,						// Pnp prod version
 	false,					// Enable device information service (DIS)
 	NULL,
@@ -487,9 +491,9 @@ void ReadPTHData()
 		GASSENSOR_DATA gdata;
 		BLEADV_MANDATA_GASSENSOR gas;
 
-    	g_GasSensor.Read(gdata);
+		g_GasSensor.Read(gdata);
 
-    	g_AdvData.Type = BLEADV_MANDATA_TYPE_GAS;
+		g_AdvData.Type = BLEADV_MANDATA_TYPE_GAS;
 		gas.GasRes = gdata.GasRes[gdata.MeasIdx];
 		gas.AirQIdx = gdata.AirQualIdx;
 
@@ -526,12 +530,20 @@ void SchedAdvData(void * p_event_data, uint16_t event_size)
 	ReadPTHData();
 }
 
+void AppTimerHandler(Timer *pTimer, int TrigNo, void *pContext)
+{
+	if (TrigNo == 0)
+	{
+		app_sched_event_put(pContext, sizeof(uint32_t), SchedAdvData);
+	}
+}
+
 void TimerHandler(Timer *pTimer, uint32_t Evt)
 {
     if (Evt & TIMER_EVT_TRIGGER(0))
     {
-    	// NOTE : Use app_sched is needed as Softdevice will crash if called directly
-    	app_sched_event_put(&Evt, sizeof(uint32_t), SchedAdvData);
+		// NOTE : Use app_sched is needed as Softdevice will crash if called directly
+		app_sched_event_put(&Evt, sizeof(uint32_t), SchedAdvData);
     }
 }
 
@@ -541,9 +553,9 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 #ifndef USE_TIMER_UPDATE
     if (p_ble_evt->header.evt_id == BLE_GAP_EVT_TIMEOUT)
     {
-    	// Update environmental sensor data every time advertisement timeout
-    	// for re-advertisement
-    	ReadPTHData();
+		// Update environmental sensor data every time advertisement timeout
+		// for re-advertisement
+		ReadPTHData();
     }
 #endif
 
@@ -588,13 +600,12 @@ void HardwareInit()
 		return;
 	}
 
-
 	// Inititalize sensor
     g_TphSensor.Init(s_TphSensorCfg, g_pIntrf, &g_Timer);
 
     if (g_TphSensor.DeviceID() == BME680_ID)
     {
-    	g_GasSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
+    		g_GasSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
     }
 
 	g_TphSensor.StartSampling();
@@ -608,8 +619,8 @@ void HardwareInit()
 
     if (g_TphSensor.DeviceID() == BME680_ID)
     {
-    	GASSENSOR_DATA gdata;
-    	g_GasSensor.Read(gdata);
+    		GASSENSOR_DATA gdata;
+    		g_GasSensor.Read(gdata);
     }
 
 	g_TphSensor.StartSampling();
@@ -619,10 +630,10 @@ void HardwareInit()
 	// adv data
 	memcpy(g_AdvData.Data, ((uint8_t*)&tphdata) + 4, sizeof(BLEADV_MANDATA_TPHSENSOR));
 
-#ifdef USE_TIMER_UPDATE
+//#ifdef USE_TIMER_UPDATE
 	// Only with SDK14
-	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS);
-#endif
+//	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS, AppTimerHandler);
+//#endif
 }
 
 int main()
@@ -630,6 +641,8 @@ int main()
     HardwareInit();
 
     BleAppInit((const BLEAPP_CFG *)&s_BleAppCfg, true);
+
+	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS, AppTimerHandler);
 
     BleAppRun();
 

@@ -418,6 +418,8 @@ bool TphgBme680::Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	}
 
 	vbMeasGas = true;
+	vbGasData = false;
+
 	vNbHeatPoint = CfgData.NbHeatPoint;
 	memcpy(vHeatPoints, CfgData.pHeatProfile, vNbHeatPoint * sizeof(GASSENSOR_HEAT));
 

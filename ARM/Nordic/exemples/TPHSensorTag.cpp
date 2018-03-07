@@ -68,6 +68,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tph_ms8607.h"
 #include "tphg_bme680.h"
 #include "timer_nrf5x.h"
+#include "timer_nrf_app_timer.h"
 #include "board.h"
 #include "idelay.h"
 
@@ -80,13 +81,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TPH_BME680
 #endif
 
-#ifdef NRF52
+//#ifdef NRF52
 // Use timer to update data
 // NOTE :	RTC timer 0 used by radio, RTC Timer 1 used by SDK
 //			Only RTC timer 2 is usable with Softdevice for nRF52, not avail on nRF51
 //
-//#define USE_TIMER_UPDATE
-#endif
+#define USE_TIMER_UPDATE
+//#endif
 
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(200, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #ifdef USE_TIMER_UPDATE
@@ -117,7 +118,11 @@ const static TIMER_CFG s_TimerCfg = {
 	.EvtHandler = TimerHandler
 };
 
+#ifdef NRF51
+TimerAppTimer g_Timer;
+#else
 TimerLFnRF5x g_Timer;
+#endif
 
 const BLEAPP_CFG s_BleAppCfg = {
 	{ // Clock config nrf_clock_lf_cfg_t
@@ -229,7 +234,7 @@ static TPHSENSOR_CFG s_TphSensorCfg = {
 #endif
 	SENSOR_OPMODE_SINGLE,
 	100,						// Sampling frequency in mHz
-	1,
+	2,
 	1,
 	1,
 	1
@@ -242,7 +247,7 @@ static const GASSENSOR_HEAT s_HeaterProfile[] = {
 static const GASSENSOR_CFG s_GasSensorCfg = {
 	BME680_I2C_DEV_ADDR0,	// Device address
 	SENSOR_OPMODE_SINGLE,	// Operating mode
-	500,
+	100,
 	sizeof(s_HeaterProfile) / sizeof(GASSENSOR_HEAT),
 	s_HeaterProfile
 };
@@ -267,19 +272,21 @@ void ReadPTHData()
 {
 	static uint32_t gascnt = 0;
 	TPHSENSOR_DATA data;
+	GASSENSOR_DATA gdata;
 
 	g_TphSensor.Read(data);
 
 
 
-	if (g_TphSensor.DeviceID() == BME680_ID && (gascnt & 0x3) == 0)
+	if (g_TphSensor.DeviceID() == BME680_ID)// && (gascnt & 0x3) == 0)
 	{
-		GASSENSOR_DATA gdata;
+		g_GasSensor.Read(gdata);
+	}
+	if ((gascnt & 0x3) == 0)
+	{
 		BLEADV_MANDATA_GASSENSOR gas;
 
-		g_GasSensor.Read(gdata);
-
-    		g_AdvData.Type = BLEADV_MANDATA_TYPE_GAS;
+		g_AdvData.Type = BLEADV_MANDATA_TYPE_GAS;
 		gas.GasRes = gdata.GasRes[gdata.MeasIdx];
 		gas.AirQIdx = gdata.AirQualIdx;
 
@@ -311,6 +318,15 @@ void TimerHandler(Timer *pTimer, uint32_t Evt)
     }
 }
 
+void AppTimerHandler(Timer *pTimer, int TrigNo, void *pContext)
+{
+	if (TrigNo == 0)
+	{
+		ReadPTHData();
+//		app_sched_event_put(pContext, sizeof(uint32_t), SchedAdvData);
+	}
+}
+
 void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 {
 #ifndef USE_TIMER_UPDATE
@@ -333,6 +349,8 @@ void HardwareInit()
 {
 	// Set this only if nRF is power at 2V or more
 	nrf_power_dcdcen_set(true);
+
+	g_Timer.Init(s_TimerCfg);
 
 	// Initialize I2C
 #ifdef NEBLINA_MODULE
@@ -385,11 +403,11 @@ void HardwareInit()
 	// adv data
 	memcpy(g_AdvData.Data, ((uint8_t*)&tphdata) + 4, sizeof(BLEADV_MANDATA_TPHSENSOR));
 
+
 #ifdef USE_TIMER_UPDATE
 	// Only with SDK14
-    g_Timer.Init(s_TimerCfg);
 
-	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS);
+//	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS);
 #endif
 }
 
@@ -399,7 +417,7 @@ int main()
 
     BleAppInit((const BLEAPP_CFG *)&s_BleAppCfg, true);
 
-	//uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS);
+	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS, AppTimerHandler);
 
     BleAppRun();
 
