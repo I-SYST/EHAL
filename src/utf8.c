@@ -30,6 +30,8 @@ Modified by          Date              Description
 Hoan Hoang           Nov. 10, 2006     For codecvt_utf8 which requires 
                                        conversion states
 ----------------------------------------------------------------------------*/
+#include <wchar.h>
+
 #include "utf8.h"
 
 int uft8towcs_octetcount(char c)

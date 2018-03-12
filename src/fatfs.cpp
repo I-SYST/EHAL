@@ -36,7 +36,6 @@ Modified by          Date              Description
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <reent.h>
 #include <errno.h>
 #include <sys/unistd.h>
 #include <reent.h>
