@@ -36,7 +36,7 @@
 #include <IOKit/hid/IOHIDLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
 
-#include "usb_hidhost.h"
+#include "usb/usb_hidhost.h"
 
 typedef void (*HIDINTRPTINCB)(UsbHidDevice *pDev, char *pBuf, uint32_t DataLen);
 

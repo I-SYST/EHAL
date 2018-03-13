@@ -1,10 +1,13 @@
-/*---------------------------------------------------------------------------
-File : usb_hidhost_implt.h
+/**--------------------------------------------------------------------------
+@file	usb_hidhost_implt.h
 
-Author : Hoang Nguyen Hoan          Oct 9, 2008
+@brief	Host side USB HID device access implementation class on Windows
 
-Desc :	Generic class of Host side USB HID device access
-		Implementation class for USB device on Windows
+
+@author	Hoang Nguyen Hoan
+@date	Oct 9, 2008
+
+@license
 
 Copyright (c) 2008-16, I-SYST, all rights reserved
 
@@ -36,17 +39,22 @@ Modified by          		Date              Description
 #include "Windows.h"
 #include <wchar.h>
 
+/** @addtogroup USB
+  * @{
+  */
+
 extern "C" {
 #include "hidsdi.h"
 #include "hidpi.h"
 }
 
-#include "usb_hidhost.h"
+#include "usb/usb_hidhost.h"
 
 typedef struct {
 
 } HIDDEV_DATA;
 
+/// USB HID device class implementation on Windows
 class UsbHidDevice_Impl : public UsbHidDevice {
 public:
 	UsbHidDevice_Impl();
@@ -83,5 +91,7 @@ private:
 typedef bool(*USBHIDFOUNDCB)(HANDLE HidDev);
 
 int UsbHidFindDevice(int VendId, int ProdId, USBHIDFOUNDCB Callback);
+
+/** @} End of group USB */
 
 #endif // __USB_HIDHOST_IMPL_H

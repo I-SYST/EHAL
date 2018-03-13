@@ -33,6 +33,8 @@
 									<listOptionValue builtIn="false" value="../../../include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.1218495010" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++11" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.pthread.1325853034" superClass="gnu.cpp.compiler.option.pthread" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.other.pic.2065715951" superClass="gnu.cpp.compiler.option.other.pic" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1162232869" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.lib.debug.365945904" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.lib.debug">
@@ -43,6 +45,8 @@
 									<listOptionValue builtIn="false" value="../../../include"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.1388859433" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.c11" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.pthread.608733672" superClass="gnu.c.compiler.option.pthread" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="gnu.c.compiler.option.misc.pic.1873908702" superClass="gnu.c.compiler.option.misc.pic" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1446997937" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1283871390" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
@@ -91,6 +95,8 @@
 									<listOptionValue builtIn="false" value="../include"/>
 									<listOptionValue builtIn="false" value="../../../include"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.pthread.1254025672" superClass="gnu.cpp.compiler.option.pthread" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.other.pic.2136706441" superClass="gnu.cpp.compiler.option.other.pic" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.952795210" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.lib.release.1868915328" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.lib.release">
@@ -100,6 +106,8 @@
 									<listOptionValue builtIn="false" value="../include"/>
 									<listOptionValue builtIn="false" value="../../../include"/>
 								</option>
+								<option id="gnu.c.compiler.option.pthread.298841272" superClass="gnu.c.compiler.option.pthread" value="true" valueType="boolean"/>
+								<option id="gnu.c.compiler.option.misc.pic.1612056079" superClass="gnu.c.compiler.option.misc.pic" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2078005524" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1399051949" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>

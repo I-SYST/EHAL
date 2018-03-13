@@ -187,7 +187,7 @@ bool UsbHidDevice_Impl::WriteOutputReport(int RepNo, uint8_t *pData, uint32_t Da
 	if (vpDev == NULL)
 		return false;
 
-	uint8_t buf[HIDRAW_BUFFER_SIZE];
+	uint8_t buf[HIDRAW_BUFFER_SIZE + 1];
 
 	buf[0] = RepNo;
 	memcpy(&buf[1], pData, DataLen);
@@ -209,7 +209,7 @@ bool UsbHidDevice_Impl::WriteFeatureReport(int RepNo, uint8_t *pData, uint32_t D
 	if (vpDev == NULL)
 		return false;
 	
-	uint8_t buf[HIDRAW_BUFFER_SIZE];
+	uint8_t buf[HIDRAW_BUFFER_SIZE + 1];
 
 	buf[0] = RepNo;
 	memcpy(&buf[1], pData, DataLen);

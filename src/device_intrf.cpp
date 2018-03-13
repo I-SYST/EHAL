@@ -116,12 +116,17 @@ int DeviceIntrfWrite(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
 {
     int count = 0, txlen = AdCmdLen;
     int nrtry = pDev->MaxRetry;
-    uint8_t d[AdCmdLen + DataLen > 0 ? DataLen : 0];
 
-    if (pAdCmd == NULL)
+    if (pAdCmd == NULL || (AdCmdLen + DataLen) <= 0)
         return 0;
 
-    // NOTE : Some I2C devices that uses DMA transfer may require that the tx to be combined
+#ifdef WIN32
+	uint8_t d[100];
+#else
+	uint8_t d[AdCmdLen + DataLen];
+#endif
+
+	// NOTE : Some I2C devices that uses DMA transfer may require that the tx to be combined
     // into single tx. Because it may generate a end condition at the end of the DMA
     memcpy(d, pAdCmd, AdCmdLen);
 

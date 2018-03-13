@@ -496,3 +496,7 @@ int UsbHidFindDevice(int VendId, int ProdId, USBHIDFOUNDCB Callback)
 	return devcnt;
 }
 
+UsbHidDevice *UsbHidDevice::Create()
+{
+	return new UsbHidDevice_Impl;
+}

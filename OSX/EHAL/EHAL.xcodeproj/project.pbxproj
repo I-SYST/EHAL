@@ -27,7 +27,7 @@
 		401FBFF61DA01F47004A39FF /* uart.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE81DA01F47004A39FF /* uart.h */; };
 		401FBFF81DA01F47004A39FF /* utf8.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFEA1DA01F47004A39FF /* utf8.h */; };
 		401FBFF91DA01F47004A39FF /* utf8cvt.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFEB1DA01F47004A39FF /* utf8cvt.h */; };
-		4047E3CE1DD8B9E8005634A1 /* usb_hidhost.h in Headers */ = {isa = PBXBuildFile; fileRef = 4047E3CD1DD8B9E8005634A1 /* usb_hidhost.h */; };
+		4030886C2053AD6600109A64 /* usb_hidhost.h in Headers */ = {isa = PBXBuildFile; fileRef = 4030886B2053AD6600109A64 /* usb_hidhost.h */; };
 		4047E3D01DD8BA20005634A1 /* usb_hidhost_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4047E3CF1DD8BA20005634A1 /* usb_hidhost_impl.cpp */; };
 		C9652D5D1E8183EB002892B7 /* device_intrf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9652D5B1E8183EB002892B7 /* device_intrf.cpp */; };
 		C9652D5E1E8183EB002892B7 /* device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9652D5C1E8183EB002892B7 /* device.cpp */; };
@@ -57,7 +57,7 @@
 		401FBFE81DA01F47004A39FF /* uart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uart.h; path = ../../include/uart.h; sourceTree = "<group>"; };
 		401FBFEA1DA01F47004A39FF /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utf8.h; path = ../../include/utf8.h; sourceTree = "<group>"; };
 		401FBFEB1DA01F47004A39FF /* utf8cvt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utf8cvt.h; path = ../../include/utf8cvt.h; sourceTree = "<group>"; };
-		4047E3CD1DD8B9E8005634A1 /* usb_hidhost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = usb_hidhost.h; path = ../../include/usb_hidhost.h; sourceTree = "<group>"; };
+		4030886B2053AD6600109A64 /* usb_hidhost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = usb_hidhost.h; path = ../../include/usb/usb_hidhost.h; sourceTree = "<group>"; };
 		4047E3CF1DD8BA20005634A1 /* usb_hidhost_impl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = usb_hidhost_impl.cpp; path = src/usb_hidhost_impl.cpp; sourceTree = "<group>"; };
 		C9652D5B1E8183EB002892B7 /* device_intrf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = device_intrf.cpp; path = ../../src/device_intrf.cpp; sourceTree = "<group>"; };
 		C9652D5C1E8183EB002892B7 /* device.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = device.cpp; path = ../../src/device.cpp; sourceTree = "<group>"; };
@@ -79,12 +79,12 @@
 		401FBF771D9CAC42004A39FF = {
 			isa = PBXGroup;
 			children = (
+				4030886B2053AD6600109A64 /* usb_hidhost.h */,
 				C9652D5F1E8183FF002892B7 /* device_intrf.h */,
 				C9652D601E8183FF002892B7 /* device.h */,
 				C9652D5B1E8183EB002892B7 /* device_intrf.cpp */,
 				C9652D5C1E8183EB002892B7 /* device.cpp */,
 				4047E3CF1DD8BA20005634A1 /* usb_hidhost_impl.cpp */,
-				4047E3CD1DD8B9E8005634A1 /* usb_hidhost.h */,
 				401FBFDE1DA01F47004A39FF /* base64.h */,
 				401FBFDF1DA01F47004A39FF /* cfifo.h */,
 				401FBFE01DA01F47004A39FF /* convutil.h */,
@@ -125,13 +125,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				401FBFF81DA01F47004A39FF /* utf8.h in Headers */,
-				4047E3CE1DD8B9E8005634A1 /* usb_hidhost.h in Headers */,
 				C9652D611E8183FF002892B7 /* device_intrf.h in Headers */,
 				401FBFED1DA01F47004A39FF /* cfifo.h in Headers */,
 				401FBFEC1DA01F47004A39FF /* base64.h in Headers */,
 				C9652D621E8183FF002892B7 /* device.h in Headers */,
 				401FBFF91DA01F47004A39FF /* utf8cvt.h in Headers */,
 				401FBFF21DA01F47004A39FF /* prbs.h in Headers */,
+				4030886C2053AD6600109A64 /* usb_hidhost.h in Headers */,
 				401FBFF11DA01F47004A39FF /* istddef.h in Headers */,
 				401FBFF61DA01F47004A39FF /* uart.h in Headers */,
 				401FBFEE1DA01F47004A39FF /* convutil.h in Headers */,

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -53,6 +53,8 @@
       <SDLCheck>false</SDLCheck>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <CallingConvention>Cdecl</CallingConvention>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -74,6 +76,7 @@
       <SDLCheck>false</SDLCheck>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <CallingConvention>Cdecl</CallingConvention>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -89,12 +92,12 @@
     <ClCompile Include="..\..\src\base64.c" />
     <ClCompile Include="..\..\src\cfifo.c" />
     <ClCompile Include="..\..\src\crc.c" />
+    <ClCompile Include="..\..\src\device_intrf.cpp" />
     <ClCompile Include="..\..\src\intelhex.c" />
+    <ClCompile Include="..\..\src\isha1.c" />
+    <ClCompile Include="..\..\src\isha256.c" />
     <ClCompile Include="..\..\src\prbs.c" />
     <ClCompile Include="..\..\src\sbuffer.c" />
-    <ClCompile Include="..\..\src\serialintrf.cpp" />
-    <ClCompile Include="..\..\src\sha1.c" />
-    <ClCompile Include="..\..\src\sha256.c" />
     <ClCompile Include="..\..\src\sysstatus.c" />
     <ClCompile Include="..\..\src\uart.c" />
     <ClCompile Include="..\..\src\usb_hidhost.cpp" />
