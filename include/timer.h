@@ -190,6 +190,24 @@ public:
 	virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type,
 	                                    TIMER_TRIGCB Handler = NULL, void *pContext = NULL) = 0;
 
+    /**
+	 * @brief	Enable millisecond timer trigger event.
+	 *
+	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
+	 * @param   msPeriod : Trigger period in msec.
+	 * @param   Type     : Trigger type single shot or continuous
+	 * @param	Handler	 : Optional Timer trigger user callback
+	 * @param   pContext : Optional pointer to user private data to be passed
+	 *                     to the callback. This could be a class or structure pointer.
+	 *
+	 * @return  real period in msec based on clock calculation
+	 */
+	int32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type,
+	                           TIMER_TRIGCB Handler, void *pContext = NULL)
+	{
+		return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type, Handler, pContext) / 1000000ULL);
+	}
+
 	/**
 	 * @brief	Enable nanosecond timer trigger event.
 	 *
