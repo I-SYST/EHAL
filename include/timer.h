@@ -202,7 +202,7 @@ public:
 	 *
 	 * @return  real period in msec based on clock calculation
 	 */
-	int32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type,
+	virtual int32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type,
 	                           TIMER_TRIGCB Handler, void *pContext = NULL)
 	{
 		return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type, Handler, pContext) / 1000000ULL);
