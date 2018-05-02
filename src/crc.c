@@ -47,10 +47,10 @@ Modified by          Date              Description
  */
 uint8_t crc8_ccitt(uint8_t *pData, int Len, uint8_t SeedVal)
 {
-	uint8_t i, e, f, crc;
+	uint8_t e, f, crc;
 
 	crc = SeedVal;
-	for (i = 0; i < Len; i++)
+	for (int i = 0; i < Len; i++)
 	{
 		e = crc ^ pData[i];
 		f = e ^ (e >> 4) ^ (e >> 7);
@@ -74,10 +74,9 @@ uint16_t crc16_ansi(uint8_t *pData, int Len, uint16_t SeedVal)
 {
     uint8_t  s;
     uint16_t t, crc;
-    int i;
 
     crc = SeedVal;
-    for (i = 0; i < Len; i++)
+    for (int i = 0; i < Len; i++)
     {
         s = pData[i] ^ (crc >> 8);
         t = s ^ (s >> 4);
@@ -106,10 +105,9 @@ uint16_t crc16_ccitt(uint8_t *pData, int Len, uint16_t SeedVal)
 {
 	uint8_t  s, t;
 	uint16_t crc;
-	int i;
 
 	crc = SeedVal;
-	for (i = 0; i < Len; i++)
+	for (int i = 0; i < Len; i++)
 	{
 		s = pData[i] ^ (crc >> 8);
 		t = s ^ (s >> 4);
@@ -129,38 +127,57 @@ uint16_t crc16_ccitt(uint8_t *pData, int Len, uint16_t SeedVal)
  */
 uint32_t crc32(uint8_t *pData, int Len)
 {
-	int i; 		// iterator
-	int j; 		// another iterator
 	char byte; 	// current byte
 	uint32_t crc; 	// CRC result
 	int q0, q1, q2, q3; // temporary variables
 	crc = 0xFFFFFFFF;
-	for (i = 0; i < Len; i++) {
+
+	for (int i = 0; i < Len; i++)
+	{
 		byte = *pData++;
-		for (j = 0; j < 2; j++) {
-			if (((crc >> 28) ^ (byte >> 3)) & 0x00000001) {
+
+		for (int j = 0; j < 2; j++)
+		{
+			if (((crc >> 28) ^ (byte >> 3)) & 0x00000001)
+			{
 				q3 = 0x04C11DB7;
-			} else {
+			}
+			else
+			{
 				q3 = 0x00000000;
 			}
-			if (((crc >> 29) ^ (byte >> 2)) & 0x00000001) {
+
+			if (((crc >> 29) ^ (byte >> 2)) & 0x00000001)
+			{
 				q2 = 0x09823B6E;
-			} else {
+			}
+			else
+			{
 				q2 = 0x00000000;
 			}
-			if (((crc >> 30) ^ (byte >> 1)) & 0x00000001) {
+
+			if (((crc >> 30) ^ (byte >> 1)) & 0x00000001)
+			{
 				q1 = 0x130476DC;
-			} else {
+			}
+			else
+			{
 				q1 = 0x00000000;
 			}
-			if (((crc >> 31) ^ (byte >> 0)) & 0x00000001) {
+
+			if (((crc >> 31) ^ (byte >> 0)) & 0x00000001)
+			{
 				q0 = 0x2608EDB8;
-			} else {
+			}
+			else
+			{
 				q0 = 0x00000000;
 			}
+
 			crc = (crc << 4) ^ q3 ^ q2 ^ q1 ^ q0;
 			byte >>= 4;
 		}
 	}
+
 	return crc;
 }
