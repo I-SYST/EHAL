@@ -58,6 +58,7 @@ bool SeepInit(SEEPDEV *pDev, const SEEP_CFG *pCfgData, DEVINTRF *pInterf)
     pDev->pWaitCB = pCfgData->pWaitCB;
     pDev->WrProtPin = pCfgData->WrProtPin;
     pDev->WrDelay = pCfgData->WrDelay * 1000; // convert to usec
+    pDev->Size = pCfgData->Size;
 
     if (pCfgData->WrProtPin.PortNo >= 0 && pCfgData->WrProtPin.PinNo >= 0)
     {
@@ -72,49 +73,92 @@ bool SeepInit(SEEPDEV *pDev, const SEEP_CFG *pCfgData, DEVINTRF *pInterf)
     return true;
 }
 
-int SeepRead(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
+int SeepRead(SEEPDEV *pDev, uint32_t Addr, uint8_t *pData, int Len)
 {
     uint8_t ad[4];
     uint8_t *p = (uint8_t*)&Addr;
+    uint32_t shift = pDev->AddrLen << 3;
+    uint32_t admask = 0xFFFFFFFF << shift;
+    int count = 0;
 
-    for (int i = 0; i < pDev->AddrLen; i++)
+    while (Len > 0 && Addr < pDev->Size)
     {
-        ad[i] = p[pDev->AddrLen - i - 1];
+        uint8_t devaddr = pDev->DevAddr;
+
+        // MSB first
+        for (int i = 0; i < pDev->AddrLen; i++)
+		{
+			ad[i] = p[pDev->AddrLen - i - 1];
+		}
+
+        if (Addr & admask)
+        {
+        	// block select
+        	devaddr |= (Addr >> shift) & 7;
+        }
+
+	    int l = min(Len, pDev->AddrLen << 8);
+
+	    l = DeviceIntrfRead(pDev->pInterf, devaddr, ad, pDev->AddrLen, pData, Len);
+	    if (l <= 0)
+	    {
+	    	break;
+	    }
+	    count += l;
+	    Addr += l;
+	    Len -= l;
+	    pData += l;
     }
 
-    return DeviceIntrfRead(pDev->pInterf, pDev->DevAddr, ad, pDev->AddrLen, pData, Len);
+    return count;
 }
 
 // Note: Sequential write is bound by page size boundary
-int SeepWrite(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len)
+int SeepWrite(SEEPDEV *pDev, uint32_t Addr, uint8_t *pData, int Len)
 {
     int count = 0;
     uint8_t ad[4];
     uint8_t *p = (uint8_t*)&Addr;
+    uint32_t shift = pDev->AddrLen << 3;
+    uint32_t admask = 0xFFFFFFFF << shift;
 
-    while (Len > 0)
+    while (Len > 0 && Addr < pDev->Size)
     {
-        int size = min(Len, pDev->PageSize - (Addr % pDev->PageSize));
+        uint8_t devaddr = pDev->DevAddr;
+        int l = min(Len, pDev->PageSize - (Addr % pDev->PageSize));
+
+        // MSB first
         for (int i = 0; i < pDev->AddrLen; i++)
         {
             ad[i] = p[pDev->AddrLen - i - 1];
         }
 
-        size = DeviceIntrfWrite(pDev->pInterf, pDev->DevAddr, ad, pDev->AddrLen, pData, size);
+        if (Addr & admask)
+        {
+        	// block select
+        	devaddr |= (Addr >> shift) & 7;
+        }
+
+        l = DeviceIntrfWrite(pDev->pInterf, devaddr, ad, pDev->AddrLen, pData, l);
+        if (l <= 0)
+        {
+        	break;
+        }
         if (pDev->pWaitCB)
         {
-            pDev->pWaitCB(pDev->DevAddr, pDev->pInterf);
+            pDev->pWaitCB(devaddr, pDev->pInterf);
         }
         else if (pDev->WrDelay > 0)
         {
             usDelay(pDev->WrDelay);
         }
 
-        Addr += size;
-        Len -= size;
-        pData += size;
-        count += size;
+        Addr += l;
+        Len -= l;
+        pData += l;
+        count += l;
     }
+
     return count;
 }
 
@@ -128,56 +172,3 @@ void SeepSetWriteProt(SEEPDEV *pDev, bool bVal)
     else
         IOPinClear(pDev->WrProtPin.PortNo, pDev->WrProtPin.PinNo);
 }
-
-/*
-int Seep::Read(int Addr, uint8_t *pData, int Len)
-{
-	uint8_t ad[4];
-	uint8_t *p = (uint8_t*)&Addr;
-
-	for (int i = 0; i < vAddrLen; i++)
-	{
-		ad[i] = p[vAddrLen - i - 1];
-	}
-
-	SerialIntrf *pI = vpInterf ;
-
-	//if (vpInterf->Tx(vDevAddr, (uint8_t*)ad, vAddrLen))
-	if (pI->Tx(vDevAddr, (uint8_t*)ad, vAddrLen))
-	{
-		return vpInterf->Rx(vDevAddr, pData, Len);
-	}
-
-	return 0;
-}
-
-// Note: Sequential write is bound by page size boundary
-int Seep::Write(int Addr, uint8_t *pData, int Len)
-{
-	int count = 0;
-	uint8_t ad[4];
-	uint8_t *p = (uint8_t*)&Addr;
-
-	while (Len > 0)
-	{
-		int size = min(Len, vPageSize - (Addr % vPageSize));
-		for (int i = 0; i < vAddrLen; i++)
-		{
-			ad[i] = p[vAddrLen - i - 1];
-		}
-
-		if (vpInterf->StartTx(vDevAddr))
-		{
-			vpInterf->TxData((uint8_t*)ad, vAddrLen);
-			count += vpInterf->TxData(pData, size);
-			vpInterf->StopTx();
-			if (vpWaitCB)
-				vpWaitCB(vDevAddr, *vpInterf);
-		}
-		Addr += size;
-		Len -= size;
-		pData += size;
-	}
-	return count;
-}
-*/

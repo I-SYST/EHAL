@@ -141,7 +141,7 @@ static inline uint16_t SeepGetPageSize(SEEPDEV *pDev) {
  *
  * @return  Number of bytes read
  */
-int SeepRead(SEEPDEV *pDev, int Addr, uint8_t *pBuff, int Len);
+int SeepRead(SEEPDEV *pDev, uint32_t Addr, uint8_t *pBuff, int Len);
 
 /**
  * @brief Write to data to Serial EEPROM.
@@ -153,7 +153,7 @@ int SeepRead(SEEPDEV *pDev, int Addr, uint8_t *pBuff, int Len);
  *
  * @return  Number of bytes written
  */
-int SeepWrite(SEEPDEV *pDev, int Addr, uint8_t *pData, int Len);
+int SeepWrite(SEEPDEV *pDev, uint32_t Addr, uint8_t *pData, int Len);
 
 /**
  * @brief Set the write protect pin.
@@ -199,7 +199,7 @@ public:
      *
      * @return  Number of bytes read
      */
-    virtual int Read(int Addr, uint8_t *pBuff, int Len) { return SeepRead(&vDevData, Addr, pBuff, Len); }
+    virtual int Read(uint32_t Addr, uint8_t *pBuff, int Len) { return SeepRead(&vDevData, Addr, pBuff, Len); }
 
     /**
      * @brief Write to data to Serial EEPROM.
@@ -210,7 +210,7 @@ public:
      *
      * @return  Number of bytes written
      */
-    virtual int Write(int Addr, uint8_t *pData, int Len) { return SeepWrite(&vDevData, Addr, pData, Len); }
+    virtual int Write(uint32_t Addr, uint8_t *pData, int Len) { return SeepWrite(&vDevData, Addr, pData, Len); }
 
     /**
      * @brief Get EEPROM size.
