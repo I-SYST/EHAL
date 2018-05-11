@@ -194,6 +194,9 @@ int nRF52I2CRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
 		dev->pReg->RXD.PTR = (uint32_t)pBuff;
 		dev->pReg->RXD.MAXCNT = l;
 		dev->pReg->RXD.LIST = 0;
+		dev->pReg->SHORTS = 0;
+		dev->pReg->EVENTS_SUSPENDED = 0;
+		dev->pReg->TASKS_RESUME = 1;
 		dev->pReg->TASKS_STARTRX = 1;
 
 		if (nRF52I2CWaitRxComplete(dev, 1000000) == false)
@@ -239,6 +242,9 @@ int nRF52I2CTxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
 		dev->pReg->TXD.PTR = (uint32_t)pData;
 		dev->pReg->TXD.MAXCNT = l;
 		dev->pReg->TXD.LIST = 0;
+		dev->pReg->SHORTS = (TWIM_SHORTS_LASTTX_SUSPEND_Enabled << TWIM_SHORTS_LASTTX_SUSPEND_Pos);
+		dev->pReg->EVENTS_SUSPENDED = 0;
+		dev->pReg->TASKS_RESUME = 1;
 		dev->pReg->TASKS_STARTTX = 1;
 
 		if (nRF52I2CWaitTxComplete(dev, 100000) == false)
@@ -259,6 +265,8 @@ void nRF52I2CStopTx(DEVINTRF *pDev)
     {
         dev->pReg->EVENTS_LASTTX = 0;
     }
+	dev->pReg->EVENTS_SUSPENDED = 0;
+	dev->pReg->TASKS_RESUME = 1;
     dev->pReg->TASKS_STOP = 1;
     nRF52I2CWaitStop(dev, 1000);
 }
