@@ -3,6 +3,108 @@
 
 @brief	Generic implementation of Serial EEPROM device
 
+This implementation supports most Serial EEPROM.
+	- Automatic memory block selections
+	- Multi-bytes memory address length
+
+There is no need to write code for each type of EEPROM.  Just fill EEPROM
+information in the SEEP_CFG data structure then pass it to the init function.
+
+Example of defining EEPROM info :
+
+-----
+CAT24C32 : 32Kbits, 2 byte address length, 32 bytes per page, Write delays 5 ms
+
+static const SEEP_CFG s_CAT24C02EepCfg = {
+	0x50,			// Device address
+	2,				// Address length
+	32,				// Page size
+	32 * 1024 / 8,	// Total size in bytes
+	5,				// Twr : 5 ms
+};
+
+-----
+CAT24C02 : 2Kbits, 1 byte address length, 16 bytes per page, Write delays 5 ms
+
+static const SEEP_CFG s_CAT24C02EepCfg = {
+	0x50,		// Device address
+	1,			// Address length
+	16,			// Page size
+	2048 / 8,	// Total size in bytes
+	5,			// Twr : 5 ms
+};
+
+-----
+M24C64S : 64Kbits, 2 bytes address length, 32 bytes per page, Write delays 5 ms
+
+static const SEEP_CFG s_M24C64SEepCfg = {
+	0x50,		// Device address
+	2,			// Address length
+	32,			// Page size
+	64 * 1024 / 8,	// Total size in bytes
+	5,			// Twr : 5 ms
+};
+
+-----
+AT24CS08 : 8Kbits, 1 byte address length, 16 bytes per page, write delays 5 ms
+
+static const SEEP_CFG s_AT24CS08EepCfg = {
+	0x50,		// Device address
+	1,			// Address length
+	16,			// Page size
+	1024,		// Total size in bytes
+	5,			// Twr : 5 ms
+};
+
+-----
+24AA08/24LC08B : 8Kbits, 1 byte address length, 16 bytes per page, write delays 3 ms
+
+static const SEEP_CFG s_AT24CS08EepCfg = {
+	0x50,		// Device address
+	1,			// Address length
+	16,			// Page size
+	1024,		// Total size in bytes
+	3,			// Twr : 3 ms
+};
+
+----
+Usage in C++ :
+
+// I2C interface instance to be used. Assuming it is already initialized.
+I2C g_I2C;
+
+// Declare instance
+Seep g_Seep;
+
+// Initialize
+g_Seep.Init(s_AT24CS08EepCfg, &g_I2C);
+
+// Read/Write
+uint8_t buff[40];
+
+g_Seep.Write(0x100, buff, 40);	// Write 40 bytes at address 0x100
+g_Seep.Read(0x10, buff, 40); // Read 40 bytes from address 0x10
+
+-----
+Usage in C :
+
+// I2C interface instance to be used. Assuming it is already initialized.
+I2CDEV g_I2CDev;
+
+// Declare instance
+SEEPDEV g_SeepDev;
+
+// Initialize
+SeepInit(&g_SeepDev, &s_AT24CS08EepCfg, &g_I2CDev->DevIntrf);
+
+
+// Read/Write
+uint8_t buff[40];
+
+SeepWrite(&g_SeepDev, 0x100, buff, 40);	// Write 40 bytes at address 0x100
+SeepRead(&g_SeepDev, 0x10, buff, 40); // Read 40 bytes from address 0x10
+
+
 @author	Hoang Nguyen Hoan
 @date	Sep. 15, 2011
 
