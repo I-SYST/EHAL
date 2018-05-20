@@ -176,6 +176,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/prbs.h</locationURI>
 		</link>
 		<link>
+			<name>include/pwm.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/pwm.h</locationURI>
+		</link>
+		<link>
 			<name>include/sdcard.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sdcard.h</locationURI>
@@ -384,6 +389,11 @@
 			<name>src/prbs.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/prbs.c</locationURI>
+		</link>
+		<link>
+			<name>src/pwm_nrf52.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/pwm_nrf52.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sbuffer.c</name>
