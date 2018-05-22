@@ -66,6 +66,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.753429622" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NRF52_PAN_12"/>
@@ -82,6 +83,7 @@
 									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_74"/>
 									<listOptionValue builtIn="false" value="NRF52832_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
@@ -183,6 +185,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1324450349" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NRF52_PAN_12"/>
@@ -199,6 +202,7 @@
 									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_74"/>
 									<listOptionValue builtIn="false" value="NRF52832_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
@@ -302,6 +306,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1844761946" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NRF52_PAN_12"/>
@@ -318,6 +323,7 @@
 									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_74"/>
 									<listOptionValue builtIn="false" value="NRF52832_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
@@ -421,6 +427,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.575847302" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NRF52_PAN_12"/>
@@ -437,6 +444,7 @@
 									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_74"/>
 									<listOptionValue builtIn="false" value="NRF52832_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
@@ -538,9 +546,9 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1675321690" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="CONFIG_NFCT_PINS_AS_GPIOS"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_12"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_15"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_58"/>
@@ -555,6 +563,7 @@
 									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_74"/>
 									<listOptionValue builtIn="false" value="NRF52832_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
@@ -656,9 +665,9 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1857355521" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="CONFIG_NFCT_PINS_AS_GPIOS"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_12"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_15"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_58"/>
@@ -673,6 +682,7 @@
 									<listOptionValue builtIn="false" value="NRF52_PAN_64"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_62"/>
 									<listOptionValue builtIn="false" value="NRF52_PAN_63"/>
+									<listOptionValue builtIn="false" value="NRF52_PAN_74"/>
 									<listOptionValue builtIn="false" value="NRF52832_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52"/>
 									<listOptionValue builtIn="false" value="CONFIG_GPIO_AS_PINRESET"/>
