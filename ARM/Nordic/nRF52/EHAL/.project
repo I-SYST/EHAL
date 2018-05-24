@@ -501,6 +501,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/converters/dac_device.h</locationURI>
 		</link>
 		<link>
+			<name>include/miscdev/buzzer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/buzzer.h</locationURI>
+		</link>
+		<link>
 			<name>include/miscdev/ledmx.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmx.h</locationURI>
@@ -624,6 +629,11 @@
 			<name>src/converters/adc_nrf52_saadc.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/adc_nrf52_saadc.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/buzzer.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/buzzer.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/miscdev/ledmx.c</name>

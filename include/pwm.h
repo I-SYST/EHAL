@@ -164,7 +164,7 @@ public:
 	 *
 	 * @return	true - success
 	 */
-	virtual bool SetFrequency(uint32_t Freq) { return PWMSetFrequency(&vDev, Freq); }
+	virtual bool Frequency(uint32_t Freq) { return PWMSetFrequency(&vDev, Freq); }
 
 	/**
 	 * @brief	Set duty cycle
@@ -174,7 +174,7 @@ public:
 	 *
 	 * @return	true - success
 	 */
-	virtual bool SetDutyCycle(int Chan, int Percent) { return PWMSetDutyCycle(&vDev, Chan, Percent); }
+	virtual bool DutyCycle(int Chan, int Percent) { return PWMSetDutyCycle(&vDev, Chan, Percent); }
 
 private:
 	PWM_DEV vDev;

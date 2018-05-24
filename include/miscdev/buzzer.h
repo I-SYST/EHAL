@@ -1,10 +1,10 @@
 /**-------------------------------------------------------------------------
-@file	PwmDemo.cpp
+@file	buzzer.h
 
-@brief	Example code using PWM (Pulse Width Modulation)
+@brief	Generic implementation of buzzer driver
 
 @author	Hoang Nguyen Hoan
-@date	May 15, 2018
+@date	May 22, 2018
 
 @license
 
@@ -31,88 +31,56 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
-#include <string.h>
+
+#ifndef __BUZZER_H__
+#define __BUZZER_H__
 
 #include "pwm.h"
-#include "idelay.h"
 
-static const PWM_CFG s_PwmCfg = {
-	.DevNo = 0,
-	.Freq = 1000,
-	.Mode = PWM_MODE_CENTER,
-	.bIntEn = false,
-	.IntPrio = 6,
-	.pEvtHandler = NULL
+class Buzzer {
+public:
+
+	/**
+	 * @brief	Buzzer initialization
+	 *
+	 * @param 	pPwm	: Pointer PWM interface connected to buzzer
+	 * @param 	Chan	: PWM channel used for the buzzer
+	 *
+	 * @return	true - success
+	 */
+	virtual bool Init(Pwm *pPwm, int Chan);
+
+	/**
+	 * @brief	Set buzzer volume
+	 *
+	 * @param 	Volume	: Volume in % (0-100)
+	 */
+	virtual void Volume(int Volume);
+
+	/**
+	 * @brief	Play frequency
+	 *
+	 * @param	Freq :
+	 * @param	msDuration	: Play duration in msec.
+	 *							if != 0, wait for it then stop
+	 *							else let running and return (no stop)
+	 */
+	virtual void Play(uint32_t Freq, uint32_t msDuration);
+
+	/**
+	 * @brief	Stop buzzer
+	 *
+	 */
+	virtual void Stop();
+
+private:
+
+	Pwm *vpPwm;			//!< Pointer to external PWM interface
+	int vDutyCycle;		//!< PWM duty cycle value for volume
+	int vChan;			//!< PWM Channel used for the buzzer
 };
 
-static const PWM_CHAN_CFG s_PwmChanCfg[] = {
-	{
-		.Chan = 0,
-		.Pol = PWM_POL_HIGH,
-		.Port = 0,
-		.Pin = 25,
-	},
-};
-
-Pwm g_Pwm;
 
 
-//
-// Print a greeting message on standard output and exit.
-//
-// On embedded platforms this might require semi-hosting or similar.
-//
-// For example, for toolchains derived from GNU Tools for Embedded,
-// to enable semi-hosting, the following was added to the linker:
-//
-// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lc -lm -lrdimon -Wl,--end-group
-//
-// Adjust it for other toolchains.
-//
+#endif // __BUZZER_H__
 
-int main()
-{
-	g_Pwm.Init(s_PwmCfg);
-	g_Pwm.OpenChannel(s_PwmChanCfg, 1);
-
-	// Set duty cycle 20% on channel 0
-	g_Pwm.DutyCycle(0, 20);
-
-	g_Pwm.Start();
-
-	// Let it runs for 1 sec
-	usDelay(1000000);
-
-	g_Pwm.Stop();
-
-	// Change PWM frequency
-	g_Pwm.Frequency(1500);
-
-	g_Pwm.Start();
-
-	int x = 0;
-
-	while (1)
-	{
-#if 0
-		// Change duty cycle
-		g_Pwm.DutyCycle(0, x);
-		x+=1;
-		if (x > 100)
-			x = 0;
-#else
-		// Change PWM frequency
-		//g_Pwm.Stop();
-		g_Pwm.Frequency(x);
-		//g_Pwm.Start();
-		x += 10;
-		if (x > 100000)
-			x = 0;
-#endif
-		usDelay(500000);
-
-
-		//__WFE();
-	}
-	return 0;
-}
