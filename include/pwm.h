@@ -37,7 +37,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 
 typedef enum __Pwm_Event {
-	PWM_EVT_STOPPED,
+	PWM_EVT_STOPPED = 0,
+	PWM_EVT_STARTED,
+	PWM_EVT_PERIOD,
 } PWM_EVT;
 
 typedef enum __Pwm_Mode {

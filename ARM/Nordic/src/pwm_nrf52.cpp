@@ -41,12 +41,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PWM_NRF5_MAX_CHAN		4
 
 typedef struct {
-	NRF_PWM_Type *pReg;
-	PWM_DEV	*pDev;
-	uint32_t Clk;	// base clock frequency
-	PWM_POL Pol[PWM_NRF5_MAX_CHAN];				//!< Polarity 0 - active 0, 1 - active high
+	NRF_PWM_Type *pReg;					//!< PWM device register pointer
+	PWM_DEV	*pDev;						//!< PWM device handle
+	uint32_t Clk;						//!< Base clock frequency
+	PWM_POL Pol[PWM_NRF5_MAX_CHAN];		//!< Polarity 0 - active 0, 1 - active high
 	uint16_t Seq0[PWM_NRF5_MAX_CHAN];
 	uint16_t Seq1[PWM_NRF5_MAX_CHAN];
+	volatile bool bStarted;
 } PWM_NRF_DEV;
 
 static PWM_NRF_DEV s_PwmnRFDev[PWM_NRF5_MAX_DEV] = {
@@ -54,6 +55,22 @@ static PWM_NRF_DEV s_PwmnRFDev[PWM_NRF5_MAX_DEV] = {
 	{NRF_PWM1, },
 	{NRF_PWM2, },
 };
+
+bool nRF52PWMWWaitForSTop(PWM_NRF_DEV *pDev, int Timeout)
+{
+	while (Timeout-- > 0)
+	{
+		if (pDev->pReg->EVENTS_STOPPED)
+		{
+			pDev->pReg->EVENTS_STOPPED = 0;
+			pDev->bStarted = false;
+
+			return true;
+		}
+	}
+
+	return false;
+}
 
 bool PWMInit(PWM_DEV *pDev, const PWM_CFG *pCfg)
 {
@@ -84,12 +101,33 @@ bool PWMInit(PWM_DEV *pDev, const PWM_CFG *pCfg)
 	dev->pReg->EVENTS_SEQSTARTED[0] = 0;
 	dev->pReg->EVENTS_SEQSTARTED[1] = 0;
 	dev->pReg->EVENTS_STOPPED = 0;
+	dev->bStarted = false;
 
 	PWMSetFrequency(pDev, pCfg->Freq);
+
+	memset(dev->Seq0, 0, sizeof(uint16_t) * PWM_NRF5_MAX_CHAN);
+	memset(dev->Seq1, 0, sizeof(uint16_t) * PWM_NRF5_MAX_CHAN);
+
+	dev->pReg->DECODER = PWM_DECODER_LOAD_Individual << PWM_DECODER_LOAD_Pos;
+
+	dev->pReg->SEQ[0].PTR = (uint32_t)dev->Seq0;
+	dev->pReg->SEQ[0].CNT = PWM_NRF5_MAX_CHAN;
+	dev->pReg->SEQ[0].REFRESH = 0;
+	dev->pReg->SEQ[0].ENDDELAY = 0;
+
+	dev->pReg->SEQ[1].PTR = (uint32_t)dev->Seq1;
+	dev->pReg->SEQ[1].CNT = PWM_NRF5_MAX_CHAN;
+	dev->pReg->SEQ[1].REFRESH = 0;
+	dev->pReg->SEQ[1].ENDDELAY = 0;
 
 	if (pCfg->bIntEn)
 	{
 		IRQn_Type irqno;
+
+		dev->pReg->INTEN = PWM_INTEN_LOOPSDONE_Msk | PWM_INTEN_PWMPERIODEND_Msk |
+						   //PWM_INTEN_SEQEND1_Msk | PWM_INTEN_SEQEND0_Msk |
+						   //PWM_INTEN_SEQSTARTED1_Msk | PWM_INTEN_SEQSTARTED0_Msk |
+						   PWM_INTEN_STOPPED_Msk;
 
 		switch (pCfg->DevNo)
 		{
@@ -107,21 +145,6 @@ bool PWMInit(PWM_DEV *pDev, const PWM_CFG *pCfg)
 		NVIC_SetPriority(irqno, pCfg->IntPrio);
 		NVIC_EnableIRQ(irqno);
 	}
-
-	memset(dev->Seq0, 0, sizeof(uint16_t) * PWM_NRF5_MAX_CHAN);
-	memset(dev->Seq1, 0, sizeof(uint16_t) * PWM_NRF5_MAX_CHAN);
-
-	dev->pReg->DECODER = PWM_DECODER_LOAD_Individual << PWM_DECODER_LOAD_Pos;
-
-	dev->pReg->SEQ[0].PTR = (uint32_t)dev->Seq0;
-	dev->pReg->SEQ[0].CNT = PWM_NRF5_MAX_CHAN;
-	dev->pReg->SEQ[0].REFRESH = 0;
-	dev->pReg->SEQ[0].ENDDELAY = 0;
-
-	dev->pReg->SEQ[1].PTR = (uint32_t)dev->Seq1;
-	dev->pReg->SEQ[1].CNT = PWM_NRF5_MAX_CHAN;
-	dev->pReg->SEQ[1].REFRESH = 0;
-	dev->pReg->SEQ[1].ENDDELAY = 0;
 
 	PWMEnable(pDev);
 
@@ -205,6 +228,11 @@ bool PWMSetFrequency(PWM_DEV *pDev, uint32_t Freq)
 
 	dev->pReg->COUNTERTOP = ct;
 
+	if (dev->bStarted)
+	{
+		dev->pReg->TASKS_SEQSTART[0] = 1;
+	}
+
 	return true;
 }
 
@@ -279,10 +307,19 @@ bool PWMStart(PWM_DEV *pDev, uint32_t msDur)
 
 	if (msDur)
 	{
+		uint32_t c = msDur * pDev->Freq / 1000UL;
 
+		dev->pReg->SHORTS = PWM_SHORTS_LOOPSDONE_STOP_Enabled << PWM_SHORTS_LOOPSDONE_STOP_Pos;
+		dev->pReg->LOOP = c >> 1;
+	}
+	else
+	{
+		dev->pReg->SHORTS = 0;
+		dev->pReg->LOOP = 0;
 	}
 
 	dev->pReg->TASKS_SEQSTART[0] = 1;
+	dev->bStarted = true;
 
 	return true;
 }
@@ -294,6 +331,8 @@ void PWMStop(PWM_DEV *pDev)
 		PWM_NRF_DEV *dev = (PWM_NRF_DEV*)pDev->pDevData;
 
 		dev->pReg->TASKS_STOP = 1;
+		dev->bStarted = false;
+		nRF52PWMWWaitForSTop(dev, 100000);
 	}
 }
 
@@ -322,7 +361,12 @@ bool PWMSetDutyCycle(PWM_DEV *pDev, int Chan, int DutyCycle)
 
 
 	dev->Seq0[Chan] = x;
-	dev->pReg->TASKS_SEQSTART[0] = 1;
+	dev->Seq1[Chan] = x;
+
+	if (dev->bStarted)
+	{
+		dev->pReg->TASKS_SEQSTART[0] = 1;
+	}
 
 	return true;
 }
@@ -360,34 +404,50 @@ bool PWMPlay(PWM_DEV *pDev, int Chan, uint32_t Freq, uint32_t Dur)
 	return true;
 }
 
+void nRF52PWMIrqHandler(int PwmNo)
+{
+	PWM_NRF_DEV *dev = &s_PwmnRFDev[PwmNo];
+	PWM_EVT evt = (PWM_EVT)-1;
+
+	if (dev->pReg->EVENTS_LOOPSDONE == 1)
+	{
+		evt = PWM_EVT_STARTED;
+		dev->pReg->EVENTS_LOOPSDONE = 0;
+	}
+
+	if (dev->pReg->EVENTS_PWMPERIODEND == 1)
+	{
+		evt = PWM_EVT_PERIOD;
+		dev->pReg->EVENTS_PWMPERIODEND = 0;
+	}
+	if (dev->pReg->EVENTS_STOPPED == 1)
+	{
+		evt = PWM_EVT_STOPPED;
+		dev->pReg->EVENTS_STOPPED = 0;
+		dev->bStarted = false;
+	}
+
+	if (evt != -1 && dev->pDev->pEvtHandler)
+	{
+		dev->pDev->pEvtHandler(dev->pDev, evt);
+	}
+}
+
 extern "C" {
 
 void PWM0_IRQHandler()
 {
-	if (NRF_PWM0->EVENTS_SEQEND)
-	{
-
-	}
-	if (s_PwmnRFDev[0].pDev && s_PwmnRFDev[0].pDev->pEvtHandler)
-	{
-		s_PwmnRFDev[0].pDev->pEvtHandler(s_PwmnRFDev[0].pDev, PWM_EVT_STOPPED);
-	}
+	nRF52PWMIrqHandler(0);
 }
 
 void PWM1_IRQHandler()
 {
-	if (s_PwmnRFDev[1].pDev && s_PwmnRFDev[1].pDev->pEvtHandler)
-	{
-		s_PwmnRFDev[1].pDev->pEvtHandler(s_PwmnRFDev[1].pDev, PWM_EVT_STOPPED);
-	}
+	nRF52PWMIrqHandler(1);
 }
 
 void PWM2_IRQHandler()
 {
-	if (s_PwmnRFDev[1].pDev && s_PwmnRFDev[0].pDev->pEvtHandler)
-	{
-		s_PwmnRFDev[1].pDev->pEvtHandler(s_PwmnRFDev[1].pDev, PWM_EVT_STOPPED);
-	}
+	nRF52PWMIrqHandler(2);
 }
 
 } // extern "C"

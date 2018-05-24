@@ -94,7 +94,7 @@ int main()
 
 	while (1)
 	{
-#if 1
+#if 0
 		// Change duty cycle
 		g_Pwm.SetDutyCycle(0, x);
 		x+=1;
@@ -102,9 +102,9 @@ int main()
 			x = 0;
 #else
 		// Change PWM frequency
-		g_Pwm.Stop();
+		//g_Pwm.Stop();
 		g_Pwm.SetFrequency(x);
-		g_Pwm.Start();
+		//g_Pwm.Start();
 		x += 10;
 		if (x > 100000)
 			x = 0;

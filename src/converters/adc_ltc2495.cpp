@@ -93,6 +93,8 @@ bool AdcLTC2495::OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan)
 			vVFullScale[pChanCfg[i].Chan] /= gain;
 
 	}
+
+	return true;
 }
 
 void AdcLTC2495::CloseChannel(int Chan)
@@ -158,5 +160,5 @@ int AdcLtc2495::Read(float *pBuff, int Len)
 */
 int AdcLTC2495::Read(ADC_DATA *pBuff, int Len)
 {
-
+	return true;
 }
