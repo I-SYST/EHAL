@@ -50,8 +50,11 @@ bool Buzzer::Init(Pwm *pPwm, int Chan)
 
 void Buzzer::Volume(int Volume)
 {
-	// max volume is at 50% duty cycle
-	vDutyCycle = Volume >> 1;
+	if (Volume >= 0 && Volume <= 100)
+	{
+		// max volume is at 50% duty cycle
+		vDutyCycle = Volume >> 1;
+	}
 }
 
 /**
@@ -65,7 +68,7 @@ void Buzzer::Volume(int Volume)
 void Buzzer::Play(uint32_t Freq, uint32_t msDuration)
 {
 	vpPwm->Frequency(Freq);
-	vpPwm->DutyCycle(vChan, vDutyCycle);
+	//vpPwm->DutyCycle(vChan, vDutyCycle);
 	vpPwm->Start(msDuration);
 
 	if (msDuration)

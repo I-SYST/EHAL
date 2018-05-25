@@ -187,19 +187,19 @@ bool PWMSetFrequency(PWM_DEV *pDev, uint32_t Freq)
 		dev->pReg->PRESCALER = PWM_PRESCALER_PRESCALER_DIV_16;
 		dev->Clk = 1000000;
 	}
-	else if (f < 400000)
+	else if (f < 4000000)
 	{
 		// 2 MHz
 		dev->pReg->PRESCALER = PWM_PRESCALER_PRESCALER_DIV_8;
 		dev->Clk = 2000000;
 	}
-	else if (f < 800000)
+	else if (f < 8000000)
 	{
 		// 4 MHz
 		dev->pReg->PRESCALER = PWM_PRESCALER_PRESCALER_DIV_4;
 		dev->Clk = 4000000;
 	}
-	else if (f < 1600000)
+	else if (f < 16000000)
 	{
 		// 8 MHz
 		dev->pReg->PRESCALER = PWM_PRESCALER_PRESCALER_DIV_2;
@@ -212,9 +212,9 @@ bool PWMSetFrequency(PWM_DEV *pDev, uint32_t Freq)
 		dev->Clk = 16000000;
 	}
 
-	uint32_t ct = dev->Clk / Freq;
+	uint32_t ct = (dev->Clk + (Freq >> 1)) / Freq;
 
-	pDev->Freq = dev->Clk / ct;
+	pDev->Freq = (dev->Clk + (ct >> 1)) / ct;
 
 	if (pDev->Mode == PWM_MODE_CENTER)
 	{
