@@ -54,6 +54,7 @@ void Buzzer::Volume(int Volume)
 	{
 		// max volume is at 50% duty cycle
 		vDutyCycle = Volume >> 1;
+		vpPwm->DutyCycle(vChan, vDutyCycle);
 	}
 }
 
