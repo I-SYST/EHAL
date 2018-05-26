@@ -39,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static const PWM_CFG s_PwmCfg = {
 	.DevNo = 0,
 	.Freq = 1000,
-	.Mode = PWM_MODE_CENTER,
+	.Mode = PWM_MODE_EDGE,
 	.bIntEn = false,
 	.IntPrio = 6,
 	.pEvtHandler = NULL
@@ -52,7 +52,15 @@ static const PWM_CHAN_CFG s_PwmChanCfg[] = {
 		.Port = 0,
 		.Pin = 25,
 	},
+	{
+		.Chan = 1,
+		.Pol = PWM_POL_HIGH,
+		.Port = 0,
+		.Pin = 22,
+	},
 };
+
+const int s_NbPwmChan = sizeof(s_PwmChanCfg) / sizeof(PWM_CHAN_CFG);
 
 Pwm g_Pwm;
 
@@ -73,10 +81,11 @@ Pwm g_Pwm;
 int main()
 {
 	g_Pwm.Init(s_PwmCfg);
-	g_Pwm.OpenChannel(s_PwmChanCfg, 1);
+	g_Pwm.OpenChannel(s_PwmChanCfg, s_NbPwmChan);
 
 	// Set duty cycle 20% on channel 0
-	g_Pwm.DutyCycle(0, 20);
+	g_Pwm.DutyCycle(0, 50);
+	g_Pwm.DutyCycle(1, 25);
 
 	g_Pwm.Start();
 
@@ -86,7 +95,9 @@ int main()
 	g_Pwm.Stop();
 
 	// Change PWM frequency
-	g_Pwm.Frequency(1500);
+	g_Pwm.Frequency(3333333);
+	g_Pwm.DutyCycle(0, 50);
+	g_Pwm.DutyCycle(1, 25);
 
 	g_Pwm.Start();
 
@@ -104,12 +115,14 @@ int main()
 		// Change PWM frequency
 		//g_Pwm.Stop();
 		g_Pwm.Frequency(x);
+		g_Pwm.DutyCycle(0, 50);
+		g_Pwm.DutyCycle(1, 25);
 		//g_Pwm.Start();
 		x += 10;
-		if (x > 100000)
+		if (x > 8000000)
 			x = 0;
 #endif
-		usDelay(500000);
+		usDelay(5000);
 
 
 		//__WFE();

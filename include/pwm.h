@@ -81,7 +81,6 @@ struct __Pwm_Device {
 	PWM_MODE Mode;				//!< PWM mode edge or center
 	PWMEVTHANDLER pEvtHandler;
 	void *pDevData;				//!< Internal implementation data
-
 };
 
 

@@ -44,6 +44,7 @@ typedef struct {
 	NRF_PWM_Type *pReg;					//!< PWM device register pointer
 	PWM_DEV	*pDev;						//!< PWM device handle
 	uint32_t Clk;						//!< Base clock frequency
+	uint32_t TopCount;					//!< Top counter value for PWM freq
 	PWM_POL Pol[PWM_NRF5_MAX_CHAN];		//!< Polarity 0 - active 0, 1 - active high
 	uint16_t Seq0[PWM_NRF5_MAX_CHAN];
 	uint16_t Seq1[PWM_NRF5_MAX_CHAN];
@@ -161,7 +162,7 @@ bool PWMSetFrequency(PWM_DEV *pDev, uint32_t Freq)
 	if (dev == NULL)
 		return false;
 
-	uint32_t f = Freq * 0x8000;
+	uint32_t f = Freq * 0x7FFF; // Get max resolution
 
 	if (f < 250000)
 	{
@@ -212,6 +213,7 @@ bool PWMSetFrequency(PWM_DEV *pDev, uint32_t Freq)
 		dev->Clk = 16000000;
 	}
 
+	// Calculate top counter based on selected clock frequency
 	uint32_t ct = (dev->Clk + (Freq >> 1)) / Freq;
 
 	pDev->Freq = (dev->Clk + (ct >> 1)) / ct;
@@ -226,6 +228,7 @@ bool PWMSetFrequency(PWM_DEV *pDev, uint32_t Freq)
 		dev->pReg->MODE = PWM_MODE_UPDOWN_Up;
 	}
 
+	dev->TopCount = ct;
 	dev->pReg->COUNTERTOP = ct;
 
 	if (dev->bStarted)
@@ -347,7 +350,7 @@ bool PWMSetDutyCycle(PWM_DEV *pDev, int Chan, int DutyCycle)
 
 	PWM_NRF_DEV *dev = (PWM_NRF_DEV*)pDev->pDevData;
 
-	uint32_t x = dev->Clk * DutyCycle / (pDev->Freq * 100);
+	uint32_t x = dev->TopCount * DutyCycle / 100;
 
 	if (pDev->Mode == PWM_MODE_CENTER)
 	{
