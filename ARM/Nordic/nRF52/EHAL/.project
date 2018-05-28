@@ -371,6 +371,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/ledmxio_nrf5x.c</locationURI>
 		</link>
 		<link>
+			<name>src/micro-ecc</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/miscdev</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -636,6 +641,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/adc_nrf52_saadc.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/micro-ecc/uECC.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/micro-ecc/uECC.c</locationURI>
+		</link>
+		<link>
 			<name>src/miscdev/buzzer.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/buzzer.cpp</locationURI>
@@ -667,11 +677,6 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/micro-ecc</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -867,11 +872,6 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/util</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/micro-ecc/micro-ecc</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -1174,11 +1174,6 @@
 			<name>src/nRF5_SDK/libraries/util/sdk_mapped_flags.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/util/sdk_mapped_flags.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/micro-ecc/micro-ecc/uECC.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/external/micro-ecc/micro-ecc/uECC.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/proprietary_rf/esb/nrf_esb.c</name>

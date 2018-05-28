@@ -69,7 +69,7 @@ void Buzzer::Volume(int Volume)
 void Buzzer::Play(uint32_t Freq, uint32_t msDuration)
 {
 	vpPwm->Frequency(Freq);
-	//vpPwm->DutyCycle(vChan, vDutyCycle);
+	vpPwm->DutyCycle(vChan, vDutyCycle);
 	vpPwm->Start(msDuration);
 
 	if (msDuration)

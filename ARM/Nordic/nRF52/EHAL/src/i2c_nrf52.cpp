@@ -349,6 +349,8 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 	pDev->DevIntrf.Busy = false;
 	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
 
+	reg->SHORTS = 0;
+
 	// Clear all errors
     if (reg->EVENTS_ERROR)
     {
