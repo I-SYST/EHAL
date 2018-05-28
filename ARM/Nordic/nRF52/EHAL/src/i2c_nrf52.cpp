@@ -301,19 +301,28 @@ void nRF52I2CReset(DEVINTRF *pDev)
 
 bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 {
-	if (pCfgData->DevNo < 0 || pCfgData->DevNo > 2)
+	if (pDev == NULL || pCfgData == NULL)
+	{
 		return false;
+	}
+
+	if (pCfgData->DevNo < 0 || pCfgData->DevNo > 2)
+	{
+		return false;
+	}
 
 	// Get the correct register map
 	NRF_TWIM_Type *reg = s_nRF52I2CDev[pCfgData->DevNo].pReg;
 
-	// Configure I/O pins
-	IOPinCfg(pCfgData->IOPinMap, I2C_MAX_NB_IOPIN);
-    IOPinSet(pCfgData->IOPinMap[I2C_SDA_IOPIN_IDX].PortNo, pCfgData->IOPinMap[I2C_SDA_IOPIN_IDX].PinNo);
-    IOPinSet(pCfgData->IOPinMap[I2C_SCL_IOPIN_IDX].PortNo, pCfgData->IOPinMap[I2C_SCL_IOPIN_IDX].PinNo);
+	memcpy(pDev->Pins, pCfgData->Pins, sizeof(IOPINCFG) * I2C_MAX_NB_IOPIN);
 
-    reg->PSEL.SCL = pCfgData->IOPinMap[I2C_SCL_IOPIN_IDX].PinNo;
-    reg->PSEL.SDA = pCfgData->IOPinMap[I2C_SDA_IOPIN_IDX].PinNo;
+	// Configure I/O pins
+	IOPinCfg(pCfgData->Pins, I2C_MAX_NB_IOPIN);
+    IOPinSet(pCfgData->Pins[I2C_SDA_IOPIN_IDX].PortNo, pCfgData->Pins[I2C_SDA_IOPIN_IDX].PinNo);
+    IOPinSet(pCfgData->Pins[I2C_SCL_IOPIN_IDX].PortNo, pCfgData->Pins[I2C_SCL_IOPIN_IDX].PinNo);
+
+    reg->PSEL.SCL = pCfgData->Pins[I2C_SCL_IOPIN_IDX].PinNo;
+    reg->PSEL.SDA = pCfgData->Pins[I2C_SDA_IOPIN_IDX].PinNo;
 
     pDev->MaxRetry = pCfgData->MaxRetry;
     pDev->Mode = pCfgData->Mode;
@@ -349,7 +358,14 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
         reg->TASKS_STOP = 1;
     }
 
-    //nRF52I2CReset(&pDev->DevIntrf);
+    usDelay(1000);
+
+    reg->EVENTS_LASTRX = 0;
+    reg->EVENTS_LASTTX = 0;
+    reg->EVENTS_RXSTARTED = 0;
+    reg->EVENTS_TXSTARTED = 0;
+    reg->EVENTS_SUSPENDED = 0;
+    reg->EVENTS_STOPPED = 0;
 
 	reg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 

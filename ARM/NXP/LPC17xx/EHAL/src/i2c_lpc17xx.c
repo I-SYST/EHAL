@@ -250,6 +250,10 @@ void LpcI2CStopTx(DEVINTRF *pDev)
 
 bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 {
+	if (pDev == NULL || pCfgData == NULL)
+	{
+		return false;
+	}
 
 	uint32_t clk = (SystemCoreClock >> 2) / pCfgData->Rate;
 
@@ -262,10 +266,13 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 	// Pin selection for SDA
 //	IOPinConfig(pCfgData->SdaPortNo, pCfgData->SdaPinNo, pCfgData->SdaPinOp, IOPINDIR_BI,
 //				IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN);
+
+	memcpy(pDev->Pins, pCfgData->Pins, sizeof(IOPINCFG) * I2C_MAX_NB_IOPIN);
+
 	// Configure I/O pins
-	IOPinCfg(pCfgData->IOPinMap, I2C_MAX_NB_IOPIN);
-    IOPinSet(pCfgData->IOPinMap[I2C_SCL_IOPIN_IDX].PortNo, pCfgData->IOPinMap[I2C_SCL_IOPIN_IDX].PinNo);
-    IOPinSet(pCfgData->IOPinMap[I2C_SDA_IOPIN_IDX].PortNo, pCfgData->IOPinMap[I2C_SDA_IOPIN_IDX].PinNo);
+	IOPinCfg(pCfgData->Pins, I2C_MAX_NB_IOPIN);
+    IOPinSet(pCfgData->Pins[I2C_SCL_IOPIN_IDX].PortNo, pCfgData->Pins[I2C_SCL_IOPIN_IDX].PinNo);
+    IOPinSet(pCfgData->Pins[I2C_SDA_IOPIN_IDX].PortNo, pCfgData->Pins[I2C_SDA_IOPIN_IDX].PinNo);
 
 	switch (pCfgData->DevNo)
 	{

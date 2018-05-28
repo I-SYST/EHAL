@@ -86,17 +86,21 @@ typedef enum __I2C_Mode {
 	I2CMODE_SLAVE
 } I2CMODE;
 
+
 #define I2C_MAX_RETRY		5
-#define I2C_MAX_NB_IOPIN	2
-#define I2C_SDA_IOPIN_IDX	0
-#define I2C_SCL_IOPIN_IDX	1
+
+#define I2C_MAX_NB_IOPIN	2	//!< Nuber of I/O pins needed by I2C
+
+/// I/O pin map index
+#define I2C_SDA_IOPIN_IDX	0	//!< SDA pin index
+#define I2C_SCL_IOPIN_IDX	1	//!< SCL pin index
 
 #pragma pack(push, 4)
 
 /// Configuration data used to initialize device
 typedef struct __I2C_Config {
 	int DevNo;			//!< I2C interface number
-	IOPINCFG IOPinMap[I2C_MAX_NB_IOPIN];	//!< Define I/O pins used by SPI
+	IOPINCFG Pins[I2C_MAX_NB_IOPIN];	//!< Define I/O pins used by I2C
 	int Rate;			//!< Speed in Hz
 	I2CMODE Mode;		//!< Master/Slave mode
 	int SlaveAddr;		//!< I2C slave address used in slave mode only
@@ -112,10 +116,11 @@ typedef struct {
 	int 	SlaveAddr;		//!< I2C slave address used in slave mode only
 	int 	MaxRetry;		//!< Max number of retry
 	DEVINTRF DevIntrf;		//!< I2C device interface implementation
-	int 	SclPort;
-	int		SclPin;
-	int		SdaPort;
-	int		SdaPin;
+	IOPINCFG Pins[I2C_MAX_NB_IOPIN];	//!< Define I/O pins used by I2C
+//	int 	SclPort;
+//	int		SclPin;
+//	int		SdaPort;
+//	int		SdaPin;
 } I2CDEV;
 
 #pragma pack(pop)
@@ -137,6 +142,7 @@ extern "C" {
  * 			- false	: Failed
  */
 bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData);
+void I2CBusReset(I2CDEV *pDev);
 static inline int I2CGetRate(I2CDEV *pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
 static inline int I2CSetRate(I2CDEV *pDev, int Rate) {
 	return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate);
