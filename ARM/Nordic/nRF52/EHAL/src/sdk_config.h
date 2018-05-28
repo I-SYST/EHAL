@@ -3277,7 +3277,7 @@
  
 
 #ifndef APP_TIMER_CONFIG_USE_SCHEDULER
-#define APP_TIMER_CONFIG_USE_SCHEDULER 1
+#define APP_TIMER_CONFIG_USE_SCHEDULER 0
 #endif
 
 // <q> APP_TIMER_WITH_PROFILER  - Enable app_timer profiling
