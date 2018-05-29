@@ -291,6 +291,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/fatfs.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/i2c.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/i2c.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/i2c_nrf52.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_nrf52.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/intelhex.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/intelhex.c</locationURI>
