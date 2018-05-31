@@ -686,6 +686,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/nrfx</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/proprietary_rf</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -732,6 +737,11 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/ble_db_discovery</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_lesc</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -791,7 +801,17 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/external/fprintf/nrf_fprintf_format.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/atomic</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/atomic_fifo</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/atomic_flags</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -881,6 +901,16 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/nrfx/drivers</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/nrfx/legacy</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/proprietary_rf/esb</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -909,6 +939,11 @@
 			<name>src/nRF5_SDK/ble/ble_db_discovery/ble_db_discovery.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_db_discovery/ble_db_discovery.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_lesc/ble_lesc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_lesc/ble_lesc.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/ble_services/ble_bas</name>
@@ -1026,9 +1061,19 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/rng/nrf_drv_rng.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/atomic/nrf_atomic.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/atomic/nrf_atomic.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/atomic_fifo/nrf_atfifo.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/atomic_fifo/nrf_atfifo.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/atomic_flags/nrf_atflags.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/atomic_flags/nrf_atflags.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/balloc/nrf_balloc.c</name>
@@ -1056,6 +1101,26 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_aead.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_aead.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_aes.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_aes.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_aes_shared.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_aes_shared.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_ecc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_ecc.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_ecdh.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_ecdh.c</locationURI>
@@ -1066,9 +1131,24 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_ecdsa.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_error.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_error.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_hash.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_hash.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_hkdf.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_hkdf.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_hmac.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_hmac.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_init.c</name>
@@ -1076,19 +1156,19 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_init.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_keys.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_keys.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_mem.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_mem.c</locationURI>
-		</link>
-		<link>
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_rng.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_rng.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_shared.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_shared.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_svc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_svc.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/experimental_log/src</name>
@@ -1181,6 +1261,16 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/util/sdk_mapped_flags.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/nrfx/drivers/src</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/nrfx/legacy/nrf_drv_rng.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/integration/nrfx/legacy/nrf_drv_rng.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/proprietary_rf/esb/nrf_esb.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/proprietary_rf/esb/nrf_esb.c</locationURI>
@@ -1241,7 +1331,12 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_crypto_sw</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_hw</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_sw</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -1276,6 +1371,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/experimental_log/src/nrf_log_str_formatter.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/nrfx/drivers/src/nrfx_rng.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/modules/nrfx/drivers/src/nrfx_rng.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK_Mesh/mesh/access/src/access.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_Mesh/mesh/access/src/access.c</locationURI>
@@ -1301,39 +1401,34 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_Mesh/mesh/access/src/nrf_mesh_node_config.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdh.c</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecc.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdh.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecc.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdsa.c</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecdh.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdsa.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecdh.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_init.c</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecdsa.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_init.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecdsa.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_keys.c</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_hw/nrf_hw_backend_init.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_keys.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_hw/nrf_hw_backend_init.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_shared.c</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_hw/nrf_hw_backend_rng.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_shared.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_hw/nrf_hw_backend_rng.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_crypto_sw/nrf_crypto_sw_hash.c</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_sw/nrf_sw_backend_hash.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw/nrf_crypto_sw_hash.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_crypto_sw/nrf_crypto_sw_rng.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw/nrf_crypto_sw_rng.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_sw/nrf_sw_backend_hash.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

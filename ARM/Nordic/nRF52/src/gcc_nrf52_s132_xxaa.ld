@@ -19,8 +19,8 @@ MEMORY
 		Reserve flash for Sooftdevice 0x00000-0x23000 
 		Reserve flash for DFU 0x78000-0x80000
 	*/
-	FLASH (rx) : ORIGIN = 0x23000, LENGTH = 0x55000
-	RAM (rwx) :  ORIGIN = 0x20002800, LENGTH = 0xD800
+	FLASH (rx) : ORIGIN = 0x26000, LENGTH = 0x5a000
+	RAM (rwx) :  ORIGIN = 0x20002900, LENGTH = 0xD700
 	/** Location of non initialized RAM. Non initialized RAM is used for exchanging bond information
 	*  from application to bootloader when using buttonluss DFU OTA.
 	*/
@@ -62,6 +62,12 @@ SECTIONS
 	  	PROVIDE(__stop_log_const_data = .);
 	} > FLASH
 	
+    .crypto_data :
+    {
+        PROVIDE(__start_crypto_data = .);
+        KEEP(*(SORT(.crypto_data*)))
+        PROVIDE(__stop_crypto_data = .);
+    } > FLASH
 	
 	.cli_command :
 	{
@@ -111,6 +117,12 @@ SECTIONS
 		KEEP(*(SORT(.sdh_soc_observers*)))
 		PROVIDE(__stop_sdh_soc_observers = .);
 	} > FLASH
+    .nrf_queue :
+  {
+    PROVIDE(__start_nrf_queue = .);
+    KEEP(*(.nrf_queue))
+    PROVIDE(__stop_nrf_queue = .);
+  } > FLASH
 } INSERT AFTER .text
 
 SECTIONS
