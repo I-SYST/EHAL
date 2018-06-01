@@ -533,6 +533,11 @@ bool AdcnRF52::OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan)
 			chconfig |= ((5 + (31 - __builtin_clzl(pChanCfg[i].Gain >> 8))) << SAADC_CH_CONFIG_GAIN_Pos) & SAADC_CH_CONFIG_GAIN_Msk;
 		}
 
+		if (pChanCfg[i].PinP.Conn == ADC_PIN_CONN_VDD)
+		{
+			s_AdcnRF52DevData.GainFactor[pChanCfg[i].Chan] *= 2.0;
+		}
+
 		if (pChanCfg[i].AcqTime < 5)
 		{
 			// Acquisition time 3us not need to set.
