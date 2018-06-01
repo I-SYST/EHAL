@@ -61,7 +61,9 @@ Modified by          Date              Description
 #include "nrf_sdh_ble.h"
 #include "nrf_dfu_settings.h"
 #include "nrf_crypto.h"
-#include "nrf_crypto_keys.h"
+#include "ble_lesc.h"
+
+//#include "nrf_crypto_keys.h"
 //#include "nrf_log.h"
 //#include "nrf_log_ctrl.h"
 //#include "nrf_log_default_backends.h"
@@ -117,9 +119,12 @@ typedef struct _BleAppData {
 	int PeriphDevCnt;
 	BLEAPP_PERIPH *pPeriphDev;
 	uint32_t (*SDEvtHandler)(void) ;
-	ble_advdata_t SRData;
+	ble_advdata_t AdvData;
+	ble_advdata_t SrData;
+    ble_advdata_manuf_data_t ManufData;
 	int MaxMtu;
 	bool bSecure;
+	bool bAdvertising;
 } BLEAPP_DATA;
 
 #pragma pack(pop)
@@ -135,9 +140,27 @@ BLE_ADVERTISING_DEF(g_AdvInstance);             /**< Advertising module instance
 //NRF_SDH_BLE_OBSERVER(g_BleAdvBleObserver, BLEAPP_OBSERVER_PRIO, ble_advertising_on_ble_evt, &g_AdvInstance);
 //NRF_SDH_SOC_OBSERVER(g_BleAdvSysObserver, BLEAPP_OBSERVER_PRIO, ble_advertising_on_sys_evt, &g_AdvInstance);
 
-NRF_BLE_GATT_DEF(s_Gatt);
+//static ble_gap_adv_params_t s_AdvParams;                                 /**< Parameters to be passed to the stack when starting advertising. */
+/*uint8_t g_AdvHandle = BLE_GAP_ADV_SET_HANDLE_NOT_SET;
+uint8_t g_AdvEncData[BLE_GAP_ADV_SET_DATA_SIZE_MAX];
 
-static ble_gap_adv_params_t s_AdvParams;                                 /**< Parameters to be passed to the stack when starting advertising. */
+ble_gap_adv_data_t g_AdvData =
+{
+    .adv_data =
+    {
+        .p_data = g_AdvEncData,
+        .len    = BLE_GAP_ADV_SET_DATA_SIZE_MAX
+    },
+    .scan_rsp_data =
+    {
+        .p_data = NULL,
+        .len    = 0
+
+    }
+};
+*/
+
+NRF_BLE_GATT_DEF(s_Gatt);
 
 BLEAPP_DATA g_BleAppData = {
 	BLEAPP_MODE_LOOP, 0, BLE_CONN_HANDLE_INVALID, -1, -1,
@@ -159,26 +182,26 @@ static ble_gap_conn_sec_mode_t s_gap_conn_mode;
 
 /**@brief Allocated private key type to use for LESC DH generation
  */
-NRF_CRYPTO_ECC_PRIVATE_KEY_CREATE(s_private_key, SECP256R1);
+//NRF_CRYPTO_ECC_PRIVATE_KEY_CREATE(s_private_key, SECP256R1);
 
 /**@brief Allocated public key type to use for LESC DH generation
  */
-NRF_CRYPTO_ECC_PUBLIC_KEY_CREATE(s_public_key, SECP256R1);
+//NRF_CRYPTO_ECC_PUBLIC_KEY_CREATE(s_public_key, SECP256R1);
 
 /**@brief Allocated peer public key type to use for LESC DH generation
  */
-NRF_CRYPTO_ECC_PUBLIC_KEY_CREATE(s_peer_public_key, SECP256R1);
+//NRF_CRYPTO_ECC_PUBLIC_KEY_CREATE(s_peer_public_key, SECP256R1);
 
 /**@brief Allocated raw public key to use for LESC DH.
  */
-NRF_CRYPTO_ECC_PUBLIC_KEY_RAW_CREATE_FROM_ARRAY(s_public_key_raw, SECP256R1, s_lesc_public_key.pk);
+//NRF_CRYPTO_ECC_PUBLIC_KEY_RAW_CREATE_FROM_ARRAY(s_public_key_raw, SECP256R1, s_lesc_public_key.pk);
 
 /**@brief Allocated shared instance to use for LESC DH.
  */
-NRF_CRYPTO_ECDH_SHARED_SECRET_CREATE_FROM_ARRAY(s_dh_key, SECP256R1, s_lesc_dh_key.key);
+//NRF_CRYPTO_ECDH_SHARED_SECRET_CREATE_FROM_ARRAY(s_dh_key, SECP256R1, s_lesc_dh_key.key);
 
 /**@brief Function to generate private key */
-uint32_t lesc_generate_key_pair(void)
+/*uint32_t lesc_generate_key_pair(void)
 {
     uint32_t ret_val;
     //NRF_LOG_INFO("Generating key-pair\r\n");
@@ -199,6 +222,7 @@ uint32_t lesc_generate_key_pair(void)
 
     return ret_val;
 }
+*/
 
 static inline void BleConnLedOff() {
 	if (g_BleAppData.ConnLedPort < 0 || g_BleAppData.ConnLedPin < 0)
@@ -414,6 +438,7 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
 static void on_ble_evt(ble_evt_t const * p_ble_evt)
 {
     uint32_t                         err_code;
+    ble_gap_evt_t        const * p_gap_evt = &p_ble_evt->evt.gap_evt;
 
 //    printf("on_ble_evt %x\r\n", p_ble_evt->header.evt_id);
 
@@ -495,11 +520,21 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             APP_ERROR_CHECK(err_code);
             break; // BLE_GATTS_EVT_SYS_ATTR_MISSING
 
-        case BLE_GAP_EVT_TIMEOUT:
-            if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_TIMEOUT_SRC_ADVERTISING)
+        case BLE_GAP_EVT_ADV_SET_TERMINATED:
+            if (  p_ble_evt->evt.gap_evt.params.adv_set_terminated.reason == BLE_GAP_EVT_ADV_SET_TERMINATED_REASON_TIMEOUT
+                ||p_ble_evt->evt.gap_evt.params.adv_set_terminated.reason == BLE_GAP_EVT_ADV_SET_TERMINATED_REASON_LIMIT_REACHED)
             {
-            		BleAppAdvTimeoutHandler();
-            		if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+            	g_BleAppData.bAdvertising = false;
+                BleAppAdvTimeoutHandler();
+            }
+            break;
+
+        case BLE_GAP_EVT_TIMEOUT:
+            if (p_ble_evt->evt.gap_evt.params.timeout.src == BLE_GAP_EVT_ADV_SET_TERMINATED_REASON_TIMEOUT)//BLE_GAP_TIMEOUT_SRC_ADVERTISING)
+            {
+            	g_BleAppData.bAdvertising = false;
+            	BleAppAdvTimeoutHandler();
+            	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
 				{
 					//err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
             			//APP_ERROR_CHECK(err_code);
@@ -556,6 +591,10 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             }
         } break; // BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST
         */
+        case BLE_GAP_EVT_AUTH_KEY_REQUEST:
+//            NRF_LOG_DEBUG("BLE_GAP_EVT_AUTH_KEY_REQUEST");
+
+            break;
 
         case BLE_GAP_EVT_LESC_DHKEY_REQUEST:
         //    NRF_LOG_INFO("%s: BLE_GAP_EVT_LESC_DHKEY_REQUEST\r\n", nrf_log_push(roles_str[role]));
@@ -566,6 +605,8 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             err_code = nrf_crypto_shared_secret_compute(NRF_CRYPTO_CURVE_SECP256R1, &m_crypto_key_sk, &peer_pk, &m_crypto_key_dhkey);
             APP_ERROR_CHECK(err_code);
 #else
+
+#if 0
             static nrf_value_length_t peer_public_key_raw = {0};
 
             peer_public_key_raw.p_value = &p_ble_evt->evt.gap_evt.params.lesc_dhkey_request.p_pk_peer->pk[0];
@@ -581,6 +622,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
                                                             &s_peer_public_key,
                                                             &s_dh_key);
             APP_ERROR_CHECK(err_code);
+#endif
 #endif
             err_code = sd_ble_gap_lesc_dhkey_reply(g_BleAppData.ConnHdl, &s_lesc_dh_key);
             APP_ERROR_CHECK(err_code);
@@ -924,6 +966,9 @@ static void BleAppPeerMngrInit(BLEAPP_SECTYPE SecType, uint8_t SecKeyExchg, bool
     err_code = pm_register(pm_evt_handler);
     APP_ERROR_CHECK(err_code);
 
+    // Generate the ECDH key pair and set public key in the peer-manager.
+    err_code = ble_lesc_ecc_keypair_generate_and_set();
+    APP_ERROR_CHECK(err_code);
 }
 
 /**@brief Function for handling the Security Request timer timeout.
@@ -951,18 +996,41 @@ static void sec_req_timeout_handler(void * p_context)
 
 void BleAppAdvManDataSet(uint8_t *pData, int Len)
 {
-	int l = min(Len, BLE_GAP_ADV_MAX_SIZE);
+   int l = min(Len, BLE_GAP_ADV_SET_DATA_SIZE_MAX);
 
-	memcpy(g_AdvInstance.manuf_data_array, pData, l);
+   memcpy(g_BleAppData.ManufData.data.p_data, pData, l);
+
+   uint32_t err = ble_advdata_encode(&g_BleAppData.AdvData, g_AdvInstance.adv_data.adv_data.p_data, &g_AdvInstance.adv_data.adv_data.len);
+   APP_ERROR_CHECK(err);
+
+   // SDK15 doesn't allow dynamicaly updating adv data.  Have to stop and re-start advertising
+   if (g_BleAppData.bAdvertising == true)
+   {
+	   sd_ble_gap_adv_stop(g_AdvInstance.adv_handle);
+   }
+
+   err = sd_ble_gap_adv_set_configure(&g_AdvInstance.adv_handle, &g_AdvInstance.adv_data, NULL);
+
+   if (g_BleAppData.bAdvertising == true)
+   {
+	   BleAppAdvStart(BLEAPP_ADVMODE_FAST);
+   }
+
+#if 0
+    int l = min(Len, BLE_GAP_ADV_MAX_SIZE);
+
+    memcpy(g_AdvInstance.manuf_data_array, pData, l);
     uint32_t ret = ble_advdata_set(&(g_AdvInstance.advdata), &g_BleAppData.SRData);
+#endif
 }
 
 void BleAppAdvStart(BLEAPP_ADVMODE AdvMode)
 {
+	g_BleAppData.bAdvertising = true;
 	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
 	{
-//	       		uint32_t ret = ble_advdata_set(&(g_AdvInstance.advdata), &g_BleAppData.SRData);
-		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams, BLEAPP_CONN_CFG_TAG);
+		uint32_t err_code = sd_ble_gap_adv_start(g_AdvInstance.adv_handle, BLEAPP_CONN_CFG_TAG);
+        APP_ERROR_CHECK(err_code);
 	}
 	else
 	{
@@ -973,7 +1041,8 @@ void BleAppAdvStart(BLEAPP_ADVMODE AdvMode)
 
 void BleAppAdvStop()
 {
-	sd_ble_gap_adv_stop();
+	sd_ble_gap_adv_stop(g_AdvInstance.adv_handle);
+	g_BleAppData.bAdvertising = false;
 }
 
 /**@brief Overloadable function for initializing the Advertising functionality.
@@ -981,14 +1050,14 @@ void BleAppAdvStop()
 __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 {
     uint32_t               err_code;
-    ble_advdata_manuf_data_t mdata;
+//    ble_advdata_manuf_data_t mdata;
     ble_advertising_init_t	initdata;
 
     memset(&initdata, 0, sizeof(ble_advertising_init_t));
 
-    mdata.company_identifier = pCfg->VendorID;
-    mdata.data.p_data = (uint8_t*)pCfg->pManData;
-    mdata.data.size = pCfg->ManDataLen;
+    g_BleAppData.ManufData.company_identifier = pCfg->VendorID;
+    g_BleAppData.ManufData.data.p_data = (uint8_t*)pCfg->pManData;
+    g_BleAppData.ManufData.data.size = pCfg->ManDataLen;
 
     // Build advertising data struct to pass into @ref ble_advertising_init.
 
@@ -1018,14 +1087,14 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
         		initdata.advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
 			if (pCfg->pManData != NULL)
 			{
-				initdata.srdata.p_manuf_specific_data = &mdata;
+				initdata.srdata.p_manuf_specific_data = &g_BleAppData.ManufData;
 			}
         }
         else
         {
 			if (pCfg->pManData != NULL)
 			{
-				initdata.advdata.p_manuf_specific_data = &mdata;
+				initdata.advdata.p_manuf_specific_data = &g_BleAppData.ManufData;
 			}
         }
     }
@@ -1038,23 +1107,41 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
         }
         if (pCfg->pManData != NULL)
         {
-        		initdata.advdata.p_manuf_specific_data = &mdata;
+        		initdata.advdata.p_manuf_specific_data = &g_BleAppData.ManufData;
         }
     }
 
     if (pCfg->AppMode == BLEAPP_MODE_NOCONNECT || pCfg->AppMode == BLEAPP_MODE_IBEACON)
     {
-        err_code = ble_advdata_set(&initdata.advdata, &initdata.srdata);
+//        err_code = ble_advdata_encode(&initdata.advdata, g_AdvData.adv_data.p_data, &g_AdvData.adv_data.len);
+        g_AdvInstance.adv_data.adv_data.len = BLE_GAP_ADV_SET_DATA_SIZE_MAX;
+        g_AdvInstance.adv_data.adv_data.p_data = g_AdvInstance.enc_advdata;
+
+        err_code = ble_advdata_encode(&initdata.advdata, g_AdvInstance.adv_data.adv_data.p_data, &g_AdvInstance.adv_data.adv_data.len);
         APP_ERROR_CHECK(err_code);
 
-        // Initialize advertising parameters (used when starting advertising).
-        memset(&s_AdvParams, 0, sizeof(s_AdvParams));
+        //err_code = ble_advdata_set(&initdata.advdata, &initdata.srdata);
+        //APP_ERROR_CHECK(err_code);
 
-        s_AdvParams.type        = BLE_GAP_ADV_TYPE_ADV_NONCONN_IND;
+        // Initialize advertising parameters (used when starting advertising).
+        memset(&g_AdvInstance.adv_params, 0, sizeof(g_AdvInstance.adv_params));
+
+
+        g_AdvInstance.adv_params.properties.type	= BLE_GAP_ADV_TYPE_NONCONNECTABLE_NONSCANNABLE_UNDIRECTED;//BLE_GAP_ADV_TYPE_ADV_NONCONN_IND;
+        g_AdvInstance.adv_params.p_peer_addr 		= NULL;                             // Undirected advertisement.
+        g_AdvInstance.adv_params.filter_policy		= BLE_GAP_ADV_FP_ANY;
+        g_AdvInstance.adv_params.interval    		= pCfg->AdvInterval;
+        g_AdvInstance.adv_params.duration     		= pCfg->AdvTimeout;
+#if 0
+        s_AdvParams.properties.type  = BLE_GAP_ADV_TYPE_NONCONNECTABLE_NONSCANNABLE_UNDIRECTED;//BLE_GAP_ADV_TYPE_ADV_NONCONN_IND;
         s_AdvParams.p_peer_addr = NULL;                             // Undirected advertisement.
-        s_AdvParams.fp          = BLE_GAP_ADV_FP_ANY;
+        s_AdvParams.filter_policy = BLE_GAP_ADV_FP_ANY;
         s_AdvParams.interval    = pCfg->AdvInterval;
-        s_AdvParams.timeout     = pCfg->AdvTimeout;
+        s_AdvParams.duration     = pCfg->AdvTimeout;
+#endif
+        err_code = sd_ble_gap_adv_set_configure(&g_AdvInstance.adv_handle, &g_AdvInstance.adv_data, &g_AdvInstance.adv_params);
+        APP_ERROR_CHECK(err_code);
+
     }
     else
     {
@@ -1069,13 +1156,14 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 			initdata.config.ble_adv_slow_interval = pCfg->AdvSlowInterval;
 			initdata.config.ble_adv_slow_timeout  = BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED;
 		}
+	    memcpy(&g_BleAppData.SrData, &initdata.srdata, sizeof(ble_advdata_t));
+
+	    initdata.evt_handler = on_adv_evt;
+	    err_code = ble_advertising_init(&g_AdvInstance, &initdata);
+	    APP_ERROR_CHECK(err_code);
     }
 
-    memcpy(&g_BleAppData.SRData, &initdata.srdata, sizeof(ble_advdata_t));
-
-    initdata.evt_handler = on_adv_evt;
-	err_code = ble_advertising_init(&g_AdvInstance, &initdata);
-	APP_ERROR_CHECK(err_code);
+    memcpy(&g_BleAppData.AdvData, &initdata.advdata, sizeof(ble_advdata_t));
 
 	// Bypass local copy of manufacturer data of the SDK
 	//g_AdvInstance.manuf_specific_data.data.p_data = initdata.advdata.p_manuf_specific_data->data.p_data;
@@ -1140,7 +1228,7 @@ void gatt_init(void)
     err_code = nrf_ble_gatt_init(&s_Gatt, gatt_evt_handler);
     APP_ERROR_CHECK(err_code);
 
-    err_code = nrf_ble_gatt_att_mtu_periph_set(&s_Gatt, 64);
+    err_code = nrf_ble_gatt_att_mtu_periph_set(&s_Gatt, 23);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -1290,7 +1378,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     if (pBleAppCfg->MaxMtu > NRF_BLE_MAX_MTU_SIZE)
 		g_BleAppData.MaxMtu = pBleAppCfg->MaxMtu;
     else
-    		g_BleAppData.MaxMtu = NRF_BLE_MAX_MTU_SIZE;
+    	g_BleAppData.MaxMtu = NRF_BLE_MAX_MTU_SIZE;
 
     app_timer_init();
 
@@ -1314,14 +1402,17 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     }
 
 	// initializing the cryptography module
-    nrf_crypto_init();
+    //nrf_crypto_init();
 
 
     // Initialize SoftDevice.
     BleAppStackInit(pBleAppCfg->CentLinkCount, pBleAppCfg->PeriLinkCount,
     				pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT);
 
-    sd_ble_gap_tx_power_set(GetValidTxPower(pBleAppCfg->TxPower));
+    err_code = ble_lesc_init();
+    APP_ERROR_CHECK(err_code);
+
+    sd_ble_gap_tx_power_set(BLE_GAP_TX_POWER_ROLE_ADV, g_AdvInstance.adv_handle, GetValidTxPower(pBleAppCfg->TxPower));
 
 	if (pBleAppCfg->PeriLinkCount > 0 && pBleAppCfg->AdvInterval > 0)
 	{
@@ -1364,11 +1455,9 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
    // err_code = fds_register(fds_evt_handler);
    // APP_ERROR_CHECK(err_code);
 
-    // Private public keypair must be generated at least once for each device. It can be stored
-    // beyond this point. Here it is generated at bootup.
-    err_code = lesc_generate_key_pair();
+    // Generate the ECDH key pair and set public key in the peer-manager.
+    err_code = ble_lesc_ecc_keypair_generate_and_set();
     APP_ERROR_CHECK(err_code);
-
 
     BleAppAdvInit(pBleAppCfg);
 
@@ -1385,10 +1474,14 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 void BleAppRun()
 {
 
-	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+	if ((g_BleAppData.AppRole & (BLEAPP_ROLE_PERIPHERAL | BLEAPP_ROLE_CENTRAL)) != BLEAPP_ROLE_CENTRAL)
 	{
-		uint32_t err_code = sd_ble_gap_adv_start(&s_AdvParams, BLEAPP_CONN_CFG_TAG);
-//		uint32_t err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
+		BleAppAdvStart(BLEAPP_ADVMODE_FAST);
+	}
+/*	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
+	{
+		uint32_t err_code = sd_ble_gap_adv_start(g_AdvInstance.adv_handle, BLEAPP_CONN_CFG_TAG);
+		//uint32_t err_code = ble_advertising_start(&g_AdvInstance, BLE_ADV_MODE_FAST);
 		APP_ERROR_CHECK(err_code);
 	}
 	else
@@ -1399,7 +1492,7 @@ void BleAppRun()
 			APP_ERROR_CHECK(err_code);
 		}
 	}
-
+*/
     while (1)
     {
 		if (g_BleAppData.AppMode == BLEAPP_MODE_RTOS)
@@ -1464,4 +1557,6 @@ NRF_SDH_STACK_OBSERVER(m_nrf_sdh_soc_evts_poll, NRF_SDH_SOC_STACK_OBSERVER_PRIO)
     .p_context = NULL,
 };
 
-
+extern nrf_crypto_backend_info_t const nrf_hw_backend;
+// Just to make the linker to keep the nrf_hw_backend
+__attribute__ ((used)) static uint32_t s_pnrf_hw_backend_info = (uint32_t)&nrf_hw_backend;
