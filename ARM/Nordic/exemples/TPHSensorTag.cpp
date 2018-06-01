@@ -52,7 +52,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "istddef.h"
 #include "ble_app.h"
 #include "ble_service.h"
-#include "nrf_power.h"
+//#include "nrf_power.h"
 
 #include "bsec_interface.h"
 
@@ -68,7 +68,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tph_ms8607.h"
 #include "tphg_bme680.h"
 #include "timer_nrf5x.h"
-#include "timer_nrf_app_timer.h"
+//#include "timer_nrf_app_timer.h"
 #include "board.h"
 #include "idelay.h"
 
@@ -273,7 +273,7 @@ void ReadPTHData()
 	static uint32_t gascnt = 0;
 	TPHSENSOR_DATA data;
 	GASSENSOR_DATA gdata;
-
+#if 0
 	g_TphSensor.Read(data);
 
 
@@ -303,9 +303,10 @@ void ReadPTHData()
 	}
 
 	g_TphSensor.StartSampling();
-
+#endif
 	// Update advertisement data
-	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
+//	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
+	BleAppAdvManDataSet((uint8_t*)&gascnt, sizeof(gascnt));
 
 	gascnt++;
 }
@@ -314,7 +315,11 @@ void TimerHandler(Timer *pTimer, uint32_t Evt)
 {
     if (Evt & TIMER_EVT_TRIGGER(0))
     {
-    		ReadPTHData();
+    	// SDK15 no longer allow updating advertisement data dynamically
+    	// Have to stop and restart advertisement
+		//BleAppAdvStop();
+    	ReadPTHData();
+		//BleAppAdvStart(BLEAPP_ADVMODE_FAST);
     }
 }
 
@@ -348,7 +353,7 @@ void BleAppAdvTimeoutHandler()
 void HardwareInit()
 {
 	// Set this only if nRF is power at 2V or more
-	nrf_power_dcdcen_set(true);
+	//nrf_power_dcdcen_set(true);
 
 	g_Timer.Init(s_TimerCfg);
 
@@ -378,7 +383,7 @@ void HardwareInit()
 
     if (g_TphSensor.DeviceID() == BME680_ID)
     {
-    		g_GasSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
+    	g_GasSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
     }
 
 	g_TphSensor.StartSampling();
@@ -392,8 +397,8 @@ void HardwareInit()
 
     if (g_TphSensor.DeviceID() == BME680_ID)
     {
-    		GASSENSOR_DATA gdata;
-    		g_GasSensor.Read(gdata);
+		GASSENSOR_DATA gdata;
+		g_GasSensor.Read(gdata);
     }
 
 	g_TphSensor.StartSampling();
