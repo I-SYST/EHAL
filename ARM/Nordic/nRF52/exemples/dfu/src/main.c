@@ -144,7 +144,7 @@ int main(void)
     uint32_t ret_val;
 
     IOPinCfg(s_IOPins, s_NbIOPins);
-    IOPinSet(BLUEIO_LED1_PORT, BLUEIO_LED1_PIN);
+    IOPinClear(BLUEIO_LED1_PORT, BLUEIO_LED1_PIN);
 
     // Protect MBR and bootloader code from being overwritten.
     ret_val = nrf_bootloader_flash_protect(0, MBR_SIZE, false);
