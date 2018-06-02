@@ -25,14 +25,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/dfu_req_handling</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
 			<name>src/ehal_dfu_public_key.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/src/ehal_dfu_public_key.c</locationURI>
+		</link>
+		<link>
+			<name>src/micro-ecc</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK</name>
@@ -40,27 +40,12 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/dfu_req_handling/dfu-cc.pb.c</name>
+			<name>src/micro-ecc/uECC.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/examples/dfu/dfu_req_handling/dfu-cc.pb.c</locationURI>
-		</link>
-		<link>
-			<name>src/dfu_req_handling/dfu_req_handling.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/examples/dfu/dfu_req_handling/dfu_req_handling.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/micro-ecc/uECC.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/boards</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -70,12 +55,12 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/micro-ecc</name>
+			<name>src/nRF5_SDK/nano-pb</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/nano-pb</name>
+			<name>src/nRF5_SDK/nrfx</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -95,37 +80,22 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/boards/boards.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/boards/boards.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/clock</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/common</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/hal</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/rng</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/uart</name>
+			<name>src/nRF5_SDK/libraries/atomic</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/atomic_fifo</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/atomic_flags</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/balloc</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -200,11 +170,6 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/micro-ecc/uECC.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/external/micro-ecc/micro-ecc/uECC.c</locationURI>
-		</link>
-		<link>
 			<name>src/nRF5_SDK/nano-pb/pb_common.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/external/nano-pb/pb_common.c</locationURI>
@@ -218,6 +183,11 @@
 			<name>src/nRF5_SDK/nano-pb/pb_encode.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/external/nano-pb/pb_encode.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/nrfx/hal</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/softdevice/common</name>
@@ -245,34 +215,24 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_srv_common.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf/clock/nrf_drv_clock.c</name>
+			<name>src/nRF5_SDK/libraries/atomic/nrf_atomic.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/clock/nrf_drv_clock.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/common/nrf_drv_common.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/common/nrf_drv_common.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/hal/nrf_nvmc.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/hal/nrf_nvmc.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/rng/nrf_drv_rng.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/rng/nrf_drv_rng.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/uart/nrf_drv_uart.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/uart/nrf_drv_uart.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/atomic/nrf_atomic.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/atomic_fifo/nrf_atfifo.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/atomic_fifo/nrf_atfifo.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/atomic_flags/nrf_atflags.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/atomic_flags/nrf_atflags.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/balloc/nrf_balloc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/balloc/nrf_balloc.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/bootloader/ble_dfu</name>
@@ -295,9 +255,19 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/nrf_bootloader_app_start.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/bootloader/nrf_bootloader_app_start_asm.c</name>
+			<name>src/nRF5_SDK/libraries/bootloader/nrf_bootloader_app_start_final.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/nrf_bootloader_app_start_asm.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/nrf_bootloader_app_start_final.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/bootloader/nrf_bootloader_dfu_timers.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/nrf_bootloader_dfu_timers.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/bootloader/nrf_bootloader_fw_activation.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/nrf_bootloader_fw_activation.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/bootloader/nrf_bootloader_info.c</name>
@@ -305,9 +275,9 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/nrf_bootloader_info.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/bootloader/serial_dfu</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
+			<name>src/nRF5_SDK/libraries/bootloader/nrf_bootloader_wdt.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/nrf_bootloader_wdt.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crc32/crc32.c</name>
@@ -320,6 +290,26 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_aead.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_aead.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_aes.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_aes.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_aes_shared.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_aes_shared.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_ecc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_ecc.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_ecdh.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_ecdh.c</locationURI>
@@ -330,9 +320,24 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_ecdsa.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_error.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_error.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_hash.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_hash.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_hkdf.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_hkdf.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_hmac.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_hmac.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_init.c</name>
@@ -340,19 +345,19 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_init.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_keys.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_keys.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_mem.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_mem.c</locationURI>
-		</link>
-		<link>
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_rng.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_rng.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_shared.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_shared.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_svc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_svc.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/experimental_section_vars/nrf_section_iter.c</name>
@@ -430,6 +435,11 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/util/nrf_assert.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/nrfx/hal/nrf_nvmc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/modules/nrfx/hal/nrf_nvmc.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/softdevice/common/nrf_sdh.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh.c</locationURI>
@@ -445,9 +455,14 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh_soc.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/bootloader/ble_dfu/nrf_ble_dfu.c</name>
+			<name>src/nRF5_SDK/libraries/bootloader/ble_dfu/nrf_dfu_ble.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/ble_dfu/nrf_ble_dfu.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/ble_dfu/nrf_dfu_ble.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/bootloader/dfu/dfu-cc.pb.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/dfu/dfu-cc.pb.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/bootloader/dfu/nrf_dfu.c</name>
@@ -468,6 +483,11 @@
 			<name>src/nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_mbr.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/dfu/nrf_dfu_mbr.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_req_handler.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/dfu/nrf_dfu_req_handler.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_settings.c</name>
@@ -495,14 +515,24 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/dfu/nrf_dfu_transport.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_trigger_usb.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/dfu/nrf_dfu_trigger_usb.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_utils.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/dfu/nrf_dfu_utils.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/bootloader/serial_dfu/nrf_serial_dfu.c</name>
+			<name>src/nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_validation.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/serial_dfu/nrf_serial_dfu.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/dfu/nrf_dfu_validation.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_ver_validation.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/dfu/nrf_dfu_ver_validation.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc</name>
@@ -510,44 +540,29 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_crypto_sw</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_sw</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdh.c</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecc.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdh.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecc.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdsa.c</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecdh.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdsa.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecdh.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_init.c</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecdsa.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_init.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecdsa.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_keys.c</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_sw/nrf_sw_backend_hash.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_keys.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_shared.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_shared.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_crypto_sw/nrf_crypto_sw_hash.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw/nrf_crypto_sw_hash.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_crypto_sw/nrf_crypto_sw_rng.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw/nrf_crypto_sw_rng.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_sw/nrf_sw_backend_hash.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
