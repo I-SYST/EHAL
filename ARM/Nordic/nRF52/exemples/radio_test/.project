@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>TPHThingy</name>
+	<name>radio_test</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -20,21 +20,34 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.cdt.core.cnature</nature>
-		<nature>org.eclipse.cdt.core.ccnature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/TPHThingy.cpp</name>
+			<name>src/nRF5_SDK</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/util</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/util/app_error.c</name>
 			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/exemples/TPHThingy.cpp</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/util/app_error.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/util/app_error_weak.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/util/app_error_weak.c</locationURI>
 		</link>
 	</linkedResources>
-	<variableList>
-		<variable>
-			<name>copy_PARENT</name>
-			<value>$%7BPARENT-2-PROJECT_LOC%7D</value>
-		</variable>
-	</variableList>
 </projectDescription>

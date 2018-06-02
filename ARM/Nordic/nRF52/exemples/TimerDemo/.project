@@ -36,54 +36,24 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/boards</name>
+			<name>src/nRF5_SDK/nrfx</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf</name>
+			<name>src/nRF5_SDK/nrfx/drivers</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries</name>
+			<name>src/nRF5_SDK/nrfx/drivers/src</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/boards/boards.c</name>
+			<name>src/nRF5_SDK/nrfx/drivers/src/nrfx_timer.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/boards/boards.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/common</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/timer</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/button</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/common/nrf_drv_common.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/common/nrf_drv_common.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/timer/nrf_drv_timer.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/timer/nrf_drv_timer.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/button/app_button.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/button/app_button.c</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/modules/nrfx/drivers/src/nrfx_timer.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
