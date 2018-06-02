@@ -52,7 +52,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "istddef.h"
 #include "ble_app.h"
 #include "ble_service.h"
-#include "nrf_power.h"
 
 #include "bsec_interface.h"
 
@@ -576,7 +575,7 @@ void BleAppInitUserServices()
 void HardwareInit()
 {
 	// Set this only if nRF is power at 2V or more
-	nrf_power_dcdcen_set(true);
+	NRF_POWER->DCDCEN = POWER_DCDCEN_DCDCEN_Enabled << POWER_DCDCEN_DCDCEN_Pos;
 
     g_Timer.Init(s_TimerCfg);
 

@@ -178,7 +178,8 @@ int nRF52SPIRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
 		dev->pReg->EVENTS_END = 0;
 		dev->pReg->TASKS_START = 1;
 
-		nRF52SPIWaitDMA(dev, 100000);
+		if (nRF52SPIWaitDMA(dev, 100000) == false)
+			break;
 
         l = dev->pReg->RXD.AMOUNT;
 		BuffLen -= l;
@@ -330,7 +331,8 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	pDev->DevIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->DevIntrf.EvtCB = pCfgData->EvtCB;
 	pDev->DevIntrf.Busy = false;
-	pDev->DevIntrf.MaxRetry = 0;
+	pDev->DevIntrf.EnCnt = 1;
+	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
 
 	reg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
 }

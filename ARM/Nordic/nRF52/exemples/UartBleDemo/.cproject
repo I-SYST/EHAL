@@ -53,12 +53,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/CMSIS//CMSIS/Core/Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/gpiote&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/uart&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/delay&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
@@ -67,7 +62,6 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/ble/ble_db_discovery&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/softdevice/common/softdevice_handler&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/softdevice/s132/headers&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1320907875" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
@@ -100,12 +94,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/CMSIS//CMSIS/Core/Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/gpiote&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/uart&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/delay&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
@@ -240,12 +229,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/CMSIS//CMSIS/Core/Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/gpiote&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/uart&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/delay&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
@@ -286,12 +270,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/CMSIS//CMSIS/Core/Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/gpiote&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/uart&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/delay&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
