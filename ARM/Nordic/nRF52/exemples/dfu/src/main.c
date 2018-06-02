@@ -127,7 +127,11 @@ static void dfu_observer(nrf_dfu_evt_type_t evt_type)
             //bsp_board_led_on(BSP_BOARD_LED_2);
             break;
         case NRF_DFU_EVT_DFU_STARTED:
+        	IOPinClear(BLUEIO_LED1_PORT, BLUEIO_LED1_PIN);
             break;
+        case NRF_DFU_EVT_DFU_COMPLETED:
+        	IOPinSet(BLUEIO_LED1_PORT, BLUEIO_LED1_PIN);
+        	break;
         default:
             break;
     }
@@ -140,7 +144,7 @@ int main(void)
     uint32_t ret_val;
 
     IOPinCfg(s_IOPins, s_NbIOPins);
-    IOPinClear(BLUEIO_LED1_PORT, BLUEIO_LED1_PIN);
+    IOPinSet(BLUEIO_LED1_PORT, BLUEIO_LED1_PIN);
 
     // Protect MBR and bootloader code from being overwritten.
     ret_val = nrf_bootloader_flash_protect(0, MBR_SIZE, false);
@@ -155,6 +159,8 @@ int main(void)
 
     ret_val = nrf_bootloader_init(dfu_observer);
     APP_ERROR_CHECK(ret_val);
+
+    IOPinSet(BLUEIO_LED1_PORT, BLUEIO_LED1_PIN);
 
     // Either there was no DFU functionality enabled in this project or the DFU module detected
     // no ongoing DFU operation and found a valid main application.
