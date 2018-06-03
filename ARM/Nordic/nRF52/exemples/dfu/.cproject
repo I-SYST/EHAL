@@ -89,18 +89,12 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/bootloader&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/bootloader/ble_dfu&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/bootloader/dfu&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/uart&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/clock&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/rng&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/atomic&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/slip&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/stack_info&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/micro-ecc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/sha256&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/mem_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/balloc&quot;"/>
@@ -127,7 +121,6 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/micro-ecc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/external/nano-pb&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/external/segger_rtt&quot;"/>
@@ -150,7 +143,7 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.usenewlibnano.1953052079" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.usenewlibnano" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.nostart.1986058446" name="Do not use standard start files (-nostartfiles)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.nostart" useByScannerDiscovery="false" value="false" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.nostdlibs.557579198" name="No startup or default libs (-nostdlib)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.nostdlibs" useByScannerDiscovery="false" value="false" valueType="boolean"/>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs.1875547589" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs" useByScannerDiscovery="false" valueType="libs">
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs.1875547589" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="EHAL"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker.input.1044110567" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker.input">
@@ -166,7 +159,7 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano.1958986900" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.nodeflibs.2023712633" name="Do not use default libraries (-nodefaultlibs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.nodeflibs" value="true" valueType="boolean"/>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs.1373839476" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs" valueType="libs">
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs.1373839476" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="EHAL"/>
 								</option>
 							</tool>
@@ -278,18 +271,12 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/bootloader&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/bootloader/ble_dfu&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/bootloader/dfu&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/uart&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/clock&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/drivers_nrf/rng&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/atomic&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/slip&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/stack_info&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/micro-ecc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/sha256&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/mem_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/balloc&quot;"/>
@@ -316,7 +303,6 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/ble/ble_advertising&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/ble/peer_manager&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/ble/common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/micro-ecc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/external/nano-pb&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/external/segger_rtt&quot;"/>
@@ -336,7 +322,7 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.usenewlibnano.1283897450" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.usenewlibnano" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.nodeflibs.1718097532" name="Do not use default libraries (-nodefaultlibs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.nodeflibs" useByScannerDiscovery="false" value="false" valueType="boolean"/>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs.278146732" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs" valueType="libs">
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs.278146732" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.linker.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="EHAL"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker.input.1270997331" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.linker.input">
@@ -352,7 +338,7 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano.1629385424" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.nodeflibs.588133657" name="Do not use default libraries (-nodefaultlibs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.nodeflibs" value="true" valueType="boolean"/>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs.768094358" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs" valueType="libs">
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs.768094358" name="Libraries (-l)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="EHAL"/>
 								</option>
 							</tool>
