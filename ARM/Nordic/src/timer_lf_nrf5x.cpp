@@ -270,7 +270,14 @@ uint32_t TimerLFnRF5x::Frequency(uint32_t Freq)
     uint32_t prescaler = 1;
 
     if (Freq > 0)
-        prescaler = TIMER_NRF5X_RTC_BASE_FREQ / Freq;
+    {
+    	prescaler = TIMER_NRF5X_RTC_BASE_FREQ / Freq;
+    	if (prescaler > 0x1000)
+    	{
+    		// Cap at 12 bits
+    		prescaler = 0x1000;
+    	}
+    }
 
     vpReg->PRESCALER = prescaler - 1;
 
@@ -295,7 +302,7 @@ uint64_t TimerLFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
     if (TrigNo < 0 || TrigNo >= TIMER_NRF5X_RTC_MAX_TRIGGER_EVT)
         return 0;
 
-    uint32_t cc = (nsPeriod + (vnsPeriod >> 1))/ vnsPeriod;
+    uint32_t cc = (nsPeriod + (vnsPeriod >> 1)) / vnsPeriod;
 
     if (cc <= 0)
     {
