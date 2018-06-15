@@ -84,18 +84,29 @@ const NRFRATECVT s_BaudnRF[] = {
 	{1000000, UART_BAUDRATE_BAUDRATE_Baud1M}
 };
 
-const int s_NbBaudnRF = sizeof(s_BaudnRF) / sizeof(NRFRATECVT);
+static const int s_NbBaudnRF = sizeof(s_BaudnRF) / sizeof(NRFRATECVT);
 
-NRFUARTDEV s_nRFUartDev = {
-	0,
-	NRF_UART0,
-	NULL,
-	false,
-	true,
+NRFUARTDEV s_nRFUartDev[] = {
+	{
+		0,
+		NRF_UART0,
+		NULL,
+		false,
+		true,
+	},
+#ifdef NRF52840_XXAA
+	{
+		0,
+		NRF_UART1,
+		NULL,
+		false,
+		true,
+	},
+#endif
 };
 
-//static uint8_t s_nRFUARTHoldBuffer[NRF51UART_FIFO_MAX];
-//static int s_nRFUARTHoldBuffLen = 0;
+static const int s_NbUartDev = sizeof(s_nRFUartDev) / sizeof(NRFUARTDEV);
+
 static int s_nRF51RxTimeOutCnt = 0;
 uint32_t g_nRF51RxDropCnt = 0;
 uint32_t g_nRF51RxErrCnt = 0;
@@ -133,13 +144,13 @@ bool nRFUARTWaitForTxReady(NRFUARTDEV *pDev, uint32_t Timeout)
 	return false;
 }
 
-void UART0_IRQHandler()
+static void UART_IRQHandler(NRFUARTDEV *pDev)
 {
 	uint8_t buff[NRFUART_CFIFO_SIZE];
 	int len = 0;
 	int cnt = 0;
 
-	if (s_nRFUartDev.pReg->EVENTS_RXDRDY || s_nRFUartDev.pReg->EVENTS_RXTO)
+	if (pDev->pReg->EVENTS_RXDRDY || pDev->pReg->EVENTS_RXTO)
 	{
 		s_nRF51RxTimeOutCnt = 0;
 		//int l = 0;
@@ -149,60 +160,60 @@ void UART0_IRQHandler()
 		//while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10) && cnt < NRF51UART_FIFO_MAX) {
 		//while (s_nRFUartDev.pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX) {
 		do {
-			s_nRFUartDev.bRxReady = false;
-			s_nRFUartDev.pReg->EVENTS_RXDRDY = 0;
-			d = CFifoPut(s_nRFUartDev.pUartDev->hRxFifo);
+			pDev->bRxReady = false;
+			pDev->pReg->EVENTS_RXDRDY = 0;
+			d = CFifoPut(pDev->pUartDev->hRxFifo);
 			if (d == NULL)
 			{
-				s_nRFUartDev.bRxReady = true;
+				pDev->bRxReady = true;
 				g_nRF51RxDropCnt++;
 				break;
 			}
-			*d = s_nRFUartDev.pReg->RXD;
+			*d = pDev->pReg->RXD;
 			cnt++;
 		}// while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10));
-		 while (s_nRFUartDev.pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX) ;
+		 while (pDev->pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX) ;
 
-		if (s_nRFUartDev.pUartDev->EvtCallback)
+		if (pDev->pUartDev->EvtCallback)
 		{
-			len = CFifoUsed(s_nRFUartDev.pUartDev->hRxFifo);
-			if (s_nRFUartDev.pReg->EVENTS_RXTO)
+			len = CFifoUsed(pDev->pUartDev->hRxFifo);
+			if (pDev->pReg->EVENTS_RXTO)
 			{
-				s_nRFUartDev.pReg->EVENTS_RXTO = 0;
-				s_nRFUartDev.bRxReady = false;
-				cnt = s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_RXTIMEOUT, buff, len);
+				pDev->pReg->EVENTS_RXTO = 0;
+				pDev->bRxReady = false;
+				cnt = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXTIMEOUT, buff, len);
 			}
 			else
-				cnt = s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_RXDATA, buff, len);
+				cnt = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXDATA, buff, len);
 		}
 	}
 
-	if (s_nRFUartDev.pReg->EVENTS_TXDRDY)
+	if (pDev->pReg->EVENTS_TXDRDY)
 	{
 
 		cnt = 0;
 
 		do {
-			s_nRFUartDev.pReg->EVENTS_TXDRDY = 0;
+			pDev->pReg->EVENTS_TXDRDY = 0;
 
-			uint8_t *p = CFifoGet(s_nRFUartDev.pUartDev->hTxFifo);
+			uint8_t *p = CFifoGet(pDev->pUartDev->hTxFifo);
 			if (p == NULL)
 			{
-				s_nRFUartDev.bTxReady = true;
+				pDev->bTxReady = true;
 				break;
 			}
-			s_nRFUartDev.bTxReady = false;
-			s_nRFUartDev.pReg->TXD = *p;
+			pDev->bTxReady = false;
+			pDev->pReg->TXD = *p;
 			cnt++;
-		} while (s_nRFUartDev.pReg->EVENTS_TXDRDY && cnt < NRF51UART_FIFO_MAX);
+		} while (pDev->pReg->EVENTS_TXDRDY && cnt < NRF51UART_FIFO_MAX);
 
-		if (s_nRFUartDev.pUartDev->EvtCallback)
+		if (pDev->pUartDev->EvtCallback)
 		{
 			//uint8_t buff[NRFUART_CFIFO_SIZE];
 
 			//len = min(NRFUART_CFIFO_SIZE, CFifoAvail(s_nRFUartDev.pUartDev->hTxFifo));
-			len = CFifoAvail(s_nRFUartDev.pUartDev->hTxFifo);
-			len = s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_TXREADY, buff, len);
+			len = CFifoAvail(pDev->pUartDev->hTxFifo);
+			len = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_TXREADY, buff, len);
 			if (len > 0)
 			{
 				//s_nRFUartDev.bTxReady = false;
@@ -211,10 +222,10 @@ void UART0_IRQHandler()
 		}
 	}
 
-	if (s_nRFUartDev.pReg->EVENTS_ERROR)
+	if (pDev->pReg->EVENTS_ERROR)
 	{
-		s_nRFUartDev.pReg->EVENTS_ERROR = 0;
-		if (s_nRFUartDev.pReg->ERRORSRC & 1)	// Overrrun
+		pDev->pReg->EVENTS_ERROR = 0;
+		if (pDev->pReg->ERRORSRC & 1)	// Overrrun
 		{
 			g_nRF51RxErrCnt++;
 			len = 0;
@@ -222,73 +233,87 @@ void UART0_IRQHandler()
 			//int l = 0;
 			uint8_t *d;
 			do {
-				s_nRFUartDev.pReg->EVENTS_RXDRDY = 0;
-				d = CFifoPut(s_nRFUartDev.pUartDev->hRxFifo);
+				pDev->pReg->EVENTS_RXDRDY = 0;
+				d = CFifoPut(pDev->pUartDev->hRxFifo);
 				if (d == NULL)
 				{
-					s_nRFUartDev.bRxReady = true;
+					pDev->bRxReady = true;
 					break;
 				}
-				s_nRFUartDev.bRxReady = false;
-				*d = s_nRFUartDev.pReg->RXD;
+				pDev->bRxReady = false;
+				*d = pDev->pReg->RXD;
 				cnt++;
 			} //while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10));
-			while (s_nRFUartDev.pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX);
+			while (pDev->pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX);
 
-			if (s_nRFUartDev.pUartDev->EvtCallback)
+			if (pDev->pUartDev->EvtCallback)
 			{
-				len = CFifoUsed(s_nRFUartDev.pUartDev->hRxFifo);
-				s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_RXDATA, buff, len);
+				len = CFifoUsed(pDev->pUartDev->hRxFifo);
+				pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXDATA, buff, len);
 			}
 		}
-		s_nRFUartDev.pReg->ERRORSRC = s_nRFUartDev.pReg->ERRORSRC;
+		pDev->pReg->ERRORSRC = pDev->pReg->ERRORSRC;
 		len = 0;
-		if (s_nRFUartDev.pUartDev->EvtCallback)
+		if (pDev->pUartDev->EvtCallback)
 		{
-			s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_LINESTATE, buff, len);
+			pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_LINESTATE, buff, len);
 		}
-		NRF_UART0->TASKS_STARTRX = 1;
+		pDev->pReg->TASKS_STARTRX = 1;
 	}
 
-	if (s_nRFUartDev.pReg->EVENTS_CTS)
+	if (pDev->pReg->EVENTS_CTS)
 	{
-		s_nRFUartDev.pReg->EVENTS_CTS = 0;
-		s_nRFUartDev.pUartDev->LineState &= ~UART_LINESTATE_CTS;
-        if (s_nRFUartDev.pUartDev->EvtCallback)
+		pDev->pReg->EVENTS_CTS = 0;
+		pDev->pUartDev->LineState &= ~UART_LINESTATE_CTS;
+        if (pDev->pUartDev->EvtCallback)
         {
             buff[0] = 0;//UART_LINESTATE_CTS;
     //        buff[1] = 0;//UART_LINESTATE_CTS;
             len = 1;
-            s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_LINESTATE, buff, len);
+            pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_LINESTATE, buff, len);
         }
 		//NRF_UART0->TASKS_STARTTX = 1;
 		//s_nRFUartDev.bTxReady = true;
 	}
 
-	if (s_nRFUartDev.pReg->EVENTS_NCTS)
+	if (pDev->pReg->EVENTS_NCTS)
 	{
-		s_nRFUartDev.pReg->EVENTS_NCTS = 0;
-		s_nRFUartDev.pUartDev->LineState |= UART_LINESTATE_CTS;
+		pDev->pReg->EVENTS_NCTS = 0;
+		pDev->pUartDev->LineState |= UART_LINESTATE_CTS;
 		//NRF_UART0->TASKS_STOPTX = 1;
-        if (s_nRFUartDev.pUartDev->EvtCallback)
+        if (pDev->pUartDev->EvtCallback)
         {
             buff[0] = UART_LINESTATE_CTS;
 //            buff[1] = UART_LINESTATE_CTS;
             len = 1;
-            s_nRFUartDev.pUartDev->EvtCallback(s_nRFUartDev.pUartDev, UART_EVT_LINESTATE, buff, len);
+            pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_LINESTATE, buff, len);
         }
 	}
 }
 
+void UART0_IRQHandler()
+{
+	UART_IRQHandler(&s_nRFUartDev[0]);
+}
+
+#ifdef NRF52840_XXAA
+void UART1_IRQHandler()
+{
+	UART_IRQHandler(&s_nRFUartDev[1]);
+}
+#endif
+
 int nRFUARTSetRate(DEVINTRF *pDev, int Rate)
 {
+	NRFUARTDEV *dev = (NRFUARTDEV *)pDev->pDevData;
+
 	int rate = s_BaudnRF[s_NbBaudnRF].Baud;
 
 	for (int i = 0; i < s_NbBaudnRF; i++)
 	{
 		if (s_BaudnRF[i].Baud >= Rate)
 		{
-		    NRF_UART0->BAUDRATE = (s_BaudnRF[i].nRFBaud << UART_BAUDRATE_BAUDRATE_Pos);
+		    dev->pReg->BAUDRATE = (s_BaudnRF[i].nRFBaud << UART_BAUDRATE_BAUDRATE_Pos);
 
 		    rate = s_BaudnRF[i].Baud;
 		    break;
@@ -382,6 +407,13 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	if (pCfg->pIoMap == NULL || pCfg->IoMapLen <= 0)
 		return false;
 
+	if (pCfg->DevNo < 0 || pCfg->DevNo >= s_NbUartDev)
+	{
+		return false;
+	}
+
+	int devno = pCfg->DevNo;
+
 	if (pCfg->pRxMem && pCfg->RxMemSize > 0)
 	{
 		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1, pCfg->bFifoBlocking);
@@ -408,39 +440,39 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 //    nrf_gpio_cfg_output(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
 //    nrf_gpio_cfg_input(pCfg->PinCfg[UARTPIN_RX_IDX].PinNo, NRF_GPIO_PIN_PULLUP);
 
-	pDev->DevIntrf.pDevData = &s_nRFUartDev;
-	s_nRFUartDev.pUartDev = pDev;
+	pDev->DevIntrf.pDevData = &s_nRFUartDev[devno];
+	s_nRFUartDev[devno].pUartDev = pDev;
 
 	//NRF_UART0->POWER = UART_POWER_POWER_Enabled << UART_POWER_POWER_Pos;
 
-    NRF_UART0->PSELRXD = pincfg[UARTPIN_RX_IDX].PinNo;
-	NRF_UART0->PSELTXD = pincfg[UARTPIN_TX_IDX].PinNo;
+	s_nRFUartDev[devno].pReg->PSELRXD = pincfg[UARTPIN_RX_IDX].PinNo;
+	s_nRFUartDev[devno].pReg->PSELTXD = pincfg[UARTPIN_TX_IDX].PinNo;
 
     // Set baud
     pDev->Rate = nRFUARTSetRate(&pDev->DevIntrf, pCfg->Rate);
 
-    NRF_UART0->CONFIG &= ~(UART_CONFIG_PARITY_Msk << UART_CONFIG_PARITY_Pos);
+    s_nRFUartDev[devno].pReg->CONFIG &= ~(UART_CONFIG_PARITY_Msk << UART_CONFIG_PARITY_Pos);
 	if (pCfg->Parity == UART_PARITY_NONE)
 	{
-		NRF_UART0->CONFIG |= UART_CONFIG_PARITY_Excluded << UART_CONFIG_PARITY_Pos;
+		s_nRFUartDev[devno].pReg->CONFIG |= UART_CONFIG_PARITY_Excluded << UART_CONFIG_PARITY_Pos;
 	}
 	else
 	{
-		NRF_UART0->CONFIG |= UART_CONFIG_PARITY_Included << UART_CONFIG_PARITY_Pos;
+		s_nRFUartDev[devno].pReg->CONFIG |= UART_CONFIG_PARITY_Included << UART_CONFIG_PARITY_Pos;
 	}
 
-    NRF_UART0->ENABLE = (UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
-    NRF_UART0->EVENTS_RXDRDY = 0;
-    NRF_UART0->EVENTS_TXDRDY = 0;
-    NRF_UART0->EVENTS_ERROR = 0;
-    NRF_UART0->ERRORSRC = NRF_UART0->ERRORSRC;
-    NRF_UART0->EVENTS_CTS = 0;
+	s_nRFUartDev[devno].pReg->ENABLE = (UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
+	s_nRFUartDev[devno].pReg->EVENTS_RXDRDY = 0;
+	s_nRFUartDev[devno].pReg->EVENTS_TXDRDY = 0;
+	s_nRFUartDev[devno].pReg->EVENTS_ERROR = 0;
+	s_nRFUartDev[devno].pReg->ERRORSRC = NRF_UART0->ERRORSRC;
+	s_nRFUartDev[devno].pReg->EVENTS_CTS = 0;
 
     if (pCfg->FlowControl == UART_FLWCTRL_HW)
 	{
-		NRF_UART0->CONFIG |= (UART_CONFIG_HWFC_Enabled << UART_CONFIG_HWFC_Pos);
-		NRF_UART0->PSELCTS = pincfg[UARTPIN_CTS_IDX].PinNo;
-		NRF_UART0->PSELRTS = pincfg[UARTPIN_RTS_IDX].PinNo;
+    	s_nRFUartDev[devno].pReg->CONFIG |= (UART_CONFIG_HWFC_Enabled << UART_CONFIG_HWFC_Pos);
+    	s_nRFUartDev[devno].pReg->PSELCTS = pincfg[UARTPIN_CTS_IDX].PinNo;
+    	s_nRFUartDev[devno].pReg->PSELRTS = pincfg[UARTPIN_RTS_IDX].PinNo;
 		NRF_GPIO->OUTCLR = (1 << pincfg[UARTPIN_CTS_IDX].PinNo);
 		NRF_GPIO->OUTCLR = (1 << pincfg[UARTPIN_RTS_IDX].PinNo);
         // Setup the gpiote to handle pin events on cts-pin.
@@ -452,18 +484,18 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	}
 	else
 	{
-		NRF_UART0->CONFIG &= ~(UART_CONFIG_HWFC_Enabled << UART_CONFIG_HWFC_Pos);
-		NRF_UART0->PSELRTS = -1;
-		NRF_UART0->PSELCTS = -1;
+		s_nRFUartDev[devno].pReg->CONFIG &= ~(UART_CONFIG_HWFC_Enabled << UART_CONFIG_HWFC_Pos);
+		s_nRFUartDev[devno].pReg->PSELRTS = -1;
+		s_nRFUartDev[devno].pReg->PSELCTS = -1;
 	}
 
 
-	s_nRFUartDev.RxPin = pincfg[UARTPIN_RX_IDX].PinNo;
-	s_nRFUartDev.TxPin = pincfg[UARTPIN_TX_IDX].PinNo;
-	s_nRFUartDev.CtsPin = pincfg[UARTPIN_CTS_IDX].PinNo;
-	s_nRFUartDev.RtsPin = pincfg[UARTPIN_RTS_IDX].PinNo;
-	s_nRFUartDev.bRxReady = false;
-	s_nRFUartDev.bTxReady = true;
+	s_nRFUartDev[devno].RxPin = pincfg[UARTPIN_RX_IDX].PinNo;
+	s_nRFUartDev[devno].TxPin = pincfg[UARTPIN_TX_IDX].PinNo;
+	s_nRFUartDev[devno].CtsPin = pincfg[UARTPIN_CTS_IDX].PinNo;
+	s_nRFUartDev[devno].RtsPin = pincfg[UARTPIN_RTS_IDX].PinNo;
+	s_nRFUartDev[devno].bRxReady = false;
+	s_nRFUartDev[devno].bTxReady = true;
 
 	pDev->DataBits = pCfg->DataBits;
 	pDev->FlowControl = pCfg->FlowControl;
@@ -488,14 +520,14 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->DevIntrf.Busy = false;
 	pDev->DevIntrf.MaxRetry = UART_RETRY_MAX;
 
-    NRF_UART0->TASKS_STARTTX = 1;
-    NRF_UART0->TASKS_STARTRX = 1;
+    s_nRFUartDev[devno].pReg->TASKS_STARTTX = 1;
+    s_nRFUartDev[devno].pReg->TASKS_STARTRX = 1;
 
-    NRF_UART0->INTENCLR = 0xffffffffUL;
+    s_nRFUartDev[devno].pReg->INTENCLR = 0xffffffffUL;
 
 	if (pCfg->bIntMode)
 	{
-		NRF_UART0->INTENSET = (UART_INTENSET_RXDRDY_Set << UART_INTENSET_RXDRDY_Pos) |
+		s_nRFUartDev[devno].pReg->INTENSET = (UART_INTENSET_RXDRDY_Set << UART_INTENSET_RXDRDY_Pos) |
 						  (UART_INTENSET_RXTO_Set << UART_INTENSET_RXTO_Pos) |
 						  (UART_INTENSET_TXDRDY_Set << UART_INTENSET_TXDRDY_Pos) |
 						  (UART_INTENSET_ERROR_Set << UART_INTENSET_ERROR_Pos) |
@@ -550,6 +582,6 @@ void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState)
 
 UARTDEV *UARTGetInstance(int DevNo)
 {
-	return s_nRFUartDev.pUartDev;
+	return s_nRFUartDev[DevNo].pUartDev;
 }
 
