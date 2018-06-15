@@ -6,6 +6,108 @@
 Most Flash devices work in MSB bit order. This implementation only support MSB.
 Make sure that the Flash is configure for MSB mode
 
+This implementation works with most Flash devices.  There is no need to implement
+for each device, just fill the config data struct and pass it to init function
+
+Example of defining Flash device info :
+
+-----
+MX25R1635F :
+
+static const FLASHDISKIO_CFG s_FlashDiskCfg = {
+    0,
+    16 * 1024 * 1024 / 8,      	// 16 Mbits
+    0x10000,					// minimum erase block size
+    256,						// Write page size
+    3,                          // 3 bytes addressing
+	NULL.						// no special init require.
+    NULL,						// blocking, no wait callback
+};
+
+-----
+S25FS :
+
+static const FLASHDISKIO_CFG s_FlashDiskCfg = {
+    0,
+    128 * 1024 * 1024 / 8,      // 128 Mbits
+    0x10000,
+    512,						// Write page size
+    3,
+    s25fs_init,					// Special initialization require
+};
+
+bool s25fs_init(int DevNo, DeviceIntrf *pInterf)
+{
+    if (pInterf == NULL)
+        return false;
+    int cnt = 0;
+
+    uint32_t d;
+
+    // Enable write
+    d = NFLASH_S25FS_CMD_WREN;
+    cnt = pInterf->Tx(DevNo, (uint8_t*)&d, 1);
+
+    do {
+        d = NFLASH_S25FS_CMD_RDSR1;
+        pInterf->StartRx(DevNo);
+        cnt = pInterf->TxData((uint8_t*)&d, 1);
+        cnt = pInterf->RxData((uint8_t*)&d, 1);
+        pInterf->StopRx();
+    } while ((d & NFLASH_S25FS_REG_SR1V_WIP));
+
+    // Configure uniform sector arch
+    uint8_t p[8];
+    p[0] = NFLASH_S25FS_CMD_WRAR;
+    p[1] = (NFLASH_S25FS_REG_CR3V >> 16) & 0xFF;
+    p[2] = (NFLASH_S25FS_REG_CR3V >> 8) & 0xFF;
+    p[3] = NFLASH_S25FS_REG_CR3V & 0xFF;
+    p[4] = NFLASH_S25FS_REG_CR3NV_20h_NV | NFLASH_S25FS_REG_CR3V_02h_NV;
+
+    cnt = pInterf->Tx(DevNo, p, 5);
+
+    return true;
+}
+
+-----
+MX66U51235F :
+
+static const FLASHDISKIO_CFG s_FlashDiskCfg = {
+    0,
+    256 * 1024 * 1024 / 8,      // 256 Mbits
+    0x10000,
+    128,						// Write page size
+    4,                          // 256+ Mbits needs 4 bytes addressing
+    NULL,
+    NULL
+};
+
+-----
+Usage in C++ :
+
+// SPI interface instance to be used.  Assuming it is already initialized
+SPI g_Spi;
+
+// Declare device instance
+FlashDiskIO g_FlashDisk;
+
+// Disk sector cache block in RAM
+uint8_t g_FlashCacheMem[DISKIO_SECT_SIZE];
+DISKIO_CACHE_DESC g_FlashCache = {
+    -1, 0xFFFFFFFF, g_FlashCacheMem
+};
+
+// Initialize
+g_FlashDisk.Init(s_FlashDiskCfg, &g_Spi, &g_FlashCache, 1);
+
+// Read/Write
+uint8_t buff[DISKIO_SECT_SIZE];
+
+g_FlashDisk.SectRead(1, buff);	// Read sector 1
+g_FlashDisk.SectWrite(2, buff);	// Write sector 2
+g_FlashDisk.Erase();			// Masse erase flash
+
+
 @author	Hoang Nguyen Hoan
 @date	Aug. 30, 2016
 
