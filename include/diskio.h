@@ -151,7 +151,7 @@ public:
 	virtual void Erase() {}
 
 	int	GetCacheSect(uint32_t SectNo, bool bLock = false);
-	void SetCache(DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk);
+	void SetCache(DISKIO_CACHE_DESC * const pCacheBlk, int NbCacheBlk);
 	void Flush();
 
 protected:

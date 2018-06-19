@@ -39,7 +39,7 @@ Modified by          Date              Description
 #include "iopinctrl.h"
 #include "i2c.h"
 
-void I2CBusReset(I2CDEV *pDev)
+void I2CBusReset(I2CDEV * const pDev)
 {
 	if (pDev == NULL)
 	{

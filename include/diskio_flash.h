@@ -173,7 +173,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @return  true - Success\n
  *          false - Failed.
  */
-typedef bool (*FLASHDISKIOCB)(int DevNo, DeviceIntrf *pInterf);
+typedef bool (*FLASHDISKIOCB)(int DevNo, DeviceIntrf * const pInterf);
 
 typedef struct {
     int         DevNo;          //!< Device number or address for interface use
@@ -210,8 +210,8 @@ public:
 	 * 			- true 	: Success
 	 * 			- false	: Failed
 	 */
-	bool Init(FLASHDISKIO_CFG &Cfg, DeviceIntrf *pInterf,
-	          DISKIO_CACHE_DESC *pCacheBlk = NULL, int NbChaceBlk = 0);
+	bool Init(FLASHDISKIO_CFG &Cfg, DeviceIntrf * const pInterf,
+	          DISKIO_CACHE_DESC * const pCacheBlk = NULL, int NbChaceBlk = 0);
 
     /**
      * @brief	Get total disk size in bytes.

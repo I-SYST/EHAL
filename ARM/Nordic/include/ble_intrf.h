@@ -96,7 +96,7 @@ class BleIntrf : public DeviceIntrf {
 public:
 	bool Init(const BLEINTRF_CFG &Cfg);
 
-	operator DEVINTRF* () { return &vBleIntrf.DevIntrf; }	// Get device interface data
+	operator DEVINTRF * const () { return &vBleIntrf.DevIntrf; }	// Get device interface data
 	// Set data rate in bits/sec (Hz)
 	virtual int Rate(int DataRate) { return DeviceIntrfSetRate(&vBleIntrf.DevIntrf, DataRate); }
 	// Get current data rate in bits/sec (Hz)
@@ -140,7 +140,7 @@ private:
 extern "C" {
 #endif
 
-bool BleIntrfInit(BLEINTRF *pBleIntrf, const BLEINTRF_CFG *pCfg);
+bool BleIntrfInit(BLEINTRF * const pBleIntrf, const BLEINTRF_CFG *pCfg);
 
 #ifdef __cplusplus
 }

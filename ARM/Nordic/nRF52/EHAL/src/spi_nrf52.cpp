@@ -58,7 +58,7 @@ static NRF52_SPIDEV s_nRF52SPIDev[NRF52_SPI_MAXDEV] = {
 	},
 };
 
-bool nRF52SPIWaitDMA(NRF52_SPIDEV *pDev, uint32_t Timeout)
+bool nRF52SPIWaitDMA(NRF52_SPIDEV * const pDev, uint32_t Timeout)
 {
 	uint32_t val = 0;
 
@@ -73,7 +73,7 @@ bool nRF52SPIWaitDMA(NRF52_SPIDEV *pDev, uint32_t Timeout)
 	return false;
 }
 
-int nRF52SPIGetRate(DEVINTRF *pDev)
+int nRF52SPIGetRate(DEVINTRF * const pDev)
 {
 	int rate = 0;
 
@@ -85,7 +85,7 @@ int nRF52SPIGetRate(DEVINTRF *pDev)
 
 // Set data rate in bits/sec (Hz)
 // return actual rate
-int nRF52SPISetRate(DEVINTRF *pDev, int DataRate)
+int nRF52SPISetRate(DEVINTRF * const pDev, int DataRate)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
@@ -130,14 +130,14 @@ int nRF52SPISetRate(DEVINTRF *pDev, int DataRate)
 	return dev->pSpiDev->Cfg.Rate;
 }
 
-void nRF52SPIDisable(DEVINTRF *pDev)
+void nRF52SPIDisable(DEVINTRF * const pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
 	dev->pReg->ENABLE = (SPIM_ENABLE_ENABLE_Disabled << SPIM_ENABLE_ENABLE_Pos);
 }
 
-void nRF52SPIEnable(DEVINTRF *pDev)
+void nRF52SPIEnable(DEVINTRF * const pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
@@ -145,7 +145,7 @@ void nRF52SPIEnable(DEVINTRF *pDev)
 }
 
 // Initial receive
-bool nRF52SPIStartRx(DEVINTRF *pDev, int DevCs)
+bool nRF52SPIStartRx(DEVINTRF * const pDev, int DevCs)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
@@ -160,7 +160,7 @@ bool nRF52SPIStartRx(DEVINTRF *pDev, int DevCs)
 }
 
 // Receive Data only, no Start/Stop condition
-int nRF52SPIRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
+int nRF52SPIRxData(DEVINTRF * const pDev, uint8_t *pBuff, int BuffLen)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 	int cnt = 0;
@@ -191,7 +191,7 @@ int nRF52SPIRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
 }
 
 // Stop receive
-void nRF52SPIStopRx(DEVINTRF *pDev)
+void nRF52SPIStopRx(DEVINTRF * const pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
@@ -200,7 +200,7 @@ void nRF52SPIStopRx(DEVINTRF *pDev)
 }
 
 // Initiate transmit
-bool nRF52SPIStartTx(DEVINTRF *pDev, int DevCs)
+bool nRF52SPIStartTx(DEVINTRF * const pDev, int DevCs)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
@@ -215,7 +215,7 @@ bool nRF52SPIStartTx(DEVINTRF *pDev, int DevCs)
 }
 
 // Transmit Data only, no Start/Stop condition
-int nRF52SPITxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
+int nRF52SPITxData(DEVINTRF * const pDev, uint8_t *pData, int DataLen)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 	int cnt = 0;
@@ -247,7 +247,7 @@ int nRF52SPITxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
 }
 
 // Stop transmit
-void nRF52SPIStopTx(DEVINTRF *pDev)
+void nRF52SPIStopTx(DEVINTRF * const pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
@@ -255,7 +255,7 @@ void nRF52SPIStopTx(DEVINTRF *pDev)
 			   dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PinNo);
 }
 
-bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
+bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 {
 	NRF_SPIM_Type *reg;
 	uint32_t err_code;

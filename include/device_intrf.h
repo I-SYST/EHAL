@@ -88,7 +88,7 @@ typedef struct __device_intrf DEVINTRF;
  * @return	Number of bytes processed.  Implementation specific.\n
  * 			in case of FIFO_FULL events,  FIFO will be pushed out if return value is zero
  */
-typedef int (*DEVINTRF_EVTCB)(DEVINTRF *pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer, int BufferLen);
+typedef int (*DEVINTRF_EVTCB)(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 
 #pragma pack(push, 4)
 
@@ -118,14 +118,14 @@ struct __device_intrf {
 	 *
 	 * @param	pDevIntrf : Pointer to an instance of the Device Interface
 	 */
-	void (*Disable)(DEVINTRF *pDevIntrf);
+	void (*Disable)(DEVINTRF * const pDevIntrf);
 
 	/**
 	 * @brief	Turn on the interface.
 	 *
 	 * @param	pDevIntrf : Pointer to an instance of the Device Interface
 	 */
-	void (*Enable)(DEVINTRF *pDevIntrf);
+	void (*Enable)(DEVINTRF * const pDevIntrf);
 
 	/**
 	 * @brief	Get data rate of the interface in Hertz.  This is not a clock frequency
@@ -136,7 +136,7 @@ struct __device_intrf {
 	 *
 	 * @return	Transfer rate per second
 	 */
-	int (*GetRate)(DEVINTRF *pDevIntrf);
+	int (*GetRate)(DEVINTRF * const pDevIntrf);
 
 	/**
 	 * @brief	Set data rate of the interface in Hertz.  This is not a clock frequency
@@ -149,7 +149,7 @@ struct __device_intrf {
 	 * @return 	Actual transfer rate per second set.  It is the real capable rate
 	 * 			closest to rate being requested.
 	 */
-	int (*SetRate)(DEVINTRF *pDevIntrf, int Rate);
+	int (*SetRate)(DEVINTRF * const pDevIntrf, int Rate);
 
 	/**
 	 * @brief	Prepare start condition to receive data with subsequence RxData.
@@ -163,7 +163,7 @@ struct __device_intrf {
 	 * @return 	true - Success\n
 	 * 			false - failed.
 	 */
-	bool (*StartRx)(DEVINTRF *pDevIntrf, int DevAddr);
+	bool (*StartRx)(DEVINTRF * const pDevIntrf, int DevAddr);
 
 	/**
 	 * @brief	Receive data into pBuff passed in parameter.  Assuming StartRx was
@@ -175,7 +175,7 @@ struct __device_intrf {
 	 *
 	 * @return	Number of bytes read
 	 */
-	int (*RxData)(DEVINTRF *pDevIntrf, uint8_t *pBuff, int BuffLen);
+	int (*RxData)(DEVINTRF * const pDevIntrf, uint8_t *pBuff, int BuffLen);
 
 	/**
 	 * @brief	Completion of read data phase. Do require post processing
@@ -186,7 +186,7 @@ struct __device_intrf {
 	 *
 	 * @return	None
 	 */
-	void (*StopRx)(DEVINTRF *pSerDev);
+	void (*StopRx)(DEVINTRF * const pSerDev);
 
 	/**
 	 * @brief	Prepare start condition to transfer data with subsequence TxData.
@@ -200,7 +200,7 @@ struct __device_intrf {
 	 * @return 	true - Success\n
 	 * 			false - failed
 	 */
-	bool (*StartTx)(DEVINTRF *pDevIntrf, int DevAddr);
+	bool (*StartTx)(DEVINTRF * const pDevIntrf, int DevAddr);
 
 	/**
 	 * @brief	Transfer data from pData passed in parameter.  Assuming StartTx was
@@ -212,7 +212,7 @@ struct __device_intrf {
 	 *
 	 * @return	Number of bytes sent
 	 */
-	int (*TxData)(DEVINTRF *pDevIntrf, uint8_t *pData, int DataLen);
+	int (*TxData)(DEVINTRF * const pDevIntrf, uint8_t *pData, int DataLen);
 
 	/**
 	 * @brief	Completion of sending data via TxData.  Do require post processing
@@ -223,7 +223,7 @@ struct __device_intrf {
 	 *
 	 * @return	None
 	 */
-	void (*StopTx)(DEVINTRF *pDevIntrf);
+	void (*StopTx)(DEVINTRF * const pDevIntrf);
 
 	/**
 	 * @brief	This function perform a reset of interface.  Must provide empty
@@ -233,7 +233,7 @@ struct __device_intrf {
      *
      * @return  None
 	 */
-	void (*Reset)(DEVINTRF *pDevIntrf);
+	void (*Reset)(DEVINTRF * const pDevIntrf);
 };
 
 #pragma pack(pop)
@@ -253,7 +253,7 @@ extern "C" {
  *
  * @return	None
  */
-static inline void DeviceIntrfDisable(DEVINTRF *pDev) {
+static inline void DeviceIntrfDisable(DEVINTRF * const pDev) {
 	if (AtomicDec(&pDev->EnCnt) < 1) {
     	pDev->Disable(pDev);
     	AtomicAssign(&pDev->EnCnt, 0);
@@ -267,7 +267,7 @@ static inline void DeviceIntrfDisable(DEVINTRF *pDev) {
  *
  * @return	None
  */
-static inline void DeviceIntrfEnable(DEVINTRF *pDev) {
+static inline void DeviceIntrfEnable(DEVINTRF * const pDev) {
     if (AtomicInc(&pDev->EnCnt) == 1) {
     	pDev->Enable(pDev);
     }
@@ -282,7 +282,7 @@ static inline void DeviceIntrfEnable(DEVINTRF *pDev) {
  *
  * @return	Transfer rate per second
  */
-static inline int DeviceIntrfGetRate(DEVINTRF *pDev) {
+static inline int DeviceIntrfGetRate(DEVINTRF * const pDev) {
 	return pDev->GetRate(pDev);
 }
 
@@ -299,7 +299,7 @@ static inline int DeviceIntrfGetRate(DEVINTRF *pDev) {
  * @return 	Actual transfer rate per second set.  It is the real capable rate
  * 			closest to rate being requested.
  */
-static inline int DeviceIntrfSetRate(DEVINTRF *pDev, int Rate) {
+static inline int DeviceIntrfSetRate(DEVINTRF * const pDev, int Rate) {
 	return pDev->SetRate(pDev, Rate);
 }
 
@@ -315,7 +315,7 @@ static inline int DeviceIntrfSetRate(DEVINTRF *pDev, int Rate) {
  *
  * @return	Number of bytes read
  */
-int DeviceIntrfRx(DEVINTRF *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
+int DeviceIntrfRx(DEVINTRF * const pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
 
 /**
  * @brief	Full transmit data sequence.
@@ -329,7 +329,7 @@ int DeviceIntrfRx(DEVINTRF *pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
  *
  * @return	Number of bytes read
  */
-int DeviceIntrfTx(DEVINTRF *pDev, int DevAddr, uint8_t *pData, int DataLen);
+int DeviceIntrfTx(DEVINTRF * const pDev, int DevAddr, uint8_t *pData, int DataLen);
 
 /**
  * @brief	Device read transfer.
@@ -346,7 +346,7 @@ int DeviceIntrfTx(DEVINTRF *pDev, int DevAddr, uint8_t *pData, int DataLen);
  *
  * @return	Number of bytes read
  */
-int DeviceIntrfRead(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
+int DeviceIntrfRead(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
                     uint8_t *pRxBuff, int RxLen);
 
 /**
@@ -364,7 +364,7 @@ int DeviceIntrfRead(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
  *
  * @return	Number of bytes of data sent (not counting the Addr/Cmd).
  */
-int DeviceIntrfWrite(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
+int DeviceIntrfWrite(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
                      uint8_t *pData, int DataLen);
 
 // Initiate receive
@@ -386,7 +386,7 @@ int DeviceIntrfWrite(DEVINTRF *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
  * @return 	true - Success\n
  * 			false - failed.
  */
-static inline bool DeviceIntrfStartRx(DEVINTRF *pDev, int DevAddr) {
+static inline bool DeviceIntrfStartRx(DEVINTRF * const pDev, int DevAddr) {
     if (AtomicTestAndSet(&pDev->Busy))
         return false;
 
@@ -411,7 +411,7 @@ static inline bool DeviceIntrfStartRx(DEVINTRF *pDev, int DevAddr) {
  *
  * @return	Number of bytes read
  */
-static inline int DeviceIntrfRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen) {
+static inline int DeviceIntrfRxData(DEVINTRF * const pDev, uint8_t *pBuff, int BuffLen) {
 	return pDev->RxData(pDev, pBuff, BuffLen);
 }
 
@@ -423,7 +423,7 @@ static inline int DeviceIntrfRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
  *
  * @param	pDevIntrf : Pointer to an instance of the Device Interface
  */
-static inline void DeviceIntrfStopRx(DEVINTRF *pDev) {
+static inline void DeviceIntrfStopRx(DEVINTRF * const pDev) {
     pDev->StopRx(pDev);
     AtomicClear(&pDev->Busy);
 }
@@ -447,7 +447,7 @@ static inline void DeviceIntrfStopRx(DEVINTRF *pDev) {
  * @return 	true - Success\n
  * 			false - failed
  */
-static inline bool DeviceIntrfStartTx(DEVINTRF *pDev, int DevAddr) {
+static inline bool DeviceIntrfStartTx(DEVINTRF * const pDev, int DevAddr) {
     if (AtomicTestAndSet(&pDev->Busy))
         return false;
 
@@ -472,7 +472,7 @@ static inline bool DeviceIntrfStartTx(DEVINTRF *pDev, int DevAddr) {
  *
  * @return	Number of bytes sent
  */
-static inline int DeviceIntrfTxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen) {
+static inline int DeviceIntrfTxData(DEVINTRF * const pDev, uint8_t *pBuff, int BuffLen) {
 	return pDev->TxData(pDev, pBuff, BuffLen);
 }
 
@@ -485,7 +485,7 @@ static inline int DeviceIntrfTxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
  *
  * @param	pDevIntrf : Pointer to an instance of the Device Interface
  */
-static inline void DeviceIntrfStopTx(DEVINTRF *pDev) {
+static inline void DeviceIntrfStopTx(DEVINTRF * const pDev) {
     pDev->StopTx(pDev);
     AtomicClear(&pDev->Busy);
 }
@@ -495,7 +495,7 @@ static inline void DeviceIntrfStopTx(DEVINTRF *pDev) {
  *
  * @param	pDevIntrf : Pointer to an instance of the Device Interface
  */
-static inline void DeviceIntrfReset(DEVINTRF *pDev) {
+static inline void DeviceIntrfReset(DEVINTRF * const pDev) {
     if (pDev->Reset)
         pDev->Reset(pDev);
 }
@@ -518,7 +518,7 @@ public:
 	 *
 	 * @return	Pointer to internal DEVINTRF to be used with C interface functions
 	 */
-	virtual operator DEVINTRF* () = 0;	// Get device interface data (handle)
+	virtual operator DEVINTRF * const () = 0;	// Get device interface data (handle)
 
 	/**
 	 * @brief	Set data rate of the interface in Hertz.

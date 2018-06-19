@@ -81,8 +81,8 @@ public:
 	SDCard();
 	virtual ~SDCard();
 
-	virtual bool Init(DeviceIntrf *pDevInterf, uint8_t *pCacheMem = NULL, int CacheMemSize = 0);
-	virtual bool Init(DeviceIntrf *pDevInterf, DISKIO_CACHE_DESC *pCacheBlk = NULL, int NbCacheBlk = 0);
+	virtual bool Init(DeviceIntrf * const pDevInterf, uint8_t * const pCacheMem = NULL, int CacheMemSize = 0);
+	virtual bool Init(DeviceIntrf * const pDevInterf, DISKIO_CACHE_DESC * const pCacheBlk = NULL, int NbCacheBlk = 0);
 	int Cmd(uint8_t Cmd, uint32_t param);
 	int GetResponse(uint8_t *pBuff, int BuffLen);
 	int ReadData(uint8_t *pBuff, int BuffLen);
@@ -113,14 +113,14 @@ private:
 extern "C" {
 #endif
 
-bool SDInit(SDDEV *pDev, SDCFG *pCfg);
-int SDCmd(SDDEV *pDev, uint8_t Cmd, uint32_t param);
-int SDGetResponse(SDDEV *pDev, uint8_t *pData, int len);
-int SDReadData(SDDEV *pDev, uint8_t *pBuff, int BuffLen);
-int SDWriteData(SDDEV *pDev, uint8_t *pData, int DataLen);
-int SDReadSingleBlock(SDDEV *pDev, uint32_t Addr, uint8_t *pData, int len);
-int SDWriteSingleBlock(SDDEV *pDev, uint32_t Addr, uint8_t *pData, int len);
-uint32_t SDGetSize(SDDEV *pDev);
+bool SDInit(SDDEV * const pDev, const SDCFG *pCfg);
+int SDCmd(SDDEV * const pDev, uint8_t Cmd, uint32_t param);
+int SDGetResponse(SDDEV * const pDev, uint8_t *pData, int len);
+int SDReadData(SDDEV * const pDev, uint8_t *pBuff, int BuffLen);
+int SDWriteData(SDDEV * const pDev, uint8_t *pData, int DataLen);
+int SDReadSingleBlock(SDDEV * const pDev, uint32_t Addr, uint8_t *pData, int len);
+int SDWriteSingleBlock(SDDEV * const pDev, uint32_t Addr, uint8_t *pData, int len);
+uint32_t SDGetSize(SDDEV * const pDev);
 
 #ifdef __cplusplus
 }

@@ -58,7 +58,7 @@ static NRF52_I2CDEV s_nRF52I2CDev[NRF52_I2C_MAXDEV] = {
 	},
 };
 
-bool nRF52I2CWaitStop(NRF52_I2CDEV *pDev, int Timeout)
+bool nRF52I2CWaitStop(NRF52_I2CDEV * const pDev, int Timeout)
 {
     do {
         if (pDev->pReg->EVENTS_ERROR)
@@ -85,7 +85,7 @@ bool nRF52I2CWaitStop(NRF52_I2CDEV *pDev, int Timeout)
     return false;
 }
 
-bool nRF52I2CWaitRxComplete(NRF52_I2CDEV *pDev, int Timeout)
+bool nRF52I2CWaitRxComplete(NRF52_I2CDEV * const pDev, int Timeout)
 {
     do {
         if (pDev->pReg->EVENTS_ERROR)
@@ -106,7 +106,7 @@ bool nRF52I2CWaitRxComplete(NRF52_I2CDEV *pDev, int Timeout)
     return false;
 }
 
-bool nRF52I2CWaitTxComplete(NRF52_I2CDEV *pDev, int Timeout)
+bool nRF52I2CWaitTxComplete(NRF52_I2CDEV * const pDev, int Timeout)
 {
     do {
         if (pDev->pReg->EVENTS_ERROR)
@@ -127,27 +127,27 @@ bool nRF52I2CWaitTxComplete(NRF52_I2CDEV *pDev, int Timeout)
     return false;
 }
 
-void nRF52I2CDisable(DEVINTRF *pDev)
+void nRF52I2CDisable(DEVINTRF * const pDev)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
 	dev->pReg->ENABLE = (TWIM_ENABLE_ENABLE_Disabled << TWIM_ENABLE_ENABLE_Pos);
 }
-void nRF52I2CEnable(DEVINTRF *pDev)
+void nRF52I2CEnable(DEVINTRF * const pDev)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
 	dev->pReg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 }
 
-int nRF52I2CGetRate(DEVINTRF *pDev)
+int nRF52I2CGetRate(DEVINTRF * const pDev)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
 	return dev->pI2cDev->Rate;
 }
 
-int nRF52I2CSetRate(DEVINTRF *pDev, int RateHz)
+int nRF52I2CSetRate(DEVINTRF * const pDev, int RateHz)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
@@ -170,7 +170,7 @@ int nRF52I2CSetRate(DEVINTRF *pDev, int RateHz)
 	return dev->pI2cDev->Rate;
 }
 
-bool nRF52I2CStartRx(DEVINTRF *pDev, int DevAddr)
+bool nRF52I2CStartRx(DEVINTRF * const pDev, int DevAddr)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
@@ -180,7 +180,7 @@ bool nRF52I2CStartRx(DEVINTRF *pDev, int DevAddr)
 }
 
 // Receive Data only, no Start/Stop condition
-int nRF52I2CRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
+int nRF52I2CRxData(DEVINTRF * const pDev, uint8_t *pBuff, int BuffLen)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 	uint32_t d;
@@ -209,14 +209,14 @@ int nRF52I2CRxData(DEVINTRF *pDev, uint8_t *pBuff, int BuffLen)
 	return cnt;
 }
 
-void nRF52I2CStopRx(DEVINTRF *pDev)
+void nRF52I2CStopRx(DEVINTRF * const pDev)
 {
     NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
     dev->pReg->TASKS_STOP = 1;
     nRF52I2CWaitStop(dev, 1000);
 }
 
-bool nRF52I2CStartTx(DEVINTRF *pDev, int DevAddr)
+bool nRF52I2CStartTx(DEVINTRF * const pDev, int DevAddr)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
@@ -227,7 +227,7 @@ bool nRF52I2CStartTx(DEVINTRF *pDev, int DevAddr)
 }
 
 // Send Data only, no Start/Stop condition
-int nRF52I2CTxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
+int nRF52I2CTxData(DEVINTRF * const pDev, uint8_t *pData, int DataLen)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 	uint32_t d;
@@ -257,7 +257,7 @@ int nRF52I2CTxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
 	return cnt;
 }
 
-void nRF52I2CStopTx(DEVINTRF *pDev)
+void nRF52I2CStopTx(DEVINTRF * const pDev)
 {
     NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
@@ -271,7 +271,7 @@ void nRF52I2CStopTx(DEVINTRF *pDev)
     nRF52I2CWaitStop(dev, 1000);
 }
 
-void nRF52I2CReset(DEVINTRF *pDev)
+void nRF52I2CReset(DEVINTRF * const pDev)
 {
     NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
@@ -299,7 +299,7 @@ void nRF52I2CReset(DEVINTRF *pDev)
     nRF52I2CEnable(pDev);
 }
 
-bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
+bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 {
 	if (pDev == NULL || pCfgData == NULL)
 	{

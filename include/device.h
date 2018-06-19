@@ -273,10 +273,10 @@ protected:
 	 */
 	DeviceIntrf *Interface() { return vpIntrf; }
 
-	bool			vbValid;			//!< Device is valid ready to use (passed detection)
+	bool		vbValid;			//!< Device is valid ready to use (passed detection)
 	uint32_t 	vDevAddr;		//!< Device address or chip select
 	DeviceIntrf *vpIntrf;		//!< Device's interface
-	uint64_t		vDevId;			//!< This is implementation specific data for device identifier
+	uint64_t	vDevId;			//!< This is implementation specific data for device identifier
 	 	 	 	 	 	 	 	//!< could be value reg from hardware register or serial number
 };
 

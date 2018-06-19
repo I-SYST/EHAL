@@ -46,7 +46,7 @@ DiskIO::DiskIO() : vLastIdx(1), vNbCache(0), vpCacheSect(NULL)
 {
 }
 
-void DiskIO::SetCache(DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk)
+void DiskIO::SetCache(DISKIO_CACHE_DESC * const pCacheBlk, int NbCacheBlk)
 {
 	if (pCacheBlk == NULL || NbCacheBlk <= 0)
 		return;

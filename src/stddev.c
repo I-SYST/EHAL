@@ -46,7 +46,7 @@ STDDEV *g_DevTable[STDDEV_MAX] = {
 	NULL,
 };
 
-int InstallBlkDev(STDDEV *pDev, int MapId)
+int InstallBlkDev(STDDEV * const pDev, int MapId)
 {
 	int retval = -1;
 
@@ -83,7 +83,7 @@ void RemoveBlkDev(int Idx)
 		g_DevTable[Idx] = NULL;
 }
 
-int _open(const char *pPathName, int Flags, int Mode)
+int _open(const char * const pPathName, int Flags, int Mode)
 {
 //	return g_FatFS.Open((char*)pPathName, Flags, Mode);
 	if (pPathName == NULL)

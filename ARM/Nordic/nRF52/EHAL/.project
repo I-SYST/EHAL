@@ -111,6 +111,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/diskio_flash.h</locationURI>
 		</link>
 		<link>
+			<name>include/esb_intrf.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/esb_intrf.h</locationURI>
+		</link>
+		<link>
 			<name>include/fatfs.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/fatfs.h</locationURI>
@@ -671,11 +676,6 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
 			<name>src/nRF5_SDK/fprintf</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -762,31 +762,6 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/peer_manager</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/clock</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/common</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/hal</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/power</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/rng</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -926,6 +901,16 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/gatt</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/stack</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/FreeRTOS/portable/GCC/ARM_CM4F</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -1034,31 +1019,6 @@
 			<name>src/nRF5_SDK/ble/peer_manager/security_manager.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/security_manager.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/clock/nrf_drv_clock.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/clock/nrf_drv_clock.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/common/nrf_drv_common.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/common/nrf_drv_common.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/hal/nrf_nvmc.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/hal/nrf_nvmc.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/power/nrf_drv_power.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/power/nrf_drv_power.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/rng/nrf_drv_rng.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/rng/nrf_drv_rng.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/atomic/nrf_atomic.c</name>
@@ -1301,6 +1261,16 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/gatt/src</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/stack/src</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/FreeRTOS/portable/GCC/ARM_CM4F/port.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/FreeRTOS/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c</locationURI>
@@ -1399,6 +1369,26 @@
 			<name>src/nRF5_SDK_Mesh/mesh/access/src/nrf_mesh_node_config.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_Mesh/mesh/access/src/nrf_mesh_node_config.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/gatt/src/mesh_gatt.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/gatt/src/mesh_gatt.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/gatt/src/proxy.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/gatt/src/proxy.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/gatt/src/proxy_filter.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/gatt/src/proxy_filter.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/stack/src/mesh_stack.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/stack/src/mesh_stack.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecc.c</name>

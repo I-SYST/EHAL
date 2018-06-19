@@ -120,7 +120,7 @@ typedef enum {
  *
  * @return number of bytes written to pBuffer for transmit
  */
-typedef int (*UARTEVTCB)(UARTDEV*pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
+typedef int (*UARTEVTCB)(UARTDEV * const pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 
 #pragma pack(push, 4)
 
@@ -179,19 +179,19 @@ extern "C" {
 #endif	// __cplusplus
 
 // Require implementations
-bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfgData);
-void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState);
-UARTDEV *UARTGetInstance(int DevNo);
-static inline int UARTGetRate(UARTDEV *pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
-static inline int UARTSetRate(UARTDEV *pDev, int Rate) { return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate); }
-static inline void UARTEnable(UARTDEV *pDev) { DeviceIntrfEnable(&pDev->DevIntrf); }
-static inline void UARTDisable(UARTDEV *pDev) { DeviceIntrfDisable(&pDev->DevIntrf); }
-int UARTRx(UARTDEV *pDev, uint8_t *pBuff, int Bufflen);
-int UARTTx(UARTDEV *pDev, uint8_t *pData, int Datalen);
-void UARTprintf(UARTDEV *pDev, const char *pFormat, ...);
-void UARTvprintf(UARTDEV *pDev, const char *pFormat, va_list vl);
-void UARTRetargetEnable(UARTDEV *pDev, int FileNo);
-void UARTRetargetDisable(UARTDEV *pDev, int FileNo);
+bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfgData);
+void UARTSetCtrlLineState(UARTDEV * const pDev, uint32_t LineState);
+UARTDEV * const UARTGetInstance(int DevNo);
+static inline int UARTGetRate(UARTDEV * const pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
+static inline int UARTSetRate(UARTDEV * const pDev, int Rate) { return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate); }
+static inline void UARTEnable(UARTDEV * const pDev) { DeviceIntrfEnable(&pDev->DevIntrf); }
+static inline void UARTDisable(UARTDEV * const pDev) { DeviceIntrfDisable(&pDev->DevIntrf); }
+int UARTRx(UARTDEV * const pDev, uint8_t *pBuff, int Bufflen);
+int UARTTx(UARTDEV * const pDev, uint8_t *pData, int Datalen);
+void UARTprintf(UARTDEV * const pDev, const char *pFormat, ...);
+void UARTvprintf(UARTDEV * const pDev, const char *pFormat, va_list vl);
+void UARTRetargetEnable(UARTDEV * const pDev, int FileNo);
+void UARTRetargetDisable(UARTDEV * const pDev, int FileNo);
 
 #ifdef __cplusplus
 }
@@ -212,7 +212,7 @@ public:
 		return UARTInit(&vDevData, &CfgData);
 	}
 
-	operator DEVINTRF* () { return &vDevData.DevIntrf; }
+	operator DEVINTRF * const () { return &vDevData.DevIntrf; }
 
 	// ++ ** Require implementation
 	// Set data baudrate
@@ -248,7 +248,7 @@ public:
 	    va_end(vl);
 	}
 
-	operator UARTDEV * () { return &vDevData; }
+	operator UARTDEV *  const () { return &vDevData; }
     virtual bool RequestToSend(int NbBytes) {
         if (CFifoAvail(vDevData.hTxFifo) < NbBytes)
             return false;

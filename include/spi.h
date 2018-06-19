@@ -127,34 +127,34 @@ extern "C" {
 #endif	// __cplusplus
 
 // Require implementations
-bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData);
+bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData);
 
-static inline int SPIGetRate(SPIDEV *pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
-static inline int SPISetRate(SPIDEV *pDev, int Rate) {
+static inline int SPIGetRate(SPIDEV * const pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
+static inline int SPISetRate(SPIDEV * const pDev, int Rate) {
 	return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate);
 }
-static inline void SPIEnable(SPIDEV *pDev) { pDev->DevIntrf.Enable(&pDev->DevIntrf); }
-static inline void SPIDisable(SPIDEV *pDev) { pDev->DevIntrf.Disable(&pDev->DevIntrf); }
-static inline int SPIRx(SPIDEV *pDev, int DevCs, uint8_t *pBuff, int Bufflen) {
+static inline void SPIEnable(SPIDEV * const pDev) { pDev->DevIntrf.Enable(&pDev->DevIntrf); }
+static inline void SPIDisable(SPIDEV * const pDev) { pDev->DevIntrf.Disable(&pDev->DevIntrf); }
+static inline int SPIRx(SPIDEV * const pDev, int DevCs, uint8_t *pBuff, int Bufflen) {
 	return DeviceIntrfRx(&pDev->DevIntrf, DevCs, pBuff, Bufflen);
 }
-static inline int SPITx(SPIDEV *pDev, int DevCs, uint8_t *pData, int DataLen) {
+static inline int SPITx(SPIDEV * const pDev, int DevCs, uint8_t *pData, int DataLen) {
 	return DeviceIntrfTx(&pDev->DevIntrf, DevCs, pData, DataLen);
 }
-static inline bool SPIStartRx(SPIDEV *pDev, int DevAddr) {
+static inline bool SPIStartRx(SPIDEV * const pDev, int DevAddr) {
 	return DeviceIntrfStartRx(&pDev->DevIntrf, DevAddr);
 }
-static inline int SPIRxData(SPIDEV *pDev, uint8_t *pBuff, int Bufflen) {
+static inline int SPIRxData(SPIDEV * const pDev, uint8_t *pBuff, int Bufflen) {
 	return DeviceIntrfRxData(&pDev->DevIntrf, pBuff, Bufflen);
 }
-static inline void SPIStopRx(SPIDEV *pDev) { DeviceIntrfStopRx(&pDev->DevIntrf); }
-static inline bool SPIStartTx(SPIDEV *pDev, int DevAddr) {
+static inline void SPIStopRx(SPIDEV * const pDev) { DeviceIntrfStopRx(&pDev->DevIntrf); }
+static inline bool SPIStartTx(SPIDEV * const pDev, int DevAddr) {
 	return DeviceIntrfStartTx(&pDev->DevIntrf, DevAddr);
 }
-static inline int SPITxData(SPIDEV *pDev, uint8_t *pData, int Datalen) {
+static inline int SPITxData(SPIDEV * const pDev, uint8_t *pData, int Datalen) {
 	return DeviceIntrfTxData(&pDev->DevIntrf, pData, Datalen);
 }
-static inline void SPIStopTx(SPIDEV *pDev) { DeviceIntrfStopTx(&pDev->DevIntrf); }
+static inline void SPIStopTx(SPIDEV * const pDev) { DeviceIntrfStopTx(&pDev->DevIntrf); }
 
 
 #ifdef __cplusplus
@@ -176,7 +176,7 @@ public:
 
 	bool Init(const SPICFG &CfgData) { return SPIInit(&vDevData, &CfgData); }
 
-	operator DEVINTRF* () { return &vDevData.DevIntrf; }
+	operator DEVINTRF * const () { return &vDevData.DevIntrf; }
 	operator SPIDEV& () { return vDevData; };	// Get config data
 	int Rate(int RateHz) { return vDevData.DevIntrf.SetRate(&vDevData.DevIntrf, RateHz); }
 	int Rate(void) { return vDevData.DevIntrf.GetRate(&vDevData.DevIntrf); }	// Get rate in Hz

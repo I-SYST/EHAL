@@ -82,7 +82,7 @@ public:
 
     bool Init(const ESBINTRF_CFG &Cfg);
 
-    operator DEVINTRF* () { return &vEsbIntrf.DevIntrf; }   // No C implementation, just return NULL
+    operator DEVINTRF *  const () { return &vEsbIntrf.DevIntrf; }   // No C implementation, just return NULL
     // Set data rate in bits/sec (Hz)
     int Rate(int DataRate) { return DeviceIntrfSetRate(&vEsbIntrf.DevIntrf, DataRate); }
     // Get current data rate in bits/sec (Hz)

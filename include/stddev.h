@@ -45,13 +45,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define STDDEV_USER_FILENO		4		//!< Start of user device fileno idx
 
 // open
-typedef int (*STDDEVOPEN)(void *pDevObj, const char *pDevName, int Flags, int Mode);
+typedef int (*STDDEVOPEN)(void * const pDevObj, const char *pDevName, int Flags, int Mode);
 // close
-typedef int (*STDDEVCLOSE)(void *pDevObj, int Handle);
+typedef int (*STDDEVCLOSE)(void * const pDevObj, int Handle);
 // Read/Write
-typedef int (*STDDEVRW)(void *pDevObj, int Handle, uint8_t *pBuff, size_t Len);
+typedef int (*STDDEVRW)(void * const pDevObj, int Handle, uint8_t *pBuff, size_t Len);
 // seek
-typedef int (*STDDEVSEEK)(void *pDevObj, int Handle, int Offset);
+typedef int (*STDDEVSEEK)(void * const pDevObj, int Handle, int Offset);
 
 #pragma pack(push, 4)
 
@@ -86,7 +86,7 @@ extern "C" {
  * 	@return	Handle : if succeeded
  * 				- 1 : Failed
  */
-int InstallBlkDev(STDDEV *pDev, int MapId);
+int InstallBlkDev(STDDEV * const pDev, int MapId);
 
 /**
  * @brief	Remove block device from stdio syscall

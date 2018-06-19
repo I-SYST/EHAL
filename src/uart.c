@@ -42,7 +42,7 @@ Modified by          Date              Description
 extern char s_Buffer[];	// defined in sbuffer.c
 extern int s_BufferSize;
 
-int UARTRx(UARTDEV *pDev, uint8_t *pBuff, int Bufflen)
+int UARTRx(UARTDEV * const pDev, uint8_t *pBuff, int Bufflen)
 {
 	int len = 0;
 
@@ -54,7 +54,7 @@ int UARTRx(UARTDEV *pDev, uint8_t *pBuff, int Bufflen)
     return len;*/
 }
 
-int UARTTx(UARTDEV *pDev, uint8_t *pData, int Datalen)
+int UARTTx(UARTDEV * const pDev, uint8_t *pData, int Datalen)
 {
 	int len = 0;
 
@@ -67,7 +67,7 @@ int UARTTx(UARTDEV *pDev, uint8_t *pData, int Datalen)
     return len;*/
 }
 
-void UARTprintf(UARTDEV *pDev, const char *pFormat, ...)
+void UARTprintf(UARTDEV * const pDev, const char *pFormat, ...)
 {
 	va_list vl;
     va_start(vl, pFormat);
@@ -75,7 +75,7 @@ void UARTprintf(UARTDEV *pDev, const char *pFormat, ...)
     va_end(vl);
 }
 
-void UARTvprintf(UARTDEV *pDev, const char *pFormat, va_list vl)
+void UARTvprintf(UARTDEV * const pDev, const char *pFormat, va_list vl)
 {
     vsnprintf(s_Buffer, s_BufferSize, pFormat, vl);
     int len = strlen(s_Buffer);

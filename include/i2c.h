@@ -141,42 +141,42 @@ extern "C" {
  * 			- true	: Success
  * 			- false	: Failed
  */
-bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData);
-void I2CBusReset(I2CDEV *pDev);
-static inline int I2CGetRate(I2CDEV *pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
-static inline int I2CSetRate(I2CDEV *pDev, int Rate) {
+bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData);
+void I2CBusReset(I2CDEV * const pDev);
+static inline int I2CGetRate(I2CDEV * const pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
+static inline int I2CSetRate(I2CDEV * const pDev, int Rate) {
 	return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate);
 }
-static inline void I2CEnable(I2CDEV *pDev) { DeviceIntrfEnable(&pDev->DevIntrf); }
-static inline void I2CDisable(I2CDEV *pDev) { DeviceIntrfDisable(&pDev->DevIntrf); }
-static inline int I2CRx(I2CDEV *pDev, int DevAddr, uint8_t *pBuff, int Bufflen) {
+static inline void I2CEnable(I2CDEV * const pDev) { DeviceIntrfEnable(&pDev->DevIntrf); }
+static inline void I2CDisable(I2CDEV * const pDev) { DeviceIntrfDisable(&pDev->DevIntrf); }
+static inline int I2CRx(I2CDEV * const pDev, int DevAddr, uint8_t *pBuff, int Bufflen) {
 	return DeviceIntrfRx(&pDev->DevIntrf, DevAddr, pBuff, Bufflen);
 }
-static inline int I2CTx(I2CDEV *pDev, int DevAddr, uint8_t *pData, int Datalen) {
+static inline int I2CTx(I2CDEV * const pDev, int DevAddr, uint8_t *pData, int Datalen) {
 	return DeviceIntrfTx(&pDev->DevIntrf, DevAddr, pData, Datalen);
 }
-static inline int I2CRead(I2CDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
+static inline int I2CRead(I2CDEV * const pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
         uint8_t *pRxBuff, int RxLen) {
 	return DeviceIntrfRead(&pDev->DevIntrf, DevAddr, pAdCmd, AdCmdLen, pRxBuff, RxLen);
 }
-static inline int I2CWrite(I2CDEV *pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
+static inline int I2CWrite(I2CDEV * const pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
         uint8_t *pTxData, int TxLen) {
 	return DeviceIntrfWrite(&pDev->DevIntrf, DevAddr, pAdCmd, AdCmdLen, pTxData, TxLen);
 }
-static inline bool I2CStartRx(I2CDEV *pDev, int DevAddr) {
+static inline bool I2CStartRx(I2CDEV * const pDev, int DevAddr) {
 	return DeviceIntrfStartRx(&pDev->DevIntrf, DevAddr);
 }
-static inline int I2CRxData(I2CDEV *pDev, uint8_t *pBuff, int Bufflen) {
+static inline int I2CRxData(I2CDEV * const pDev, uint8_t *pBuff, int Bufflen) {
 	return DeviceIntrfRxData(&pDev->DevIntrf, pBuff, Bufflen);
 }
-static inline void I2CStopRx(I2CDEV *pDev) { DeviceIntrfStopRx(&pDev->DevIntrf); }
-static inline bool I2CStartTx(I2CDEV *pDev, int DevAddr) {
+static inline void I2CStopRx(I2CDEV * const pDev) { DeviceIntrfStopRx(&pDev->DevIntrf); }
+static inline bool I2CStartTx(I2CDEV * const pDev, int DevAddr) {
 	return DeviceIntrfStartTx(&pDev->DevIntrf, DevAddr);
 }
-static inline int I2CTxData(I2CDEV *pDev, uint8_t *pData, int Datalen) {
+static inline int I2CTxData(I2CDEV * const pDev, uint8_t *pData, int Datalen) {
 	return DeviceIntrfTxData(&pDev->DevIntrf, pData, Datalen);
 }
-static inline void I2CStopTx(I2CDEV *pDev) { DeviceIntrfStopTx(&pDev->DevIntrf); }
+static inline void I2CStopTx(I2CDEV * const pDev) { DeviceIntrfStopTx(&pDev->DevIntrf); }
 
 #ifdef __cplusplus
 }
@@ -195,7 +195,7 @@ public:
 	I2C(I2C&);	// Copy ctor not allowed
 
 	bool Init(const I2CCFG &CfgData) { return I2CInit(&vDevData, &CfgData); }
-	operator DEVINTRF*() { return &vDevData.DevIntrf; }
+	operator DEVINTRF * const () { return &vDevData.DevIntrf; }
 	operator I2CDEV& () { return vDevData; };	// Get config data
 	int Rate(int RateHz) { return DeviceIntrfSetRate(&vDevData.DevIntrf, RateHz); }
 	int Rate(void) { return vDevData.Rate; };	// Get rate in Hz

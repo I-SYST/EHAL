@@ -257,11 +257,11 @@ typedef union __FATFS_DirEntry {
 #pragma pack(push, 4)
 
 typedef struct {
-	char 		VolName[12];	//!< Volume name
-	int 		SectSize;		//!< Sector size in bytes
-	uint32_t 	VolumeSize;		//!< Disk size in bytes
-	const MBR 	*pMbrSect;
-	const FATFS_BSBPB 	*pBootSect; //!< Pointer to predefined BSBPB sector
+	char 				VolName[12];//!< Volume name
+	int 				SectSize;	//!< Sector size in bytes
+	uint32_t 			VolumeSize;	//!< Disk size in bytes
+	const MBR 			*pMbrSect;
+	const FATFS_BSBPB	*pBootSect; //!< Pointer to predefined BSBPB sector
 	const FATFS_DIR 	*pRootDir;	//!< Pointer to Root direct
 	const uint16_t 		*pFat1;		//!< Pointer to File Allocation Table
 	const FATFS_FSINFO 	*pFat32Info;
@@ -290,7 +290,7 @@ typedef struct {
 	uint32_t	CurClus;		//!< Current data cluster
 	uint32_t 	SectIdx;		//!< Sector index in CurClus
 	uint32_t	SectOff;		//!< Current file pos : offset in sector
-//	uint8_t 	SectData[512];	// Current sector data
+	bool 		bWritable;		//!< Writable access
 } FATFS_FD;
 
 #pragma pack(pop)
@@ -326,8 +326,8 @@ public:
 	 * 			- true 	: Pathname found
 	 * 			- false : Not found
 	 */
-	bool Find(char *pPathName, DIR *pDir);
-	int Open(char *pPathName, int Flags, int Mode);
+	bool Find(char * const pPathName, DIR *pDir);
+	int Open(char * const pPathName, int Flags, int Mode);
 	int Close(int fd);
 	int Read(int Fd, uint8_t *pBuff, size_t Len);
 	int Write(int Fd, uint8_t *pBuf, size_t Len);
@@ -344,6 +344,8 @@ protected:
 	 * @return	Sector number
 	 */
 	uint32_t ClusToSect(uint32_t ClusNo);
+	int Create();
+	bool FindFreeDirEntry();
 
 private:
 	FATFS_TYPE 	vType;				//!< FAT type
@@ -355,7 +357,6 @@ private:
 	uint32_t 	vDataStartSect;		//!< Data start sector
 	uint32_t 	vRootDirSect;		//!< Root dir start sector
 	DIR			vCurDir;			//!< Current directory
-	//std::shared_ptr<DiskIO> vDiskIO;	// Disk object
 	DiskIO		*vDiskIO;
 	DISKPART 	vPartData;			//!< Partition data
 	FATFS_FD 	vOpenFiles[MAX_FILE];	//!< Keep list of open files

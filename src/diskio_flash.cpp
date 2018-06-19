@@ -42,8 +42,8 @@ FlashDiskIO::FlashDiskIO() : DiskIO()
 	vpInterf = NULL;
 }
 
-bool FlashDiskIO::Init(FLASHDISKIO_CFG &Cfg, DeviceIntrf *pInterf,
-                       DISKIO_CACHE_DESC *pCacheBlk, int NbCacheBlk)
+bool FlashDiskIO::Init(FLASHDISKIO_CFG &Cfg, DeviceIntrf * const pInterf,
+                       DISKIO_CACHE_DESC * const pCacheBlk, int NbCacheBlk)
 {
     if (pInterf == NULL)
         return false;
@@ -62,7 +62,7 @@ bool FlashDiskIO::Init(FLASHDISKIO_CFG &Cfg, DeviceIntrf *pInterf,
     if (Cfg.WriteSize == 0)
         vWriteSize = DISKIO_SECT_SIZE;
     else
-        vWriteSize      = Cfg.WriteSize;
+        vWriteSize = Cfg.WriteSize;
     vTotalSize      = Cfg.TotalSize;
     vAddrSize       = Cfg.AddrSize;
     vpInterf        = pInterf;
