@@ -65,20 +65,20 @@ typedef struct __TPHSensor_Data {
 
 class TphSensor;
 
-typedef void (*TPHDataRdyCB)(TphSensor *pSensor, TPHSENSOR_DATA *pData);
+typedef void (*TPHDataRdyCB)(TphSensor * const pSensor, TPHSENSOR_DATA *pData);
 
 #pragma pack(push, 4)
 
 /// @brief	TPH sensor configuration
 ///
 typedef struct __TPHSensor_Config {
-	uint32_t			DevAddr;		//!< Either I2C dev address or CS index select if SPI is used
+	uint32_t		DevAddr;		//!< Either I2C dev address or CS index select if SPI is used
 	SENSOR_OPMODE 	OpMode;		//!< Operating mode
-	uint32_t			Freq;		//!< Sampling frequency in mHz (milliHerz) if continuous mode is used
+	uint32_t		Freq;		//!< Sampling frequency in mHz (milliHerz) if continuous mode is used
 	int				TempOvrs;	//!< Oversampling measurement for temperature
 	int				PresOvrs;	//!< Oversampling measurement for pressure
-	int 				HumOvrs;		//!< Oversampling measurement for humidity
-	uint32_t			FilterCoeff;//!< Filter coefficient select value (this value is device dependent)
+	int 			HumOvrs;		//!< Oversampling measurement for humidity
+	uint32_t		FilterCoeff;//!< Filter coefficient select value (this value is device dependent)
 	TPHDataRdyCB	DataRdyCB;		//!< Callback handler for data ready
 } TPHSENSOR_CFG;
 
@@ -107,7 +107,7 @@ public:
 	 * 			- true	: Success
 	 * 			- false	: Failed
 	 */
-	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL) = 0;
+	virtual bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
 
 	/**
 	 * @brief	Read TPH data (require implementation).

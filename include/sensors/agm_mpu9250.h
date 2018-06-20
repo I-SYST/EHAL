@@ -368,9 +368,9 @@ Modified by          Date              Description
 
 class AgmMpu9250 : public AccelSensor, public GyroSensor, public MagSensor {
 public:
-	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf *pIntrf, Timer *pTimer = NULL);
-	virtual bool Init(const GYROSENSOR_CFG&, DeviceIntrf*, Timer *pTimer = NULL);
-	virtual bool Init(const MAGSENSOR_CFG&, DeviceIntrf*, Timer *pTimer = NULL);
+	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+	virtual bool Init(const GYROSENSOR_CFG&, DeviceIntrf* const , Timer * const pTimer = NULL);
+	virtual bool Init(const MAGSENSOR_CFG&, DeviceIntrf* const , Timer * const pTimer = NULL);
 	bool WakeOnMotion(bool bEnable, uint8_t Threshold);
 	virtual bool Enable();
 	virtual void Disable();
@@ -389,7 +389,7 @@ public:
 	 uint32_t SamplingFrequency(uint32_t FreqHz);
 
 private:
-	bool InitDefault(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer);
+	bool InitDefault(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer);
 	bool UpdateData();
 	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);

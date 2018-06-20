@@ -377,7 +377,7 @@ uint64_t TimerHFnRF5x::TickCount()
 }
 
 uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type,
-                                          TIMER_TRIGCB Handler, void *pContext)
+                                          TIMER_TRIGCB const Handler, void * const pContext)
 {
     if (TrigNo < 0 || TrigNo >= vMaxNbTrigEvt)
         return 0;
@@ -416,7 +416,7 @@ uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
 }
 
 uint32_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type,
-                                          TIMER_TRIGCB Handler, void *pContext)
+                                          TIMER_TRIGCB const Handler, void * const pContext)
 {
 	return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type, Handler, pContext) / 1000000ULL);
 }

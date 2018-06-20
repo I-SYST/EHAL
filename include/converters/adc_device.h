@@ -157,7 +157,7 @@ public:
 	 * 			- True	: Success
 	 * 			- false	: Failed
 	 */
-	virtual bool Init(const ADC_CFG &Cfg, Timer *pTimer, DeviceIntrf *pIntrf) = 0;
+	virtual bool Init(const ADC_CFG &Cfg, Timer * const pTimer, DeviceIntrf * const pIntrf) = 0;
 
 	/**
 	 * @brief	Set conversion rate for continuous mode only
@@ -199,7 +199,7 @@ public:
 	 *
 	 * @return	True - Success
 	 */
-	virtual bool OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan) = 0;
+	virtual bool OpenChannel(const ADC_CHAN_CFG * const pChanCfg, int NbChan) = 0;
 
 	/**
 	 * @brief	Close ADC channel
@@ -252,7 +252,7 @@ public:
 
 protected:
 	void SetEvtHandler(ADC_EVTCB EvtHandler) { vEvtHandler = EvtHandler; }
-	void SetRefVoltage(const ADC_REFVOLT *pRefVolt, int NbRefVolt) {
+	void SetRefVoltage(const ADC_REFVOLT * const pRefVolt, int NbRefVolt) {
 		vpRefVolt = pRefVolt;
 		vNbRefVolt = NbRefVolt;
 	}

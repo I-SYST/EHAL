@@ -34,7 +34,7 @@ Modified by          Date              Description
 
 #include "timer.h"
 
-int Timer::EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler, void *pContext)
+int Timer::EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB const Handler, void * const pContext)
 {
 	int idx = FindAvailTimerTrigger();
 	if (idx < 0)
@@ -45,7 +45,7 @@ int Timer::EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRI
 	return idx;
 }
 
-int Timer::EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB Handler, void *pContext)
+int Timer::EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRIGCB const Handler, void * const pContext)
 {
 	int idx = FindAvailTimerTrigger();
 	if (idx < 0)

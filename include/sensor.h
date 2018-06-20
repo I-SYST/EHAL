@@ -202,7 +202,7 @@ public:
 	 */
 	virtual bool UpdateData() = 0;
 
-	static void TimerTrigHandler(Timer *pTimer, int TrigNo, void *pContext) {
+	static void TimerTrigHandler(Timer * const pTimer, int TrigNo, void * const pContext) {
 	    Sensor *sensor = (Sensor*)pContext;
 
 	    sensor->UpdateData();

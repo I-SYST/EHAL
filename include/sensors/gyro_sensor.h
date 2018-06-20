@@ -60,7 +60,7 @@ typedef struct __GyroSensor_Config {
 
 class GyroSensor : virtual public Sensor {
 public:
-	virtual bool Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf *pIntrf, Timer *pTimer) = 0;
+	virtual bool Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer) = 0;
 	virtual bool Read(GYROSENSOR_DATA *pData) = 0;
 
 private:

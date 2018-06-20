@@ -102,7 +102,7 @@ public:
 	 *
 	 * @return	true - Success
 	 */
-	virtual bool Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf = NULL, Timer *pTimer = NULL) = 0;
+	virtual bool Init(const GASSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
 
 	/**
 	 * @brief	Read gas sensor data (require implementation).
@@ -127,7 +127,7 @@ public:
 	 * 			- true	: Success
 	 * 			- false	: Failed
 	 */
-	virtual bool SetHeatingProfile(int Count, const GASSENSOR_HEAT *pProfile) = 0;
+	virtual bool SetHeatingProfile(int Count, const GASSENSOR_HEAT * const pProfile) = 0;
 
 protected:
 

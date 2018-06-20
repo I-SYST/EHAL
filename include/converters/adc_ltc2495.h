@@ -101,7 +101,7 @@ public:
 	 *
 	 * @return	True - Success
 	 */
-	virtual bool Init(const ADC_CFG &Cfg, DeviceIntrf *pIntrf);
+	virtual bool Init(const ADC_CFG &Cfg, DeviceIntrf * const pIntrf);
 
 	/**
 	 * @brief	Set conversion rate for continuous mode only
@@ -129,7 +129,7 @@ public:
 	 *
 	 * @return	True - Success
 	 */
-	virtual bool OpenChannel(const ADC_CHAN_CFG *pChanCfg, int NbChan);
+	virtual bool OpenChannel(const ADC_CHAN_CFG * const pChanCfg, int NbChan);
 
 	/**
 	 * @brief	Close ADC channel

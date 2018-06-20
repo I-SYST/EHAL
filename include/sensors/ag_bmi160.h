@@ -387,7 +387,7 @@ Modified by          Date              Description
 
 class ImuBmi160 : public AccelSensor, public GyroSensor {
 public:
-	bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf *pIntrf, Timer *pTimer);
+	bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer);
 	bool Read(ACCELSENSOR_DATA *pData);
 
 private:

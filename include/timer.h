@@ -72,7 +72,7 @@ class Timer;
  * @param	Timer	: Pointer reference to Timer class generating the event
  * @param	Evt		: Event ID for which this callback is activated
  */
-typedef void (*TIMER_EVTCB)(Timer *pTimer, uint32_t Evt);
+typedef void (*TIMER_EVTCB)(Timer * const pTimer, uint32_t Evt);
 
 /**
  * @brief	Timer trigger handler type
@@ -81,7 +81,7 @@ typedef void (*TIMER_EVTCB)(Timer *pTimer, uint32_t Evt);
  * @param	TrigNo	: Trigger ID for which this callback is activated
  * @param   pContext: Pointer to user context (user private data, could be a class or structure)
  */
-typedef void (*TIMER_TRIGCB)(Timer *pTimer, int TrigNo, void *pContext);
+typedef void (*TIMER_TRIGCB)(Timer * const pTimer, int TrigNo, void * const pContext);
 
 #pragma pack(push, 4)
 
@@ -188,7 +188,7 @@ public:
 	 * @return  real period in nsec based on clock calculation
 	 */
 	virtual uint64_t EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type,
-	                                    TIMER_TRIGCB Handler = NULL, void *pContext = NULL) = 0;
+	                                    TIMER_TRIGCB const Handler = NULL, void * const pContext = NULL) = 0;
 
     /**
 	 * @brief	Enable millisecond timer trigger event.
@@ -203,7 +203,7 @@ public:
 	 * @return  real period in msec based on clock calculation
 	 */
 	virtual uint32_t EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type,
-	                           	   	    TIMER_TRIGCB Handler, void *pContext = NULL)
+	                           	   	    TIMER_TRIGCB const Handler, void * const pContext = NULL)
 	{
 		return (uint32_t)(EnableTimerTrigger(TrigNo, (uint64_t)msPeriod * 1000000ULL, Type, Handler, pContext) / 1000000ULL);
 	}
@@ -221,7 +221,7 @@ public:
 	 * 			-1 : Failed
 	 */
 	virtual int EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type,
-	                               TIMER_TRIGCB Handler = NULL, void *pContext = NULL);
+	                               TIMER_TRIGCB const Handler = NULL, void * const pContext = NULL);
 
 	/**
 	 * @brief	Enable millisecond timer trigger event.
@@ -236,7 +236,7 @@ public:
 	 * 			-1 : Failed
 	 */
 	int EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type,
-	                       TIMER_TRIGCB Handler = NULL, void *pContext = NULL);
+	                       TIMER_TRIGCB const Handler = NULL, void * const pContext = NULL);
 
 	/**
 	 * @brief   Disable timer trigger event.

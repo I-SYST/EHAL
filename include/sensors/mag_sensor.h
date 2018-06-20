@@ -60,7 +60,7 @@ typedef struct __MagSensor_Config {
 
 class MagSensor : virtual public Sensor {
 public:
-	virtual bool Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf *pIntrf, Timer *pTimer) = 0;
+	virtual bool Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer) = 0;
 	virtual bool Read(MAGSENSOR_DATA *pData) = 0;
 
 private:

@@ -35,7 +35,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "idelay.h"
 #include "miscdev/buzzer.h"
 
-bool Buzzer::Init(Pwm *pPwm, int Chan)
+bool Buzzer::Init(Pwm * const pPwm, int Chan)
 {
 	if (pPwm == nullptr)
 	{

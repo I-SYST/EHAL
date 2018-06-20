@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define APP_TIMER_PRESCALER             0                                           /**< Value of the RTC1 PRESCALER register. */
 
-void TimerAppTimer::TimerAppTimerHandler(void* pContext)
+void TimerAppTimer::TimerAppTimerHandler(void * const pContext)
 {
 	TimerAppTimer *timer = (TimerAppTimer*)pContext;
 
@@ -73,7 +73,7 @@ bool TimerAppTimer::Init(const TIMER_CFG &Cfg)
  * @return  real period in nsec based on clock calculation
  */
 uint32_t TimerAppTimer::EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type,
-										  TIMER_TRIGCB Handler, void *pContext)
+										  TIMER_TRIGCB const Handler, void * const pContext)
 {
     // Create timers.
     uint32_t err_code = app_timer_create(&vAppTimerId,
@@ -108,7 +108,7 @@ uint32_t TimerAppTimer::EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_
  * @return  real period in nsec based on clock calculation
  */
 uint64_t TimerAppTimer::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TRIG_TYPE Type,
-										  TIMER_TRIGCB Handler, void *pContext)
+										  TIMER_TRIGCB const Handler, void * const pContext)
 {
 	uint32_t period = nsPeriod / 1000000ULL;
 

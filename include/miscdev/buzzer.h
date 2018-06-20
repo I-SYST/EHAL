@@ -48,7 +48,7 @@ public:
 	 *
 	 * @return	true - success
 	 */
-	virtual bool Init(Pwm *pPwm, int Chan);
+	virtual bool Init(Pwm * const pPwm, int Chan);
 
 	/**
 	 * @brief	Set buzzer volume

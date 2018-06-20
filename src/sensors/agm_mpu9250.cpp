@@ -250,6 +250,8 @@ bool AgmMpu9250::WakeOnMotion(bool bEnable, uint8_t Threshold)
 	    regaddr = MPU9250_AG_PWR_MGMT_1;
 		Write8(&regaddr, 1, 0);
 	}
+
+	return true;
 }
 
 uint8_t AgmMpu9250::Scale(uint8_t Value)
@@ -281,7 +283,7 @@ uint8_t AgmMpu9250::Scale(uint8_t Value)
 
 bool AgmMpu9250::UpdateData()
 {
-
+	return true;
 }
 
 bool AgmMpu9250::Read(ACCELSENSOR_DATA *pData)

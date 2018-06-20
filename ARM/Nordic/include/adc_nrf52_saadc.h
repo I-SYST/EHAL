@@ -42,8 +42,6 @@ Modified by          Date              Description
 
 #define SAADC_NRF52_MAX_CHAN        8   // Max number of channels
 
-extern "C" void SAADC_IRQHandler();
-
 class AdcnRF52 : public AdcDevice {
 public:
 	AdcnRF52();
@@ -61,7 +59,7 @@ public:
 	 *
 	 * @return	True - Success
 	 */
-	virtual bool Init(const ADC_CFG &Cfg, Timer *pTimer = NULL, DeviceIntrf *pIntrf = NULL);
+	virtual bool Init(const ADC_CFG &Cfg, Timer * const pTimer = NULL, DeviceIntrf * const pIntrf = NULL);
 
 	/**
 	 * @brief	Set conversion rate for continuous mode only

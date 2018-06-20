@@ -36,6 +36,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdint.h>
 
+#include "device.h"
+
 typedef enum __DAC_Mode {
 	DAC_MODE_SINGLE_ENDED,
 	DAC_MODE_DIFFERENTIAL
@@ -47,7 +49,7 @@ typedef struct __DAC_Config {
 
 class DacDevice : virtual public Device {
 public:
-	virtual bool Init(const DAC_CFG &CfgData, DeviceIntrf *pIntrf) = 0;
+	virtual bool Init(const DAC_CFG &CfgData, DeviceIntrf * const pIntrf) = 0;
 
 private:
 
