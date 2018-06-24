@@ -176,6 +176,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>include/modem.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/modem.h</locationURI>
+		</link>
+		<link>
 			<name>include/prbs.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/prbs.h</locationURI>
@@ -389,6 +394,11 @@
 			<name>src/miscdev</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/modem.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/modem.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK</name>
