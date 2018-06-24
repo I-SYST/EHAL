@@ -76,7 +76,10 @@ Hoan				17 nov. 2014	Adapt to GNU GCC
 #endif
 #endif
 
+#ifndef __unix__
 #include "cmsis_gcc.h"
+#endif
+
 #endif
 
 #else
@@ -268,6 +271,7 @@ static inline void AtomicClear(void *pVar) {
 #endif // __TSOK__
 
 #if defined(_WIN32) || defined(WIN32)
+#elif defined(__unix__)
 #else
 static inline uint32_t EnterCriticalSection(void) {
 #ifdef __arm__
@@ -286,7 +290,8 @@ static inline void ExitCriticalSection(uint32_t State) {
 }
 #endif
 
-#ifdef __arm__
+#ifdef __unix__
+#elif defined(__arm__)
 static inline uint32_t DisableInterrupt() {
 	uint32_t __primmask = __get_PRIMASK();
 	__disable_irq();
