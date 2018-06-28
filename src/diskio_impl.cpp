@@ -78,8 +78,10 @@ int	DiskIO::GetCacheSect(uint32_t SectNo, bool bLock)
 	{
 		// Grab first cache
 		vpCacheSect[i].UseCnt++;
-		if (vpCacheSect[0].SectNo == SectNo)
+		if (vpCacheSect[i].SectNo == SectNo)
+		{
 			return i;
+		}
 		// Not requested sector release it
 		vpCacheSect[i].UseCnt--;
 	}
@@ -159,8 +161,12 @@ int DiskIO::Read(uint64_t Offset, uint8_t *pBuff, uint32_t Len)
 		pBuff += l;
 		Len -= l;
 		retval += l;
-		sectno++;
-		sectoff = 0;
+		sectoff += l;
+		if (sectoff >= DISKIO_SECT_SIZE)
+		{
+			sectno++;
+			sectoff = 0;
+		}
 	}
 
 	return retval;
@@ -210,8 +216,12 @@ int DiskIO::Write(uint64_t Offset, uint8_t *pData, uint32_t Len)
 		pData += l;
 		Len -= l;
 		retval += l;
-		sectno++;
-		sectoff = 0;
+		sectoff += l;
+		if (sectoff >= DISKIO_SECT_SIZE)
+		{
+			sectno++;
+			sectoff = 0;
+		}
 	}
 
 	return retval;

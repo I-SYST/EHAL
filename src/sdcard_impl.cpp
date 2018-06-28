@@ -50,12 +50,14 @@ SDCard::~SDCard()
 
 bool SDCard::Init(DeviceIntrf * const pDevInterf, uint8_t *  const pCacheMem, int CacheMemSize)
 {
-	int nbcache = CacheMemSize / DISKIO_SECT_SIZE;
+	int nbcache = 0;
 	DISKIO_CACHE_DESC *cachedesc = NULL;
 	uint8_t *p = pCacheMem;
 
 	if (pCacheMem)
 	{
+		nbcache = CacheMemSize / DISKIO_SECT_SIZE;
+
 		if (nbcache > SDCARD_CACHE_MAX)
 			nbcache = SDCARD_CACHE_MAX;
 
@@ -207,7 +209,7 @@ int SDCard::ReadData(uint8_t *pBuff, int BuffLen)
 	if (pBuff == NULL)
 		return 0;
 
-	timeout = 100000;
+	timeout = 1000000;
 
 	do {
 		vpInterf->Rx(0, &d, 1);
@@ -257,9 +259,10 @@ int SDCard::WriteData(uint8_t *pData, int Len)
 
 	crc = crc16_ccitt(pData, Len, 0);
 
-	vpInterf->Tx(0, d, 2);
+	//vpInterf->Tx(0, d, 2);
 
-	cnt = vpInterf->Tx(0, pData, Len);
+	//cnt = vpInterf->Tx(0, pData, Len);
+	cnt = vpInterf->Write(0, d, 2, pData, Len);
 
 	d[0] = crc >> 8;
 	d[1] = crc & 0xff;
@@ -267,7 +270,7 @@ int SDCard::WriteData(uint8_t *pData, int Len)
 
 	// Wait for respond data
 	// It took about 99992 loop until receiving respond
-	int t = 100000;
+	int t = 1000000;
 	do
 	{
 		vpInterf->Rx(0, d, 1);
@@ -337,11 +340,11 @@ int SDCard::ReadSingleBlock(uint32_t Addr, uint8_t *pData, int len)
 
 	if (pData)
 	{
-		uint32_t state = DisableInterrupt();
+		//uint32_t state = DisableInterrupt();
 		int r = Cmd(17, Addr);
 		if (r == 0)
 			retval = ReadData(pData, len);
-		EnableInterrupt(state);
+		//EnableInterrupt(state);
 	}
 	return retval;
 }
@@ -352,11 +355,11 @@ int SDCard::WriteSingleBlock(uint32_t Addr, uint8_t *pData, int Len)
 
 	if (pData)
 	{
-		uint32_t state = DisableInterrupt();
+		//uint32_t state = DisableInterrupt();
 		int r = Cmd(24, Addr);
 		if (r == 0)
 			retval =  WriteData(pData, Len);
-		EnableInterrupt(state);
+		//EnableInterrupt(state);
 	}
 
 	return retval;
