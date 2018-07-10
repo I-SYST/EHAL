@@ -7264,7 +7264,7 @@
 // <i> The total amount of flash memory that is used by FDS amounts to @ref FDS_VIRTUAL_PAGES * @ref FDS_VIRTUAL_PAGE_SIZE * 4 bytes.
 
 #ifndef FDS_VIRTUAL_PAGES
-#define FDS_VIRTUAL_PAGES 3
+#define FDS_VIRTUAL_PAGES 6
 #endif
 
 // <o> FDS_VIRTUAL_PAGE_SIZE  - The size of a virtual flash page.
@@ -7349,7 +7349,7 @@
 //==========================================================
 // <o> FDS_MAX_USERS - Maximum number of callbacks that can be registered. 
 #ifndef FDS_MAX_USERS
-#define FDS_MAX_USERS 4
+#define FDS_MAX_USERS 8
 #endif
 
 // </h> 
@@ -7783,7 +7783,7 @@
  
 
 #ifndef NRF_FPRINTF_ENABLED
-#define NRF_FPRINTF_ENABLED 1
+#define NRF_FPRINTF_ENABLED 0
 #endif
 
 // <e> NRF_FSTORAGE_ENABLED - nrf_fstorage - Flash abstraction library
