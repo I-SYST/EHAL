@@ -209,6 +209,21 @@ public:
 	    sensor->StartSampling();
 	}
 
+	/**
+	 * @brief	Wake on sensor detection event
+	 *
+	 * This function allows implementing event to wake up MCU up on sensor detection pattern.
+	 * It can be implemented by sensor that can support this feature. For example motion sensor
+	 * to wake on motion detection, water leak sensor to wake on leak detection.
+	 *
+	 * @param	bEnable	: true - Enable, false - Disable
+	 * @param	Threshold : Threshold value for the detection event
+	 *
+	 * @return	true - Success
+	 * 			false - Feature not supported
+	 */
+	virtual bool WakeOnEvent(bool bEnable, int Threshold) { return false; }
+
 protected:
 
 	SENSOR_STATE vState;		//!< Current sensor state

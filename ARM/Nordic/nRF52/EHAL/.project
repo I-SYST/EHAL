@@ -186,6 +186,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/prbs.h</locationURI>
 		</link>
 		<link>
+			<name>include/pulse_train.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/pulse_train.h</locationURI>
+		</link>
+		<link>
 			<name>include/pwm.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/pwm.h</locationURI>
@@ -421,6 +426,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/prbs.c</locationURI>
 		</link>
 		<link>
+			<name>src/pulse_train.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/pulse_train.c</locationURI>
+		</link>
+		<link>
 			<name>src/pwm_nrf52.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/pwm_nrf52.cpp</locationURI>
@@ -544,6 +554,11 @@
 			<name>include/miscdev/ledmxfont.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmxfont.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/a_adxl362.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/a_adxl362.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/accel_sensor.h</name>
@@ -714,6 +729,16 @@
 			<name>src/nRF5_SDK_Mesh/mesh</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/a_adxl362.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/a_adxl362.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/ag_bmi160.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/ag_bmi160.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sensors/agm_mpu9250.cpp</name>

@@ -213,7 +213,8 @@ bool AgmMpu9250::StartSampling()
 	return true;
 }
 
-bool AgmMpu9250::WakeOnMotion(bool bEnable, uint8_t Threshold)
+// Implement wake on motion
+bool AgmMpu9250::WakeOnEvent(bool bEnable, int Threshold)
 {
     uint8_t regaddr;
 

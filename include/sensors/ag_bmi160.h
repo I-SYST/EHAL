@@ -385,12 +385,26 @@ Modified by          Date              Description
 
 #pragma pack(pop)
 
-class ImuBmi160 : public AccelSensor, public GyroSensor {
+class AgBmi160 : public AccelSensor, public GyroSensor {
 public:
-	bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer);
-	bool Read(ACCELSENSOR_DATA *pData);
+	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer);
+	virtual bool Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer);
+	virtual bool Enable();
+	virtual void Disable();
+	virtual void Reset();
+	virtual bool StartSampling();
+	virtual uint8_t Scale(uint8_t Value);
+	virtual bool Read(ACCELSENSOR_DATA *pData);
+	virtual bool Read(GYROSENSOR_DATA *pData);
 
 private:
+	bool InitDefault(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer);
+	bool UpdateData();
+	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
+	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
+
+	bool vbSpi;
+	bool vbInitialized;
 };
 
 #endif // __AG_BMI160_H__

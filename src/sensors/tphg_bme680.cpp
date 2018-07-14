@@ -629,6 +629,11 @@ bool TphgBme680::UpdateData()
 		uint8_t d[8];
 		addr = BME680_REG_PRESS_MSB;
 
+		if (vpTimer)
+		{
+			vTphData.Timestamp = vpTimer->uSecond();
+		}
+
 		if (Read(&addr, 1, d, 8) == 8)
 		{
 			int32_t p = (((uint32_t)d[0] << 12) | ((uint32_t)d[1] << 4) | ((uint32_t)d[2] >> 4));

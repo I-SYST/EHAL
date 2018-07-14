@@ -371,7 +371,8 @@ public:
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
 	virtual bool Init(const GYROSENSOR_CFG&, DeviceIntrf* const , Timer * const pTimer = NULL);
 	virtual bool Init(const MAGSENSOR_CFG&, DeviceIntrf* const , Timer * const pTimer = NULL);
-	bool WakeOnMotion(bool bEnable, uint8_t Threshold);
+	virtual bool WakeOnEvent(bool bEnable, int Threshold);
+//	virtual bool WakeOnMotion(bool bEnable, uint8_t Threshold);
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();

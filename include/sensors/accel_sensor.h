@@ -1,10 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : accel_sensor.h
+/**-------------------------------------------------------------------------
+@file	accel_sensor.h
 
-Author : Hoang Nguyen Hoan          			Nov. 18, 2017
+@brief	Generic accelerometer sensor abstraction
 
-Desc   : Generic accelerometer sensor abstraction
+@author	Hoang Nguyen Hoan
+@date	Nov. 18, 2017
 
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -42,43 +44,45 @@ Modified by          Date              Description
 #include "sensor.h"
 
 #pragma pack(push, 1)
+
+/// Accel sensor data
 typedef struct __AccelSensor_Data {
-	uint32_t Timestamp;	// Time stamp count in msec
-	int16_t x;			// X axis
-	int16_t y;			// Y axis
-	int16_t z;			// Z axis
+	uint32_t Timestamp;	//!< Time stamp count in msec
+	int16_t x;			//!< X axis
+	int16_t y;			//!< Y axis
+	int16_t z;			//!< Z axis
 } ACCELSENSOR_DATA;
 
 typedef void (*ACCELINTCB)(ACCELSENSOR_DATA *pData);
 
+/// Accel configuration data
 typedef struct __AccelSensor_Config {
-	uint32_t		DevAddr;	// Either I2C dev address or CS index select if SPI is used
-	SENSOR_OPMODE 	OpMode;		// Operating mode
-	uint32_t		Freq;		// Sampling frequency in Hz if continuous mode is used
-	bool 			bInter;		// true - enable interrupt
-	int				IntPort;
-	int				IntPin;
+	uint32_t		DevAddr;	//!< Either I2C dev address or CS index select if SPI is used
+	SENSOR_OPMODE 	OpMode;		//!< Operating mode
+	uint16_t		Scale;		//!< Accel sensor scale in g force (2g, 4g, ...
+	uint32_t		Freq;		//!< Sampling frequency in Hz if continuous mode is used
+	bool 			bInter;		//!< true - enable interrupt
 	ACCELINTCB		IntHandler;
 } ACCELSENSOR_CFG;
 
 #pragma pack(pop)
 
-
+/// Accel. sensor base class
 class AccelSensor : virtual public Sensor {
 public:
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer) = 0;
 	virtual bool Read(ACCELSENSOR_DATA *pData) = 0;
-	virtual uint8_t Scale() { return vScale; }
-	virtual uint8_t Scale(uint8_t Value) { vScale = Value; return vScale; }
+	virtual uint16_t Scale() { return vScale; }
+	virtual uint16_t Scale(uint16_t Value) { vScale = Value; return vScale; }
 
 protected:
 	virtual bool UpdateData() = 0;
 
-	ACCELSENSOR_DATA vData;
+	ACCELSENSOR_DATA vData;		//!< Current sensor data
 
 private:
 	ACCELINTCB vIntHandler;
-	uint8_t vScale;
+	uint16_t vScale;			//!< Sensor data scale in g force (2g, 4g, ...)
 };
 
 #endif // __ACCEL_SENSOR_H__

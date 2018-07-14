@@ -73,6 +73,21 @@ bool nRF52SPIWaitDMA(NRF52_SPIDEV * const pDev, uint32_t Timeout)
 	return false;
 }
 
+bool nRF52SPIWaitRX(NRF52_SPIDEV * const pDev, uint32_t Timeout)
+{
+	uint32_t val = 0;
+
+	do {
+		if (pDev->pReg->EVENTS_ENDRX)
+		{
+			pDev->pReg->EVENTS_ENDRX = 0; // clear event
+			return true;
+		}
+	} while (Timeout-- > 0);
+
+	return false;
+}
+
 int nRF52SPIGetRate(DEVINTRF * const pDev)
 {
 	int rate = 0;
@@ -176,9 +191,10 @@ int nRF52SPIRxData(DEVINTRF * const pDev, uint8_t *pBuff, int BuffLen)
 		dev->pReg->TXD.MAXCNT = 0;
 		dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
 		dev->pReg->EVENTS_END = 0;
+		dev->pReg->EVENTS_ENDRX = 0;
 		dev->pReg->TASKS_START = 1;
 
-		if (nRF52SPIWaitDMA(dev, 100000) == false)
+		if (nRF52SPIWaitRX(dev, 100000) == false)
 			break;
 
         l = dev->pReg->RXD.AMOUNT;
@@ -230,6 +246,7 @@ int nRF52SPITxData(DEVINTRF * const pDev, uint8_t *pData, int DataLen)
 		dev->pReg->TXD.MAXCNT = l;
 		dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
 		dev->pReg->EVENTS_END = 0;
+		dev->pReg->EVENTS_ENDTX = 0;
 		dev->pReg->TASKS_START = 1;
 
 		if (nRF52SPIWaitDMA(dev, 100000) == false)

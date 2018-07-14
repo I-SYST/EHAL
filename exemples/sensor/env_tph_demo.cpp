@@ -45,6 +45,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
+#include <inttypes.h>
 
 #include "i2c.h"
 #include "spi.h"
@@ -58,8 +59,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "idelay.h"
 
 #include "bsec_interface.h"
-
-#define TPH_I2C		// To use I2C interface
 
 #define BME680		// To use Bosch BME680 with Air Quality Index
 #include "board.h"
@@ -113,13 +112,12 @@ const UARTCFG g_UartCfg = {
 
 UART g_Uart;
 
-#ifndef TPH_I2C
 //********** SPI **********
 static const IOPINCFG s_SpiPins[] = {
     {SPI_SCK_PORT, SPI_SCK_PIN, SPI_SCK_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
     {SPI_MISO_PORT, SPI_MISO_PIN, SPI_MISO_PINOP,
-     IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+     IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
     {SPI_MOSI_PORT, SPI_MOSI_PIN, SPI_MOSI_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
     {BMEx80_CS_PORT, BMEx80_CS_PIN, BMEx80_CS_PINOP,
@@ -143,7 +141,6 @@ static const SPICFG s_SpiCfg = {
 };
 
 SPI g_Spi;
-#endif
 
 //********** I2C **********
 static const I2CCFG s_I2cCfg = {
@@ -162,6 +159,8 @@ static const I2CCFG s_I2cCfg = {
 
 I2C g_I2c;
 
+//#define TPH_I2C		// To use I2C interface
+
 #ifdef	TPH_I2C
 DeviceIntrf *g_pIntrf = &g_I2c;
 #else
@@ -175,9 +174,9 @@ static const GASSENSOR_HEAT s_HeaterProfile[] = {
 
 static const GASSENSOR_CFG s_GasSensorCfg = {
 #ifdef	TPH_I2C
-	BME680_I2C_DEV_ADDR0,		// Device address
+	BME680_I2C_DEV_ADDR0,	// I2C Device address
 #else
-	0,
+	0,						// SPI CS index
 #endif
 	SENSOR_OPMODE_SINGLE,	// Operating mode
 	500,
@@ -188,12 +187,12 @@ static const GASSENSOR_CFG s_GasSensorCfg = {
 static const TPHSENSOR_CFG s_TphSensorCfg = {
 
 #ifdef	TPH_I2C
-	BME680_I2C_DEV_ADDR0,		// I2C Device address
+	BME680_I2C_DEV_ADDR0,	// I2C Device address
 #else
-	0,		// SPI CS index
+	0,						// SPI CS index
 #endif
 	SENSOR_OPMODE_SINGLE,	// Operating mode
-	1000,						// Sampling frequency in mHz
+	1000,					// Sampling frequency in mHz
 	2,
 	1,
 	1,
@@ -257,9 +256,13 @@ int main()
 
 	res = g_EnvSensor.Init(s_TphSensorCfg, g_pIntrf, &g_Timer);
 
+	if (res == false)
+	{
+		printf("Init error\r\n");
+	}
 
 #ifdef BME680
-	g_EnvSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
+	g_EnvSensor.Init(s_GasSensorCfg, g_pIntrf, &g_Timer);
 #endif
 
 	float lastiaq = -1;
@@ -276,16 +279,22 @@ int main()
 #ifdef BME680
 		g_EnvSensor.Read(gdata);
 
+#endif
+		printf("T=%" PRIu64 " : Temp : %.2f C, Press : %.3f KPa, Humi : %.2f %% ",
+				tphdata.Timestamp,
+				(float)tphdata.Temperature / 100.0,
+				(float)tphdata.Pressure / 1000.0,
+				(float)tphdata.Humidity / 100.0);
+
+#ifdef BME680
 		if (lastiaq != gdata.AirQualIdx)
 		{
 			lastiaq = gdata.AirQualIdx;
 		}
-		printf("Gas = %d %.2f, ", gdata.GasRes[gdata.MeasIdx], gdata.AirQualIdx);
+		printf("Gas = %d %.2f\r\n", gdata.GasRes[gdata.MeasIdx], gdata.AirQualIdx);
+#else
+		printf("\r\n");
 #endif
-		printf("Temp : %.2f C, Press : %.3f KPa, Humi : %.2f %%\r\n",
-				(float)tphdata.Temperature / 100.0,
-				(float)tphdata.Pressure / 1000.0,
-				(float)tphdata.Humidity / 100.0);
 
  	}
 
