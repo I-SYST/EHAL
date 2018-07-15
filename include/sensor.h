@@ -110,14 +110,14 @@ public:
 	 * @param	OpMode : Operating mode
 	 * 					- SENSOR_OPMODE_SINGLE
 	 * 					- SENSOR_OPMODE_CONTINUOUS
-	 * @param	Freq : Sampling frequency in Hz for continuous mode
+	 * @param	Freq : Sampling frequency in mHz (miliHertz) for continuous mode
 	 *
 	 * @return	true- if success
 	 */
 	virtual bool Mode(SENSOR_OPMODE OpMode, uint32_t Freq) {
 		vOpMode = OpMode;
 		vSampFreq = Freq;
-        vSampPeriod = 1000000000LL / vSampFreq;
+        vSampPeriod = 1000000000000LL / vSampFreq;
 
 		if (vpTimer && OpMode == SENSOR_OPMODE_CONTINUOUS)
 		{
@@ -139,7 +139,7 @@ public:
 	/**
 	 * @brief	Get sampling period.
 	 *
-	 * @return	Sampling period in usec
+	 * @return	Sampling period in nsec
 	 */
 	virtual uint64_t SamplingPeriod() { return vSampPeriod; }
 
@@ -160,7 +160,7 @@ public:
 	 */
 	virtual uint32_t SamplingFrequency(uint32_t Freq) {
 		vSampFreq = Freq;
-		vSampPeriod = 1000000000LL / vSampFreq;
+		vSampPeriod = 1000000000000LL / vSampFreq;
 
 		return vSampFreq;
 	}
