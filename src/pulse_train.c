@@ -49,7 +49,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 void PulseTrain(PULSE_TRAIN_CFG *pCfg, uint32_t Loop)
 {
-	IOPinCfg(pCfg->pPins, pCfg->NbPins);
+	// Configure pins as output and reset all pins to zero
+	for (int i = 0; i < pCfg->NbPins; i++ )
+	{
+		IOPinConfig(pCfg->pPins[i].PortNo, pCfg->pPins[i].PinNo, pCfg->pPins[i].PinOp,
+					IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
+		if (pCfg->Pol == PULSE_TRAIN_POL_HIGH)
+		{
+			IOPinClear(pCfg->pPins[i].PortNo, pCfg->pPins[i].PinNo);
+		}
+		else
+		{
+			IOPinSet(pCfg->pPins[i].PortNo, pCfg->pPins[i].PinNo);
+		}
+	}
 
 	do {
 		for (int i = 0; i < pCfg->NbPins; i++ )

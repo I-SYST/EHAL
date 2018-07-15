@@ -43,11 +43,25 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma pack(push, 4)
 
+/// Pulse train polarity
+typedef enum __Pulse_train_polarity {
+	PULSE_TRAIN_POL_LOW,		//!< Active low pulse
+	PULSE_TRAIN_POL_HIGH		//!< Active high pulse
+} PULSE_TRAIN_POL;
+
+/// Pulse train GPIO pin
+typedef struct __Pulse_train_pins {
+	int PortNo;					//!< GPIO port number
+	int PinNo;					//!< GPIO pin number
+	int PinOp;					//!< Pin GPIO mode select
+} PULSE_TRAIN_PIN;
+
 /// Pulse train configuration data
-typedef struct {
-	IOPINCFG *pPins;		//!< IO pins array to pulse
-	int NbPins;				//!< Total number of pins
-	uint32_t Period;		//!< Pulse period in usec
+typedef struct __Pulse_train_config {
+	PULSE_TRAIN_PIN *pPins;		//!< IO pins array to pulse
+	int NbPins;					//!< Total number of pins
+	uint32_t Period;			//!< Pulse period in usec
+	PULSE_TRAIN_POL Pol;		//!< Pulse train polarity
 } PULSE_TRAIN_CFG;
 
 #pragma pack(pop)
