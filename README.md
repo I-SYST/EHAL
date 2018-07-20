@@ -1,4 +1,4 @@
-![I-SYST inc.](https://www.i-syst.com/images/HeaderLogo.png) 
+![I-SYST inc.](I-SYST_Logo180.png) 
  
 ![nRF5x product line](https://www.i-syst.com/images/nRF5_Products_1024.png) 
  
@@ -35,7 +35,7 @@ KSDK      : Kinetis SDK
 
 [BSEC](https://www.bosch-sensortec.com/bst/products/all_products/bsec) : Bosch Sensortec Environmental Cluster (BSEC) Software for #BME680 environmental sensor  
 
-![IBK-BME680](docs/image/IBK-BME680_PinOut_640.png) 
+![IBK-BME680](https://www.i-syst.com/images/IBK-BME680_PinOut_640.png) 
  
 <p align="center"> 
   
