@@ -75,3 +75,47 @@ void I2CBusReset(I2CDEV * const pDev)
 
     pDev->DevIntrf.Enable(&pDev->DevIntrf);
 }
+
+/**
+ * @brief	Set I2C slave data for read command.
+ *
+ * This function sets internal pointer to the location of data to be returned to I2C master upon
+ * receiving read command.
+ *
+ * @param	pDev	: Pointer I2C driver data initialized be I2CInit function
+ * @param	SlaveIdx: Slave address index to assign the data buffer
+ * @param	pData	: Pointer to data buffer to send for read command
+ * @param	DataLen	: Total data length in bytes
+ *
+ * @return	None
+ */
+void I2CSetReadRqstData(I2CDEV * const pDev, int SlaveIdx, uint8_t * const pData, int DataLen) {
+	if (SlaveIdx < 0 || SlaveIdx >= I2C_SLAVEMODE_MAX_ADDR || pDev == NULL)
+		return;
+
+	pDev->pRRData[SlaveIdx] = pData;
+	pDev->RRDataLen[SlaveIdx] = DataLen;
+}
+
+/**
+ * @brief	Set I2C slave buff for write command.
+ *
+ * This function sets internal pointer to the location of buffer to data from I2C master upon
+ * receiving write command.
+ *
+ * @param	pDev	: Pointer I2C driver data initialized be I2CInit function
+ * @param	SlaveIdx: Slave address index to assign the data buffer
+ * @param	pBuff	: Pointer to data buffer to receive for write command
+ * @param	BuffLen	: Total data length in bytes
+ *
+ * @return	None
+ */
+void I2CSetWriteRqstBuffer(I2CDEV * const pDev, int SlaveIdx, uint8_t * const pBuff, int BuffLen)
+{
+	if (SlaveIdx < 0 || SlaveIdx >= I2C_SLAVEMODE_MAX_ADDR || pDev == NULL)
+		return;
+
+	pDev->pTRBuff[SlaveIdx] = pBuff;
+	pDev->TRBuffLen[SlaveIdx] = BuffLen;
+}
+

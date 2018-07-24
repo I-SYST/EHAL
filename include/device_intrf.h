@@ -86,12 +86,12 @@ typedef struct __device_intrf DEVINTRF;
  * 					  on DEVINTRF_EVT_STATECHG, pBuffer contains state data. This is implementation specific
  * 					  for example UART implementation would contains line state info.
  *
- * @param	BufferLen : Max buffer length.  See above description
+ * @param	Len 	: Max buffer length.  See above description
  *
  * @return	Number of bytes processed.  Implementation specific.\n
  * 			in case of FIFO_FULL events,  FIFO will be pushed out if return value is zero
  */
-typedef int (*DEVINTRF_EVTCB)(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer, int BufferLen);
+typedef int (*DEVINTRF_EVTCB)(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer, int Len);
 
 #pragma pack(push, 4)
 

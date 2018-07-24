@@ -87,25 +87,29 @@ typedef enum __I2C_Mode {
 } I2CMODE;
 
 
-#define I2C_MAX_RETRY		5
+#define I2C_SLAVEMODE_MAX_ADDR		4	//!< Max number of response addresses in slave mode
 
-#define I2C_MAX_NB_IOPIN	2	//!< Nuber of I/O pins needed by I2C
+#define I2C_MAX_RETRY				5	//!< Max number of retries
+
+#define I2C_MAX_NB_IOPIN			2	//!< Nuber of I/O pins needed by I2C
 
 /// I/O pin map index
-#define I2C_SDA_IOPIN_IDX	0	//!< SDA pin index
-#define I2C_SCL_IOPIN_IDX	1	//!< SCL pin index
+#define I2C_SDA_IOPIN_IDX			0	//!< SDA pin index
+#define I2C_SCL_IOPIN_IDX			1	//!< SCL pin index
 
 #pragma pack(push, 4)
 
 /// Configuration data used to initialize device
 typedef struct __I2C_Config {
-	int DevNo;			//!< I2C interface number
+	int DevNo;				//!< I2C interface number
 	IOPINCFG Pins[I2C_MAX_NB_IOPIN];	//!< Define I/O pins used by I2C
-	int Rate;			//!< Speed in Hz
-	I2CMODE Mode;		//!< Master/Slave mode
-	int SlaveAddr;		//!< I2C slave address used in slave mode only
-	int MaxRetry;		//!< Max number of retry
-	int	IntPrio;		//!< Interrupt priority.  Value is implementation specific
+	int Rate;				//!< Speed in Hz
+	I2CMODE Mode;			//!< Master/Slave mode
+	int NbSlaveAddr;		//!< Number of slave mode address configured
+	int SlaveAddr[I2C_SLAVEMODE_MAX_ADDR];	//!< I2C slave address used in slave mode only
+	int MaxRetry;			//!< Max number of retry
+	bool bIntEn;			//!< Interrupt enable
+	int	IntPrio;			//!< Interrupt priority.  Value is implementation specific
 	DEVINTRF_EVTCB EvtCB;	//!< Interrupt based event callback function pointer. Must be set to NULL if not used
 } I2CCFG;
 
@@ -113,14 +117,15 @@ typedef struct __I2C_Config {
 typedef struct {
 	I2CMODE Mode;			//!< Operating mode Master/Slave
 	int 	Rate;			//!< Speed in Hz
-	int 	SlaveAddr;		//!< I2C slave address used in slave mode only
+	int 	NbSlaveAddr;	//!< Number of slave mode address configured
+	int 	SlaveAddr[I2C_SLAVEMODE_MAX_ADDR];	//!< I2C slave address used in slave mode only
 	int 	MaxRetry;		//!< Max number of retry
 	DEVINTRF DevIntrf;		//!< I2C device interface implementation
-	IOPINCFG Pins[I2C_MAX_NB_IOPIN];	//!< Define I/O pins used by I2C
-//	int 	SclPort;
-//	int		SclPin;
-//	int		SdaPort;
-//	int		SdaPin;
+	IOPINCFG Pins[I2C_MAX_NB_IOPIN];			//!< Define I/O pins used by I2C
+	uint8_t *pRRData[I2C_SLAVEMODE_MAX_ADDR];	//!< Pointer to data buffer to return upon receiving read request
+	int RRDataLen[I2C_SLAVEMODE_MAX_ADDR];		//!< Read request data length in bytes
+	uint8_t *pTRBuff[I2C_SLAVEMODE_MAX_ADDR];	//!< Pointer to buffer to receive data upon receiving write request
+	int TRBuffLen[I2C_SLAVEMODE_MAX_ADDR];		//!< Write request buffer length in bytes
 } I2CDEV;
 
 #pragma pack(pop)
@@ -178,10 +183,40 @@ static inline int I2CTxData(I2CDEV * const pDev, uint8_t *pData, int Datalen) {
 }
 static inline void I2CStopTx(I2CDEV * const pDev) { DeviceIntrfStopTx(&pDev->DevIntrf); }
 
+/**
+ * @brief	Set I2C slave data for read command.
+ *
+ * This function sets internal pointer to the location of data to be returned to I2C master upon
+ * receiving read command.
+ *
+ * @param	pDev	: Pointer I2C driver data initialized be I2CInit function
+ * @param	SlaveIdx: Slave address index to assign the data buffer
+ * @param	pData	: Pointer to data buffer to send for read command
+ * @param	DataLen	: Total data length in bytes
+ *
+ * @return	None
+ */
+void I2CSetReadRqstData(I2CDEV * const pDev, int SlaveIdx, uint8_t * const pData, int DataLen);
+
+/**
+ * @brief	Set I2C slave buff for write command.
+ *
+ * This function sets internal pointer to the location of buffer to data from I2C master upon
+ * receiving write command.
+ *
+ * @param	pDev	: Pointer I2C driver data initialized be I2CInit function
+ * @param	SlaveIdx: Slave address index to assign the data buffer
+ * @param	pBuff	: Pointer to data buffer to receive for write command
+ * @param	BuffLen	: Total data length in bytes
+ *
+ * @return	None
+ */
+void I2CSetWriteRqstBuffer(I2CDEV * const pDev, int SlaveIdx, uint8_t * const pBuff, int BuffLen);
+
 #ifdef __cplusplus
 }
 
-/// Genereic I2C base class
+/// Generic I2C base class
 class I2C : public DeviceIntrf {
 public:
 	I2C() {
@@ -218,6 +253,38 @@ public:
 	}
 	virtual void StopTx(void) { DeviceIntrfStopTx(&vDevData.DevIntrf); }
 	
+	/**
+	 * @brief	Set I2C slave data for read command.
+	 *
+	 * This function sets internal pointer to the location of data to be returned to I2C master upon
+	 * receiving read command.
+	 *
+	 * @param	SlaveIdx: Slave address index to assign the data buffer
+	 * @param	pData	: Pointer to data buffer to send for read command
+	 * @param	DataLen	: Total data length in bytes
+	 *
+	 * @return	None
+	 */
+	virtual void SetReadRqstData(int SlaveIdx, uint8_t * const pData, int DataLen) {
+		I2CSetReadRqstData(&vDevData, SlaveIdx, pData, DataLen);
+	}
+
+	/**
+	 * @brief	Set I2C slave buff for write command.
+	 *
+	 * This function sets internal pointer to the location of buffer to data from I2C master upon
+	 * receiving write command.
+	 *
+	 * @param	SlaveIdx: Slave address index to assign the data buffer
+	 * @param	pBuff	: Pointer to data buffer to receive for write command
+	 * @param	BuffLen	: Total data length in bytes
+	 *
+	 * @return	None
+	 */
+	virtual void SetWriteRqstBuffer(int SlaveIdx, uint8_t * const pBuff, int BuffLen) {
+		I2CSetWriteRqstBuffer(&vDevData, SlaveIdx, pBuff, BuffLen);
+	}
+
 private:
 	I2CDEV vDevData;
 };

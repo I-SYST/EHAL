@@ -36,16 +36,25 @@ Modified by         Date            Description
 #include "i2c.h"
 #include "iopinctrl.h"
 #include "idelay.h"
+#include "i2c_spi_nrf52_irq.h"
 
 #define NRF52_I2C_MAXDEV        2
+#define NRF52_I2C_MAXSLAVE		2
+
 #define NRF52_I2C_DMA_MAXCNT    255
+
+#define NRF52_I2C_TRBUFF_SIZE	4
 
 #pragma pack(push, 4)
 typedef struct {
 	int DevNo;
 	I2CDEV *pI2cDev;
 	uint32_t Clk;
-	NRF_TWIM_Type *pReg;	// Register map
+	union {
+		NRF_TWIM_Type *pReg;	// Register map
+		NRF_TWIS_Type *pSReg;	// Register map
+	};
+	uint8_t TRData[NRF52_I2C_MAXSLAVE][NRF52_I2C_TRBUFF_SIZE];
 } NRF52_I2CDEV;
 #pragma pack(pop)
 
@@ -299,6 +308,80 @@ void nRF52I2CReset(DEVINTRF * const pDev)
     nRF52I2CEnable(pDev);
 }
 
+void I2CIrqHandler(int DevNo, DEVINTRF * const pDev)
+{
+    NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
+
+    if (dev->pI2cDev->Mode == I2CMODE_SLAVE)
+    {
+    	// Slave mode
+    	if (dev->pSReg->EVENTS_READ)
+    	{
+    		// Read command received
+
+    		if (pDev->EvtCB)
+    		{
+    			int len = dev->pSReg->EVENTS_RXSTARTED ? dev->pSReg->RXD.AMOUNT : 0;
+
+    			pDev->EvtCB(pDev, DEVINTRF_EVT_READ_RQST, NULL, len);
+    		}
+    		dev->pSReg->EVENTS_RXSTARTED = 0;
+    		dev->pSReg->EVENTS_READ = 0;
+    		dev->pSReg->TXD.PTR = (uint32_t)dev->pI2cDev->pRRData[dev->pSReg->MATCH];
+    		dev->pSReg->TXD.MAXCNT = dev->pI2cDev->RRDataLen[dev->pSReg->MATCH] & 0xFF;
+    		dev->pSReg->TASKS_PREPARETX = 1;
+    		dev->pSReg->TASKS_RESUME = 1;
+    	}
+
+    	if (dev->pSReg->EVENTS_WRITE)
+    	{
+    		// Write command received
+
+    		if (pDev->EvtCB)
+    		{
+    			pDev->EvtCB(pDev, DEVINTRF_EVT_WRITE_RQST, NULL, 0);
+    		}
+    		dev->pSReg->EVENTS_WRITE = 0;
+    		dev->pSReg->RXD.PTR = (uint32_t)dev->pI2cDev->pTRBuff[dev->pSReg->MATCH];
+    		dev->pSReg->RXD.MAXCNT = dev->pI2cDev->TRBuffLen[dev->pSReg->MATCH];
+    		dev->pSReg->SHORTS = 0;
+    		dev->pSReg->TASKS_PREPARERX = 1;
+    		dev->pSReg->TASKS_RESUME = 1;
+    	}
+
+    	if (dev->pSReg->EVENTS_STOPPED)
+    	{
+    		int len = 0;
+
+    		if (dev->pSReg->EVENTS_RXSTARTED)
+    		{
+    			len = dev->pSReg->RXD.AMOUNT;
+    			dev->pSReg->EVENTS_RXSTARTED = 0;
+    		}
+    		if (dev->pSReg->EVENTS_TXSTARTED)
+    		{
+    			len = dev->pSReg->TXD.AMOUNT;
+    			dev->pSReg->EVENTS_TXSTARTED = 0;
+    		}
+    		dev->pSReg->EVENTS_STOPPED = 0;
+    		if (pDev->EvtCB)
+    		{
+    			pDev->EvtCB(pDev, DEVINTRF_EVT_COMPLETED, NULL, len);
+    		}
+    	}
+    	if (dev->pSReg->EVENTS_ERROR)
+    	{
+    		dev->pSReg->EVENTS_ERROR = 0;
+    	}
+    }
+    else
+    {
+    	// Master mode
+    	// TODO: implement interrupt handling for master mode
+    }
+
+}
+
 bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 {
 	if (pDev == NULL || pCfgData == NULL)
@@ -326,7 +409,6 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 
     pDev->MaxRetry = pCfgData->MaxRetry;
     pDev->Mode = pCfgData->Mode;
-    pDev->SlaveAddr = pCfgData->SlaveAddr;
 
 	s_nRF52I2CDev[pCfgData->DevNo].pI2cDev  = pDev;
 	pDev->DevIntrf.pDevData = (void*)&s_nRF52I2CDev[pCfgData->DevNo];
@@ -369,7 +451,55 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
     reg->EVENTS_SUSPENDED = 0;
     reg->EVENTS_STOPPED = 0;
 
-	reg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
+    uint32_t enval = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
+    uint32_t inten = 0;
+
+    if (pCfgData->Mode == I2CMODE_SLAVE)
+    {
+    	NRF_TWIS_Type *sreg = s_nRF52I2CDev[pCfgData->DevNo].pSReg;
+        pDev->NbSlaveAddr = min(pCfgData->NbSlaveAddr, NRF52_I2C_MAXSLAVE);
+
+        sreg->CONFIG = 0;
+        sreg->ORC = 0xff;
+
+        for (int i = 0; i < pDev->NbSlaveAddr; i++)
+        {
+        	pDev->SlaveAddr[i] = pCfgData->SlaveAddr[i];
+        	sreg->ADDRESS[i] = (uint32_t)pCfgData->SlaveAddr[i];
+        	if (pDev->SlaveAddr[i] != 0)
+        	{
+        		sreg->CONFIG |= 1<<i;
+        	}
+        }
+
+		sreg->SHORTS = TWIS_SHORTS_READ_SUSPEND_Msk | TWIS_SHORTS_WRITE_SUSPEND_Msk;
+        sreg->EVENTS_READ = 0;
+        sreg->EVENTS_WRITE = 0;
+        enval = TWIS_ENABLE_ENABLE_Enabled << TWIS_ENABLE_ENABLE_Pos;
+        inten = (TWIS_INTEN_READ_Enabled << TWIS_INTEN_READ_Pos) | (TWIS_INTEN_WRITE_Enabled << TWIS_INTEN_WRITE_Pos) |
+        		(TWIS_INTEN_STOPPED_Enabled << TWIS_INTEN_STOPPED_Pos);
+    }
+
+    if (pCfgData->bIntEn)
+    {
+    	SetI2cSpiIntHandler(pCfgData->DevNo, &pDev->DevIntrf, I2CIrqHandler);
+
+    	if (pCfgData->DevNo == 0)
+    	{
+    		NVIC_ClearPendingIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
+    		NVIC_SetPriority(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn, pCfgData->IntPrio);
+    		NVIC_EnableIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
+    	}
+    	else
+    	{
+    		NVIC_ClearPendingIRQ(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn);
+    		NVIC_SetPriority(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn, pCfgData->IntPrio);
+    		NVIC_EnableIRQ(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn);
+    	}
+
+    	reg->INTEN = inten;
+    }
+	reg->ENABLE = enval;
 
 	return true;
 }
