@@ -1,4 +1,4 @@
-![I-SYST inc.](I-SYST_Logo180.png) 
+![I-SYST inc.](https://www.i-syst.com/images/I-SYST_Logo180.png) 
  
 ![nRF5x product line](https://www.i-syst.com/images/nRF5_Products_1024.png) 
  
@@ -33,7 +33,7 @@ external vendors' SDK and library required :
 
 KSDK      : Kinetis SDK
 
-[BSEC](https://www.bosch-sensortec.com/bst/products/all_products/bsec) : Bosch Sensortec Environmental Cluster (BSEC) Software for #BME680 environmental sensor  
+[BSEC]( https://www.bosch-sensortec.com/bst/products/all_products/bsec) : Bosch Sensortec Environmental Cluster (BSEC) Software for #BME680 environmental sensor.  BSEC is needed for calculating Air Quality Index.  Go to https://www.bosch-sensortec.com/bst/products/all_products/bsec at the end of the page.  Select checkbox to accept license terms to download.  Unzip the the downloaded file. Rename the extracted folder BSEC and copy the whole folder to external as indicated in the folder tree bellow.  
 
 ![IBK-BME680](https://www.i-syst.com/images/IBK-BME680_PinOut_640.png) 
  
