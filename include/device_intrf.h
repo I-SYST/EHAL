@@ -58,6 +58,9 @@ typedef enum {
                                 //!< if handler does not process FIFO (returns 0)
 	DEVINTRF_EVT_STATECHG,      //!< State changed. State data is device dependent.
                                 //!< To be interpreted by implementation
+    DEVINTRF_EVT_READ_RQST,     //!< Receive a read request from host
+	DEVINTRF_EVT_WRITE_RQST,	//!< Received a write request from host
+	DEVINTRF_EVT_COMPLETED,		//!< Transfer completed
 } DEVINTRF_EVT;
 
 /// @brief	Device Interface forward data structure type definition.
