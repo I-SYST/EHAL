@@ -151,8 +151,10 @@ static const I2CCFG s_I2cCfg = {
 	},
 	100000,	// Rate
 	I2CMODE_MASTER,
-	0,			// Slave address
+	0,			// Number of slave addresses
+	{0,},		// Slave addresses
 	5,			// Retry
+	false,		// Use interrupt
 	7,			// Interrupt prio
 	NULL		// Event callback
 };
