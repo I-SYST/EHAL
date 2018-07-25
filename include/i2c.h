@@ -91,7 +91,7 @@ typedef enum __I2C_Mode {
 
 #define I2C_MAX_RETRY				5	//!< Max number of retries
 
-#define I2C_MAX_NB_IOPIN			2	//!< Nuber of I/O pins needed by I2C
+#define I2C_MAX_NB_IOPIN			2	//!< Number of I/O pins needed by I2C
 
 /// I/O pin map index
 #define I2C_SDA_IOPIN_IDX			0	//!< SDA pin index
@@ -105,9 +105,9 @@ typedef struct __I2C_Config {
 	IOPINCFG Pins[I2C_MAX_NB_IOPIN];	//!< Define I/O pins used by I2C
 	int Rate;				//!< Speed in Hz
 	I2CMODE Mode;			//!< Master/Slave mode
-	int NbSlaveAddr;		//!< Number of slave mode address configured
-	int SlaveAddr[I2C_SLAVEMODE_MAX_ADDR];	//!< I2C slave address used in slave mode only
 	int MaxRetry;			//!< Max number of retry
+	int NbSlaveAddr;		//!< Number of slave mode address configured
+	uint8_t SlaveAddr[I2C_SLAVEMODE_MAX_ADDR];	//!< I2C slave address used in slave mode only
 	bool bIntEn;			//!< Interrupt enable
 	int	IntPrio;			//!< Interrupt priority.  Value is implementation specific
 	DEVINTRF_EVTCB EvtCB;	//!< Interrupt based event callback function pointer. Must be set to NULL if not used

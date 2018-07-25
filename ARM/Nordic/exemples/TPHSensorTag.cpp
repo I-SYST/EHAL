@@ -213,9 +213,9 @@ static const I2CCFG s_I2cCfg = {
 	},
 	100000,	// Rate
 	I2CMODE_MASTER,
+	5,			// Retry
 	0,			// Number of slave addresses
 	{0,},		// Slave addresses
-	5,			// Retry
 	false,		// Use interrupt
 	APP_IRQ_PRIORITY_LOW,			// Interrupt prio
 	NULL		// Event callback

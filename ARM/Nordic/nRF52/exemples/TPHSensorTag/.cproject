@@ -159,6 +159,7 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.paths.1019704943" name="Library search path (-L)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/BSEC/algo/bin/Lite_version/gcc/Cortex_M4&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/BSEC/algo/bin/gcc/Cortex_M4&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/Debug&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../EHAL/Debug&quot;"/>
 								</option>
@@ -355,6 +356,7 @@
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.paths.1487705801" name="Library search path (-L)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.paths" useByScannerDiscovery="false" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/BSEC/algo/bin/Lite_version/gcc/Cortex_M4&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/BSEC/algo/bin/gcc/Cortex_M4&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/Release&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../EHAL/Release&quot;"/>
 								</option>
