@@ -143,6 +143,7 @@ int I2CSlaveIntrfHandler(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t *pBu
 			g_I2CSlave.SetReadRqstData(0, &s_ReadRqstData[s_Offset], 10);
 
 			break;
+
 		case DEVINTRF_EVT_WRITE_RQST:
 			s_bWriteRqst = true;
 			break;
@@ -161,6 +162,7 @@ int I2CSlaveIntrfHandler(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t *pBu
 				}
 			}
 			s_bWriteRqst = false;
+			break;
 	}
 }
 

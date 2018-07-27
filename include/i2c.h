@@ -5,7 +5,9 @@
 
 Current implementation
  	 - Master mode
+ 	 - Slave mode
  	 - Polling
+ 	 - Interrupt
 
 
 @author	Hoang Nguyen Hoan
@@ -88,6 +90,7 @@ typedef enum __I2C_Mode {
 
 
 #define I2C_SLAVEMODE_MAX_ADDR		4	//!< Max number of response addresses in slave mode
+	 									//!< the real implementation may support less depending on hardware
 
 #define I2C_MAX_RETRY				5	//!< Max number of retries
 

@@ -35,13 +35,19 @@ Modified by         Date            Description
 
 #include "spi_nrf52.h"
 #include "iopinctrl.h"
+#include "i2c_spi_nrf52_irq.h"
 
+#pragma pack(push, 4)
 typedef struct {
 	int DevNo;
 	SPIDEV *pSpiDev;
 	uint32_t Clk;
-	NRF_SPIM_Type *pReg;	// Register map
+	union {
+		NRF_SPIM_Type *pReg;	// Master register map
+		NRF_SPIS_Type *pSReg;	// Slave register map
+	};
 } NRF52_SPIDEV;
+#pragma pack(pop)
 
 #define NRF52_SPI_MAXDEV		3
 #define NRF52_SPI_DMA_MAXCNT	255
@@ -149,14 +155,28 @@ void nRF52SPIDisable(DEVINTRF * const pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
-	dev->pReg->ENABLE = (SPIM_ENABLE_ENABLE_Disabled << SPIM_ENABLE_ENABLE_Pos);
+	if (dev->pSpiDev->Cfg.Mode == SPIMODE_SLAVE)
+	{
+		dev->pReg->ENABLE = (SPIS_ENABLE_ENABLE_Disabled << SPIS_ENABLE_ENABLE_Pos);
+	}
+	else
+	{
+		dev->pReg->ENABLE = (SPIM_ENABLE_ENABLE_Disabled << SPIM_ENABLE_ENABLE_Pos);
+	}
 }
 
 void nRF52SPIEnable(DEVINTRF * const pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
-	dev->pReg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
+	if (dev->pSpiDev->Cfg.Mode == SPIMODE_SLAVE)
+	{
+		dev->pReg->ENABLE = (SPIS_ENABLE_ENABLE_Enabled << SPIS_ENABLE_ENABLE_Pos);
+	}
+	else
+	{
+		dev->pReg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
+	}
 }
 
 // Initial receive
@@ -272,6 +292,50 @@ void nRF52SPIStopTx(DEVINTRF * const pDev)
 			   dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PinNo);
 }
 
+void SPIIrqHandler(int DevNo, DEVINTRF * const pDev)
+{
+	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
+
+	if (dev->pSpiDev->Cfg.Mode == SPIMODE_SLAVE)
+	{
+		if (dev->pSReg->EVENTS_ENDRX)
+		{
+			if (dev->pSpiDev->Cfg.EvtCB)
+			{
+				dev->pSpiDev->Cfg.EvtCB(pDev, DEVINTRF_EVT_RX_FIFO_FULL, NULL, 0);
+			}
+			dev->pSReg->EVENTS_ENDRX = 0;
+			dev->pSReg->STATUS = dev->pSReg->STATUS;
+		}
+
+		if (dev->pSReg->EVENTS_END)
+		{
+			if (dev->pSpiDev->Cfg.EvtCB)
+			{
+				dev->pSpiDev->Cfg.EvtCB(pDev, DEVINTRF_EVT_COMPLETED, (uint8_t*)dev->pSReg->RXD.PTR, dev->pSReg->RXD.AMOUNT);
+			}
+			dev->pSReg->EVENTS_END = 0;
+		}
+
+		if (dev->pSReg->EVENTS_ACQUIRED)
+		{
+			if (dev->pSpiDev->Cfg.EvtCB)
+			{
+				dev->pSpiDev->Cfg.EvtCB(pDev, DEVINTRF_EVT_STATECHG, NULL, 0);
+			}
+			dev->pSReg->STATUS = dev->pSReg->STATUS;
+
+			dev->pSReg->RXD.PTR = (uint32_t)dev->pSpiDev->pRxBuff[0];
+			dev->pSReg->RXD.MAXCNT = dev->pSpiDev->RxBuffLen[0];
+			dev->pSReg->TXD.PTR = (uint32_t)dev->pSpiDev->pTxData[0];
+			dev->pSReg->TXD.MAXCNT = dev->pSpiDev->TxDataLen[0];
+
+			dev->pSReg->EVENTS_ACQUIRED = 0;
+			dev->pSReg->TASKS_RELEASE = 1;
+		}
+	}
+}
+
 bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 {
 	NRF_SPIM_Type *reg;
@@ -287,12 +351,10 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	// Configure I/O pins
 	IOPinCfg(pCfgData->pIOPinMap, pCfgData->NbIOPins);
 
-	reg->PSEL.SCK = pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo;
-	reg->PSEL.MISO = pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo;
-	reg->PSEL.MOSI = pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PinNo;
-
 	for (int i = SPI_SS_IOPIN_IDX; i < pCfgData->NbIOPins; i++)
+	{
 		IOPinSet(pCfgData->pIOPinMap[i].PortNo, pCfgData->pIOPinMap[i].PinNo);
+	}
 
 	if (pCfgData->BitOrder == SPIDATABIT_LSB)
 	{
@@ -311,8 +373,6 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	{
 		cfgreg |= (SPIM_CONFIG_CPHA_Leading    << SPIM_CONFIG_CPHA_Pos);
 	}
-
-	//config.irq_priority = APP_IRQ_PRIORITY_LOW;
 
 	if (pCfgData->ClkPol == SPICLKPOL_LOW)
 	{
@@ -351,7 +411,57 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	pDev->DevIntrf.EnCnt = 1;
 	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
 
-	reg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
+	uint32_t inten = 0;
+
+    if (pCfgData->Mode == SPIMODE_SLAVE)
+	{
+		NRF_SPIS_Type *sreg = s_nRF52SPIDev[pCfgData->DevNo].pSReg;
+
+		sreg->PSEL.SCK = pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo;
+		sreg->PSEL.MISO = pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo;
+		sreg->PSEL.MOSI = pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PinNo;
+		sreg->PSEL.CSN = pCfgData->pIOPinMap[SPI_SS_IOPIN_IDX].PinNo;
+
+		sreg->STATUS = sreg->STATUS;
+		sreg->EVENTS_ENDRX = 0;
+		sreg->EVENTS_END = 0;
+		sreg->EVENTS_ACQUIRED = 0;
+		sreg->DEF = 0xFF;
+		sreg->SHORTS = (SPIS_SHORTS_END_ACQUIRE_Enabled << SPIS_SHORTS_END_ACQUIRE_Pos);
+
+		inten = (SPIS_INTENSET_ACQUIRED_Enabled << SPIS_INTENSET_ACQUIRED_Pos) |
+				(SPIS_INTENSET_ENDRX_Enabled << SPIS_INTENSET_ENDRX_Pos) |
+				(SPIS_INTENSET_END_Enabled << SPIS_INTENSET_END_Pos);
+		reg->ENABLE =  (SPIS_ENABLE_ENABLE_Enabled << SPIS_ENABLE_ENABLE_Pos);
+		sreg->TASKS_ACQUIRE = 1;	// Active event to update rx/tx buffer
+	}
+	else
+	{
+		reg->PSEL.SCK = pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo;
+		reg->PSEL.MISO = pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo;
+		reg->PSEL.MOSI = pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PinNo;
+    	reg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
+	}
+
+    if (pCfgData->bIntEn)
+    {
+    	SetI2cSpiIntHandler(pCfgData->DevNo, &pDev->DevIntrf, SPIIrqHandler);
+
+    	if (pCfgData->DevNo == 0)
+    	{
+    		NVIC_ClearPendingIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
+    		NVIC_SetPriority(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn, pCfgData->IntPrio);
+    		NVIC_EnableIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
+    	}
+    	else
+    	{
+    		NVIC_ClearPendingIRQ(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn);
+    		NVIC_SetPriority(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn, pCfgData->IntPrio);
+    		NVIC_EnableIRQ(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn);
+    	}
+
+    	reg->INTENSET = inten;
+    }
 
 	return true;
 }

@@ -142,11 +142,19 @@ void nRF52I2CDisable(DEVINTRF * const pDev)
 
 	dev->pReg->ENABLE = (TWIM_ENABLE_ENABLE_Disabled << TWIM_ENABLE_ENABLE_Pos);
 }
+
 void nRF52I2CEnable(DEVINTRF * const pDev)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
-	dev->pReg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
+	if (dev->pI2cDev->Mode == I2CMODE_SLAVE)
+	{
+		dev->pReg->ENABLE = (TWIS_ENABLE_ENABLE_Enabled << TWIS_ENABLE_ENABLE_Pos);
+	}
+	else
+	{
+		dev->pReg->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
+	}
 }
 
 int nRF52I2CGetRate(DEVINTRF * const pDev)

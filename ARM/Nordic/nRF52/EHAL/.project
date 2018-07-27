@@ -456,6 +456,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/spi.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/spi.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/stddev.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/stddev.c</locationURI>

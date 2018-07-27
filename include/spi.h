@@ -85,7 +85,13 @@ typedef enum __SPI_Chip_Select {
 } SPICSEL;
 
 #define SPI_MAX_RETRY			5
+
+#define SPI_SLAVEMODE_MAX_DEV	4	//!< Max number of device (CS) supported in slave mode
+ 	 	 	 	 	 	 	 	 	//!< the real implementation may support less depending on hardware
+
 #define SPI_MAX_NB_IOPIN		4
+
+/// SPI pins indexes
 #define SPI_SCK_IOPIN_IDX		0
 #define SPI_MISO_IOPIN_IDX		1
 #define SPI_MOSI_IOPIN_IDX		2
@@ -107,17 +113,22 @@ typedef struct __SPI_Config {
 	SPIDATAPHASE DataPhase;	//!< Data Out Phase.
 	SPICLKPOL ClkPol;		//!< Clock Out Polarity.
 	SPICSEL ChipSel;		//!< Chip select mode
+	bool bIntEn;			//!< Interrupt enable
 	int IntPrio;			//!< Interrupt priority
 	DEVINTRF_EVTCB EvtCB;	//!< Event callback
 } SPICFG;
 
-// Device driver data require by low level fonctions
+// Device driver data require by low level functions
 typedef struct {
-	SPICFG 		Cfg;		//!< Config data
-	DEVINTRF	DevIntrf;	//!< device interface implementation
-	int			FirstRdData;//!< This is to keep the first dummy read data of SPI
+	SPICFG Cfg;				//!< Config data
+	DEVINTRF DevIntrf;		//!< device interface implementation
+	int	FirstRdData;		//!< This is to keep the first dummy read data of SPI
 							//!< there are devices that may return a status code through this
-	int			CurDevCs;	//!< Current active device CS
+	int	CurDevCs;			//!< Current active device CS
+	uint8_t *pRxBuff[SPI_SLAVEMODE_MAX_DEV];//!< Pointer to slave mode rx buffer
+	int RxBuffLen[SPI_SLAVEMODE_MAX_DEV];	//!< Rx buffer length in bytes
+	uint8_t *pTxData[SPI_SLAVEMODE_MAX_DEV];//!< Pointer to slave mode tx data
+	int TxDataLen[SPI_SLAVEMODE_MAX_DEV];	//!< Tx data length in bytes
 } SPIDEV;
 
 #pragma pack(pop)
@@ -156,12 +167,41 @@ static inline int SPITxData(SPIDEV * const pDev, uint8_t *pData, int Datalen) {
 }
 static inline void SPIStopTx(SPIDEV * const pDev) { DeviceIntrfStopTx(&pDev->DevIntrf); }
 
+/**
+ * @brief	Set SPI slave data for read command.
+ *
+ * This function sets internal pointer to the location of data to be returned to I2C master upon
+ * receiving read command.
+ *
+ * @param	pDev	: Pointer SPI driver data initialized be SPIInit function
+ * @param	SlaveIdx: Slave address index to assign the buffer
+ * @param	pBuff	: Pointer to buffer to receive data from master
+ * @param	BuffLen	: Total buffer length in bytes
+ *
+ * @return	None
+ */
+void SPISetSlaveRxBuffer(SPIDEV * const pDev, int SlaveIdx, uint8_t * const pBuff, int BuffLen);
+
+/**
+ * @brief	Set I2C slave buff for write command.
+ *
+ * This function sets internal pointer to the location of buffer to data from I2C master upon
+ * receiving write command.
+ *
+ * @param	pDev	: Pointer I2C driver data initialized be I2CInit function
+ * @param	SlaveIdx: Slave address index to assign the data buffer
+ * @param	pData	: Pointer to data buffer to send to master
+ * @param	DataLen	: Total data length in bytes
+ *
+ * @return	None
+ */
+void SPISetSlaveTxData(SPIDEV * const pDev, int SlaveIdx, uint8_t * const pData, int DataLen);
+
 
 #ifdef __cplusplus
 }
 
-// C++ class wrapper
-
+/// C++ SPI class wrapper
 class SPI : public DeviceIntrf {
 public:
 	SPI() {
@@ -169,7 +209,6 @@ public:
 	}
 
 	virtual ~SPI() {
-//		Disable();
 	}
 
 	SPI(SPI&);	// Copy ctor not allowed
@@ -204,6 +243,38 @@ public:
 	}
 	virtual void StopTx(void) { DeviceIntrfStopTx(&vDevData.DevIntrf); }
 	int GetFirstRead(void) {return vDevData.FirstRdData;}
+
+	/**
+	 * @brief	Set SPI slave rx buffer to receive data from master.
+	 *
+	 * This function sets internal pointer to the location of data to be returned to I2C master upon
+	 * receiving read command.
+	 *
+	 * @param	SlaveIdx: Slave address index to assign the buffer
+	 * @param	pBuff	: Pointer to buffer to receive data from master
+	 * @param	BuffLen	: Total buffer length in bytes
+	 *
+	 * @return	None
+	 */
+	virtual void SetSlaveRxBuffer(int SlaveIdx, uint8_t * const pBuff, int BuffLen) {
+		SPISetSlaveRxBuffer(&vDevData, SlaveIdx, pBuff, BuffLen);
+	}
+
+	/**
+	 * @brief	Set I2C slave tx data buffer to se to master.
+	 *
+	 * This function sets internal pointer to the location of buffer to data from I2C master upon
+	 * receiving write command.
+	 *
+	 * @param	SlaveIdx: Slave address index to assign the data buffer
+	 * @param	pData	: Pointer to data buffer to send to master
+	 * @param	DataLen	: Total data length in bytes
+	 *
+	 * @return	None
+	 */
+	virtual void SetSlaveTxData(int SlaveIdx, uint8_t * const pData, int DataLen) {
+		SPISetSlaveTxData(&vDevData, SlaveIdx, pData, DataLen);
+	}
 
 private:
 	SPIDEV vDevData;
