@@ -44,9 +44,9 @@ Modified by          Date              Description
 #include "timer_nrf5x.h"
 #endif
 
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "iopinctrl.h"
-#include "uart.h"
+#include "coredev/uart.h"
 #include "board.h"
 #include "stddev.h"
 

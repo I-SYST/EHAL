@@ -60,7 +60,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/softdevice/s110/headers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS/Core/Include&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.669185201" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NRF51"/>
@@ -82,7 +82,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/softdevice/s110/headers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS_RTX/INC&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.defs.606912546" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
@@ -140,9 +140,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.156205435.1293738948" name="nrf_drv_common.c" rcbsApplicability="disable" resourcePath="src/drivers_nrf/common/nrf_drv_common.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1962733272.354776614">
-						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1962733272.354776614" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1962733272"/>
-					</fileInfo>
 					<sourceEntries>
 						<entry excluding="drivers_nrf/uart/app_uart.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
@@ -209,7 +206,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/softdevice/s110/headers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS/Core/Include&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1945800595" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NRF51"/>
@@ -231,7 +228,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../nrf51_sdk/components/softdevice/s110/headers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../CMSIS/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS/Core/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../CMSIS//CMSIS_RTX/INC&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.defs.1969986739" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">

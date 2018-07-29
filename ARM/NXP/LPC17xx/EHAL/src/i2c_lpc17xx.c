@@ -38,7 +38,7 @@ Modified by          Date              Description
 #include "system_LPC17xx.h"
 
 #include "i2c_lpcxx.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "iopinctrl.h"
 
 #define LPCI2C_MAX_INTRF			3			// Max number of I2C interface
@@ -305,7 +305,8 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 
 	pDev->Mode = pCfgData->Mode;
 	pDev->Rate = pCfgData->Rate;
-	pDev->SlaveAddr = pCfgData->SlaveAddr;
+	pDev->NbSlaveAddr = pCfgData->NbSlaveAddr;
+	memcpy(pDev->SlaveAddr, pCfgData->SlaveAddr, pDev->NbSlaveAddr * sizeof(uint8_t));
 //	pDev->MaxRetry = pCfgData->MaxRetry;
 
 	pDev->DevIntrf.pDevData = (void*)&g_LpcI2CDev[pCfgData->DevNo];

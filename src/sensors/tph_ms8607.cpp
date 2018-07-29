@@ -41,7 +41,7 @@ Modified by          Date              Description
 #endif
 
 #include "idelay.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "sensors/tph_ms8607.h"
 
 uint8_t crc4_PT(uint16_t *pData)

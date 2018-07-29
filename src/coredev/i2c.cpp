@@ -35,9 +35,9 @@ Modified by          Date              Description
 
 #include "istddef.h"
 #include "idelay.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "iopinctrl.h"
-#include "i2c.h"
+#include "coredev/i2c.h"
 
 void I2CBusReset(I2CDEV * const pDev)
 {

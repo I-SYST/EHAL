@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 #include "LPC11Uxx.h"
-#include "lpcuart.h"
+#include "uart_lpcxx.h"
 
 #define SYSAHBCLKCTRL_GPIO		(1UL << 6)	// Enables clock for GPIO port registers.
 #define SYSAHBCLKCTRL_USB		(1UL << 14)	// Enables clock to the USB register interface
@@ -19,18 +19,23 @@
 #define UART_TXD_PORT				0
 #define UART_TXD_PIN				19
 
+static const IOPINCFG s_UartPins[] = {
+	{UART_RXD_PORT, UART_RXD_PIN, 1, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
+	{UART_TXD_PORT, UART_TXD_PIN, 1, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
+	{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+	{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+//	{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+//	{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+//	{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+//	{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+};
+
+static const int s_NbUartPins = sizeof(s_UartPins) / sizeof(IOPINCFG);
+
 const UARTCFG g_UartCfg = {
 	0,
-	{
-		{UART_RXD_PORT, UART_RXD_PIN, 1, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-		{UART_TXD_PORT, UART_TXD_PIN, 1, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
-		{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-		{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-		{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-		{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-		{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-		{-1, -1, 0, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-	},
+	s_UartPins,
+	s_NbUartPins,
 	115200,
 	8,
 	UART_PARITY_NONE,
@@ -44,27 +49,6 @@ UART g_Uart;
 //UARTDEV *g_pUartDev = g_Uart;
 
 uint8_t bbb[100];
-
-extern "C" void UART_IRQHandler(void)
-{
-	uint32_t iir = LPC_USART->IIR;
-
-	if ((iir & LPCUART_IIR_STATUS) == 0)
-	{
-		switch (iir & LPCUART_IIR_ID_MASK)
-		{
-		case 6: // Line Status
-		{
-			uint32_t ls = LPC_USART->LSR;
-			if (ls & 1)
-				bbb[0] = LPC_USART->RBR;
-		}
-		case LPCUART_IIR_ID_RDA:
-			bbb[0] = LPC_USART->RBR;
-			break;
-		}
-	}
-}
 
 void HardwareInit()
 {

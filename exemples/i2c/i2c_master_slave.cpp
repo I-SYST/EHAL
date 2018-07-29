@@ -36,8 +36,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
 
-#include "i2c.h"
-#include "uart.h"
+#include "coredev/i2c.h"
+#include "coredev/uart.h"
 #include "stddev.h"
 #include "board.h"
 

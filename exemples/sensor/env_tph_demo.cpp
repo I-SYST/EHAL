@@ -47,9 +47,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------------*/
 #include <inttypes.h>
 
-#include "i2c.h"
-#include "spi.h"
-#include "uart.h"
+#include "coredev/i2c.h"
+#include "coredev/spi.h"
+#include "coredev/uart.h"
 #include "stddev.h"
 #include "timer_nrf5x.h"
 #include "sensors/tph_bme280.h"
@@ -120,7 +120,7 @@ static const IOPINCFG s_SpiPins[] = {
      IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
     {SPI_MOSI_PORT, SPI_MOSI_PIN, SPI_MOSI_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-    {BMEx80_CS_PORT, BMEx80_CS_PIN, BMEx80_CS_PINOP,
+    {BME280_CS_PORT, BME280_CS_PIN, BME280_CS_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
 };
 
@@ -136,8 +136,9 @@ static const SPICFG s_SpiCfg = {
     SPIDATAPHASE_SECOND_CLK, // Data phase
     SPICLKPOL_LOW,         // clock polarity
     SPICSEL_AUTO,
+	false,
     6, //APP_IRQ_PRIORITY_LOW,      // Interrupt priority
-    nullptr
+    NULL
 };
 
 SPI g_Spi;

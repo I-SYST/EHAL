@@ -19,10 +19,10 @@
 
 #include "istddef.h"
 #include "idelay.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "iopinctrl.h"
 #include "blueio_board.h"
-#include "uart.h"
+#include "coredev/uart.h"
 #include "board.h"
 #include "stddev.h"
 

@@ -39,7 +39,7 @@ Modified by          Date              Description
 
 #include "nrf_gpiote.h"
 
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 
 #define IOPIN_MAX_INT			(GPIOTE_CH_NUM)
 

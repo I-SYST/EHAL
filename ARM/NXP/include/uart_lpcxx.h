@@ -42,8 +42,8 @@ Modified by          Date              Description
 #include <stdbool.h>
 #endif
 
-#include "iopincfg.h"
-#include "uart.h"
+#include "coredev/iopincfg.h"
+#include "coredev/uart.h"
 
 // IER interrupt enable
 #define LPCUART_IER_RBR			1 		// RBR Interrupt enable

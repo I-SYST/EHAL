@@ -159,7 +159,8 @@ uint32_t SystemSetCoreClock(bool Crystal, int ClkFreq)
 	LPC_SYSCON->MAINCLKUEN    = 0x01;
 	while (!(LPC_SYSCON->MAINCLKUEN & 0x01));
 
-
+	if (Crystal == true)
+	{
 	// USB clock
 	LPC_SYSCON->PDRUNCFG     &= ~PDRUNCFG_USBPLL_PD;	// Power-up USB PLL
 	LPC_SYSCON->USBPLLCLKSEL  = USBPLLCLKSEL_SYSOSC;	// Select PLL Input
@@ -171,7 +172,7 @@ uint32_t SystemSetCoreClock(bool Crystal, int ClkFreq)
 	LPC_SYSCON->USBPLLCTRL    = pll;
 	while (!(LPC_SYSCON->USBPLLSTAT   & 0x01));     	// Wait Until PLL Locked
 	LPC_SYSCON->USBCLKSEL     = USBCLKSEL_PLLOUT;		// Select USB PLL
-
+	}
 	LPC_SYSCON->USBCLKDIV	= div;      				// Set USB clock divider
 	LPC_SYSCON->USBCLKUEN	= 0x00;               		// Toggle Update Register
 	LPC_SYSCON->USBCLKUEN	= 0x01;

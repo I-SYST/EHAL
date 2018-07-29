@@ -56,6 +56,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/convutil.h</locationURI>
 		</link>
 		<link>
+			<name>include/coredev</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>include/crc.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/crc.h</locationURI>
@@ -79,11 +84,6 @@
 			<name>include/fatfs.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/fatfs.h</locationURI>
-		</link>
-		<link>
-			<name>include/i2c.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/i2c.h</locationURI>
 		</link>
 		<link>
 			<name>include/i2c_lpcxx.h</name>
@@ -166,11 +166,6 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>include/spi.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/spi.h</locationURI>
-		</link>
-		<link>
 			<name>include/spi_lpcxx.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/spi_lpcxx.h</locationURI>
@@ -194,11 +189,6 @@
 			<name>include/sysstatusdef.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sysstatusdef.h</locationURI>
-		</link>
-		<link>
-			<name>include/uart.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/uart.h</locationURI>
 		</link>
 		<link>
 			<name>include/uart_lpcxx.h</name>
@@ -286,6 +276,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/coredev</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/crc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/crc.c</locationURI>
@@ -319,11 +314,6 @@
 			<name>src/fatfs_vdisk.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/fatfs_vdisk.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/i2c.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/i2c.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/i2c_lpcxx.c</name>
@@ -401,11 +391,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sysstatus_impl.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/uart.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/uart.c</locationURI>
-		</link>
-		<link>
 			<name>src/uart_lpcxx.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/uart_lpcxx.c</locationURI>
@@ -439,6 +424,31 @@
 			<name>include/converters/dac_device.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/converters/dac_device.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/i2c.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/i2c.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/iopincfg.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/iopincfg.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/spi.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/spi.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/timer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/timer.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/uart.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/uart.h</locationURI>
 		</link>
 		<link>
 			<name>include/miscdev/ledmx.h</name>
@@ -506,6 +516,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pth_sensor.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/sensor.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/tphg_bme680.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/tphg_bme680.h</locationURI>
@@ -549,6 +564,26 @@
 			<name>src/converters/adc_ltc2495.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/converters/adc_ltc2495.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/i2c.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/i2c.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/spi.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/spi.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/timer.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/timer.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/uart.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/uart.c</locationURI>
 		</link>
 		<link>
 			<name>src/miscdev/ledmx.c</name>

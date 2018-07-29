@@ -34,7 +34,7 @@ Modified by          Date              Description
 #include "ledmxio.h"
 
 #include "LPC17xx.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 //#include "delay.h"
 
 typedef struct {

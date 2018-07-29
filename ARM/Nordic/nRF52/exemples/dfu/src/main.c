@@ -61,7 +61,7 @@
 #include "app_timer.h"
 #include "nrf_delay.h"
 
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "iopinctrl.h"
 #include "blueio_board.h"
 

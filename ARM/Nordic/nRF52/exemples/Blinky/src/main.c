@@ -4,7 +4,7 @@
 
 #include "idelay.h"
 #include "blueio_board.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "iopinctrl.h"
 #include "pulse_train.h"
 

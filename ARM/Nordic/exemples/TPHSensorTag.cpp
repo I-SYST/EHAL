@@ -57,18 +57,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "bsec_interface.h"
 
 #include "blueio_board.h"
-#include "uart.h"
-#include "i2c.h"
-#include "spi.h"
+#include "coredev/uart.h"
+#include "coredev/i2c.h"
+#include "coredev/spi.h"
 #include "custom_board.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "app_util_platform.h"
 #include "app_scheduler.h"
 #include "tph_bme280.h"
 #include "tph_ms8607.h"
 #include "tphg_bme680.h"
 #include "timer_nrf5x.h"
-//#include "timer_nrf_app_timer.h"
+#ifdef NRF51
+#include "timer_nrf_app_timer.h"
+#endif
 #include "board.h"
 #include "idelay.h"
 

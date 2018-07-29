@@ -39,10 +39,10 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
-#include "iopincfg.h"
-#include "accel_sensor.h"
-#include "gyro_sensor.h"
-#include "mag_sensor.h"
+#include "coredev/iopincfg.h"
+#include "sensors/accel_sensor.h"
+#include "sensors/gyro_sensor.h"
+#include "sensors/mag_sensor.h"
 
 #define BMI160_CMD                  0x7E
 

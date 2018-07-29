@@ -37,8 +37,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdio.h>
 
-#include "iopincfg.h"
-#include "uart.h"
+#include "coredev/iopincfg.h"
+#include "coredev/uart.h"
 #include "prbs.h"
 
 // This include contain i/o definition the board in use

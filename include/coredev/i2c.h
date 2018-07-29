@@ -121,7 +121,7 @@ typedef struct {
 	I2CMODE Mode;			//!< Operating mode Master/Slave
 	int 	Rate;			//!< Speed in Hz
 	int 	NbSlaveAddr;	//!< Number of slave mode address configured
-	int 	SlaveAddr[I2C_SLAVEMODE_MAX_ADDR];	//!< I2C slave address used in slave mode only
+	uint8_t	SlaveAddr[I2C_SLAVEMODE_MAX_ADDR];	//!< I2C slave address used in slave mode only
 	int 	MaxRetry;		//!< Max number of retry
 	DEVINTRF DevIntrf;		//!< I2C device interface implementation
 	IOPINCFG Pins[I2C_MAX_NB_IOPIN];			//!< Define I/O pins used by I2C

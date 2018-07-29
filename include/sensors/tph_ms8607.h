@@ -53,8 +53,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 #endif
 
-#include "iopincfg.h"
-#include "tph_sensor.h"
+#include "coredev/iopincfg.h"
+#include "sensors/tph_sensor.h"
 
 /** @addtogroup Sensors
   * @{

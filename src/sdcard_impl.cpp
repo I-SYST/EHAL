@@ -34,7 +34,7 @@ Modified by          Date              Description
 #include <string.h>
 
 #include "istddef.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "sdcard.h"
 #include "crc.h"
 #include "atomic.h"

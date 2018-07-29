@@ -42,9 +42,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 #endif
 
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "device.h"
-#include "timer.h"
+#include "coredev/timer.h"
 
 /** @addtogroup Sensors
   * @{

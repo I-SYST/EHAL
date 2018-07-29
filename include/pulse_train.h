@@ -39,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __PULSE_TRAIN_H__
 #define __PULSE_TRAIN_H__
 
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 
 #pragma pack(push, 4)
 

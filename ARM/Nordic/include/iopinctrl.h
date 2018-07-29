@@ -41,7 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdint.h>
 #include "nrf.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 
 /**
  * @brief	Set gpio pin direction

@@ -44,7 +44,7 @@ Modified by          Date              Description
 #include <stdbool.h>
 #endif
 
-#include "i2c.h"
+#include "coredev/i2c.h"
 
 // Power connect
 #define LPC_PCONP_I2C0				(1 << 7)

@@ -42,8 +42,8 @@ Modified by          Date              Description
 #include <stdbool.h>
 #endif
 
-#include "iopincfg.h"
-#include "uart.h"
+#include "coredev/iopincfg.h"
+#include "coredev/uart.h"
 
 // Device driver data require by low level functions
 typedef struct _nRF_UART_Dev {

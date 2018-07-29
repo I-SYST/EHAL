@@ -40,7 +40,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "nrf.h"
 
-#include "timer.h"
+#include "coredev/timer.h"
 
 /// Low frequency timer using Real Time Counter (RTC) 32768 Hz clock source.
 ///

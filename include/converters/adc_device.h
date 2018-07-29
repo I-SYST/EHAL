@@ -40,7 +40,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "cfifo.h"
 #include "device.h"
 #include "device_intrf.h"
-#include "timer.h"
+#include "coredev/timer.h"
 
 /** @addtogroup Converters
   * @{

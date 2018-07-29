@@ -77,6 +77,7 @@ There are 2 main libraries in the EHAL for each ARM based MCU.
  |   |-- include     - Generic include common to all platform
  |   |   |-- bluetooth   - Generic definition for Bluetooth
  |   |   |-- converters  - Generic definition for ADV, DAC, etc...
+ |   |   |-- coredev     - Generic core processor builtin devices such as i2c, uart, spi, timer, etc...
  |   |   |-- miscdev     - Generic definition for other non categorized devices
  |   |   |-- sensors     - Generic definition for al sort of sensors (environmental, motion, etc...)
  |   |   |-- usb         - Generic definition for USB

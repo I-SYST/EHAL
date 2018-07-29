@@ -36,9 +36,8 @@ Modified by          Date              Description
 #include <stdint.h>
 #include <stdarg.h>
 
-//#include "istddef.h"
 #include "stddev.h"
-#include "uart.h"
+#include "coredev/uart.h"
 
 extern char s_Buffer[];	// defined in sbuffer.c
 extern int s_BufferSize;

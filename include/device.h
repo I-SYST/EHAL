@@ -46,7 +46,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "device_intrf.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 
 /// @brief	Defines interrupt pin polarity of the device.
 ///

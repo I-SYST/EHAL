@@ -69,9 +69,9 @@ Modified by          Date              Description
 //#include "nrf_log_default_backends.h"
 
 #include "istddef.h"
-#include "uart.h"
+#include "coredev/uart.h"
 #include "custom_board.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "iopinctrl.h"
 #include "ble_app.h"
 

@@ -36,8 +36,8 @@ Modified by          Date              Description
 #include <stdio.h>
 
 
-#include "iopincfg.h"
-#include "nrf5x_uart.h"
+#include "coredev/iopincfg.h"
+#include "uart_nrf5x.h"
 #include "idelay.h"
 
 #define TEST_INTERRUPT

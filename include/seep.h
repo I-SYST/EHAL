@@ -139,7 +139,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 
 #include "device_intrf.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 
 /** @addtogroup Storage
   * @{

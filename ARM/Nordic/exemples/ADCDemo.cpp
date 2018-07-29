@@ -34,13 +34,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------------*/
 
 #include "adc_nrf52_saadc.h"
-#include "uart.h"
+#include "coredev/uart.h"
 #include "stddev.h"
 
 // This include contain i/o definition the board in use
 #include "board.h"
 
-//#define ADC_DEMO_INTERRUPT_ENABLE
+#define ADC_DEMO_INTERRUPT_ENABLE
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 void ADVEventHandler(AdcDevice *pDevObj, ADC_EVT Evt);
@@ -50,10 +50,10 @@ void ADVEventHandler(AdcDevice *pDevObj, ADC_EVT Evt);
 uint8_t g_TxBuff[FIFOSIZE];
 
 static IOPINCFG s_UartPins[] = {
-	{UART_RX_PORT, UART_RX_PIN, UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-	{UART_TX_PORT, UART_TX_PIN, UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
+	{UART_RX_PORT, UART_RX_PIN, UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},		// RX
+	{UART_TX_PORT, UART_TX_PIN, UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},		// TX
 	{UART_CTS_PORT, UART_CTS_PIN, UART_CTS_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// CTS
-	{UART_RTS_PORT, UART_RTS_PIN, UART_RTS_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// RTS
+	{UART_RTS_PORT, UART_RTS_PIN, UART_RTS_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RTS
 };
 
 // UART configuration data
@@ -207,7 +207,7 @@ int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buffe
 
 void HardwareInit()
 {
-//	g_Uart.Init(s_UartCfg);
+	g_Uart.Init(s_UartCfg);
 //	UARTRetargetEnable(g_Uart, STDIN_FILENO);
 //	UARTRetargetEnable(g_Uart, STDOUT_FILENO);
 

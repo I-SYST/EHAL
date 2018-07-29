@@ -34,8 +34,8 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 
 #include "idelay.h"
-#include "i2c.h"
-#include "spi.h"
+#include "coredev/i2c.h"
+#include "coredev/spi.h"
 #include "sensors/agm_mpu9250.h"
 
 bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)

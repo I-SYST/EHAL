@@ -33,7 +33,7 @@ Modified by         Date            Description
 ----------------------------------------------------------------------------*/
 #include "nrf.h"
 
-#include "i2c.h"
+#include "coredev/i2c.h"
 #include "iopinctrl.h"
 #include "idelay.h"
 #include "i2c_spi_nrf52_irq.h"

@@ -43,9 +43,9 @@ Modified by          Date              Description
 #include "ble_intrf.h"
 #include "bluetooth/blesrvc_blueio.h"
 #include "blueio_board.h"
-#include "uart.h"
+#include "coredev/uart.h"
 #include "custom_board.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 
 #define DEVICE_NAME                     "UARTBridge"                            /**< Name of device. Will be included in the advertising data. */
 

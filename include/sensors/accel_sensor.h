@@ -40,8 +40,8 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
-#include "iopincfg.h"
-#include "sensor.h"
+#include "coredev/iopincfg.h"
+#include "sensors/sensor.h"
 
 #pragma pack(push, 1)
 

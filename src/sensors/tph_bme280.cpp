@@ -41,7 +41,7 @@ Modified by          Date              Description
 
 #include "idelay.h"
 #include "device_intrf.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "sensors/tph_bme280.h"
 
 //static BME280_CALIB_DATA s_Bme280CalibData;

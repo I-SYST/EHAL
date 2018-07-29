@@ -55,21 +55,31 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "bsec_interface.h"
 
+#include "mpl.h"
+
+//#include "fusion_9axis.h"
+
 #include "blueio_board.h"
-#include "uart.h"
-#include "i2c.h"
-#include "spi.h"
+#include "coredev/uart.h"
+#include "coredev/i2c.h"
+#include "coredev/spi.h"
 #include "custom_board.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "app_util_platform.h"
 #include "app_scheduler.h"
-#include "tph_bme280.h"
-#include "tph_ms8607.h"
-#include "tphg_bme680.h"
+#include "sensors/tph_bme280.h"
+#include "sensors/tph_ms8607.h"
+#include "sensors/tphg_bme680.h"
+#include "sensors/agm_mpu9250.h"
+#include "sensors/a_adxl362.h"
 #include "timer_nrf5x.h"
 #include "timer_nrf_app_timer.h"
 #include "board.h"
 #include "idelay.h"
+#include "seep.h"
+
+#include "BlueIOThingy.h"
+#include "BlueIOMPU9250.h"
 
 #define DEVICE_NAME                     "BlueIOThingy"                            /**< Name of device. Will be included in the advertising data. */
 
@@ -111,168 +121,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define APP_ADV_TIMEOUT_IN_SECONDS      0                                         /**< The advertising timeout (in units of seconds). */
 #endif
 
-/// Thingy custom service UUID
-#define THINGY_BASE_UUID    {{0x42, 0x00, 0x74, 0xA9, 0xFF, 0x52, 0x10, 0x9B, 0x33, 0x49, 0x35, 0x9B, 0x00, 0x00, 0x68, 0xEF}} //!< Used vendor specific UUID
 
-// TCS (Configuration service characteristics)
-
-#define BLE_UUID_TCS_SERVICE				0x0100                      /**< The UUID of the Thingy Configuration Service. */
-
-#define BLE_UUID_TCS_DEVICE_NAME_CHAR	0x0101                      /**< The UUID of the device name Characteristic. */
-#define BLE_UUID_TCS_ADV_PARAMS_CHAR		0x0102                      /**< The UUID of the advertising parameters Characteristic. */
-#define BLE_UUID_TCS_APPEARANCE_CHAR		0x0103                      /**< The UUID of the appearance Characteristic. */
-#define BLE_UUID_TCS_CONN_PARAM_CHAR		0x0104                      /**< The UUID of the connection parameters Characteristic. */
-#define BLE_UUID_TCS_BEACON_PARAM_CHAR	0x0105                      /**< The UUID of the beacon Characteristic. */
-#define BLE_UUID_TCS_CLOUD_PARAM_CHAR	0x0106                      /**< The UUID of the cloud token Characteristic. */
-#define BLE_UUID_TCS_FW_VERSION_CHAR		0x0107                      /**< The UUID of the FW version Characteristic. */
-#define BLE_UUID_TCS_MTU_CHAR			0x0108                      /**< The UUID of the MTU Characteristic. */
-
-#define THINGY_TCS_FW_VERSIO_CHAR_IDX   	0//5
-
-#define BLE_TCS_MAX_DATA_LEN (NRF_BLE_MAX_MTU_SIZE - 3) /**< Maximum length of data (in bytes) that can be transmitted to the peer by the Thingy Configuration service module. */
-
-#pragma pack(push, 1)
-typedef struct {
-    uint8_t major;
-    uint8_t minor;
-    uint8_t patch;
-} ble_tcs_fw_version_t;
-#pragma pack(pop)
-
-const ble_tcs_fw_version_t s_ThingyVersion {
-	 2, 1, 0
-};
-
-BLESRVC_CHAR g_ConfChars[] = {
-    {
-        // Version characteristic.  This is the minimum required for Thingy App to work
-		BLE_UUID_TCS_FW_VERSION_CHAR,
-        BLE_TCS_MAX_DATA_LEN,
-        BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_VARLEN,
-        NULL,    					// char UTF-8 description string
-        NULL,                       // Callback for write char, set to NULL for read char
-        NULL,                       // Callback on set notification
-        NULL,                       // Tx completed callback
-		(uint8_t*)&s_ThingyVersion,                       // pointer to char default values
-        3,                          // Default value length in bytes
-    },
-};
-
-/// Service definition
-const BLESRVC_CFG s_ConfSrvcCfg = {
-    BLESRVC_SECTYPE_NONE,       	// Secure or Open service/char
-    THINGY_BASE_UUID,           	// Base UUID
-    BLE_UUID_TCS_SERVICE,       	// Service UUID
-    sizeof(g_ConfChars) / sizeof(BLESRVC_CHAR),  // Total number of characteristics for the service
-    g_ConfChars,                 	// Pointer a an array of characteristic
-    NULL,                       	// pointer to user long write buffer
-    0,                           	// long write buffer size
-	NULL,							// Authentication event callback
-};
-
-/// TCS instance
-BLESRVC g_ConfSrvc;
-
-#define BLE_UUID_TES_SERVICE          	0x0200
-
-#define BLE_UUID_TES_TEMPERATURE_CHAR	0x0201                      /**< The UUID of the temperature Characteristic. */
-#define BLE_UUID_TES_PRESSURE_CHAR    	0x0202                      /**< The UUID of the pressure Characteristic. */
-#define BLE_UUID_TES_HUMIDITY_CHAR    	0x0203                      /**< The UUID of the humidity Characteristic. */
-#define BLE_UUID_TES_GAS_CHAR         	0x0204                      /**< The UUID of the gas Characteristic. */
-#define BLE_UUID_TES_COLOR_CHAR       	0x0205                      /**< The UUID of the gas Characteristic. */
-#define BLE_UUID_TES_CONFIG_CHAR      	0x0206                      /**< The UUID of the config Characteristic. */
-
-//#define THINGY_TES_CONFIGCHAR_IDX   0
-#define THINGY_TES_TEMPCHAR_IDX     0
-#define THINGY_TES_PRESCHAR_IDX     1
-#define THINGY_TES_HUMICHAR_IDX     2
-
-#define BLE_TES_MAX_DATA_LEN (NRF_BLE_MAX_MTU_SIZE - 3)       /**< Maximum length of data (in bytes) that can be transmitted to the peer by the Thingy Environment service module. */
-
-#pragma pack(push, 1)
-typedef struct {
-    int8_t  integer;
-    uint8_t decimal;
-} ble_tes_temperature_t;
-
-typedef struct {
-    int32_t  integer;
-    uint8_t  decimal;
-} ble_tes_pressure_t;
-
-typedef struct {
-    uint8_t  led_red;
-    uint8_t  led_green;
-    uint8_t  led_blue;
-} ble_tes_color_config_t;
-
-#pragma pack(pop)
-
-static const char s_EnvTempCharDescString[] = {
-        "Temperature characteristic",
-};
-
-static const char s_EnvPresCharDescString[] = {
-        "Pressure characteristic",
-};
-
-static const char s_EnvHumCharDescString[] = {
-        "Humidity characteristic",
-};
-
-/// Characteristic definitions
-BLESRVC_CHAR g_EnvChars[] = {
-    {
-        // Temperature characteristic
-        BLE_UUID_TES_TEMPERATURE_CHAR,
-        BLE_TES_MAX_DATA_LEN,
-        BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN,
-        s_EnvTempCharDescString,    // char UTF-8 description string
-        NULL,                       // Callback for write char, set to NULL for read char
-        NULL,                       // Callback on set notification
-        NULL,                       // Tx completed callback
-        NULL,                       // pointer to char default values
-        0,                          // Default value length in bytes
-    },
-    {
-        // Pressure characteristic
-        BLE_UUID_TES_PRESSURE_CHAR, // char UUID
-        BLE_TES_MAX_DATA_LEN,       // char max data length
-        BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN,
-        s_EnvPresCharDescString,    // char UTF-8 description string
-        NULL,                       // Callback for write char, set to NULL for read char
-        NULL,                       // Callback on set notification
-        NULL,                       // Tx completed callback
-        NULL,                       // pointer to char default values
-        0                           // Default value length in bytes
-    },
-    {
-        // Humidity characteristic
-        BLE_UUID_TES_HUMIDITY_CHAR, // char UUID
-        BLE_TES_MAX_DATA_LEN,       // char max data length
-        BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN,
-        s_EnvHumCharDescString,     // char UTF-8 description string
-        NULL,                       // Callback for write char, set to NULL for read char
-        NULL,                       // Callback on set notification
-        NULL,                       // Tx completed callback
-        NULL,                       // pointer to char default values
-        0                           // Default value length in bytes
-    },
-};
-
-/// Service definition
-const BLESRVC_CFG s_EnvSrvcCfg = {
-    BLESRVC_SECTYPE_NONE,       // Secure or Open service/char
-    THINGY_BASE_UUID,           // Base UUID
-    BLE_UUID_TES_SERVICE,       // Service UUID
-    sizeof(g_EnvChars) / sizeof(BLESRVC_CHAR),  // Total number of characteristics for the service
-    g_EnvChars,                 // Pointer a an array of characteristic
-    NULL,                       // pointer to user long write buffer
-    0,                          // long write buffer size
-	NULL
-};
-
-BLESRVC g_EnvSrvc;
 
 
 uint8_t g_AdvDataBuff[9] = {
@@ -346,40 +195,37 @@ const BLEAPP_CFG s_BleAppCfg = {
 	276,
 };
 
-// Motsai Neblina V2 module uses SPI interface
-#ifdef NEBLINA_MODULE
-static const IOPINCFG gsSpiBoschPin[] = {
-    {SPI_SCK_PORT, SPI_SCK_PIN, SPI_SCK_PINOP,
+static const IOPINCFG s_SpiPins[] = {
+    {SPI2_SCK_PORT, SPI2_SCK_PIN, SPI2_SCK_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-    {SPI_MISO_PORT, SPI_MISO_PIN, SPI_MISO_PINOP,
+    {SPI2_MISO_PORT, SPI2_MISO_PIN, SPI2_MISO_PINOP,
      IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-    {SPI_MOSI_PORT, SPI_MOSI_PIN, SPI_MOSI_PINOP,
+    {SPI2_MOSI_PORT, SPI2_MOSI_PIN, SPI2_MOSI_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-    {BME280_CS_PORT, BME280_CS_PIN, BME280_CS_PINOP,
-     IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
+    {BLUEIO_TAG_EVIM_IMU_CS_PORT, BLUEIO_TAG_EVIM_IMU_CS_PIN, BLUEIO_TAG_EVIM_IMU_CS_PINOP,
+     IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
 };
 
 static const SPICFG s_SpiCfg = {
-    SPI_DEVNO,
+    SPI2_DEVNO,
     SPIMODE_MASTER,
-    gsSpiBoschPin,
-    sizeof( gsSpiBoschPin ) / sizeof( IOPINCFG ),
-    8000000,   // Speed in Hz
+    s_SpiPins,
+    sizeof(s_SpiPins) / sizeof(IOPINCFG),
+    1000000,   // Speed in Hz
     8,      // Data Size
     5,      // Max retries
     SPIDATABIT_MSB,
     SPIDATAPHASE_SECOND_CLK, // Data phase
     SPICLKPOL_LOW,         // clock polarity
     SPICSEL_AUTO,
-    6, //APP_IRQ_PRIORITY_LOW,      // Interrupt priority
-    nullptr
+	false,
+    APP_IRQ_PRIORITY_LOW,      // Interrupt priority
+    NULL
 };
 
 SPI g_Spi;
 
-DeviceIntrf *g_pIntrf = &g_Spi;
-
-#else
+//DeviceIntrf *g_pIntrf = &g_Spi;
 
 // Configure I2C interface
 static const I2CCFG s_I2cCfg = {
@@ -395,19 +241,20 @@ static const I2CCFG s_I2cCfg = {
 		{0, 3, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
 #endif
 	},
-	100000,	// Rate
+	100000,		// Rate
 	I2CMODE_MASTER,
-	0,			// Slave address
 	5,			// Retry
-	7,			// Interrupt prio
+	0,			// Number of slave addresses
+	{0,},		// Slave addresses
+	false,		// use interrupt
+	APP_IRQ_PRIORITY_LOW,// Interrupt prio
 	NULL		// Event callback
 };
 
 // I2C interface instance
 I2C g_I2c;
 
-DeviceIntrf *g_pIntrf = &g_I2c;
-#endif
+//DeviceIntrf *g_pIntrf = &g_I2c;
 
 // Configure environmental sensor
 static TPHSENSOR_CFG s_TphSensorCfg = {
@@ -450,31 +297,28 @@ TphSensor &g_TphSensor = g_MS8607Sensor;
 
 GasSensor &g_GasSensor = g_Bme680Sensor;
 
-void EnvSrvcNotifTemp(float Temp)
-{
-    ble_tes_temperature_t t;
+static const ACCELSENSOR_CFG s_AccelCfg = {
+	.DevAddr = 0,	// SPI CS idx
+	.OpMode = SENSOR_OPMODE_SINGLE,
+	.Scale = 4,
+	.Freq = 6,
+//	.IntHandler = NULL,
+};
 
 
-    t.integer = (int)Temp;
-    t.decimal = (uint8_t)((Temp - (float)t.integer) * 100.0);
+//AgmMpu9250 g_AgmSensor;
+AccelAdxl362 g_AccelSensor;
 
-	BleSrvcCharNotify(&g_EnvSrvc, THINGY_TES_TEMPCHAR_IDX, (uint8_t*)&t, sizeof(t));
-}
+static const SEEP_CFG s_SeepCfg = {
+	.DevAddr = 0x50,
+	.AddrLen = 2,
+	.PageSize = 32,
+	.Size = 128 * 32,
+	.WrDelay = 5,
+	.WrProtPin = {-1, -1,},
+};
 
-void EnvSrvcNotifPressure(float Press)
-{
-    ble_tes_pressure_t b;
-
-    b.integer = (int)Press;
-    b.decimal = (uint8_t)((Press - (float)b.integer) * 100.0);
-
-	BleSrvcCharNotify(&g_EnvSrvc, THINGY_TES_PRESCHAR_IDX, (uint8_t*)&b, sizeof(b));
-}
-
-void EnvSrvcNotifHumi(uint8_t Humi)
-{
-	BleSrvcCharNotify(&g_EnvSrvc, THINGY_TES_HUMICHAR_IDX, &Humi, sizeof(Humi));
-}
+Seep g_Seep;
 
 void ReadPTHData()
 {
@@ -558,9 +402,9 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
     }
 #endif
 
-	BleSrvcEvtHandler(&g_ConfSrvc, p_ble_evt);
-    BleSrvcEvtHandler(&g_EnvSrvc, p_ble_evt);
-
+	BleSrvcEvtHandler(GetConfSrvcInstance(), p_ble_evt);
+    BleSrvcEvtHandler(GetEnvSrvcInstance(), p_ble_evt);
+    BleSrvcEvtHandler(GetImuSrvcInstance(), p_ble_evt);
 }
 
 /// Initialize all services needed for this firmware
@@ -568,8 +412,14 @@ void BleAppInitUserServices()
 {
     uint32_t res = 0;
 
-    res = BleSrvcInit(&g_ConfSrvc, &s_ConfSrvcCfg);
-    res = BleSrvcInit(&g_EnvSrvc, &s_EnvSrvcCfg);
+    res = ConfSrvcInit();
+    res = EnvSrvcInit();
+    res = ImuSrvcInit();
+}
+
+static void mpulib_data_handler_cb(void)
+{
+//    mpulib_data_handler(0, 0);
 }
 
 void HardwareInit()
@@ -579,14 +429,30 @@ void HardwareInit()
 
     g_Timer.Init(s_TimerCfg);
 
-	// Initialize I2C
-#ifdef NEBLINA_MODULE
     g_Spi.Init(s_SpiCfg);
-#else
     g_I2c.Init(s_I2cCfg);
-#endif
 
-	bsec_library_return_t bsec_status;
+    g_Seep.Init(s_SeepCfg, &g_I2c);
+
+    uint8_t d = 0xa5;
+    g_Seep.Write(0, &d, 1);
+
+    d = 0;
+    g_Seep.Read(0, &d, 1);
+
+    printf("%d\r\n", d);
+
+    uint8_t reg[2] = { 0xb, 0};
+    uint8_t val[2] = {0, };
+
+    g_Spi.Read(0, reg, 2, val, 2);
+
+    MPU9250Init(&g_Spi, &g_Timer);
+
+//    g_AgmSensor.Init(s_AccelCfg, &g_Spi);
+    g_AccelSensor.Init(s_AccelCfg, &g_Spi);
+
+    bsec_library_return_t bsec_status;
 
 	// NOTE : For BME680 air quality calculation, this library is require to be initialized
 	// before initializing the sensor driver.
@@ -600,11 +466,11 @@ void HardwareInit()
 	}
 
 	// Inititalize sensor
-    g_TphSensor.Init(s_TphSensorCfg, g_pIntrf, &g_Timer);
+    g_TphSensor.Init(s_TphSensorCfg, &g_I2c, &g_Timer);
 
     if (g_TphSensor.DeviceID() == BME680_ID)
     {
-    		g_GasSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
+    		g_GasSensor.Init(s_GasSensorCfg, &g_I2c, NULL);
     }
 
 	g_TphSensor.StartSampling();
@@ -633,6 +499,9 @@ void HardwareInit()
 	// Only with SDK14
 //	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS, AppTimerHandler);
 //#endif
+
+    //RETURN_IF_ERROR(err_code);
+
 }
 
 int main()
@@ -648,3 +517,7 @@ int main()
 	return 0;
 }
 
+extern "C" int _MLPrintLog (int priority, const char* tag, const char* fmt, ...)
+{
+
+}

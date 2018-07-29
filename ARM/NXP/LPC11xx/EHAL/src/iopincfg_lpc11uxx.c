@@ -35,7 +35,7 @@ Modified by          Date              Description
 #include <stdio.h>
 #include "LPC11Uxx.h"
 
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 
 // I/O Pin configuration bits definitions
 #define IOCON_PIN_FUNCTION			0

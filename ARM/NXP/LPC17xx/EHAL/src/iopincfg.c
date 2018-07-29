@@ -35,7 +35,7 @@ Modified by          Date              Description
 #include <stdio.h>
 #include "LPC17xx.h"
 
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 
 /*
  * Configure individual I/O pin

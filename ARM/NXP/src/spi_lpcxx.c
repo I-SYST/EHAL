@@ -33,7 +33,7 @@ Hoan				Feb. 20, 2015	New EHAL
 ----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <string.h>
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "spi_lpcxx.h"
 
 extern uint32_t SystemCoreClock;

@@ -38,10 +38,10 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
-#include "iopincfg.h"
-#include "accel_sensor.h"
-#include "gyro_sensor.h"
-#include "mag_sensor.h"
+#include "coredev/iopincfg.h"
+#include "sensors/accel_sensor.h"
+#include "sensors/gyro_sensor.h"
+#include "sensors/mag_sensor.h"
 
 #define MPU9250_I2C_DEV_ADDR0			0x68		// AD0 low
 #define MPU9250_I2C_DEV_ADDR1			0x69		// AD0 high

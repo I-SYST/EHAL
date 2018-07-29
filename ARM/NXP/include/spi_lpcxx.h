@@ -38,7 +38,7 @@ Hoan				Feb. 20, 2015	New EHAL
 #include <stdbool.h>
 #include <string.h>
 
-#include "spi.h"
+#include "coredev/spi.h"
 
 #define LPC_PCLKSEL1_SSP0_MASK	(3 << 10)	// On PCLKSEL1
 #define LPC_PCLKSEL1_SSP0_DIV1	(1 << 10)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Blinky</name>
+	<name>ESBptx</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -20,14 +20,8 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.cdt.core.cnature</nature>
+		<nature>org.eclipse.cdt.core.ccnature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src/gcc_nrf52_xxaa.ld</name>
-			<type>1</type>
-			<locationURI>WORKSPACE_LOC/src/gcc_nrf52_xxaa.ld</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
