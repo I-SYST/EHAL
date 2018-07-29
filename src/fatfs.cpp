@@ -206,6 +206,7 @@ bool FatFS::Find(char *const pPathName, DIR *pDir)
 	pDir->d_dirent.d_name[0] = '/';
 	pDir->d_dirent.d_name[1] = 0;
 	pDir->d_dirent.FirstClus = 2;
+	//pDir->d_dirent.EntrySect = vRootDirSect;
 	pDir->d_dirent.EntrySect = vRootDirSect;
 	pDir->d_dirent.EntryIdx = 0;
 	pDir->d_dirent.d_type = DT_DIR;
@@ -328,9 +329,10 @@ bool FatFS::Find(char *const pPathName, DIR *pDir)
 				pname = strtok(NULL, tok);
 				if (pname == NULL)
 				{
-					pDir->d_dirnamelen = strlen(path);
-					pDir->d_dirname = new char[pDir->d_dirnamelen + 1];//(char *)malloc(pDir->d_dirnamelen + 1);
-					strcpy(pDir->d_dirname, path);
+					//pDir->d_dirnamelen = strlen(path);
+				    pDir->d_dirent.d_namelen = strlen(path);
+					//pDir->d_dirname = new char[pDir->d_dirnamelen + 1];//(char *)malloc(pDir->d_dirnamelen + 1);
+					strcpy(pDir->d_dirent.d_name, path);
 					break;
 				}
 				sectno = ClusToSect(clus);
@@ -344,6 +346,13 @@ bool FatFS::Find(char *const pPathName, DIR *pDir)
 	}
 //printf("Found = %x\r\n", found);
 	return found;
+}
+
+bool FatFS::FindFreeCluster()
+{
+    bool retval = false;
+
+    return retval;
 }
 
 bool FatFS::FindFreeDirEntry()
@@ -376,6 +385,11 @@ bool FatFS::FindFreeDirEntry()
 
 		if (found)
 		{
+		    retval = FindFreeCluster();
+		    if (retval)
+		    {
+		        // Free cluster found
+		    }
 			break;
 		}
 		sectno++;
@@ -385,9 +399,11 @@ bool FatFS::FindFreeDirEntry()
 	return retval;
 }
 
-int FatFS::Create()
+int FatFS::Create(FATFS_FD * const pFd)
 {
 	int retval = -1;
+
+	FindFreeDirEntry();
 
 	return retval;
 }
@@ -455,13 +471,23 @@ int FatFS::Open(char * const pPathName, int Flags, int Mode)
 	}
 	else
 	{
+		//printf("File not found\r\n");
 		// File does not exist
 		if ((Flags & O_CREAT) == 0)
 		{
 			return -1;
 		}
 
-		Create();
+		if (Create(fatfd))
+		{
+	        fatfd->pFs = (void*)this;
+	        fatfd->CurClus = fatfd->DirEntry.d_dirent.FirstClus;
+	        fatfd->SectIdx = 0;
+	        fatfd->SectOff = 0;
+	        //uint32_t sectno = ClusToSect(fatfd->CurClus) + fatfd->SectIdx;
+	        //vDiskIO->SectRead(sectno, fatfd->SectData);
+	        fatfd->DirEntry.d_dirent.d_offset = 0;
+		}
 	}
 
 	return -1;
@@ -485,8 +511,8 @@ int FatFS::Close(int Fd)
 	fatdir.ShortName.FileSize = fatfd->DirEntry.d_dirent.d_size;
 	fatdir.ShortName.FstClusLO = fatfd->DirEntry.d_dirent.FirstClus & 0xFFFF;
 	fatdir.ShortName.FstClusHI = (fatfd->DirEntry.d_dirent.FirstClus >> 16L) & 0xFFFF;
-	delete fatfd->DirEntry.d_dirname;
-	fatfd->DirEntry.d_dirname = NULL;
+	//delete fatfd->DirEntry.d_dirname;
+	//fatfd->DirEntry.d_dirname = NULL;
 	//vDiskIO->SectWrite(fatfd->DirEntry.d_dirent.EntrySect, sect);
 	vDiskIO->Write(off, (uint8_t *)&fatdir, sizeof(FATFS_DIR));
 	fatfd->pFs = NULL;	// Close handle

@@ -4,8 +4,8 @@
 @brief	Generic device base class
 
 This is the base class to implement all sort devices, hardware or software.
-For example a sensor device or a software audio decoder.  The device can transfer
-data via it's DeviceIntrf object.
+For example a sensor device or a software audio/video decoder.
+The device can transfer data via it's DeviceIntrf object.
 
 @author	Hoang Nguyen Hoan
 @date	Feb. 12, 2017
@@ -48,9 +48,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "device_intrf.h"
 #include "iopincfg.h"
 
+/// @brief	Defines interrupt pin polarity of the device.
+///
+/// Many hardware devices can have interrupt pin polarity configurable.
+typedef enum __Dev_Interrupt_Polarity {
+	DEVINTR_POL_LOW,	//!< Interrupt pin active low
+	DEVINTR_POL_HIGH	//!< Interrupt pin active high
+} DEVINTR_POL;
+
 #ifdef __cplusplus
 
-/// @brief	Device base class
+/// @brief	Device base class.
 ///
 /// This is the base class to implement all sort devices, hardware or software.
 /// For example a sensor device or a software audio decoder.  The device can transfer
@@ -273,11 +281,11 @@ protected:
 	 */
 	DeviceIntrf *Interface() { return vpIntrf; }
 
-	bool		vbValid;			//!< Device is valid ready to use (passed detection)
-	uint32_t 	vDevAddr;		//!< Device address or chip select
+	bool		vbValid;		//!< Device is valid ready to use (passed detection)
+	uint32_t 	vDevAddr;		//!< Device address or chip select index
 	DeviceIntrf *vpIntrf;		//!< Device's interface
 	uint64_t	vDevId;			//!< This is implementation specific data for device identifier
-	 	 	 	 	 	 	 	//!< could be value reg from hardware register or serial number
+	 	 	 	 	 	 	 	//!< could be value read from hardware register or serial number
 };
 
 extern "C" {

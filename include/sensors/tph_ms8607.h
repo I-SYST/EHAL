@@ -146,7 +146,7 @@ public:
 	 * @param OpMode : Operating mode
 	 * 					- SENSOR_OPMODE_SINGLE
 	 * 					- SENSOR_OPMODE_CONTINUOUS
-	 * @param Freq : Sampling frequency in mHz for continuous mode
+	 * @param Freq : Sampling frequency in mHz (miliHertz) for continuous mode
 	 *
 	 * @return true- if success
 	 */

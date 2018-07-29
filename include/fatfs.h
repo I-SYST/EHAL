@@ -344,8 +344,9 @@ protected:
 	 * @return	Sector number
 	 */
 	uint32_t ClusToSect(uint32_t ClusNo);
-	int Create();
+	int Create(FATFS_FD * const pFd);
 	bool FindFreeDirEntry();
+	bool FindFreeCluster();
 
 private:
 	FATFS_TYPE 	vType;				//!< FAT type
@@ -356,7 +357,7 @@ private:
 	uint32_t 	vFATStartSect;		//!< FAT Table start sector
 	uint32_t 	vDataStartSect;		//!< Data start sector
 	uint32_t 	vRootDirSect;		//!< Root dir start sector
-	DIR			vCurDir;			//!< Current directory
+	//DIR			vCurDir;			//!< Current directory
 	DiskIO		*vDiskIO;
 	DISKPART 	vPartData;			//!< Partition data
 	FATFS_FD 	vOpenFiles[MAX_FILE];	//!< Keep list of open files

@@ -45,12 +45,13 @@ Modified by          Date              Description
 
 #pragma pack(push, 1)
 
-/// Accel sensor data
+/// Accelerometer sensor data in G
+/// Data format in 8 bits fixed point. i.e. g value in float = X / 256.0;
 typedef struct __AccelSensor_Data {
 	uint32_t Timestamp;	//!< Time stamp count in msec
-	int16_t x;			//!< X axis
-	int16_t y;			//!< Y axis
-	int16_t z;			//!< Z axis
+	int16_t X;			//!< X axis
+	int16_t Y;			//!< Y axis
+	int16_t Z;			//!< Z axis
 } ACCELSENSOR_DATA;
 
 typedef void (*ACCELINTCB)(ACCELSENSOR_DATA *pData);
@@ -59,9 +60,10 @@ typedef void (*ACCELINTCB)(ACCELSENSOR_DATA *pData);
 typedef struct __AccelSensor_Config {
 	uint32_t		DevAddr;	//!< Either I2C dev address or CS index select if SPI is used
 	SENSOR_OPMODE 	OpMode;		//!< Operating mode
-	uint16_t		Scale;		//!< Accel sensor scale in g force (2g, 4g, ...
-	uint32_t		Freq;		//!< Sampling frequency in Hz if continuous mode is used
+	uint16_t		Scale;		//!< Accelerometer sensor scale in g force (2g, 4g, ...
+	uint32_t		Freq;		//!< Sampling frequency in mHz (miliHertz) if continuous mode is used
 	bool 			bInter;		//!< true - enable interrupt
+	DEVINTR_POL		IntPol;		//!< interrupt polarity
 	ACCELINTCB		IntHandler;
 } ACCELSENSOR_CFG;
 
@@ -70,15 +72,57 @@ typedef struct __AccelSensor_Config {
 /// Accel. sensor base class
 class AccelSensor : virtual public Sensor {
 public:
+
+	/**
+	 * @brief	Sensor initialization
+	 *
+	 * @param 	Cfg		: Sensor configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer) = 0;
-	virtual bool Read(ACCELSENSOR_DATA *pData) = 0;
+
+	/**
+	 * @brief	Read last updated sensor data
+	 *
+	 * This function read the currently stored data last updated by UdateData().
+	 * Device implementation can add validation if needed and return true or false
+	 * in the case of data valid or not.  This default implementation only returns
+	 * the stored data with success.
+	 *
+	 * @param 	Data : Reference to data storage for the returned data
+	 *
+	 * @return	True - Success.
+	 */
+	virtual bool Read(ACCELSENSOR_DATA &Data) {
+		Data = vData;
+		return true;
+	}
+
+	/**
+	 * @brief	Get the current G scale value.
+	 *
+	 * @return	G scale value
+	 */
 	virtual uint16_t Scale() { return vScale; }
+
+	/**
+	 * @brief	Set the current G scale value.
+	 *
+	 * NOTE : Implementer must overload this function to add require hardware implement then call
+	 * this function to keep the scale value internally and return the real hardware scale value.
+	 *
+	 * @param 	Value : Wanted scale value
+	 *
+	 * @return	Real scale value
+	 */
 	virtual uint16_t Scale(uint16_t Value) { vScale = Value; return vScale; }
 
 protected:
-	virtual bool UpdateData() = 0;
 
-	ACCELSENSOR_DATA vData;		//!< Current sensor data
+	ACCELSENSOR_DATA vData;		//!< Current sensor data updated with UpdateData()
 
 private:
 	ACCELINTCB vIntHandler;

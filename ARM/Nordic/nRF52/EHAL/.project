@@ -176,11 +176,6 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>include/modem.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/modem.h</locationURI>
-		</link>
-		<link>
 			<name>include/prbs.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/prbs.h</locationURI>
@@ -401,11 +396,6 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/modem.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/modem.cpp</locationURI>
-		</link>
-		<link>
 			<name>src/nRF5_SDK</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -561,6 +551,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmxfont.h</locationURI>
 		</link>
 		<link>
+			<name>include/miscdev/modem.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/modem.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/a_adxl362.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/a_adxl362.h</locationURI>
@@ -699,6 +694,11 @@
 			<name>src/miscdev/ledmxfont.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmxfont.c</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/modem.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/modem.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble</name>

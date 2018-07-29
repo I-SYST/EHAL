@@ -73,12 +73,12 @@ typedef void (*TPHDataRdyCB)(TphSensor * const pSensor, TPHSENSOR_DATA *pData);
 ///
 typedef struct __TPHSensor_Config {
 	uint32_t		DevAddr;		//!< Either I2C dev address or CS index select if SPI is used
-	SENSOR_OPMODE 	OpMode;		//!< Operating mode
-	uint32_t		Freq;		//!< Sampling frequency in mHz (milliHerz) if continuous mode is used
-	int				TempOvrs;	//!< Oversampling measurement for temperature
-	int				PresOvrs;	//!< Oversampling measurement for pressure
+	SENSOR_OPMODE 	OpMode;			//!< Operating mode
+	uint32_t		Freq;			//!< Sampling frequency in mHz (milliHerz) if continuous mode is used
+	int				TempOvrs;		//!< Oversampling measurement for temperature
+	int				PresOvrs;		//!< Oversampling measurement for pressure
 	int 			HumOvrs;		//!< Oversampling measurement for humidity
-	uint32_t		FilterCoeff;//!< Filter coefficient select value (this value is device dependent)
+	uint32_t		FilterCoeff;	//!< Filter coefficient select value (this value is device dependent)
 	TPHDataRdyCB	DataRdyCB;		//!< Callback handler for data ready
 } TPHSENSOR_CFG;
 

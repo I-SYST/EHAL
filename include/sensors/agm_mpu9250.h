@@ -69,6 +69,12 @@ Modified by          Date              Description
 
 #define MPU9250_AG_GYRO_CONFIG_FCHOICE_MASK					(3)
 #define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_MASK				(3<<3)
+#define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_250DPS			(0<<5)
+#define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_500DPS			(1<<5)
+#define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_1000DPS			(2<<5)
+#define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_2000DPS			(3<<5)
+
+
 #define MPU9250_AG_GYRO_CONFIG_ZGYROCT_EN					(1<<5)
 #define MPU9250_AG_GYRO_CONFIG_YGYROCT_EN					(1<<6)
 #define MPU9250_AG_GYRO_CONFIG_XGYROCT_EN					(1<<7)
@@ -105,7 +111,7 @@ Modified by          Date              Description
 #define MPU9250_AG_FIFO_EN_GYRO_ZOUT						(1<<4)
 #define MPU9250_AG_FIFO_EN_GYRO_YOUT						(1<<5)
 #define MPU9250_AG_FIFO_EN_GYRO_XOUT						(1<<6)
-#define MPU9250_AG_FIFO_EN_TEMP_FIFO_EN						(1<<7)
+#define MPU9250_AG_FIFO_EN_TEMP_OUT							(1<<7)
 
 #define MPU9250_AG_I2C_MST_CTRL			0x24
 
@@ -118,7 +124,7 @@ Modified by          Date              Description
 #define MPU9250_AG_I2C_SLV0_ADDR		0x25
 
 #define MPU9250_AG_I2C_SLV0_ADDR_I2C_ID_MASK				(0x7F)
-#define MPU9250_AG_I2C_SLV0_ADDR_I2C_SLVO_RNW				(1<<7)
+#define MPU9250_AG_I2C_SLV0_ADDR_I2C_SLVO_RD				(1<<7)
 
 #define MPU9250_AG_I2C_SLV0_REG			0x26
 
@@ -285,6 +291,10 @@ Modified by          Date              Description
 #define MPU9250_AG_PWR_MGMT_1			0x6B
 
 #define MPU9250_AG_PWR_MGMT_1_CLKSEL_MASK					(7)
+#define MPU9250_AG_PWR_MGMT_1_CLKSEL_INTERNAL				(0)
+#define MPU9250_AG_PWR_MGMT_1_CLKSEL_AUTO					(1)
+#define MPU9250_AG_PWR_MGMT_1_CLKSEL_STOP					(7)
+
 #define MPU9250_AG_PWR_MGMT_1_PD_PTAT						(1<<3)
 #define MPU9250_AG_PWR_MGMT_1_GYRO_STANDBY					(1<<4)
 #define MPU9250_AG_PWR_MGMT_1_CYCLE							(1<<5)
@@ -316,7 +326,9 @@ Modified by          Date              Description
 #define MPU9250_AG_ZA_OFFSET_L			0x7E
 
 // Mag registers
-//
+// AK8963C
+#define MPU9250_MAG_I2C_DEVADDR			0xC
+
 #define MPU9250_MAG_WIA					0x00		// Mag device ID
 
 #define MPU9250_MAG_WIA_DEVICE_ID							(0x48)
@@ -343,6 +355,15 @@ Modified by          Date              Description
 #define MPU9250_MAG_CTRL1				0x0A
 
 #define MPU9250_MAG_CTRL1_MODE_MASK							(0xF)
+#define MPU9250_MAG_CTRL1_MODE_PWRDOWN						(0)
+#define MPU9250_MAG_CTRL1_MODE_SINGLE						(1)
+#define MPU9250_MAG_CTRL1_MODE_8HZ							(2)
+#define MPU9250_MAG_CTRL1_MODE_100HZ						(6)
+#define MPU9250_MAG_CTRL1_MODE_EXT_TRIG						(4)
+#define MPU9250_MAG_CTRL1_MODE_SELFTEST						(8)
+#define MPU9250_MAG_CTRL1_MODE_FUSEROM_ACCESS				(0xF)
+#define MPU9250_MAG_CTRL1_BIT_16							(1<<4)
+
 
 #define MPU9250_MAG_CTRL2				0x0B
 
@@ -361,6 +382,7 @@ Modified by          Date              Description
 #define MPU9250_MAG_ASAY				0x11
 #define MPU9250_MAG_ASAZ				0x12
 
+#define MPU9250_MAG_MAX_FLUX_DENSITY	4912
 
 #pragma pack(push, 1)
 
@@ -368,19 +390,64 @@ Modified by          Date              Description
 
 class AgmMpu9250 : public AccelSensor, public GyroSensor, public MagSensor {
 public:
+	/**
+	 * @brief	Initialize accelerometer sensor.
+	 *
+	 * NOTE: This sensor must be the first to be initialized.
+	 *
+	 * @param 	Cfg		: Accelerometer configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
-	virtual bool Init(const GYROSENSOR_CFG&, DeviceIntrf* const , Timer * const pTimer = NULL);
-	virtual bool Init(const MAGSENSOR_CFG&, DeviceIntrf* const , Timer * const pTimer = NULL);
-	virtual bool WakeOnEvent(bool bEnable, int Threshold);
-//	virtual bool WakeOnMotion(bool bEnable, uint8_t Threshold);
+
+	/**
+	 * @brief	Initialize gyroscope sensor.
+	 *
+	 * NOTE : Accelerometer must be initialized first prior to this one.
+	 *
+	 * @param 	Cfg		: Accelerometer configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
+	virtual bool Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL);
+
+	/**
+	 * @brief	Initialize magnetometer sensor.
+	 *
+	 * NOTE : Accelerometer must be initialized first prior to this one.
+	 *
+	 * @param 	Cfg		: Accelerometer configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
+	virtual bool Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL);
+
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
+
+	/**
+	 * @brief	Enable/Disable wake on motion event
+	 *
+	 * @param bEnable
+	 * @param Threshold
+	 * @return
+	 */
+	virtual bool WakeOnEvent(bool bEnable, int Threshold);
+
 	virtual bool StartSampling();
-	virtual uint8_t Scale(uint8_t Value);
-	virtual bool Read(ACCELSENSOR_DATA *pData);
-	virtual bool Read(GYROSENSOR_DATA*);
-	virtual bool Read(MAGSENSOR_DATA*);
+	virtual uint16_t Scale(uint16_t Value);	// Accel
+	virtual uint32_t Scale(uint32_t Value);	// Gyro
+	virtual bool Read(ACCELSENSOR_DATA &Data);
+	virtual bool Read(GYROSENSOR_DATA &Data);
+	virtual bool Read(MAGSENSOR_DATA &Data);
 	/**
 	 * @brief	Set sampling frequency.
 	 * 		The sampling frequency is relevant only in continuous mode.
@@ -389,14 +456,21 @@ public:
 	 */
 	 uint32_t SamplingFrequency(uint32_t FreqHz);
 
-private:
-	bool InitDefault(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer);
-	bool UpdateData();
 	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
+	int Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
+	int Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
+	bool UpdateData();
+	virtual void IntHandler();
+
+private:
+	// Default base initialization. Deos detection and set default config for all sensor.
+	// All sensor init must call this first prio to initializing itself
+	bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer);
 
 	bool vbSpi;
 	bool vbInitialized;
+	uint8_t vMagCtrl1Val;
 };
 
 #endif // __AGM_MPU9250_H__

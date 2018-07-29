@@ -63,6 +63,8 @@ bool AccelAdxl362::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, 
 
 	Reset();
 
+	DeviceID(id);
+
 	uint32_t freq = 0;
 
 	cmd[0] = ADXL362_CMD_WRITE;
@@ -181,14 +183,9 @@ uint16_t AccelAdxl362::Scale(uint16_t Value)
 	return AccelSensor::Scale(Value);
 }
 
-bool AccelAdxl362::Read(ACCELSENSOR_DATA *pData)
+bool AccelAdxl362::Read(ACCELSENSOR_DATA &Data)
 {
-	if (pData == NULL)
-	{
-		return false;
-	}
-
-	*pData = vData;
+	Data = vData;
 
 	return true;
 }
@@ -211,13 +208,13 @@ bool AccelAdxl362::UpdateData()
 		}
 
 		cmd[1] = ADXL362_XDATA_L_REG;
-		vData.x = Read16(cmd, 2);
+		vData.X = Read16(cmd, 2);
 
 		cmd[1] = ADXL362_YDATA_L_REG;
-		vData.y = Read16(cmd, 2);
+		vData.Y = Read16(cmd, 2);
 
 		cmd[1] = ADXL362_ZDATA_L_REG;
-		vData.z = Read16(cmd, 2);
+		vData.Z = Read16(cmd, 2);
 
 		retval = true;
 	}

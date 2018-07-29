@@ -42,28 +42,79 @@ Modified by          Date              Description
 #include "sensor.h"
 
 #pragma pack(push, 1)
+
+/// Gyroscope sensor data
 typedef struct __GyroSensor_Data {
-	uint32_t Timestamp;	// Time stamp count in msec
-	int16_t x;			// X axis
-	int16_t y;			// Y axis
-	int16_t z;			// Z axis
+	uint32_t Timestamp;	//!< Time stamp count in usec
+	int16_t X;			//!< X axis
+	int16_t Y;			//!< Y axis
+	int16_t Z;			//!< Z axis
 } GYROSENSOR_DATA;
 
 typedef struct __GyroSensor_Config {
-	uint32_t		DevAddr;	// Either I2C dev address or CS index select if SPI is used
-	SENSOR_OPMODE 	OpMode;		// Operating mode
-	uint32_t		Freq;		// Sampling frequency in Hz if continuous mode is used
-	bool 			bInter;		// true - enable interrupt
+	uint32_t		DevAddr;	//!< Either I2C dev address or CS index select if SPI is used
+	SENSOR_OPMODE 	OpMode;		//!< Operating mode
+	uint32_t		Freq;		//!< Sampling frequency in mHz (miliHertz) if continuous mode is used
+	bool 			bInter;		//!< true - enable interrupt
+	DEVINTR_POL		IntPol;		//!< Interrupt pin polarity
 } GYROSENSOR_CFG;
 
 #pragma pack(pop)
 
 class GyroSensor : virtual public Sensor {
 public:
-	virtual bool Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer) = 0;
-	virtual bool Read(GYROSENSOR_DATA *pData) = 0;
 
-private:
+	/**
+	 * @brief	Sensor initialization
+	 *
+	 * @param 	Cfg		: Sensor configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
+	virtual bool Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer) = 0;
+
+	/**
+	 * @brief	Read last updated sensor data
+	 *
+	 * This function read the currently stored data last updated by UdateData().
+	 * Device implementation can add validation if needed and return true or false
+	 * in the case of data valid or not.  This default implementation only returns
+	 * the stored data with success.
+	 *
+	 * @param 	Data : Reference to data storage for the returned data
+	 *
+	 * @return	True - Success.
+	 */
+	virtual bool Read(GYROSENSOR_DATA &Data) {
+		Data = vData;
+		return true;
+	}
+
+	/**
+	 * @brief	Get the current scale value.
+	 *
+	 * @return	G scale value
+	 */
+	virtual uint32_t Scale() { return vScale; }
+
+	/**
+	 * @brief	Set the current scale value.
+	 *
+	 * NOTE : Implementer must overload this function to add require hardware implement then call
+	 * this function to keep the scale value internally and return the real hardware scale value.
+	 *
+	 * @param 	Value : Wanted scale value
+	 *
+	 * @return	Real scale value
+	 */
+	virtual uint32_t Scale(uint32_t Value) { vScale = Value; return vScale; }
+
+protected:
+
+	uint32_t vScale;
+	GYROSENSOR_DATA vData;	//!< Current sensor data updated with UpdateData()
 };
 
 #endif // __GYRO_SENSOR_H__

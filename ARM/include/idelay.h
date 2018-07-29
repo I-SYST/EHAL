@@ -108,6 +108,10 @@ static inline __attribute__((always_inline)) void nsDelay(uint32_t cnt) {
 		 );
 }
 
+static inline __attribute__((always_inline)) void msDelay(uint32_t ms) {
+	usDelay(ms * 1000UL);
+}
+
 /** @} End of group Utilities */
 
 #endif	// __IDELAY_H__

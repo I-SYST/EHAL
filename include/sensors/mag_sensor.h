@@ -42,28 +42,63 @@ Modified by          Date              Description
 #include "sensor.h"
 
 #pragma pack(push, 1)
+
+/// Magnetometer sensor data
 typedef struct __MagSensor_Data {
-	uint32_t Timestamp;	// Time stamp count in msec
-	int16_t x;			// X axis
-	int16_t y;			// Y axis
-	int16_t z;			// Z axis
+	uint32_t Timestamp;	//!< Time stamp count in msec
+	int16_t X;			//!< X axis
+	int16_t Y;			//!< Y axis
+	int16_t Z;			//!< Z axis
 } MAGSENSOR_DATA;
 
+/// Mag configuration data
 typedef struct __MagSensor_Config {
-	uint32_t		DevAddr;	// Either I2C dev address or CS index select if SPI is used
-	SENSOR_OPMODE 	OpMode;		// Operating mode
-	uint32_t		Freq;		// Sampling frequency in Hz if continuous mode is used
-	bool 			bInter;		// true - enable interrupt
+	uint32_t		DevAddr;	//!< Either I2C 7 bits device address or CS index select if SPI is used
+	SENSOR_OPMODE 	OpMode;		//!< Operating mode
+	uint32_t		Freq;		//!< Sampling frequency in mHz (miliHertz) if continuous mode is used
+	int				Precision;	//!< Sampling precision in bits
+	bool 			bInter;		//!< true - enable interrupt
+	DEVINTR_POL		IntPol;		//!< Interrupt polarity
 } MAGSENSOR_CFG;
 
 #pragma pack(pop)
 
 class MagSensor : virtual public Sensor {
 public:
+	/**
+	 * @brief	Sensor initialization
+	 *
+	 * @param 	Cfg		: Sensor configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
 	virtual bool Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer) = 0;
-	virtual bool Read(MAGSENSOR_DATA *pData) = 0;
 
+	/**
+	 * @brief	Read last updated sensor data
+	 *
+	 * This function read the currently stored data last updated by UdateData().
+	 * Device implementation can add validation if needed and return true or false
+	 * in the case of data valid or not.  This default implementation only returns
+	 * the stored data with success.
+	 *
+	 * @param 	Data : Reference to data storage for the returned data
+	 *
+	 * @return	True - Success.
+	 */
+	virtual bool Read(MAGSENSOR_DATA &Data) {
+		Data = vData;
+		return true;
+	}
+
+protected:
+	int32_t vScale;			//!< Sample scaling value at the discretion of the implementation
+	int vPrecision;			//!< Sampling precision in bits
+	MAGSENSOR_DATA vData;	//!< Current sensor data updated with UpdateData()
 private:
+
 };
 
 #endif // __MAG_SENSOR_H__

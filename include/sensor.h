@@ -62,7 +62,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// @note	Timer configuration and operation is handled by user firmware application
 typedef enum __Sensor_OpMode {
 	SENSOR_OPMODE_SINGLE,			//!< Single capture
-	SENSOR_OPMODE_CONTINUOUS		//!< Continuous capture
+	SENSOR_OPMODE_CONTINUOUS,		//!< Hardware continuous capture
+	SENSOR_OPMODE_TIMER				//!< Using periodic timer
 } SENSOR_OPMODE;
 
 ///@brief	Sensor state.
@@ -72,7 +73,8 @@ typedef enum __Sensor_OpMode {
 typedef enum __Sensor_State {
 	SENSOR_STATE_SLEEP,				//!< Sleep state low power
 	SENSOR_STATE_IDLE,				//!< Idle state powered on
-	SENSOR_STATE_SAMPLING			//!< Sampling in progress
+	SENSOR_STATE_SAMPLING			//!< Sampling in progress. In continuous operating mode
+									//!< the sensor would always be in sampling state.
 } SENSOR_STATE;
 
 #ifdef __cplusplus
@@ -101,6 +103,19 @@ public:
 	virtual bool StartSampling() = 0;
 
 	/**
+	 * @brief	Read sensor and update internal data with new readings
+	 *
+	 * This function should be called by a periodic timer to update
+	 * sensor data in SENSOR_OPMODE_CONTINUOUS or interrupt or when Read is called
+	 * in SENSOR_OPMODE_SINGLE
+	 *
+	 * @return	true - New data is updated
+	 */
+	virtual bool UpdateData() = 0;
+
+	virtual void IntHandler() {}
+
+	/**
 	 * @brief	Set operating mode.
 	 *
 	 * Sensor implementation must overload this function to do necessary
@@ -110,6 +125,7 @@ public:
 	 * @param	OpMode : Operating mode
 	 * 					- SENSOR_OPMODE_SINGLE
 	 * 					- SENSOR_OPMODE_CONTINUOUS
+	 * 					- SENSOR_OPMODE_TIMER
 	 * @param	Freq : Sampling frequency in mHz (miliHertz) for continuous mode
 	 *
 	 * @return	true- if success
@@ -117,9 +133,9 @@ public:
 	virtual bool Mode(SENSOR_OPMODE OpMode, uint32_t Freq) {
 		vOpMode = OpMode;
 		vSampFreq = Freq;
-        vSampPeriod = 1000000000000LL / vSampFreq;
+        vSampPeriod = vSampFreq > 0 ? 1000000000000LL / vSampFreq : 0;
 
-		if (vpTimer && OpMode == SENSOR_OPMODE_CONTINUOUS)
+		if (vpTimer && OpMode == SENSOR_OPMODE_TIMER)
 		{
 		    vTimerTrigId = vpTimer->EnableTimerTrigger(vSampPeriod, TIMER_TRIG_TYPE_CONTINUOUS,
 		                                               TimerTrigHandler, (void*)this);
@@ -160,7 +176,7 @@ public:
 	 */
 	virtual uint32_t SamplingFrequency(uint32_t Freq) {
 		vSampFreq = Freq;
-		vSampPeriod = 1000000000000LL / vSampFreq;
+		vSampPeriod = vSampFreq > 0 ? 1000000000000LL / vSampFreq : 0;
 
 		return vSampFreq;
 	}
@@ -191,16 +207,6 @@ public:
 	 */
 	virtual SENSOR_STATE State() { return vState; }
 
-	/**
-	 * @brief	Read sensor and update internal data with new readings
-	 *
-	 * This function should be called by a periodic timer to update
-	 * sensor data in SENSOR_OPMODE_CONTINUOUS or interrupt or when Read is called
-	 * in SENSOR_OPMODE_SINGLE
-	 *
-	 * @return	true - New data is updated
-	 */
-	virtual bool UpdateData() = 0;
 
 	static void TimerTrigHandler(Timer * const pTimer, int TrigNo, void * const pContext) {
 	    Sensor *sensor = (Sensor*)pContext;
