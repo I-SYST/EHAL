@@ -29,7 +29,7 @@ external vendors' SDK and library required :
 
 [Micro-ECC](https://github.com/kmackay/micro-ecc) : Encryption library
 
-[Motion_Driver](https://www.invensense.com/) : Create a user at https://www.invensense.com/. Under "Downloads" download "Embedded MotionDriver 6.12". Unzip the downloaded motion_driver_6.12 folder and navigate to motion_driver_6.12/mpl libraries/arm/gcc4.9.3. Unzip the require libraries and copy to folders indicated in the folder tree bellow (external/MPL/lib/...). For the include (.h) files, navigate to motion_driver_6.12/arm/STM32F4_MD6/Projects/eMD6/core/mpl and copy all .h files to external/MPL/include as indicated bellow.
+[Motion_Driver](https://www.invensense.com/) : Create a user at https://www.invensense.com/. Under "Downloads" download "Embedded MotionDriver 6.12". Unzip the downloaded motion_driver_6.12 folder and navigate to motion_driver_6.12/mpl libraries/arm/gcc4.9.3. Unzip the require libraries and copy to folders indicated in the folder tree bellow (external/MPL/lib/...). For the include (.h) files, navigate to motion_driver_6.12/arm/STM32F4_MD6/Projects/eMD6 and copy core folder to external/MPL as indicated bellow.
 
 KSDK      : Kinetis SDK
 
@@ -63,7 +63,7 @@ There are 2 main libraries in the EHAL for each ARM based MCU.
  |   |-- KSDK            - Kinetis SDK
  |   |-- BSEC            - Bosch Sensortec Environmental Cluster (BSEC) Software (https://www.bosch-sensortec.com/bst/products/all_products/bsec) for #BME680
  |   |-- MPL             - Invensense Motion Driver (download https://www.invensense.com)
- |   |   |-- include     - Copy all .h files from eMD6/core/mpl here
+ |   |   |-- core        - Copy core from motion_driver_6.12/arm/STM32F4_MD6/Projects/eMD6 here
  |   |   |-- lib
  |   |   |   |-- m0      - Unzip the liblibmplmpu_m0.zip, copy liblibmplmpu.a here
  |   |   |   |-- m3      - Unzip the liblibmplmpu_m3.zip, copy liblibmplmpu.a here
