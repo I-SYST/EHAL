@@ -417,10 +417,10 @@ void BleAppInitUserServices()
     res = ImuSrvcInit();
 }
 
-static void mpulib_data_handler_cb(void)
-{
+//static void mpulib_data_handler_cb(void)
+//{
 //    mpulib_data_handler(0, 0);
-}
+//}
 
 void HardwareInit()
 {

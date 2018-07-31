@@ -30,6 +30,66 @@
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy.cpp</locationURI>
 		</link>
+		<link>
+			<name>src/eMPL-hal</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/mllite</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/eMPL-hal/eMPL_outputs.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/MPL/core/eMPL-hal/eMPL_outputs.c</locationURI>
+		</link>
+		<link>
+			<name>src/mllite/data_builder.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/MPL/core/mllite/data_builder.c</locationURI>
+		</link>
+		<link>
+			<name>src/mllite/hal_outputs.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/MPL/core/mllite/hal_outputs.c</locationURI>
+		</link>
+		<link>
+			<name>src/mllite/message_layer.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/MPL/core/mllite/message_layer.c</locationURI>
+		</link>
+		<link>
+			<name>src/mllite/ml_math_func.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/MPL/core/mllite/ml_math_func.c</locationURI>
+		</link>
+		<link>
+			<name>src/mllite/mlmath.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/MPL/core/mllite/mlmath.c</locationURI>
+		</link>
+		<link>
+			<name>src/mllite/mpl.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/MPL/core/mllite/mpl.c</locationURI>
+		</link>
+		<link>
+			<name>src/mllite/results_holder.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/MPL/core/mllite/results_holder.c</locationURI>
+		</link>
+		<link>
+			<name>src/mllite/start_manager.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/MPL/core/mllite/start_manager.c</locationURI>
+		</link>
+		<link>
+			<name>src/mllite/storage_manager.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/MPL/core/mllite/storage_manager.c</locationURI>
+		</link>
 	</linkedResources>
 	<variableList>
 		<variable>
