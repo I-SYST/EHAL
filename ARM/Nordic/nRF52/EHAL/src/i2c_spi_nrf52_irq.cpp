@@ -40,7 +40,7 @@ typedef struct {
 	IRQHANDLER Handler ;		// Device interface interrupt handler
 } IRQDATA;
 
-#define MAX_NB_DEV		2
+#define MAX_NB_DEV		3
 
 static IRQDATA s_DevIrq[MAX_NB_DEV] = { {NULL, }, };
 
@@ -69,4 +69,12 @@ extern "C" void SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQHandler(void)
 	{
 		s_DevIrq[1].Handler(1, s_DevIrq[1].pDev);
 	}
+}
+
+extern "C" void SPIM2_SPIS2_SPI2_IRQHandler(void)
+{
+    if (s_DevIrq[2].pDev != NULL)
+    {
+        s_DevIrq[2].Handler(2, s_DevIrq[1].pDev);
+    }
 }
