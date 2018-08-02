@@ -35,28 +35,25 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-//#ifndef _lint
-//#error "This file should be copied, not included."
-//#endif
-
 #ifndef NRF_MESH_CONFIG_APP_H__
 #define NRF_MESH_CONFIG_APP_H__
 
 /**
- * @addtogroup MESH_API_GROUP_APP_CONFIG
+ * @defgroup NRF_MESH_CONFIG_APP nRF Mesh app config
  *
- * Should be copied into every application, and customized to fit its requirements.
+ * Application side configuration file. Should be copied into every
+ * application, and customized to fit its requirements.
  * @{
  */
 
 /**
  * @defgroup DEVICE_CONFIG Device configuration
- * Device-global configuration parameters for the device's representation on the mesh network.
+ *
  * @{
  */
 
 /** Device company identifier. */
-#define DEVICE_COMPANY_ID (ACCESS_COMPANY_ID_NONE)
+#define DEVICE_COMPANY_ID (ACCESS_COMPANY_ID_NORDIC)
 
 /** Device product identifier*/
 #define DEVICE_PRODUCT_ID (0x0000)
@@ -70,8 +67,7 @@
 /** @} end of DEVICE_CONFIG */
 
 /**
- * @defgroup APP_ACCESS_CONFIG Access layer configuration
- * Access layer resource usage configuration.
+ * @defgroup ACCESS_CONFIG Access layer configuration
  * @{
  */
 
@@ -83,21 +79,18 @@
 /**
  * The number of models in the application.
  *
- * @note This value has to be greater than one to fit the configuration model plus the number of
- * models needed by the application.
+ * @note This value has to be greater than two to fit the configuration and health models,
+ * plus the number of models needed by the application.
  */
-#define ACCESS_MODEL_COUNT (1)
+#define ACCESS_MODEL_COUNT (3)
 
 /**
  * The number of elements in the application.
  *
- * @note This value has to be greater than two to fit the configuration and health models,
- * plus the number of models needed by the application.
- *
  * @warning If the application is to support multiple _instances_ of the _same_ model, they cannot
  * belong in the same element and a separate element is needed for the new instance.
  */
-#define ACCESS_ELEMENT_COUNT (2)
+#define ACCESS_ELEMENT_COUNT (1)
 
 /**
  * The number of allocated subscription lists for the application.
@@ -105,17 +98,15 @@
  * @note The application should set this number to @ref ACCESS_MODEL_COUNT minus the number of
  * models operating on shared states.
  */
-#define ACCESS_SUBSCRIPTION_LIST_COUNT (ACCESS_MODEL_COUNT)
+#define ACCESS_SUBSCRIPTION_LIST_COUNT (1)
 
 /**
  * The number of pages of flash storage reserved for the access layer for persistent data storage.
  */
 #define ACCESS_FLASH_PAGE_COUNT (1)
 
-
 /**
- * @defgroup ACCESS_RELIABLE_CONFIG Access reliable messages configuration
- * Configuration of the application specific parameters of the access layer reliable messages.
+ * @defgroup ACCESS_RELIABLE_CONFIG Access reliable transfer configuration
  * @{
  */
 
@@ -127,21 +118,26 @@
 
 /** @} end of ACCESS_CONFIG */
 
+
 /**
  * @defgroup DSM_CONFIG Device State Manager configuration
  * Sizes for the internal storage of the Device State Manager.
  * @{
  */
 /** Maximum number of subnetworks. */
-#define DSM_SUBNET_MAX                                  (4)
+#define DSM_SUBNET_MAX                                  (1)
 /** Maximum number of applications */
-#define DSM_APP_MAX                                     (8)
+#define DSM_APP_MAX                                     (1)
 /** Maximum number of device keys */
 #define DSM_DEVICE_MAX                                  (1)
 /** Maximum number of virtual addresses. */
-#define DSM_VIRTUAL_ADDR_MAX                            (8)
-/** Maximum number of non-virtual addresses. */
-#define DSM_NONVIRTUAL_ADDR_MAX                         (16)
+#define DSM_VIRTUAL_ADDR_MAX                            (1)
+/** Maximum number of non-virtual addresses.
+ * - Simple OnOff publication
+ * - Health publication
+ * - Subscription address
+ */
+#define DSM_NONVIRTUAL_ADDR_MAX                         (3)
 /** Number of flash pages reserved for the DSM storage */
 #define DSM_FLASH_PAGE_COUNT                            (1)
 /** @} end of DSM_CONFIG */
@@ -150,4 +146,3 @@
 /** @} */
 
 #endif /* NRF_MESH_CONFIG_APP_H__ */
-
