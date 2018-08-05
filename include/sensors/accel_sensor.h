@@ -62,6 +62,7 @@ typedef struct __AccelSensor_Config {
 	SENSOR_OPMODE 	OpMode;		//!< Operating mode
 	uint16_t		Scale;		//!< Accelerometer sensor scale in g force (2g, 4g, ...
 	uint32_t		Freq;		//!< Sampling frequency in mHz (miliHertz) if continuous mode is used
+	uint32_t		LPFreq;		//!< Low pass filter cutoff frequency in Hz
 	bool 			bInter;		//!< true - enable interrupt
 	DEVINTR_POL		IntPol;		//!< interrupt polarity
 	ACCELINTCB		IntHandler;
@@ -120,6 +121,9 @@ public:
 	 */
 	virtual uint16_t Scale(uint16_t Value) { vScale = Value; return vScale; }
 
+	virtual uint32_t LowPassFreq() { return vLPFreq; }
+	virtual uint32_t LowPassFreq(uint32_t Freq) { vLPFreq = Freq; return vLPFreq; }
+
 protected:
 
 	ACCELSENSOR_DATA vData;		//!< Current sensor data updated with UpdateData()
@@ -127,6 +131,7 @@ protected:
 private:
 	ACCELINTCB vIntHandler;
 	uint16_t vScale;			//!< Sensor data scale in g force (2g, 4g, ...)
+	uint32_t vLPFreq;			//!< Low pass filter cutoff frequency in Hz
 };
 
 #endif // __ACCEL_SENSOR_H__

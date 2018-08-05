@@ -62,6 +62,15 @@ Modified by          Date              Description
 #define MPU9250_AG_CONFIG				0x1A
 
 #define MPU9250_AG_CONFIG_DLPF_CFG_MASK 					(7)
+#define MPU9250_AG_CONFIG_DLPF_CFG_250HZ					(0)
+#define MPU9250_AG_CONFIG_DLPF_CFG_184HZ					(1)
+#define MPU9250_AG_CONFIG_DLPF_CFG_92HZ						(2)
+#define MPU9250_AG_CONFIG_DLPF_CFG_41HZ						(3)
+#define MPU9250_AG_CONFIG_DLPF_CFG_20HZ						(4)
+#define MPU9250_AG_CONFIG_DLPF_CFG_10HZ						(5)
+#define MPU9250_AG_CONFIG_DLPF_CFG_5HZ						(6)
+#define MPU9250_AG_CONFIG_DLPF_CFG_3600HZ					(7)
+
 #define MPU9250_AG_CONFIG_EXT_SYNC_SET_MASK					(7<<3)
 #define MPU9250_AG_CONFIG_FIFO_MODE_BLOCKING				(1<<6)
 
@@ -69,15 +78,15 @@ Modified by          Date              Description
 
 #define MPU9250_AG_GYRO_CONFIG_FCHOICE_MASK					(3)
 #define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_MASK				(3<<3)
-#define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_250DPS			(0<<5)
-#define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_500DPS			(1<<5)
-#define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_1000DPS			(2<<5)
-#define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_2000DPS			(3<<5)
+#define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_250DPS			(0<<3)
+#define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_500DPS			(1<<3)
+#define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_1000DPS			(2<<3)
+#define MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_2000DPS			(3<<3)
 
 
-#define MPU9250_AG_GYRO_CONFIG_ZGYROCT_EN					(1<<5)
-#define MPU9250_AG_GYRO_CONFIG_YGYROCT_EN					(1<<6)
-#define MPU9250_AG_GYRO_CONFIG_XGYROCT_EN					(1<<7)
+#define MPU9250_AG_GYRO_CONFIG_ZGYRO_SELFTEST_EN			(1<<5)
+#define MPU9250_AG_GYRO_CONFIG_YGYRO_SELFTEST_EN			(1<<6)
+#define MPU9250_AG_GYRO_CONFIG_XGYRO_SELFTEST_EN			(1<<7)
 
 #define MPU9250_AG_ACCEL_CONFIG			0x1C
 #define MPU9250_AG_ACCEL_CONFIG_ACCEL_FS_SEL_MASK			(3<<3)		// Accel full scale select mask
@@ -91,10 +100,21 @@ Modified by          Date              Description
 
 #define MPU9250_AG_ACCEL_CONFIG2		0x1D
 
-#define MPU9250_AG_ACCEL_CONFIG2_A_DLPF_CFG_MASK			(3)
-#define MPU9250_AG_ACCEL_CONFIG2_A_DLPF_CFG_BITPOS			(0)
-#define MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B_MASK		(3<<2)
-#define MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B_BITPOS		(2)
+#define MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_MASK				(3)
+#define MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_BITPOS			(0)
+#define MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_5HZ				(6)
+#define MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_10HZ				(5)
+#define MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_20HZ				(4)
+#define MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_41HZ				(3)
+#define MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_92HZ				(2)
+#define MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_184HZ			(1)
+#define MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_460HZ			(7)
+#define MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B			(1<<3)
+// Undocumented FIFO size settings
+// min needs to be 1024, otherwise big large
+#define MPU9250_AG_ACCEL_CONFIG2_FIFO_SIZE_1024				(1<<6)
+#define MPU9250_AG_ACCEL_CONFIG2_FIFO_SIZE_2048				(2<<6)
+#define MPU9250_AG_ACCEL_CONFIG2_FIFO_SIZE_4096				(3<<6)
 
 #define MPU9250_AG_LP_ACCEL_ODR			0x1E
 
@@ -443,18 +463,15 @@ public:
 	virtual bool WakeOnEvent(bool bEnable, int Threshold);
 
 	virtual bool StartSampling();
-	virtual uint16_t Scale(uint16_t Value);	// Accel
-	virtual uint32_t Scale(uint32_t Value);	// Gyro
+	virtual uint32_t LowPassFreq(uint32_t Freq);
+
+	virtual uint16_t Scale(uint16_t Value);			// Accel
+	virtual uint32_t Sensitivity(uint32_t Value);	// Gyro
+
+
 	virtual bool Read(ACCELSENSOR_DATA &Data);
 	virtual bool Read(GYROSENSOR_DATA &Data);
 	virtual bool Read(MAGSENSOR_DATA &Data);
-	/**
-	 * @brief	Set sampling frequency.
-	 * 		The sampling frequency is relevant only in continuous mode.
-	 *
-	 * @return	Frequency in Hz
-	 */
-	 uint32_t SamplingFrequency(uint32_t FreqHz);
 
 	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
@@ -464,13 +481,14 @@ public:
 	virtual void IntHandler();
 
 private:
-	// Default base initialization. Deos detection and set default config for all sensor.
+	// Default base initialization. Does detection and set default config for all sensor.
 	// All sensor init must call this first prio to initializing itself
 	bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer);
 
 	bool vbSpi;
 	bool vbInitialized;
 	uint8_t vMagCtrl1Val;
+	int16_t vMagSenAdj[3];
 };
 
 #endif // __AGM_MPU9250_H__

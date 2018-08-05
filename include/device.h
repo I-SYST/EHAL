@@ -7,6 +7,10 @@ This is the base class to implement all sort devices, hardware or software.
 For example a sensor device or a software audio/video decoder.
 The device can transfer data via it's DeviceIntrf object.
 
+Important NOTE : For performance, there is no pointer or
+parameter validation at this low level layer.  It is the responsibility of
+caller to pre-validate all access
+
 @author	Hoang Nguyen Hoan
 @date	Feb. 12, 2017
 
@@ -63,6 +67,9 @@ typedef enum __Dev_Interrupt_Polarity {
 /// This is the base class to implement all sort devices, hardware or software.
 /// For example a sensor device or a software audio decoder.  The device can transfer
 /// data via it's DeviceIntrf object.
+/// Important NOTE : For performance, there is no pointer or
+/// parameter validation at this low level layer.  It is the responsibility of
+/// caller to pre-validate all access
 class Device {
 public:
 	Device();
@@ -132,11 +139,7 @@ public:
 	 * @return	Actual number of bytes read
 	 */
 	virtual int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen) {
-		if (vpIntrf) {
-			return vpIntrf->Read(vDevAddr, pCmdAddr, CmdAddrLen, pBuff, BuffLen);
-		}
-
-		return 0;
+		return vpIntrf->Read(vDevAddr, pCmdAddr, CmdAddrLen, pBuff, BuffLen);
 	}
 
 	/**
@@ -151,11 +154,7 @@ public:
 	 * @return	Actual number of bytes written
 	 */
 	virtual int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen) {
-		if (vpIntrf) {
-			return vpIntrf->Write(vDevAddr, pCmdAddr, CmdAddrLen, pData, DataLen);
-		}
-
-		return 0;
+		return vpIntrf->Write(vDevAddr, pCmdAddr, CmdAddrLen, pData, DataLen);
 	}
 
 	/**

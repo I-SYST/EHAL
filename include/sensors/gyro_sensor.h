@@ -1,10 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : gyro_sensor.h
+/**-------------------------------------------------------------------------
+@file	gyro_sensor.h
 
-Author : Hoang Nguyen Hoan          			Nov. 18, 2017
+@brief	Generic gyroscope sensor abstraction
 
-Desc   : Generic gyroscope sensor abstraction
+@author	Hoang Nguyen Hoan
+@date	Nov. 18, 2017
 
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -52,11 +54,12 @@ typedef struct __GyroSensor_Data {
 } GYROSENSOR_DATA;
 
 typedef struct __GyroSensor_Config {
-	uint32_t		DevAddr;	//!< Either I2C dev address or CS index select if SPI is used
-	SENSOR_OPMODE 	OpMode;		//!< Operating mode
-	uint32_t		Freq;		//!< Sampling frequency in mHz (miliHertz) if continuous mode is used
-	bool 			bInter;		//!< true - enable interrupt
-	DEVINTR_POL		IntPol;		//!< Interrupt pin polarity
+	uint32_t		DevAddr;		//!< Either I2C dev address or CS index select if SPI is used
+	SENSOR_OPMODE 	OpMode;			//!< Operating mode
+	uint32_t		Freq;			//!< Sampling frequency in mHz (miliHertz) if continuous mode is used
+	uint32_t		Sensitivity;	//!< Sensitivity level per degree per second
+	bool 			bInter;			//!< true - enable interrupt
+	DEVINTR_POL		IntPol;			//!< Interrupt pin polarity
 } GYROSENSOR_CFG;
 
 #pragma pack(pop)
@@ -97,7 +100,7 @@ public:
 	 *
 	 * @return	G scale value
 	 */
-	virtual uint32_t Scale() { return vScale; }
+	virtual uint32_t Sensitivity() { return vSensitivity; }
 
 	/**
 	 * @brief	Set the current scale value.
@@ -109,11 +112,11 @@ public:
 	 *
 	 * @return	Real scale value
 	 */
-	virtual uint32_t Scale(uint32_t Value) { vScale = Value; return vScale; }
+	virtual uint32_t Sensitivity(uint32_t Value) { vSensitivity = Value; return vSensitivity; }
 
 protected:
 
-	uint32_t vScale;
+	uint32_t vSensitivity;	//!< Sensitivity level per degree per second
 	GYROSENSOR_DATA vData;	//!< Current sensor data updated with UpdateData()
 };
 
