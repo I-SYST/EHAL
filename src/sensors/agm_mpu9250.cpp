@@ -566,7 +566,7 @@ bool AgmMpu9250::UpdateData()
 	Read(&regaddr, 1, (uint8_t*)d, 2);
 	val = ((d[0] & 0xF) << 8) | d[1];
 
-	printf("%d\r\n", val);
+	//printf("%d\r\n", val);
 
 	if (val > 0)
 	{
@@ -756,7 +756,7 @@ void AgmMpu9250::IntHandler()
 	uint8_t d;
 
 	d = Read8(&regaddr, 1);
-	if (MPU9250_AG_INT_STATUS_RAW_DATA_RDY_INT)
+	if (d & MPU9250_AG_INT_STATUS_RAW_DATA_RDY_INT)
 	{
 		UpdateData();
 	}

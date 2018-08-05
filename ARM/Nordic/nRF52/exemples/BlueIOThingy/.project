@@ -3,6 +3,7 @@
 	<name>BlueIOThingy</name>
 	<comment></comment>
 	<projects>
+		<project>EHAL</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

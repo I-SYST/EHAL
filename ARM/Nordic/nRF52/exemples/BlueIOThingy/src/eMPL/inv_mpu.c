@@ -735,8 +735,8 @@ int mpu_init(struct int_param_s *int_param)
 
     /* Wake up chip. */
     data[0] = 0x00;
-    if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
-        return -1;
+   if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
+      return -1;
 
    st.chip_cfg.accel_half = 0;
 
@@ -772,6 +772,8 @@ int mpu_init(struct int_param_s *int_param)
     st.chip_cfg.dmp_loaded = 0;
     st.chip_cfg.dmp_sample_rate = 0;
 
+//    st.chip_cfg.gyro_fsr = INV_FSR_2000DPS;
+
     if (mpu_set_gyro_fsr(2000))
         return -1;
     if (mpu_set_accel_fsr(2))
@@ -784,8 +786,8 @@ int mpu_init(struct int_param_s *int_param)
         return -1;
 
 #ifndef EMPL_TARGET_STM32F4    
-    if (int_param)
-        reg_int_cb(int_param);
+//    if (int_param)
+ //       reg_int_cb(int_param);
 #endif
 
 #ifdef AK89xx_SECONDARY
@@ -1860,6 +1862,7 @@ int mpu_read_fifo_stream(unsigned short length, unsigned char *data,
  */
 int mpu_set_bypass(unsigned char bypass_on)
 {
+	return 0;
     unsigned char tmp;
 
     if (st.chip_cfg.bypass_mode == bypass_on)
@@ -2946,7 +2949,7 @@ static int setup_compass(void)
     unsigned char data[4], akm_addr;
 
     mpu_set_bypass(1);
-
+    delay_ms(10);
     /* Find compass. Possible addresses range from 0x0C to 0x0F. */
     for (akm_addr = 0x0C; akm_addr <= 0x0F; akm_addr++) {
         int result;
@@ -2971,7 +2974,7 @@ static int setup_compass(void)
     data[0] = AKM_FUSE_ROM_ACCESS;
     if (i2c_write(st.chip_cfg.compass_addr, AKM_REG_CNTL, 1, data))
         return -1;
-    delay_ms(1);
+    delay_ms(100);
 
     /* Get sensitivity adjustment data from fuse ROM. */
     if (i2c_read(st.chip_cfg.compass_addr, AKM_REG_ASAX, 3, data))

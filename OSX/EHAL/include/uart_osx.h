@@ -36,7 +36,7 @@
 #define __UART_OSX_H__
 
 #include <stdio.h>
-#include "uart.h"
+#include "coredev/uart.h"
 
 #define OSXUART_DEVPATH_MAXLEN		255
 

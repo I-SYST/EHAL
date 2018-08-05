@@ -34,6 +34,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <inttypes.h>
 
 #include "ble_service.h"
+#include "ble_intrf.h"
 #include "sensors/accel_sensor.h"
 #include "sensors/gyro_sensor.h"
 #include "sensors/mag_sensor.h"
@@ -139,6 +140,18 @@ typedef struct {
 } ble_tms_config_t;
 
 #pragma pack(pop)
+
+#define IMUCHAR_IDX_CONFIG					0
+#define IMUCHAR_IDX_TAP						1
+#define IMUCHAR_IDX_ORIENT					2
+#define IMUCHAR_IDX_QUAT					3
+#define IMUCHAR_IDX_PEDO					4
+#define IMUCHAR_IDX_RAW						5
+#define IMUCHAR_IDX_EULER					6
+#define IMUCHAR_IDX_ROTMAT					7
+#define IMUCHAR_IDX_HEADING					8
+#define IMUCHAR_IDX_GRAVITY					9
+
 
 static const char s_ImuConfigCharDescString[] = {
         "Config characteristic",
@@ -318,6 +331,10 @@ const BLESRVC_CFG s_ImuSrvcCfg = {
 
 BLESRVC g_ImuSrvc;
 
+static const BLEINTRF_CFG s_ImuQuatIntrfCfg = {
+	&g_ImuSrvc,
+};
+
 BLESRVC *GetImuSrvcInstance()
 {
 	return &g_ImuSrvc;
@@ -335,31 +352,50 @@ void ImuConfSrvcWrhandler(BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len)
 
 void ImuTapCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
+	g_ImuChars[IMUCHAR_IDX_TAP].bNotify = true;
 	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_TAP);
 }
 
 void ImuOrientCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
+	g_ImuChars[IMUCHAR_IDX_ORIENT].bNotify = true;
 	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_ORIENTATION);
 }
 
 void ImuQuaternionCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
+	g_ImuChars[IMUCHAR_IDX_QUAT].bNotify = true;
 	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_QUAT);
 }
 
 void ImuQuatDataSend(long Quat[4])
 {
-	BleSrvcCharNotify(GetImuSrvcInstance(), 3, (uint8_t*)Quat, sizeof(long) * 4);
+	if (g_ImuChars[IMUCHAR_IDX_QUAT].bNotify == false)
+		return;
+
+	long q[4];
+
+	q[0] = Quat[0];
+	q[1] = Quat[2];
+	q[2] = Quat[1];
+	q[3] = -Quat[3];
+
+	uint32_t err = BleSrvcCharNotify(&g_ImuSrvc, IMUCHAR_IDX_QUAT, (uint8_t*)q, sizeof(long) * 4);
+	if (err != 0)
+	{
+		printf("Error %x\r\n", err);
+	}
 }
 
 void ImuPedometerCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
+	g_ImuChars[IMUCHAR_IDX_PEDO].bNotify = true;
 	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_PEDOMETER);
 }
 
 void ImuRawCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
+	g_ImuChars[IMUCHAR_IDX_RAW].bNotify = true;
 	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_RAW);
 }
 
@@ -384,20 +420,24 @@ void ImuRawDataSend(ACCELSENSOR_DATA &AccData, GYROSENSOR_DATA GyroData, MAGSENS
 
 void ImuEulerCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
+	g_ImuChars[IMUCHAR_IDX_EULER].bNotify = true;
 	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_EULER);
 }
 
 void ImuRotMatCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
+	g_ImuChars[IMUCHAR_IDX_ROTMAT].bNotify = true;
 	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_ROT_MAT);
 }
 void ImuHeadingCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
+	g_ImuChars[IMUCHAR_IDX_HEADING].bNotify = true;
 	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_HEADING);
 }
 
 void ImuGravityCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
+	g_ImuChars[IMUCHAR_IDX_GRAVITY].bNotify = true;
 	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_GRAVITY_VECTOR);
 }
 

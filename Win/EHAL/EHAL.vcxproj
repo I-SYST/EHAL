@@ -91,6 +91,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\base64.c" />
     <ClCompile Include="..\..\src\cfifo.c" />
+    <ClCompile Include="..\..\src\coredev\uart.c" />
     <ClCompile Include="..\..\src\crc.c" />
     <ClCompile Include="..\..\src\device_intrf.cpp" />
     <ClCompile Include="..\..\src\intelhex.c" />
@@ -99,7 +100,6 @@
     <ClCompile Include="..\..\src\prbs.c" />
     <ClCompile Include="..\..\src\sbuffer.c" />
     <ClCompile Include="..\..\src\sysstatus.c" />
-    <ClCompile Include="..\..\src\uart.c" />
     <ClCompile Include="..\..\src\usb_hidhost.cpp" />
     <ClCompile Include="..\..\src\utf8.c" />
     <ClCompile Include="..\..\src\utf8cvt.cpp" />

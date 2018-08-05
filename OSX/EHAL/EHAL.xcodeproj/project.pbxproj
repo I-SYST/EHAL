@@ -13,7 +13,6 @@
 		401FBF961D9CAC96004A39FF /* intelhex.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF8A1D9CAC96004A39FF /* intelhex.c */; };
 		401FBF971D9CAC96004A39FF /* prbs.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF8B1D9CAC96004A39FF /* prbs.c */; };
 		401FBF981D9CAC96004A39FF /* sbuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF8C1D9CAC96004A39FF /* sbuffer.c */; };
-		401FBF9C1D9CAC96004A39FF /* uart.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF901D9CAC96004A39FF /* uart.c */; };
 		401FBF9D1D9CAC96004A39FF /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF911D9CAC96004A39FF /* utf8.c */; };
 		401FBF9E1D9CAC96004A39FF /* utf8cvt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF921D9CAC96004A39FF /* utf8cvt.cpp */; };
 		401FBFA11D9CAD53004A39FF /* uart_osx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 401FBF9F1D9CAD53004A39FF /* uart_osx.cpp */; };
@@ -24,11 +23,12 @@
 		401FBFF01DA01F47004A39FF /* intelhex.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE21DA01F47004A39FF /* intelhex.h */; };
 		401FBFF11DA01F47004A39FF /* istddef.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE31DA01F47004A39FF /* istddef.h */; };
 		401FBFF21DA01F47004A39FF /* prbs.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE41DA01F47004A39FF /* prbs.h */; };
-		401FBFF61DA01F47004A39FF /* uart.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFE81DA01F47004A39FF /* uart.h */; };
 		401FBFF81DA01F47004A39FF /* utf8.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFEA1DA01F47004A39FF /* utf8.h */; };
 		401FBFF91DA01F47004A39FF /* utf8cvt.h in Headers */ = {isa = PBXBuildFile; fileRef = 401FBFEB1DA01F47004A39FF /* utf8cvt.h */; };
 		4030886C2053AD6600109A64 /* usb_hidhost.h in Headers */ = {isa = PBXBuildFile; fileRef = 4030886B2053AD6600109A64 /* usb_hidhost.h */; };
 		4047E3D01DD8BA20005634A1 /* usb_hidhost_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4047E3CF1DD8BA20005634A1 /* usb_hidhost_impl.cpp */; };
+		40EB81F4211743A4006ED118 /* uart.h in Headers */ = {isa = PBXBuildFile; fileRef = 40EB81F3211743A4006ED118 /* uart.h */; };
+		40EB81F6211743B4006ED118 /* uart.c in Sources */ = {isa = PBXBuildFile; fileRef = 40EB81F5211743B4006ED118 /* uart.c */; };
 		C9652D5D1E8183EB002892B7 /* device_intrf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9652D5B1E8183EB002892B7 /* device_intrf.cpp */; };
 		C9652D5E1E8183EB002892B7 /* device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9652D5C1E8183EB002892B7 /* device.cpp */; };
 		C9652D611E8183FF002892B7 /* device_intrf.h in Headers */ = {isa = PBXBuildFile; fileRef = C9652D5F1E8183FF002892B7 /* device_intrf.h */; };
@@ -43,7 +43,6 @@
 		401FBF8A1D9CAC96004A39FF /* intelhex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = intelhex.c; path = ../../src/intelhex.c; sourceTree = "<group>"; };
 		401FBF8B1D9CAC96004A39FF /* prbs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = prbs.c; path = ../../src/prbs.c; sourceTree = "<group>"; };
 		401FBF8C1D9CAC96004A39FF /* sbuffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sbuffer.c; path = ../../src/sbuffer.c; sourceTree = "<group>"; };
-		401FBF901D9CAC96004A39FF /* uart.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = uart.c; path = ../../src/uart.c; sourceTree = "<group>"; };
 		401FBF911D9CAC96004A39FF /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf8.c; path = ../../src/utf8.c; sourceTree = "<group>"; };
 		401FBF921D9CAC96004A39FF /* utf8cvt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utf8cvt.cpp; path = ../../src/utf8cvt.cpp; sourceTree = "<group>"; };
 		401FBF9F1D9CAD53004A39FF /* uart_osx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uart_osx.cpp; path = src/uart_osx.cpp; sourceTree = "<group>"; };
@@ -54,11 +53,12 @@
 		401FBFE21DA01F47004A39FF /* intelhex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = intelhex.h; path = ../../include/intelhex.h; sourceTree = "<group>"; };
 		401FBFE31DA01F47004A39FF /* istddef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = istddef.h; path = ../../include/istddef.h; sourceTree = "<group>"; };
 		401FBFE41DA01F47004A39FF /* prbs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = prbs.h; path = ../../include/prbs.h; sourceTree = "<group>"; };
-		401FBFE81DA01F47004A39FF /* uart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uart.h; path = ../../include/uart.h; sourceTree = "<group>"; };
 		401FBFEA1DA01F47004A39FF /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utf8.h; path = ../../include/utf8.h; sourceTree = "<group>"; };
 		401FBFEB1DA01F47004A39FF /* utf8cvt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utf8cvt.h; path = ../../include/utf8cvt.h; sourceTree = "<group>"; };
 		4030886B2053AD6600109A64 /* usb_hidhost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = usb_hidhost.h; path = ../../include/usb/usb_hidhost.h; sourceTree = "<group>"; };
 		4047E3CF1DD8BA20005634A1 /* usb_hidhost_impl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = usb_hidhost_impl.cpp; path = src/usb_hidhost_impl.cpp; sourceTree = "<group>"; };
+		40EB81F3211743A4006ED118 /* uart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uart.h; path = ../../include/coredev/uart.h; sourceTree = "<group>"; };
+		40EB81F5211743B4006ED118 /* uart.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = uart.c; path = ../../src/coredev/uart.c; sourceTree = "<group>"; };
 		C9652D5B1E8183EB002892B7 /* device_intrf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = device_intrf.cpp; path = ../../src/device_intrf.cpp; sourceTree = "<group>"; };
 		C9652D5C1E8183EB002892B7 /* device.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = device.cpp; path = ../../src/device.cpp; sourceTree = "<group>"; };
 		C9652D5F1E8183FF002892B7 /* device_intrf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = device_intrf.h; path = ../../include/device_intrf.h; sourceTree = "<group>"; };
@@ -79,6 +79,8 @@
 		401FBF771D9CAC42004A39FF = {
 			isa = PBXGroup;
 			children = (
+				40EB81F5211743B4006ED118 /* uart.c */,
+				40EB81F3211743A4006ED118 /* uart.h */,
 				4030886B2053AD6600109A64 /* usb_hidhost.h */,
 				C9652D5F1E8183FF002892B7 /* device_intrf.h */,
 				C9652D601E8183FF002892B7 /* device.h */,
@@ -92,7 +94,6 @@
 				401FBFE21DA01F47004A39FF /* intelhex.h */,
 				401FBFE31DA01F47004A39FF /* istddef.h */,
 				401FBFE41DA01F47004A39FF /* prbs.h */,
-				401FBFE81DA01F47004A39FF /* uart.h */,
 				401FBFEA1DA01F47004A39FF /* utf8.h */,
 				401FBFEB1DA01F47004A39FF /* utf8cvt.h */,
 				401FBF9F1D9CAD53004A39FF /* uart_osx.cpp */,
@@ -102,7 +103,6 @@
 				401FBF8A1D9CAC96004A39FF /* intelhex.c */,
 				401FBF8B1D9CAC96004A39FF /* prbs.c */,
 				401FBF8C1D9CAC96004A39FF /* sbuffer.c */,
-				401FBF901D9CAC96004A39FF /* uart.c */,
 				401FBF911D9CAC96004A39FF /* utf8.c */,
 				401FBF921D9CAC96004A39FF /* utf8cvt.cpp */,
 				401FBF811D9CAC42004A39FF /* Products */,
@@ -124,6 +124,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40EB81F4211743A4006ED118 /* uart.h in Headers */,
 				401FBFF81DA01F47004A39FF /* utf8.h in Headers */,
 				C9652D611E8183FF002892B7 /* device_intrf.h in Headers */,
 				401FBFED1DA01F47004A39FF /* cfifo.h in Headers */,
@@ -133,7 +134,6 @@
 				401FBFF21DA01F47004A39FF /* prbs.h in Headers */,
 				4030886C2053AD6600109A64 /* usb_hidhost.h in Headers */,
 				401FBFF11DA01F47004A39FF /* istddef.h in Headers */,
-				401FBFF61DA01F47004A39FF /* uart.h in Headers */,
 				401FBFEE1DA01F47004A39FF /* convutil.h in Headers */,
 				401FBFEF1DA01F47004A39FF /* crc.h in Headers */,
 				401FBFF01DA01F47004A39FF /* intelhex.h in Headers */,
@@ -197,13 +197,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40EB81F6211743B4006ED118 /* uart.c in Sources */,
 				401FBF9E1D9CAC96004A39FF /* utf8cvt.cpp in Sources */,
 				401FBF971D9CAC96004A39FF /* prbs.c in Sources */,
 				401FBF981D9CAC96004A39FF /* sbuffer.c in Sources */,
 				C9652D5E1E8183EB002892B7 /* device.cpp in Sources */,
 				401FBFA11D9CAD53004A39FF /* uart_osx.cpp in Sources */,
 				401FBF961D9CAC96004A39FF /* intelhex.c in Sources */,
-				401FBF9C1D9CAC96004A39FF /* uart.c in Sources */,
 				4047E3D01DD8BA20005634A1 /* usb_hidhost_impl.cpp in Sources */,
 				401FBF951D9CAC96004A39FF /* crc.c in Sources */,
 				401FBF931D9CAC96004A39FF /* base64.c in Sources */,

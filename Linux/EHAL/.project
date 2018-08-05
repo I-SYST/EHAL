@@ -353,7 +353,7 @@
 		<link>
 			<name>src/uart.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/uart.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/coredev/uart.c</locationURI>
 		</link>
 		<link>
 			<name>src/uart_retarget.c</name>

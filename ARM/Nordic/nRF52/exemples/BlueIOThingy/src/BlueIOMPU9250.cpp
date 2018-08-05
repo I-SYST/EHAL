@@ -551,14 +551,14 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
 	IOPinEnableInterrupt(BLUEIO_TAG_EVIM_IMU_INT_NO, 6, BLUEIO_TAG_EVIM_IMU_INT_PORT,
 						 BLUEIO_TAG_EVIM_IMU_INT_PIN, IOPINSENSE_LOW_TRANSITION,
 						 MPU9250IntHandler);
-/*
+
 	g_Mpu9250.Init(s_AccelCfg, pIntrF, pTimer);
 	g_Mpu9250.Init(s_GyroCfg, NULL);
-	g_Mpu9250.Init(s_MagCfg, NULL);
+//	g_Mpu9250.Init(s_MagCfg, NULL);
 
 
-	g_Mpu9250.Enable();
-*/
+//	g_Mpu9250.Enable();
+
 #if 0
 	while (1)
 	{
@@ -833,14 +833,14 @@ int drv_mpu9250_write(unsigned char slave_addr, unsigned char reg_addr, unsigned
 {
 	if (slave_addr != MPU9250_I2C_DEV_ADDR0 && slave_addr != MPU9250_I2C_DEV_ADDR1)
 	{
-		return Mpu9250AuxWrite(slave_addr, &reg_addr, length, (uint8_t*)p_data, 1) <= 0;
+		return Mpu9250AuxWrite(slave_addr, &reg_addr, 1, (uint8_t*)p_data, length) <= 0;
 	}
 	else
 	{
 		reg_addr &= 0x7F;
 		return g_pSpi->Write(0, &reg_addr, 1, (uint8_t*)p_data, length) <= 0;
 	}
-	//return g_Mpu9250.Write(&reg_addr, length, (uint8_t*)p_data, 1) <= 0;
+	return g_Mpu9250.Write(&reg_addr, 1, (uint8_t*)p_data, length) <= 0;
 }
 
 /**@brief Function for reading a MPU-9250 register.
@@ -856,14 +856,14 @@ int drv_mpu9250_read(unsigned char slave_addr, unsigned char reg_addr, unsigned 
 {
 	if (slave_addr != MPU9250_I2C_DEV_ADDR0 && slave_addr != MPU9250_I2C_DEV_ADDR1)
 	{
-		return Mpu9250AuxRead(slave_addr, &reg_addr, length, (uint8_t*)p_data, 1) <= 0;
+		return Mpu9250AuxRead(slave_addr, &reg_addr, 1, (uint8_t*)p_data, length) <= 0;
 	}
 	else
 	{
 		reg_addr |= 0x80;
 		return g_pSpi->Read(0, &reg_addr, 1, p_data, length) <= 0;
 	}
-	//return g_Mpu9250.Read(&reg_addr, length, p_data, 1) <= 0;
+	return g_Mpu9250.Read(&reg_addr, 1, p_data, length) <= 0;
 }
 
 /**@brief Function for getting a timestamp in milliseconds.

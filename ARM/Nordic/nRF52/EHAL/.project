@@ -131,6 +131,11 @@
 			<locationURI>PARENT-3-PROJECT_LOC/include/idelay.h</locationURI>
 		</link>
 		<link>
+			<name>include/imu</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>include/intelhex.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/intelhex.h</locationURI>
@@ -331,6 +336,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_nrf52.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/imu</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/intelhex.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/intelhex.c</locationURI>
@@ -516,6 +526,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/uart.h</locationURI>
 		</link>
 		<link>
+			<name>include/imu/imu.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/imu_invensense.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_invensense.h</locationURI>
+		</link>
+		<link>
 			<name>include/miscdev/buzzer.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/buzzer.h</locationURI>
@@ -679,6 +699,16 @@
 			<name>src/coredev/uart.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/uart.c</locationURI>
+		</link>
+		<link>
+			<name>src/imu/imu invensense.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu%20invensense.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/imu/imu.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/micro-ecc/uECC.c</name>
@@ -941,27 +971,7 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/access</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
 			<name>src/nRF5_SDK_Mesh/mesh/core</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/gatt</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/stack</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -1311,27 +1321,7 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh_soc.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/access/src</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
 			<name>src/nRF5_SDK_Mesh/mesh/core/src</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/gatt/src</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/stack/src</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -1409,116 +1399,6 @@
 			<name>src/nRF5_SDK/nrfx/drivers/src/nrfx_rng.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/modules/nrfx/drivers/src/nrfx_rng.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/access/src/access.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_Mesh/mesh/access/src/access.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/access/src/access_loopback.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/access/src/access_loopback.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/access/src/access_publish.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_Mesh/mesh/access/src/access_publish.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/access/src/access_reliable.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_Mesh/mesh/access/src/access_reliable.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/access/src/device_state_manager.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_Mesh/mesh/access/src/device_state_manager.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/ad_listener.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/ad_listener.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/ad_type_filter.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/ad_type_filter.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/adv_ext_packet.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/adv_ext_packet.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/adv_ext_tx.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/adv_ext_tx.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/adv_packet_filter.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/adv_packet_filter.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/advertiser.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/advertiser.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/bearer_handler.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/bearer_handler.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/broadcast.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/broadcast.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/filter_engine.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/filter_engine.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/gap_address_filter.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/gap_address_filter.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/instaburst.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/instaburst.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/instaburst_rx.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/instaburst_rx.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/instaburst_tx.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/instaburst_tx.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/mesh_pa_lna.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/mesh_pa_lna.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/radio_config.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/radio_config.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/rssi_filter.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/rssi_filter.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/bearer/src/scanner.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/bearer/src/scanner.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK_Mesh/mesh/core/src/aes.c</name>
@@ -1749,26 +1629,6 @@
 			<name>src/nRF5_SDK_Mesh/mesh/core/src/uri.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/uri.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/gatt/src/mesh_gatt.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/gatt/src/mesh_gatt.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/gatt/src/proxy.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/gatt/src/proxy.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/gatt/src/proxy_filter.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/gatt/src/proxy_filter.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK_Mesh/mesh/stack/src/mesh_stack.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/stack/src/mesh_stack.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_backend_ecc.c</name>
