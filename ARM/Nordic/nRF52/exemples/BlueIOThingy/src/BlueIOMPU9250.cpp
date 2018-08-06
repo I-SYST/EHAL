@@ -8,10 +8,11 @@
 #include "ble_app.h"
 #include "ble_service.h"
 #include "device_intrf.h"
+#include "coredev/spi.h"
 #include "coredev/timer.h"
 #include "BlueIOMPU9250.h"
 #include "sensors/agm_mpu9250.h"
-#include "coredev/spi.h"
+#include "imu/imu_invensense.h"
 #include "idelay.h"
 #include "board.h"
 
@@ -45,11 +46,13 @@ static const GYROSENSOR_CFG s_GyroCfg = {
 static const MAGSENSOR_CFG s_MagCfg = {
 	.DevAddr = 0,	// SPI CS idx
 	.OpMode = SENSOR_OPMODE_SINGLE,
-	.Freq = 50000,
+	.Freq = 10000,
 	.Precision = 16,
 };
 
 AgmMpu9250 g_Mpu9250;
+ImuInvenSense g_Imu;
+
 static Timer * s_pTimer;
 static uint32_t s_MotionFeature = 0;
 
@@ -554,10 +557,10 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
 
 	g_Mpu9250.Init(s_AccelCfg, pIntrF, pTimer);
 	g_Mpu9250.Init(s_GyroCfg, NULL);
-//	g_Mpu9250.Init(s_MagCfg, NULL);
+	g_Mpu9250.Init(s_MagCfg, NULL);
 
 
-//	g_Mpu9250.Enable();
+	//g_Mpu9250.Enable();
 
 #if 0
 	while (1)
@@ -585,26 +588,28 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
     	return false;
     }
 
-	inv_init_mpl();
+	//inv_init_mpl();
+
+    g_Imu.Init(&g_Mpu9250, &g_Mpu9250, &g_Mpu9250);
 
     /* This algorithm updates the accel biases when in motion. A more accurate
      * bias measurement can be made when running the self-test. */
-    err_code = inv_enable_in_use_auto_calibration();
+   // err_code = inv_enable_in_use_auto_calibration();
     //RETURN_IF_ERROR(err_code);
 
     /* Compute 6-axis and 9-axis quaternions. */
-    err_code = inv_enable_quaternion();
+   // err_code = inv_enable_quaternion();
     //RETURN_IF_ERROR(err_code);
 
-    err_code = inv_enable_9x_sensor_fusion();
+    //err_code = inv_enable_9x_sensor_fusion();
     //RETURN_IF_ERROR(err_code);
 
     /* Update gyro biases when not in motion. */
-    err_code = inv_enable_fast_nomot();
+    //err_code = inv_enable_fast_nomot();
     //RETURN_IF_ERROR(err_code);
 
     /* Update gyro biases when temperature changes. */
-    err_code = inv_enable_gyro_tc();
+    //err_code = inv_enable_gyro_tc();
     //RETURN_IF_ERROR(err_code);
 
     /* Set the default compass bias to compensate for hard iron effects.
@@ -617,10 +622,10 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
     #endif
 
     /* Compass calibration algorithms. */
-    err_code = inv_enable_vector_compass_cal();
+    //err_code = inv_enable_vector_compass_cal();
     //RETURN_IF_ERROR(err_code);
 
-    err_code = inv_enable_magnetic_disturbance();
+    //err_code = inv_enable_magnetic_disturbance();
     //RETURN_IF_ERROR(err_code);
 
     /* Allows use of the MPL APIs in read_from_mpl. */

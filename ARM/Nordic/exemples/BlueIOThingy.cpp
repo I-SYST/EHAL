@@ -49,13 +49,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string.h>
 
-#include "istddef.h"
-#include "ble_app.h"
-#include "ble_service.h"
+#include "app_util_platform.h"
+#include "app_scheduler.h"
 
 #include "bsec_interface.h"
 
 #include "mpl.h"
+
+#include "istddef.h"
+#include "ble_app.h"
+#include "ble_service.h"
+
 
 //#include "fusion_9axis.h"
 
@@ -65,8 +69,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "coredev/spi.h"
 #include "custom_board.h"
 #include "coredev/iopincfg.h"
-#include "app_util_platform.h"
-#include "app_scheduler.h"
 #include "sensors/tph_bme280.h"
 #include "sensors/tph_ms8607.h"
 #include "sensors/tphg_bme680.h"
@@ -156,7 +158,7 @@ static const ble_uuid_t  s_AdvUuids[] = {
 };
 
 
-const BLEAPP_CFG s_BleAppCfg = {
+static const BLEAPP_CFG s_BleAppCfg = {
 	{ // Clock config nrf_clock_lf_cfg_t
 #ifdef IMM_NRF51822
 		NRF_CLOCK_LF_SRC_RC,	// Source RC
