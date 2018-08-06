@@ -25,7 +25,9 @@ external vendors' SDK and library required :
  
 [CMSIS](https://github.com/ARM-software/CMSIS_5) : ARM CMSIS SDK for all ARM platform
 
-[nRF5_SDK](https://developer.nordicsemi.com)  : Nordic nRF5x Bluetooth Low Energy, Bluetooth Mesh SDK
+[nRF5_SDK](https://developer.nordicsemi.com)  : Nordic nRF5x Bluetooth Low Energy
+
+[nrf5_SDK_Mesh](https://www.nordicsemi.com/eng/nordic/Products/nRF5-SDK-for-Mesh/nRF5-SDK-for-Mesh/62377) : Nordic nRF5 SDK for Bluetoth Mesh
 
 [Micro-ECC](https://github.com/kmackay/micro-ecc) : Encryption library
 
@@ -33,7 +35,7 @@ external vendors' SDK and library required :
 
 KSDK      : Kinetis SDK
 
-[BSEC]( https://www.bosch-sensortec.com/bst/products/all_products/bsec) : Bosch Sensortec Environmental Cluster (BSEC) Software for #BME680 environmental sensor.  BSEC is needed for calculating Air Quality Index.  Go to https://www.bosch-sensortec.com/bst/products/all_products/bsec at the end of the page.  Select checkbox to accept license terms to download.  Unzip the the downloaded file. Rename the extracted folder BSEC and copy the whole folder to external as indicated in the folder tree bellow.  
+[BSEC](https://www.bosch-sensortec.com/bst/products/all_products/bsec) : Bosch Sensortec Environmental Cluster (BSEC) Software for #BME680 environmental sensor.  BSEC is needed for calculating Air Quality Index.  Go to https://www.bosch-sensortec.com/bst/products/all_products/bsec at the end of the page.  Select checkbox to accept license terms to download.  Unzip the the downloaded file. Rename the extracted folder BSEC and copy the whole folder to external as indicated in the folder tree bellow.  
 
 ![IBK-BME680](https://www.i-syst.com/images/IBK-BME680_PinOut_640.png) 
  
@@ -58,6 +60,7 @@ There are 2 main libraries in the EHAL for each ARM based MCU.
  |-- external        - Contains downloaded SDKs from silicon vendors
  |   |-- CMSIS           - ARM CMSIS SDK for all ARM platform (https://github.com/ARM-software/CMSIS_5)
  |   |-- nRF5_SDK        - Latest Nordic SDK (https://developer.nordicsemi.com)
+ |   |-- nrf5_SDK_Mesh   - Latest Nordic SDK for Mesh (https://www.nordicsemi.com/eng/nordic/Products/nRF5-SDK-for-Mesh/nRF5-SDK-for-Mesh/62377)
  |   |---nRF5_SDK_12     - Last version of Nordick SDK12 for nRF51 series
  |   |-- Micro-ECC       - Micro-ECC (download from https://github.com/kmackay/micro-ecc)
  |   |-- KSDK            - Kinetis SDK
