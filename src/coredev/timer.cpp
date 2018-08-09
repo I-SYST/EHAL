@@ -40,7 +40,7 @@ int Timer::EnableTimerTrigger(uint64_t nsPeriod, TIMER_TRIG_TYPE Type, TIMER_TRI
 	if (idx < 0)
 		return 0;
 
-	uint64_t period = EnableTimerTrigger(idx, nsPeriod, Type, Handler, pContext);
+	EnableTimerTrigger(idx, nsPeriod, Type, Handler, pContext);
 
 	return idx;
 }
@@ -51,7 +51,7 @@ int Timer::EnableTimerTrigger(uint32_t msPeriod, TIMER_TRIG_TYPE Type, TIMER_TRI
 	if (idx < 0)
 		return 0;
 
-	uint32_t period = EnableTimerTrigger(idx, msPeriod, Type, Handler, pContext);
+	EnableTimerTrigger(idx, msPeriod, Type, Handler, pContext);
 
 	return idx;
 }

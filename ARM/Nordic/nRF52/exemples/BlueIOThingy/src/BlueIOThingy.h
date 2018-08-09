@@ -59,8 +59,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 BLESRVC *GetConfSrvcInstance();
 uint32_t ConfSrvcInit();
+BLESRVC *GetUISrvcInstance();
+uint32_t UISrvcInit();
 BLESRVC *GetEnvSrvcInstance();
 uint32_t EnvSrvcInit();
+
 void EnvSrvcNotifTemp(float Temp);
 void EnvSrvcNotifPressure(float Press);
 void EnvSrvcNotifHumi(uint8_t Humi);

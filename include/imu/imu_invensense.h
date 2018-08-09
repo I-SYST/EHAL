@@ -39,12 +39,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "imu/imu.h"
 
+class AgmMpu9250;
+
 class ImuInvenSense : public Imu {
 public:
 	virtual bool Init(AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag);
 	virtual bool UpdateData();
 protected:
 private:
+	AgmMpu9250 *vpMpu;
 };
 
 #endif // __IMU_INVENSENSE_H__

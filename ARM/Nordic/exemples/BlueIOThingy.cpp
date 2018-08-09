@@ -405,6 +405,7 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 #endif
 
 	BleSrvcEvtHandler(GetConfSrvcInstance(), p_ble_evt);
+	BleSrvcEvtHandler(GetUISrvcInstance(), p_ble_evt);
     BleSrvcEvtHandler(GetEnvSrvcInstance(), p_ble_evt);
     BleSrvcEvtHandler(GetImuSrvcInstance(), p_ble_evt);
 }
@@ -415,6 +416,7 @@ void BleAppInitUserServices()
     uint32_t res = 0;
 
     res = ConfSrvcInit();
+    res = UISrvcInit();
     res = EnvSrvcInit();
     res = ImuSrvcInit();
 }
@@ -512,7 +514,7 @@ int main()
 
     BleAppInit((const BLEAPP_CFG *)&s_BleAppCfg, true);
 
-	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS, AppTimerHandler);
+	uint32_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS, AppTimerHandler);
 
     BleAppRun();
 

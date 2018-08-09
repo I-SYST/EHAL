@@ -56,10 +56,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "log.h"
 
 #include "imu/imu_invensense.h"
+#include "sensors/agm_mpu9250.h"
 
 bool ImuInvenSense::Init(AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag)
 {
 	inv_error_t err;
+
+	if (pAccel == NULL)
+	{
+		return false;
+	}
+
+	vpMpu = (AgmMpu9250 *)pAccel;
 
     inv_init_storage_manager();
 

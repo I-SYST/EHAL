@@ -147,6 +147,8 @@ bool TphMS8607::Mode(SENSOR_OPMODE OpMode, uint32_t Freq)
 			break;
 		case SENSOR_OPMODE_CONTINUOUS:
 			break;
+		case SENSOR_OPMODE_TIMER:
+			break;
 	}
 
 	StartSampling();

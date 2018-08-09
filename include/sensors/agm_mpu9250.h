@@ -330,6 +330,11 @@ Modified by          Date              Description
 #define MPU9250_AG_PWR_MGMT_2_DIS_YA						(1<<4)
 #define MPU9250_AG_PWR_MGMT_2_DIS_XA						(1<<5)
 
+// Undocumented registers
+#define MPU9250_DMP_MEM_BANKSEL			0x6D
+#define MPU9250_DMP_MEM_STARTADDR		0x6E
+#define MPU9250_DMP_PROG_START			0x70
+
 #define MPU9250_AG_FIFO_COUNT_H			0x72
 #define MPU9250_AG_FIFO_COUNT_L			0x73
 #define MPU9250_AG_FIFO_R_W				0x74

@@ -89,7 +89,7 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 
 	// NOTE : require delay for reset to stabilize
 	// the chip would not respond properly to motion detection
-	usDelay(200000);
+	usDelay(500000);
 
 	//regaddr = MPU9250_AG_CONFIG;
 	//Write8(&regaddr, 1, MPU9250_AG_CONFIG_FIFO_MODE_BLOCKING);

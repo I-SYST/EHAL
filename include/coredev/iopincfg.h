@@ -172,6 +172,26 @@ void IOPinDisbleInterrupt(int IntNo);
 bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSENSE Sense, IOPINEVT_CB pEvtCB);
 
 /**
+ * @brief	Allocate I/O pin sensing interrupt event
+ *
+ * Generate an interrupt when I/O sense a state change. This function will automatically
+ * allocate available interrupt number to use for the pin.
+ * The IntNo (interrupt number) parameter is processor dependent. Some is
+ * directly the hardware interrupt number other is just an index in an array
+ *
+ *
+ * @Param	IntPrio : Interrupt priority
+ * @Param	PortNo  : Port number (up to 32 ports)
+ * @Param	PinNo   : Pin number (up to 32 pins)
+ * @Param	Sense   : Sense type of event on the I/O pin
+ * @Param	pEvtCB	: Pointer to callback function when event occurs
+ *
+ * @return	Interrupt number on success
+ * 			-1 on failure.
+ */
+int IOPinAllocateInterrupt(int IntPrio, int PortNo, int PinNo, IOPINSENSE Sense, IOPINEVT_CB pEvtCB);
+
+/**
  * @brief Set I/O pin sensing option
  *
  * Some hardware allow pin sensing to wake up or active other subsystem without
