@@ -150,7 +150,7 @@ void IOPinDisable(int PortNo, int PinNo);
  *
  * @param	IntNo : Interrupt number to disable
  */
-void IOPinDisbleInterrupt(int IntNo);
+void IOPinDisableInterrupt(int IntNo);
 
 /**
  * @brief Enable I/O pin sensing interrupt event

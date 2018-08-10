@@ -145,7 +145,7 @@ void IOPinDisable(int PortNo, int PinNo)
  *
  * @param	IntNo : Interrupt number to disable
  */
-void IOPinDisbleInterrupt(int IntNo)
+void IOPinDisableInterrupt(int IntNo)
 {
     if (IntNo >= IOPIN_MAX_INT)
         return;
