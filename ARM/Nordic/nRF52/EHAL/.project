@@ -26,6 +26,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>include/analog_comp_nrf5x.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/analog_comp_nrf5x.h</locationURI>
+		</link>
+		<link>
 			<name>include/atomic.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/atomic.h</locationURI>
@@ -254,6 +259,11 @@
 			<name>src/FreeRTOS</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/analog_comp_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/analog_comp_nrf5x.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/base64.c</name>
@@ -494,6 +504,11 @@
 			<name>include/converters/adc_nrf52_saadc.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/adc_nrf52_saadc.h</locationURI>
+		</link>
+		<link>
+			<name>include/converters/analog_comp.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/converters/analog_comp.h</locationURI>
 		</link>
 		<link>
 			<name>include/converters/dac_device.h</name>
