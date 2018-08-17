@@ -38,6 +38,7 @@ Modified by          Date              Description
 #include "sdcard.h"
 #include "crc.h"
 #include "atomic.h"
+#include "idelay.h"
 
 SDCard::SDCard()
 {
@@ -98,13 +99,23 @@ bool SDCard::Init(DeviceIntrf * const pDevInterf, DISKIO_CACHE_DESC * const pCac
 
 	vpInterf->Rate(speed);
 
+	// Give a little delays for slow card to initializes
+	usDelay(100000);
+
 	// Activate SPI mode
-	r = Cmd(0, 0);
+	int i = 1000;
+	do {
+		r = Cmd(0, 0);
+	} while (--i > 0 && (r & 0xfe));
+
 	if (r & 0xfe)
 	{
 		// Card not usable or not found
 		return false;
 	}
+
+	// Give a little delays for slow card to initializes
+	usDelay(100000);
 
 	// CMD8 must be sent before activating with ACMD41
 	uint32_t acmd = 0x10000000;
@@ -120,7 +131,7 @@ bool SDCard::Init(DeviceIntrf * const pDevInterf, DISKIO_CACHE_DESC * const pCac
 
 	// Start card initialisation
 	// send ACMD41
-	int i = 10;
+	i = 1000;
 	do {
 		r = Cmd(55, 0x0000000);
 		if ((r & 0xfe) == 0)
@@ -130,14 +141,21 @@ bool SDCard::Init(DeviceIntrf * const pDevInterf, DISKIO_CACHE_DESC * const pCac
 		}
 	} while (--i > 0 && r != 0);
 
+
 	if (r != 0)
 	{
 		// ACMD41 not succeeded
 		// use CMD1
-		i = 0x1ffff;
+		//i = 0x1ffff;
+		i = 1000;
 		do {
 			r = Cmd(1, 0);
 		} while (r != 0 && --i > 0);
+
+		if (r != 0)
+		{
+			return false;
+		}
 	}
 
 	if (r == 0)
