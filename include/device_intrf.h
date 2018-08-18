@@ -237,6 +237,21 @@ struct __device_intrf {
      * @return  None
 	 */
 	void (*Reset)(DEVINTRF * const pDevIntrf);
+
+	/**
+	 * @brief	Power off device for power saving.
+	 *
+	 * This function will power off device completely. Not all device provide this
+	 * type of functionality.  Once power off is call, full initialization cycle is
+	 * required.  Therefore their is no PowerOn counter part of this function contrary
+	 * to the Enable/Disable functions.
+	 *
+     * @param	pDevIntrf : Pointer to an instance of the Device Interface
+     *
+     * @return  None
+	 */
+	void (*PowerOff)(DEVINTRF * const pDevIntrf);
+
 };
 
 #pragma pack(pop)
@@ -252,7 +267,7 @@ extern "C" {
  * way to turn off for energy saving. Make sure the turn off procedure can
  * be turned back on without going through the full initialization sequence
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
+ * @param	pDev	: Pointer to an instance of the Device Interface
  *
  * @return	None
  */
@@ -266,7 +281,7 @@ static inline void DeviceIntrfDisable(DEVINTRF * const pDev) {
 /**
  * @brief	Turn on the interface.
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
+ * @param	pDev	: Pointer to an instance of the Device Interface
  *
  * @return	None
  */
@@ -281,7 +296,7 @@ static inline void DeviceIntrfEnable(DEVINTRF * const pDev) {
  * but rather the transfer frequency (number of transfers per second). It has meaning base on the
  * implementation as bits/sec or bytes/sec or whatever the case
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
+ * @param	pDev	: Pointer to an instance of the Device Interface
  *
  * @return	Transfer rate per second
  */
@@ -296,8 +311,8 @@ static inline int DeviceIntrfGetRate(DEVINTRF * const pDev) {
  * transfers per second). It has meaning base on the implementation as bits/sec
  * or bytes/sec or whatever the case
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
- * @param	Rate 	  : Data rate to be set in Hertz (transfer per second)
+ * @param	pDev	: Pointer to an instance of the Device Interface
+ * @param	Rate	: Data rate to be set in Hertz (transfer per second)
  *
  * @return 	Actual transfer rate per second set.  It is the real capable rate
  * 			closest to rate being requested.
@@ -311,10 +326,10 @@ static inline int DeviceIntrfSetRate(DEVINTRF * const pDev, int Rate) {
  *
  * This function does full receive data sequence by calling StartRx, RxData, StopRx.
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
- * @param	DevAddr   : The device selection id scheme
- * @param	pBuff 	  : Pointer to memory area to receive data.
- * @param	BuffLen   : Length of buffer memory in bytes
+ * @param	pDev	: Pointer to an instance of the Device Interface
+ * @param	DevAddr	: The device selection id scheme
+ * @param	pBuff	: Pointer to memory area to receive data.
+ * @param	BuffLen	: Length of buffer memory in bytes
  *
  * @return	Number of bytes read
  */
@@ -325,10 +340,10 @@ int DeviceIntrfRx(DEVINTRF * const pDev, int DevAddr, uint8_t *pBuff, int BuffLe
  *
  * This function does full transmit data sequence by calling StartTx, TxData, StopTx.
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
- * @param	DevAddr   : The device selection id scheme
- * @param	pData 	  : Pointer to data to send.
- * @param	DataLen   : Length of data in bytes
+ * @param	pDev	: Pointer to an instance of the Device Interface
+ * @param	DevAddr	: The device selection id scheme
+ * @param	pData	: Pointer to data to send.
+ * @param	DataLen	: Length of data in bytes
  *
  * @return	Number of bytes read
  */
@@ -340,7 +355,7 @@ int DeviceIntrfTx(DEVINTRF * const pDev, int DevAddr, uint8_t *pData, int DataLe
  * A device read transfer usually starts with a write of a command or register address.
  * Then follows with a read data results. This function encapsulate that functionality.
  *
- * @param	pDevIntrf	: Pointer to an instance of the Device Interface
+ * @param	pDev		: Pointer to an instance of the Device Interface
  * @param	DevAddr   	: The device selection id scheme
  * @param	pAdCmd		: Pointer to buffer containing address or command code to send
  * @param	AdCmdLen	: Size of addr/Cmd in bytes
@@ -358,7 +373,7 @@ int DeviceIntrfRead(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int AdC
  * A device write transfer usually starts with a write of a command or register address.
  * Then follows with a write data. This function encapsulate that functionality.
  *
- * @param	pDevIntrf	: Pointer to an instance of the Device Interface
+ * @param	pDev		: Pointer to an instance of the Device Interface
  * @param	DevAddr   	: The device selection id scheme
  * @param	pAdCmd		: Pointer to buffer containing address or command code to send
  * @param	AdCmdLen	: Size of addr/Cmd in bytes
@@ -408,9 +423,9 @@ static inline bool DeviceIntrfStartRx(DEVINTRF * const pDev, int DevAddr) {
  * @brief	Receive data into pBuff passed in parameter.  Assuming StartRx was
  * called prior calling this function to get the actual data
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
- * @param	pBuff 	  : Pointer to memory area to receive data.
- * @param	BuffLen   : Length of buffer memory in bytes
+ * @param	pDev 	: Pointer to an instance of the Device Interface
+ * @param	pBuff 	: Pointer to memory area to receive data.
+ * @param	BuffLen : Length of buffer memory in bytes
  *
  * @return	Number of bytes read
  */
@@ -424,7 +439,7 @@ static inline int DeviceIntrfRxData(DEVINTRF * const pDev, uint8_t *pBuff, int B
  * Do require post processing after data has been received via RxData
  * This function must clear the busy state for re-entrancy
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
+ * @param	pDev : Pointer to an instance of the Device Interface
  */
 static inline void DeviceIntrfStopRx(DEVINTRF * const pDev) {
     pDev->StopRx(pDev);
@@ -444,7 +459,7 @@ static inline void DeviceIntrfStopRx(DEVINTRF * const pDev) {
  *
  * On success StopRx must be called to release busy flag
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
+ * @param	pDev : Pointer to an instance of the Device Interface
  * @param	DevAddr   : The device selection id scheme
  *
  * @return 	true - Success\n
@@ -469,7 +484,7 @@ static inline bool DeviceIntrfStartTx(DEVINTRF * const pDev, int DevAddr) {
  * @brief	Transfer data from pData passed in parameter.  Assuming StartTx was
  * called prior calling this function to send the actual data
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
+ * @param	pDev	: Pointer to an instance of the Device Interface
  * @param	pData 	: Pointer to memory area of data to send.
  * @param	DataLen : Length of data memory in bytes
  *
@@ -482,11 +497,11 @@ static inline int DeviceIntrfTxData(DEVINTRF * const pDev, uint8_t *pBuff, int B
 /**
  * @brief	Completion of sending data via TxData.
  *
- * Do require post processing
+ * Perform the require post processing
  * after all data was transmitted via TxData.
  * This function must clear the busy state for re-entrancy
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
+ * @param	pDev : Pointer to an instance of the Device Interface
  */
 static inline void DeviceIntrfStopTx(DEVINTRF * const pDev) {
     pDev->StopTx(pDev);
@@ -496,12 +511,29 @@ static inline void DeviceIntrfStopTx(DEVINTRF * const pDev) {
 /**
  * @brief	This function perform a reset of interface.
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
+ * @param	pDev : Pointer to an instance of the Device Interface
  */
 static inline void DeviceIntrfReset(DEVINTRF * const pDev) {
     if (pDev->Reset)
         pDev->Reset(pDev);
 }
+
+/**
+ * @brief	Power off device for power saving.
+ *
+ * This function will power off device completely. Not all device provide this
+ * type of functionality.  Once power off is call, full initialization cycle is
+ * required.  Therefore their is no PowerOn counter part of this function contrary
+ * to the Enable/Disable functions.
+ *
+ * @param	pDev : Pointer to an instance of the Device Interface
+ *
+ * @return  None
+ */
+static inline void DeviceIntrfPowerOff(DEVINTRF * const pDev) {
+	if (pDev->PowerOff) pDev->PowerOff(pDev);
+}
+
 
 #ifdef __cplusplus
 }
@@ -563,6 +595,18 @@ public:
 	virtual void Enable(void) { DeviceIntrfEnable(*this); }
 
 	/**
+	 * @brief	Power off device for power saving.
+	 *
+	 * This function will power off device completely. Not all device provide this
+	 * type of functionality.  Once power off is call, full initialization cycle is
+	 * required.  Therefore their is no PowerOn counter part of this function contrary
+	 * to the Enable/Disable functions.
+	 *
+     * @return  None
+	 */
+	void PowerOff() { DeviceIntrfPowerOff(*this); }
+
+	/**
 	 * @brief	Full receive data sequence.
 	 *
 	 * This function does full receive data sequence by calling StartRx, RxData, StopRx.
@@ -582,7 +626,6 @@ public:
 	 *
 	 * This function does full transmit data sequence by calling StartTx, TxData, StopTx.
 	 *
-	 * @param	pDevIntrf : Pointer to an instance of the Device Interface
 	 * @param	DevAddr   : The device selection id scheme
 	 * @param	pData 	  : Pointer to data to send.
 	 * @param	DataLen   : Length of data in bytes
@@ -599,7 +642,6 @@ public:
 	 * A device read transfer usually starts with a write of a command or register address.
 	 * Then follows with a read data results. This function encapsulate that functionality.
 	 *
-	 * @param	pDevIntrf	: Pointer to an instance of the Device Interface
 	 * @param	DevAddr   	: The device selection id scheme
 	 * @param	pAdCmd		: Pointer to buffer containing address or command code to send
 	 * @param	AdCmdLen	: Size of addr/Cmd in bytes
@@ -618,7 +660,6 @@ public:
      * A device write transfer usually starts with a write of a command or register address.
      * Then follows with a write data. This function encapsulate that functionality.
      *
-     * @param	pDevIntrf	: Pointer to an instance of the Device Interface
      * @param	DevAddr   	: The device selection id scheme
      * @param	pAdCmd		: Pointer to buffer containing address or command code to send
      * @param	AdCmdLen	: Size of addr/Cmd in bytes
