@@ -37,25 +37,12 @@ Modified by          Date              Description
 #include <stdarg.h>
 
 #include "nrf.h"
-/*
-#ifdef NRF51
-#include "nrf51.h"
-#include "nrf51_bitfields.h"
-#else
-#include "nrf52.h"
-#include "nrf52_bitfields.h"
-#define NRF_GPIO			NRF_P0
-#define UART0_IRQn			UARTE0_UART0_IRQn
-#define UART0_IRQHandler	UARTE0_UART0_IRQHandler
-#endif
-*/
+
 #include "istddef.h"
+#include "iopinctrl.h"
 #include "uart_nrf5x.h"
 #include "idelay.h"
 #include "atomic.h"
-
-extern char s_Buffer[];	// defined in sbuffer.c
-extern int s_BufferSize;
 
 #define NRF51UART_FIFO_MAX		6
 #define NRF51UART_RXTIMEOUT		15
@@ -435,7 +422,9 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIoMap;
 
 	//NRF_GPIO->OUTSET = (1 << pincfg[UARTPIN_TX_IDX].PinNo);
+	IOPinSet(pincfg[UARTPIN_TX_IDX].PortNo, pincfg[UARTPIN_TX_IDX].PinNo);
 	IOPinCfg(pincfg, pCfg->IoMapLen);
+
 //    nrf_gpio_pin_set(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
 //    nrf_gpio_cfg_output(pCfg->PinCfg[UARTPIN_TX_IDX].PinNo);
 //    nrf_gpio_cfg_input(pCfg->PinCfg[UARTPIN_RX_IDX].PinNo, NRF_GPIO_PIN_PULLUP);

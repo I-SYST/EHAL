@@ -111,7 +111,8 @@ typedef struct __I2C_Config {
 	int MaxRetry;			//!< Max number of retry
 	int NbSlaveAddr;		//!< Number of slave mode address configured
 	uint8_t SlaveAddr[I2C_SLAVEMODE_MAX_ADDR];	//!< I2C slave address used in slave mode only
-	bool bIntEn;			//!< Interrupt enable
+	bool bDmaEn;			//!< true - Use DMA mode only on supported devices
+	bool bIntEn;			//!< true - Interrupt enable
 	int	IntPrio;			//!< Interrupt priority.  Value is implementation specific
 	DEVINTRF_EVTCB EvtCB;	//!< Interrupt based event callback function pointer. Must be set to NULL if not used
 } I2CCFG;
@@ -122,7 +123,7 @@ typedef struct {
 	int 	Rate;			//!< Speed in Hz
 	int 	NbSlaveAddr;	//!< Number of slave mode address configured
 	uint8_t	SlaveAddr[I2C_SLAVEMODE_MAX_ADDR];	//!< I2C slave address used in slave mode only
-	int 	MaxRetry;		//!< Max number of retry
+	bool	bDmaEn;
 	DEVINTRF DevIntrf;		//!< I2C device interface implementation
 	IOPINCFG Pins[I2C_MAX_NB_IOPIN];			//!< Define I/O pins used by I2C
 	uint8_t *pRRData[I2C_SLAVEMODE_MAX_ADDR];	//!< Pointer to data buffer to return upon receiving read request
