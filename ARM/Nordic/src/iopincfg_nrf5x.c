@@ -195,8 +195,10 @@ void IOPinDisableInterrupt(int IntNo)
  * The IntNo (interrupt number) parameter is processor dependent. Some is
  * directly the hardware interrupt number other is just an index in an array
  *
+ * NOTE : Port event interrupt is set when IntNo = -1.  Port event mode only
+ * high transition is detected no matter the setting of pin sense
  *
- * @param	IntNo	: Interrupt number.
+ * @param	IntNo	: Interrupt number. -1 for port event interrupt
  * 			IntPrio : Interrupt priority
  * 			PortNo  : Port number (up to 32 ports)
  * 			PinNo   : Pin number (up to 32 pins)
@@ -400,7 +402,9 @@ void __WEAK GPIOTE_IRQHandler(void)
         if (s_GpIOSenseEvt[IOPIN_MAX_INT].SensEvtCB)
             s_GpIOSenseEvt[IOPIN_MAX_INT].SensEvtCB(-1);
 	    NRF_GPIOTE->EVENTS_PORT = 0;
+	    NRF_GPIO->LATCH = 0xFFFFFFFF;	// Clear detect latch
 	}
+
 	NVIC_ClearPendingIRQ(GPIOTE_IRQn);
 }
 

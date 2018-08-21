@@ -296,6 +296,13 @@ void nRF52I2CStopRx(DEVINTRF * const pDev)
     NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
     dev->pReg->TASKS_RESUME = 1;
     dev->pReg->TASKS_STOP = 1;
+
+    if (dev->pI2cDev->bDmaEn == false)
+    {
+        // must read dummy last byte to generate NACK & STOP condition
+    	nRF52I2CWaitRxComplete(dev, 100000);
+    	uint8_t d __attribute__((unused)) = dev->pReg->RXD;
+    }
     nRF52I2CWaitStop(dev, 1000);
 }
 
