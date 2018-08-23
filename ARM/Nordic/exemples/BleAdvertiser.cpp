@@ -70,6 +70,8 @@ const BLEAPP_CFG s_BleAppCfg = {
 	NULL,					// Pointer device info descriptor
 	(uint8_t*)&g_AdvCnt,   	// Manufacture specific data to advertise
 	sizeof(g_AdvCnt),      	// Length of manufacture specific data
+	NULL,
+	0,
 	BLEAPP_SECTYPE_NONE,    	// Secure connection type
 	BLEAPP_SECEXCHG_NONE,   	// Security key exchange
 	NULL,      				// Service uuids to advertise
@@ -102,7 +104,7 @@ void BleAppAdvTimeoutHandler()
 {
 	g_AdvCnt++;
 
-	BleAppAdvManDataSet((uint8_t*)&g_AdvCnt, sizeof(g_AdvCnt));
+	BleAppAdvManDataSet((uint8_t*)&g_AdvCnt, sizeof(g_AdvCnt), NULL, 0);
 	BleAppAdvStart(BLEAPP_ADVMODE_FAST);
 }
 

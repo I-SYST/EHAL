@@ -729,14 +729,14 @@ int mpu_init(struct int_param_s *int_param)
 
     /* Reset device. */
     data[0] = BIT_RESET;
-//    if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
-//        return -1;
+    if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
+        return -1;
     delay_ms(100);
 
     /* Wake up chip. */
     data[0] = 0x00;
-//   if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
-  //    return -1;
+    if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
+      return -1;
 
    st.chip_cfg.accel_half = 0;
 
@@ -745,8 +745,8 @@ int mpu_init(struct int_param_s *int_param)
      * first 3kB are needed by the DMP, we'll use the last 1kB for the FIFO.
      */
     data[0] = BIT_FIFO_SIZE_1024 | 0x8;
-//    if (i2c_write(st.hw->addr, st.reg->accel_cfg2, 1, data))
-//        return -1;
+    if (i2c_write(st.hw->addr, st.reg->accel_cfg2, 1, data))
+        return -1;
 #endif
 
     /* Set to invalid values to ensure no I2C writes are skipped. */
@@ -772,9 +772,9 @@ int mpu_init(struct int_param_s *int_param)
     st.chip_cfg.dmp_loaded = 0;
     st.chip_cfg.dmp_sample_rate = 0;
 
-    st.chip_cfg.gyro_fsr = INV_FSR_2000DPS;
+    //st.chip_cfg.gyro_fsr = INV_FSR_2000DPS;
 
-/*    if (mpu_set_gyro_fsr(2000))
+    if (mpu_set_gyro_fsr(2000))
         return -1;
     if (mpu_set_accel_fsr(2))
         return -1;
@@ -784,16 +784,16 @@ int mpu_init(struct int_param_s *int_param)
         return -1;
     if (mpu_configure_fifo(0))
         return -1;
-*/
+
 #ifndef EMPL_TARGET_STM32F4    
 //    if (int_param)
  //       reg_int_cb(int_param);
 #endif
 
 #ifdef AK89xx_SECONDARY
-    //setup_compass();
-    //if (mpu_set_compass_sample_rate(10))
-     //   return -1;
+    setup_compass();
+    if (mpu_set_compass_sample_rate(10))
+        return -1;
 #else
     /* Already disabled by setup_compass. */
     if (mpu_set_bypass(0))

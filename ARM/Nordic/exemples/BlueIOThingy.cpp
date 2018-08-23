@@ -69,6 +69,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "coredev/spi.h"
 #include "custom_board.h"
 #include "coredev/iopincfg.h"
+#include "iopinctrl.h"
 #include "sensors/tph_bme280.h"
 #include "sensors/tph_ms8607.h"
 #include "sensors/tphg_bme680.h"
@@ -178,24 +179,43 @@ static const BLEAPP_CFG s_BleAppCfg = {
 	0,						// Pnp prod version
 	false,					// Enable device information service (DIS)
 	NULL,
-	(uint8_t*)&g_AdvDataBuff,   // Manufacture specific data to advertise
-	sizeof(g_AdvDataBuff),      // Length of manufacture specific data
+	(uint8_t*)&g_AdvDataBuff,	// Manufacture specific data to advertise
+	sizeof(g_AdvDataBuff),  // Length of manufacture specific data
+	NULL,					// Manufacture specific data to advertise
+	0,  					// Length of manufacture specific data
 	BLEAPP_SECTYPE_NONE,    // Secure connection type
 	BLEAPP_SECEXCHG_NONE,   // Security key exchange
-	s_AdvUuids,      				// Service uuids to advertise
+	s_AdvUuids,      		// Service uuids to advertise
 	sizeof(s_AdvUuids) / sizeof(ble_uuid_t), 						// Total number of uuids
 	APP_ADV_INTERVAL,       // Advertising interval in msec
 	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
-	0,                          // Slow advertising interval, if > 0, fallback to
-								// slow interval on adv timeout and advertise until connected
+	0,                      // Slow advertising interval, if > 0, fallback to
+							// slow interval on adv timeout and advertise until connected
 	MIN_CONN_INTERVAL,
 	MAX_CONN_INTERVAL,
-	-1,		// Led port nuber
-	-1,     // Led pin number
-	0, 		// Tx power
-	NULL,						// RTOS Softdevice handler
+	BLUEIO_LED1_PORT,		// Led port nuber
+	BLUEIO_LED1_PIN,     	// Led pin number
+	0, 						// Tx power
+	NULL,					// RTOS Softdevice handler
 	276,
 };
+
+static const IOPINCFG s_GpioPins[] = {
+    {BLUEIO_BUT1_PORT, BLUEIO_BUT1_PIN, BLUEIO_BUT1_PINOP,
+     IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
+	{BLUEIO_BUT2_PORT, BLUEIO_BUT2_PIN, BLUEIO_BUT2_PINOP,
+	 IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
+    {BLUEIO_LED1_PORT, BLUEIO_LED1_PIN, BLUEIO_LED1_PINOP,
+     IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+	{BLUEIO_TAG_EVIM_LED2_RED_PORT, BLUEIO_TAG_EVIM_LED2_RED_PIN, BLUEIO_TAG_EVIM_LED2_RED_PINOP,
+	 IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+	{BLUEIO_TAG_EVIM_LED2_GREEN_PORT, BLUEIO_TAG_EVIM_LED2_GREEN_PIN, BLUEIO_TAG_EVIM_LED2_GREEN_PINOP,
+	 IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+	{BLUEIO_TAG_EVIM_LED2_BLUE_PORT, BLUEIO_TAG_EVIM_LED2_BLUE_PIN, BLUEIO_TAG_EVIM_LED2_BLUE_PINOP,
+	 IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+};
+
+static const int s_NbGpioPins = sizeof(s_GpioPins) / sizeof(IOPINCFG);
 
 static const IOPINCFG s_SpiPins[] = {
     {SPI2_SCK_PORT, SPI2_SCK_PIN, SPI2_SCK_PINOP,
@@ -358,7 +378,7 @@ void ReadPTHData()
 	g_TphSensor.StartSampling();
 
 	// Update advertisement data
-	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
+	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff), NULL, 0);
 
 	EnvSrvcNotifTemp((float)data.Temperature / 100.0);
 
@@ -421,15 +441,18 @@ void BleAppInitUserServices()
     res = ImuSrvcInit();
 }
 
-//static void mpulib_data_handler_cb(void)
-//{
-//    mpulib_data_handler(0, 0);
-//}
-
 void HardwareInit()
 {
 	// Set this only if nRF is power at 2V or more
 	NRF_POWER->DCDCEN = POWER_DCDCEN_DCDCEN_Enabled << POWER_DCDCEN_DCDCEN_Pos;
+
+	IOPinCfg(s_GpioPins, s_NbGpioPins);
+
+	// Turn off all LEDs
+	IOPinSet(BLUEIO_LED1_PORT, BLUEIO_LED1_PIN);
+	IOPinSet(BLUEIO_TAG_EVIM_LED2_RED_PORT, BLUEIO_TAG_EVIM_LED2_RED_PIN);
+	IOPinSet(BLUEIO_TAG_EVIM_LED2_GREEN_PORT, BLUEIO_TAG_EVIM_LED2_GREEN_PIN);
+	IOPinSet(BLUEIO_TAG_EVIM_LED2_BLUE_PORT, BLUEIO_TAG_EVIM_LED2_BLUE_PIN);
 
     g_Timer.Init(s_TimerCfg);
 
@@ -474,7 +497,7 @@ void HardwareInit()
 
     if (g_TphSensor.DeviceID() == BME680_ID)
     {
-    		g_GasSensor.Init(s_GasSensorCfg, &g_I2c, NULL);
+		g_GasSensor.Init(s_GasSensorCfg, &g_I2c, NULL);
     }
 
 	g_TphSensor.StartSampling();
@@ -488,8 +511,8 @@ void HardwareInit()
 
     if (g_TphSensor.DeviceID() == BME680_ID)
     {
-    		GASSENSOR_DATA gdata;
-    		g_GasSensor.Read(gdata);
+		GASSENSOR_DATA gdata;
+		g_GasSensor.Read(gdata);
     }
 
 	g_TphSensor.StartSampling();

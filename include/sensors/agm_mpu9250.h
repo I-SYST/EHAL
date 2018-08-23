@@ -243,6 +243,7 @@ Modified by          Date              Description
 #define MPU9250_AG_INT_ENABLE			0x38
 
 #define MPU9250_AG_INT_ENABLE_RAW_RDY_EN					(1<<0)
+#define MPU9250_AG_INT_ENABLE_DMP_EN						(1<<1)	// Undocumented
 #define MPU9250_AG_INT_ENABLE_FSYNC_INT_EN					(1<<3)
 #define MPU9250_AG_INT_ENABLE_FIFO_OFLOW_EN					(1<<4)
 #define MPU9250_AG_INT_ENABLE_WOM_EN						(1<<6)
@@ -307,6 +308,7 @@ Modified by          Date              Description
 #define MPU9250_AG_USER_CTRL_I2C_IF_DIS						(1<<4)
 #define MPU9250_AG_USER_CTRL_I2C_MST_EN						(1<<5)
 #define MPU9250_AG_USER_CTRL_FIFO_EN						(1<<6)
+#define MPU9250_AG_USER_CTRL_DMP_EN							(1<<7)	// Undocumented
 
 #define MPU9250_AG_PWR_MGMT_1			0x6B
 

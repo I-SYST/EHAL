@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// UART UUID :
 #define NUS_BASE_UUID	{ 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, \
 						  0x93, 0xF3, 0xA3, 0xB5, 0x00, 0x00, 0x40, 0x6E } /**< Used vendor specific UUID. */
-#define BLE_UUID_NUS_SERVICE				0x0001	/**< The UUID of the Nordic UART Service. */
+#define BLE_UUID_NUS_SERVICE			0x0001	/**< The UUID of the Nordic UART Service. */
 #define BLE_UUID_NUS_TX_CHARACTERISTIC	0x0003	/**< The UUID of the TX Characteristic. */
 #define BLE_UUID_NUS_RX_CHARACTERISTIC	0x0002	 /**< The UUID of the RX Characteristic. */
 
@@ -68,12 +68,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 							0xe4, 0x11, 0x7c, 0x28, 0x00, 0x00, 0x00, 0x00 }
 
 /// Default BlueIO control/data service UUID
-#define BLUEIO_UUID_SERVICE 			0x1		//!< BlueIO default service
+#define BLUEIO_UUID_SERVICE 		0x1		//!< BlueIO default service
 #define BLUEIO_UUID_RDCHAR 			0x2		//!< Data characteristic
 #define BLUEIO_UUID_WRCHAR 			0x3		//!< Command control characteristic
 
 /// Default BLueIO UART service UUID
-#define BLUEIO_UUID_UART_SERVICE 	0x101		//!< BlueIO Uart service
+#define BLUEIO_UUID_UART_SERVICE 		0x101		//!< BlueIO Uart service
 #define BLUEIO_UUID_UART_RX_CHAR		0x102		//!< UART Rx characteristic
 #define BLUEIO_UUID_UART_TX_CHAR		0x103		//!< UART Tx characteristic
 
@@ -81,15 +81,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLUEIOSRVC_DATA_ID_BLECFG			0							//!< BLE configuration settings
 #define BLUEIOSRVC_DATA_ID_TPH				BLUEIO_DATA_TYPE_TPH			//!< Environmental sensor data (Temperature, Pressure, Humidity)
 #define BLUEIOSRVC_DATA_ID_GAS				BLUEIO_DATA_TYPE_GAS			//!< Gas sensor data
-#define BLUEIOSRVC_DATA_ID_ACCEL				BLUEIO_DATA_TYPE_ACCEL		//!< Accelerometer sensor data
+#define BLUEIOSRVC_DATA_ID_ACCEL			BLUEIO_DATA_TYPE_ACCEL		//!< Accelerometer sensor data
 #define BLUEIOSRVC_DATA_ID_GYRO				BLUEIO_DATA_TYPE_GYRO		//!< Gyroscope sensor data
 #define BLUEIOSRVC_DATA_ID_MAG				BLUEIO_DATA_TYPE_MAG			//!< Magnetometer sensor data
-#define BLUEIOSRVC_DATA_ID_PROXY				BLUEIO_DATA_TYPE_PROXY		//!< Proximity sensor data
+#define BLUEIOSRVC_DATA_ID_PROXY			BLUEIO_DATA_TYPE_PROXY		//!< Proximity sensor data
 #define BLUEIOSRVC_DATA_ID_ADC				BLUEIO_DATA_TYPE_ADC			//!< Analog converter data
 #define BLUEIOSRVC_DATA_ID_GPIO				BLUEIO_DATA_TYPE_GPIO		//!< GPIO pins data
 #define BLUEIOSRVC_DATA_ID_BUT				BLUEIO_DATA_TYPE_BUT			//!< Button state
-#define BLUEIOSRVC_DATA_ID_MOT              	BLUEIO_DATA_TYPE_MOT			//!< Motion detection
-#define BLUEIOSRVC_DATA_ID_AUDIO				BLUEIO_DATA_TYPE_AUDIO		//!< Audio data
+#define BLUEIOSRVC_DATA_ID_MOT              BLUEIO_DATA_TYPE_MOT			//!< Motion detection
+#define BLUEIOSRVC_DATA_ID_AUDIO			BLUEIO_DATA_TYPE_AUDIO		//!< Audio data
 #define BLUEIOSRVC_DATA_ID_DFU				0xFF							//!< Re-boot to DFU mode
 
 #define BLUEIOSRVC_DATA_LEN_MAX				48

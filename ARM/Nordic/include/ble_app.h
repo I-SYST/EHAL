@@ -87,8 +87,8 @@ typedef enum __BleApp_SecurityType {
 	BLEAPP_SECTYPE_SIGNED_MITM,			//!< AES signed encryption with MITM
 } BLEAPP_SECTYPE;
 
-#define BLEAPP_SECEXCHG_NONE				0
-#define BLEAPP_SECEXCHG_KEYBOARD			(1<<0)
+#define BLEAPP_SECEXCHG_NONE			0
+#define BLEAPP_SECEXCHG_KEYBOARD		(1<<0)
 #define BLEAPP_SECEXCHG_DISPLAY			(1<<1)
 #define BLEAPP_SECEXCHG_OOB				(1<<2)
 
@@ -119,28 +119,30 @@ typedef struct __BleApp_Config {
 	nrf_clock_lf_cfg_t ClkCfg;		//!< Clock config
 	int CentLinkCount;				//!< Number of central link
 	int	PeriLinkCount;				//!< Number of peripheral link
-	BLEAPP_MODE AppMode;				//!< App use scheduler, rtos
+	BLEAPP_MODE AppMode;			//!< App use scheduler, rtos
 	const char *pDevName;			//!< Device name
 	uint16_t VendorID;				//!< PnP Bluetooth/USB vendor id. iBeacon mode, this is Major value
 	uint16_t ProductId;				//!< PnP product ID. iBeacon mode, this is Minor value
-	uint16_t ProductVer;				//!< PnP product version
+	uint16_t ProductVer;			//!< PnP product version
 	bool bEnDevInfoService;			//!< Enable device information service (DIS)
 	const BLEAPP_DEVDESC *pDevDesc;	//!< Pointer device info descriptor
-	const uint8_t *pManData;			//!< Manufacture specific data to advertise
-	int ManDataLen;					//!< Length of manufacture specific data
+	const uint8_t *pAdvManData;		//!< Manufacture specific data to advertise
+	int AdvManDataLen;				//!< Length of manufacture specific data
+	const uint8_t *pSrManData;		//!< Addition Manufacture specific data to advertise in scan response
+	int SrManDataLen;				//!< Length of manufacture specific data in scan response
 	BLEAPP_SECTYPE SecType;			//!< Secure connection type
 	uint8_t SecExchg;				//!< Sec key exchange
-	const ble_uuid_t *pAdvUuids;		//!< Service uuids to advertise
+	const ble_uuid_t *pAdvUuids;	//!< Service uuids to advertise
 	int NbAdvUuid;					//!< Total number of uuids
 	uint32_t AdvInterval;			//!< In msec
-	uint32_t AdvTimeout;				//!< In sec
+	uint32_t AdvTimeout;			//!< In sec
 	uint32_t AdvSlowInterval;		//!< Slow advertising interval, if > 0, fallback to
 									//!< slow interval on adv timeout and advertise until connected
-	uint32_t ConnIntervalMin;   		//!< Min. connection interval
-	uint32_t ConnIntervalMax;   		//!< Max connection interval
-	int ConnLedPort;					//!< Connection LED port number
+	uint32_t ConnIntervalMin;   	//!< Min. connection interval
+	uint32_t ConnIntervalMax;   	//!< Max connection interval
+	int ConnLedPort;				//!< Connection LED port number
 	int ConnLedPin;					//!< Connection LED pin number
-	int TxPower;						//!< Tx power in dBm
+	int TxPower;					//!< Tx power in dBm
 	uint32_t (*SDEvtHandler)(void) ;//!< Require for BLEAPP_MODE_RTOS
 	int	MaxMtu;						//!< Max MTU size or 0 for default
 	int PeriphDevCnt;				//!< Max number of peripheral connection
@@ -215,10 +217,11 @@ void BleAppEnterDfu();
 void BleAppRun();
 uint16_t BleAppGetConnHandle();
 void BleAppGapDeviceNameSet(const char* ppDeviceName);
-void BleAppAdvManDataSet(uint8_t *pData, int Len);
+void BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int SrLen);
 void BleAppAdvTimeoutHandler();
 void BleAppAdvStart(BLEAPP_ADVMODE AdvMode);
 void BleAppAdvStop();
+void BleAppScanRespManDataSet(uint8_t *pData, int Len);
 
 #ifdef __cplusplus
 }

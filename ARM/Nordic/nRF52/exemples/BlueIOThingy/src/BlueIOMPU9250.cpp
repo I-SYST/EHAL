@@ -45,7 +45,7 @@ static const GYROSENSOR_CFG s_GyroCfg = {
 
 static const MAGSENSOR_CFG s_MagCfg = {
 	.DevAddr = 0,	// SPI CS idx
-	.OpMode = SENSOR_OPMODE_SINGLE,
+	.OpMode = SENSOR_OPMODE_CONTINUOUS,
 	.Freq = 10000,
 	.Precision = 16,
 };
@@ -119,6 +119,18 @@ struct platform_data_s {
     signed char orientation[9];
 };
 
+/**@brief Acclerometer rotation matrix.
+ *
+ * @note Accellerometer inverted to get positive readings when axis is aligned with g (down).
+ */
+static struct platform_data_s s_accel_pdata =
+{
+    .orientation = {  0,  1,  0,
+                      -1,  0,  0,
+                      0,  0, -1}
+};
+
+
 /* The sensors can be mounted onto the board in any orientation. The mounting
  * matrix seen below tells the MPL how to rotate the raw data from the
  * driver(s).
@@ -126,17 +138,32 @@ struct platform_data_s {
  * boards at Invensense. If needed, please modify the matrices to match the
  * chip-to-body matrix for your particular set up.
  */
+#if 1
 static struct platform_data_s gyro_pdata = {
-    .orientation = { 1, 0, 0,
-                     0, 1, 0,
+    .orientation = { 0, 1, 0,
+                     -1, 0, 0,
+                     0, 0, -1}
+};
+#else
+// BLUEIO-TAG-EVIM
+static struct platform_data_s gyro_pdata = {
+    .orientation = { 0, 1, 0,
+                     1, 0, 0,
                      0, 0, 1}
 };
+#endif
 
 #if defined MPU9150 || defined MPU9250
 static struct platform_data_s compass_pdata = {
-    .orientation = { 0, 1, 0,
-                     1, 0, 0,
+#if 1
+	.orientation = { 1, 0, 0,
+                     0, 1, 0,
                      0, 0, -1}
+#else
+    .orientation = { 1, 0, 0,
+                     0, -1, 0,
+                     0, 0, -1}
+#endif
 };
 #define COMPASS_ENABLED 1
 #elif defined AK8975_SECONDARY
@@ -549,18 +576,20 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
 	g_pSpi = (SPI*)pIntrF;
 	s_pTimer = pTimer;
 
+
+	g_Mpu9250.Init(s_AccelCfg, pIntrF, pTimer);
+	g_Mpu9250.Init(s_GyroCfg, NULL);
+	g_Mpu9250.Init(s_MagCfg, NULL);
+
 	IOPinConfig(BLUEIO_TAG_EVIM_IMU_INT_PORT, BLUEIO_TAG_EVIM_IMU_INT_PIN, BLUEIO_TAG_EVIM_IMU_INT_PINOP,
 			IOPINDIR_INPUT, IOPINRES_PULLDOWN, IOPINTYPE_NORMAL);
 	IOPinEnableInterrupt(BLUEIO_TAG_EVIM_IMU_INT_NO, 6, BLUEIO_TAG_EVIM_IMU_INT_PORT,
 						 BLUEIO_TAG_EVIM_IMU_INT_PIN, IOPINSENSE_LOW_TRANSITION,
 						 MPU9250IntHandler);
 
-	g_Mpu9250.Init(s_AccelCfg, pIntrF, pTimer);
-	g_Mpu9250.Init(s_GyroCfg, NULL);
-	g_Mpu9250.Init(s_MagCfg, NULL);
 
 
-	//g_Mpu9250.Enable();
+//	g_Mpu9250.Enable();
 
 #if 0
 	while (1)
@@ -594,28 +623,28 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
 
     /* This algorithm updates the accel biases when in motion. A more accurate
      * bias measurement can be made when running the self-test. */
-   // err_code = inv_enable_in_use_auto_calibration();
+    //err_code = inv_enable_in_use_auto_calibration();
     //RETURN_IF_ERROR(err_code);
 
     /* Compute 6-axis and 9-axis quaternions. */
-   // err_code = inv_enable_quaternion();
+    //err_code = inv_enable_quaternion();
     //RETURN_IF_ERROR(err_code);
 
-    //err_code = inv_enable_9x_sensor_fusion();
+   // err_code = inv_enable_9x_sensor_fusion();
     //RETURN_IF_ERROR(err_code);
 
     /* Update gyro biases when not in motion. */
-    //err_code = inv_enable_fast_nomot();
+   //err_code = inv_enable_fast_nomot();
     //RETURN_IF_ERROR(err_code);
 
     /* Update gyro biases when temperature changes. */
-    //err_code = inv_enable_gyro_tc();
+   // err_code = inv_enable_gyro_tc();
     //RETURN_IF_ERROR(err_code);
 
     /* Set the default compass bias to compensate for hard iron effects.
     1 places a low level on trust on the compass.
     The value will vary between Thingys, but this will provide some hard iron correction. */
-  //  inv_set_compass_bias(COMPASS_BIAS, 1);
+    //inv_set_compass_bias(COMPASS_BIAS, 1);
 
     #if NRF_LOG_ENABLED
         print_sensor_status();
@@ -693,12 +722,12 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
 
     /* Set chip-to-body orientation matrix.
      * Set hardware units to dps/g's/degrees scaling factor. */
-    inv_set_gyro_orientation_and_scale(
+/*    inv_set_gyro_orientation_and_scale(
             inv_orientation_matrix_to_scalar(gyro_pdata.orientation),
             (long)gyro_fsr<<15);
     inv_set_accel_orientation_and_scale(
-            inv_orientation_matrix_to_scalar(gyro_pdata.orientation),
-            (long)accel_fsr<<15);
+            inv_orientation_matrix_to_scalar(s_accel_pdata.orientation),
+            (long)accel_fsr<<15);*/
     inv_set_compass_orientation_and_scale(
             inv_orientation_matrix_to_scalar(compass_pdata.orientation),
             (long)compass_fsr<<15);
@@ -741,7 +770,7 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
     err_code = mpu_set_dmp_state(1);
 
     hal.dmp_on = 1;
-
+#if 0
     //RETURN_IF_ERROR(err_code);
     if (hal.motion_int_mode) {
         /* Enable motion interrupt. */
@@ -757,8 +786,16 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
         mpu_lp_motion_interrupt(0, 0, 0);
         hal.motion_int_mode = 0;
     }
+#endif
 
 #endif
+/*
+    IOPinConfig(BLUEIO_TAG_EVIM_IMU_INT_PORT, BLUEIO_TAG_EVIM_IMU_INT_PIN, BLUEIO_TAG_EVIM_IMU_INT_PINOP,
+			IOPINDIR_INPUT, IOPINRES_PULLDOWN, IOPINTYPE_NORMAL);
+	IOPinEnableInterrupt(BLUEIO_TAG_EVIM_IMU_INT_NO, 6, BLUEIO_TAG_EVIM_IMU_INT_PORT,
+						 BLUEIO_TAG_EVIM_IMU_INT_PIN, IOPINSENSE_LOW_TRANSITION,
+						 MPU9250IntHandler);
+*/
 }
 
 int Mpu9250AuxRead(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
@@ -891,6 +928,11 @@ int drv_mpu9250_ms_get(unsigned long * p_count)
 int drv_mpu9250_int_register(struct int_param_s * p_int_param)
 {
 	printf("drv_mpu9250_int_register\r\n");
+	IOPinConfig(BLUEIO_TAG_EVIM_IMU_INT_PORT, BLUEIO_TAG_EVIM_IMU_INT_PIN, BLUEIO_TAG_EVIM_IMU_INT_PINOP,
+			IOPINDIR_INPUT, IOPINRES_PULLDOWN, IOPINTYPE_NORMAL);
+	IOPinEnableInterrupt(BLUEIO_TAG_EVIM_IMU_INT_NO, 6, BLUEIO_TAG_EVIM_IMU_INT_PORT,
+						 BLUEIO_TAG_EVIM_IMU_INT_PIN, IOPINSENSE_LOW_TRANSITION,
+						 MPU9250IntHandler);
 }
 
 

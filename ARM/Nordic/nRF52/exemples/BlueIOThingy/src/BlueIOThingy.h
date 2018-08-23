@@ -56,7 +56,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLE_UUID_TCS_SERVICE				0x0100                      /**< The UUID of the Thingy Configuration Service. */
 
 
-
 BLESRVC *GetConfSrvcInstance();
 uint32_t ConfSrvcInit();
 BLESRVC *GetUISrvcInstance();

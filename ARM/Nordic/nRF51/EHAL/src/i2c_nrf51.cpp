@@ -324,7 +324,7 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
     reg->PSELSCL = pCfgData->Pins[I2C_SCL_IOPIN_IDX].PinNo;
     reg->PSELSDA = pCfgData->Pins[I2C_SDA_IOPIN_IDX].PinNo;
 
-    pDev->MaxRetry = pCfgData->MaxRetry;
+    //pDev->MaxRetry = pCfgData->MaxRetry;
     pDev->Mode = pCfgData->Mode;
     pDev->NbSlaveAddr = pCfgData->NbSlaveAddr;
     memcpy(pDev->SlaveAddr, pCfgData->SlaveAddr, pDev->NbSlaveAddr * sizeof(uint8_t));

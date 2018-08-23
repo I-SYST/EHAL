@@ -66,15 +66,34 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ORG_UNIQUE_ID                   ISYST_BLUETOOTH_ID                  /**< Organizational Unique ID, part of System ID. Will be passed to Device Information Service. */
 
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(64, UNIT_0_625_MS)	/**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
-#define APP_ADV_TIMEOUT_IN_SECONDS      180                                 /**< The advertising timeout (in units of seconds). */
+
+#if (NRF_SD_BLE_API_VERSION < 6)
+#define APP_ADV_TIMEOUT			      	180										/**< The advertising timeout (in units of seconds). */
+#else
+#define APP_ADV_TIMEOUT					MSEC_TO_UNITS(180000, UNIT_10_MS)		/**< The advertising timeout (in units of 10ms seconds). */
+#endif
 
 #define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)     /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
 #define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)     /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
 
+#ifdef NORDIC_NUS_SERVICE
+#define BLE_UART_UUID_BASE			NUS_BASE_UUID
+
+#define BLE_UART_UUID_SERVICE		BLE_UUID_NUS_SERVICE			/**< The UUID of the Nordic UART Service. */
+#define BLE_UART_UUID_TX_CHAR		BLE_UUID_NUS_TX_CHARACTERISTIC	/**< The UUID of the TX Characteristic. */
+#define BLE_UART_UUID_RX_CHAR		BLE_UUID_NUS_RX_CHARACTERISTIC	/**< The UUID of the RX Characteristic. */
+#else
+#define BLE_UART_UUID_BASE			BLUEIO_UUID_BASE
+
+#define BLE_UART_UUID_SERVICE		BLUEIO_UUID_SERVICE		//!< BlueIO default service
+#define BLE_UART_UUID_TX_CHAR		BLUEIO_UUID_RDCHAR		//!< Data characteristic
+#define BLE_UART_UUID_RX_CHAR		BLUEIO_UUID_WRCHAR		//!< Command control characteristic
+#endif
+
 void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
 
 static const ble_uuid_t  s_AdvUuids[] = {
-	{BLUEIO_UUID_UART_SERVICE, BLE_UUID_TYPE_VENDOR_BEGIN}
+	{BLE_UART_UUID_SERVICE, BLE_UUID_TYPE_VENDOR_BEGIN}
 };
 
 static const char s_RxCharDescString[] = {
@@ -91,7 +110,7 @@ uint8_t g_ManData[8];
 BLESRVC_CHAR g_UartChars[] = {
 	{
 		// Read characteristic
-		BLUEIO_UUID_UART_RX_CHAR,
+		BLE_UART_UUID_RX_CHAR,//BLUEIO_UUID_UART_RX_CHAR,
 		20,
 		BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN,
 		s_RxCharDescString,	// char UTF-8 description string
@@ -103,7 +122,7 @@ BLESRVC_CHAR g_UartChars[] = {
 	},
 	{
 		// Write characteristic
-		BLUEIO_UUID_UART_TX_CHAR,// char UUID
+		BLE_UART_UUID_TX_CHAR,//BLUEIO_UUID_UART_TX_CHAR,// char UUID
 		20,						// char max data length
 		BLESVC_CHAR_PROP_WRITEWORESP,// char properties define by BLUEIOSVC_CHAR_PROP_...
 		s_TxCharDescString,		// char UTF-8 description string
@@ -115,16 +134,18 @@ BLESRVC_CHAR g_UartChars[] = {
 	},
 };
 
+static const int s_BleUartNbChar = sizeof(g_UartChars) / sizeof(BLESRVC_CHAR);
+
 uint8_t g_LWrBuffer[512];
 
 /// Service definition
 const BLESRVC_CFG s_UartSrvcCfg = {
 	BLESRVC_SECTYPE_NONE,		// Secure or Open service/char
-	BLUEIO_UUID_BASE, 			// Base UUID
-	BLUEIO_UUID_UART_SERVICE,	// Service UUID
-	2, 							// Total number of characteristics for the service
-	g_UartChars,					// Pointer a an array of characteristic
-	g_LWrBuffer,					// pointer to user long write buffer
+	BLE_UART_UUID_BASE,			// Base UUID
+	BLE_UART_UUID_SERVICE,		// Service UUID
+	s_BleUartNbChar,			// Total number of characteristics for the service
+	g_UartChars,				// Pointer a an array of characteristic
+	g_LWrBuffer,				// pointer to user long write buffer
 	sizeof(g_LWrBuffer)			// long write buffer size
 };
 
@@ -133,7 +154,7 @@ BLESRVC g_UartBleSrvc;
 const BLEAPP_DEVDESC s_UartBleDevDesc {
 	MODEL_NAME,           		// Model name
 	MANUFACTURER_NAME,			// Manufacturer name
-	"",							// Serial number string
+	"123",							// Serial number string
 	"0.0",						// Firmware version string
 	"0.0",						// Hardware version string
 };
@@ -141,7 +162,7 @@ const BLEAPP_DEVDESC s_UartBleDevDesc {
 const BLEAPP_CFG s_BleAppCfg = {
 	{ // Clock config nrf_clock_lf_cfg_t
 #ifdef IMM_NRF51822
-		NRF_CLOCK_LF_SRC_RC,		// Source RC
+		NRF_CLOCK_LF_SRC_RC,	// Source RC
 		1, 1, 0
 #else
 		NRF_CLOCK_LF_SRC_XTAL,	// Source 32KHz XTAL
@@ -160,20 +181,22 @@ const BLEAPP_CFG s_BleAppCfg = {
 	&s_UartBleDevDesc,
 	g_ManData,				// Manufacture specific data to advertise
 	sizeof(g_ManData),		// Length of manufacture specific data
-	BLEAPP_SECTYPE_STATICKEY_MITM,//BLEAPP_SECTYPE_NONE,    // Secure connection type
+	NULL,
+	0,
+	BLEAPP_SECTYPE_NONE,//BLEAPP_SECTYPE_STATICKEY_MITM,//BLEAPP_SECTYPE_NONE,    // Secure connection type
 	BLEAPP_SECEXCHG_NONE,	// Security key exchange
 	NULL,      				// Service uuids to advertise
 	0, 						// Total number of uuids
 	APP_ADV_INTERVAL,		// Advertising interval in msec
-	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
+	APP_ADV_TIMEOUT,		// Advertising timeout in sec
 	0,						// Slow advertising interval, if > 0, fallback to
 							// slow interval on adv timeout and advertise until connected
 	MIN_CONN_INTERVAL,
 	MAX_CONN_INTERVAL,
-	BLUEIO_CONNECT_LED_PORT,	// Led port nuber
+	BLUEIO_CONNECT_LED_PORT,// Led port nuber
 	BLUEIO_CONNECT_LED_PIN,	// Led pin number
 	0,						// Tx power
-	NULL						// RTOS Softdevice handler
+	NULL					// RTOS Softdevice handler
 };
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
@@ -275,10 +298,10 @@ void HardwareInit()
 void BleAppInitUserData()
 {
 	// Add passkey pairing
-    ble_opt_t opt;
-    opt.gap_opt.passkey.p_passkey = (uint8_t*)"123456";
-	uint32_t err_code =  sd_ble_opt_set(BLE_GAP_OPT_PASSKEY, &opt);
-	APP_ERROR_CHECK(err_code);
+    //ble_opt_t opt;
+    //opt.gap_opt.passkey.p_passkey = (uint8_t*)"123456";
+	//uint32_t err_code =  sd_ble_opt_set(BLE_GAP_OPT_PASSKEY, &opt);
+	//APP_ERROR_CHECK(err_code);
 
 }
 

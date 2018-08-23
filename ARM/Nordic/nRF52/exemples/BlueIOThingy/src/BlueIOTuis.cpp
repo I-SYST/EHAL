@@ -35,9 +35,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <inttypes.h>
 
 #include "ble_service.h"
+#include "iopinctrl.h"
 #include "board.h"
 #include "BlueIOThingy.h"
 
+void LedCharWrhandler(BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len);
 void ButtonCharSetNotify(BLESRVC *pBleSvc, bool bEnable);
 
 // TUIS (Thingy User Interface Service characteristics)
@@ -93,7 +95,7 @@ static BLESRVC_CHAR s_UIChars[] = {
         sizeof(BLE_TUIS_LED),
 		BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_READ,
         NULL,    					// char UTF-8 description string
-        NULL,                       // Callback for write char, set to NULL for read char
+		LedCharWrhandler,           // Callback for write char, set to NULL for read char
         NULL,                       // Callback on set notification
         NULL,                       // Tx completed callback
 		NULL,//(uint8_t*)&s_ThingyVersion,                       // pointer to char default values
@@ -150,9 +152,31 @@ uint32_t UISrvcInit()
 	return BleSrvcInit(&g_UISrvc, &s_UISrvcCfg);
 }
 
+void LedCharWrhandler(BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len)
+{
+	BLE_TUIS_LED *leddata = (BLE_TUIS_LED*)pData;
+
+	switch (leddata->Mode)
+	{
+		case BLE_TUIS_LED_MODE_OFF:
+			IOPinSet(BLUEIO_TAG_EVIM_LED2_RED_PORT, BLUEIO_TAG_EVIM_LED2_RED_PIN);
+			IOPinSet(BLUEIO_TAG_EVIM_LED2_GREEN_PORT, BLUEIO_TAG_EVIM_LED2_GREEN_PIN);
+			IOPinSet(BLUEIO_TAG_EVIM_LED2_BLUE_PORT, BLUEIO_TAG_EVIM_LED2_BLUE_PIN);
+			break;
+		case BLE_TUIS_LED_MODE_CONST:
+			IOPinClear(BLUEIO_TAG_EVIM_LED2_RED_PORT, BLUEIO_TAG_EVIM_LED2_RED_PIN);
+			IOPinClear(BLUEIO_TAG_EVIM_LED2_GREEN_PORT, BLUEIO_TAG_EVIM_LED2_GREEN_PIN);
+			IOPinClear(BLUEIO_TAG_EVIM_LED2_BLUE_PORT, BLUEIO_TAG_EVIM_LED2_BLUE_PIN);
+			break;
+		case BLE_TUIS_LED_MODE_BREATHE:
+			break;
+		case BLE_TUIS_LED_MODE_E_ONE_SHOT:
+			break;
+	}
+}
+
 void ButtonCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
 	s_UIChars[UICHAR_IDX_BUTTON].bNotify = true;
-
 }
 

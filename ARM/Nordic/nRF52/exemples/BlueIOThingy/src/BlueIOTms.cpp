@@ -42,7 +42,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "BlueIOThingy.h"
 #include "BlueIOMPU9250.h"
 
-void ImuConfSrvcWrhandler(BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len);
+void ImuConfCharWrhandler(BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len);
 void ImuTapCharSetNotify(BLESRVC *pBleSvc, bool bEnable);
 void ImuOrientCharSetNotify(BLESRVC *pBleSvc, bool bEnable);
 void ImuQuaternionCharSetNotify(BLESRVC *pBleSvc, bool bEnable);
@@ -201,7 +201,7 @@ BLESRVC_CHAR g_ImuChars[] = {
 		BLE_TMS_MAX_DATA_LEN,
         BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_VARLEN,
 		s_ImuConfigCharDescString,  // char UTF-8 description string
-        ImuConfSrvcWrhandler,       // Callback for write char, set to NULL for read char
+		ImuConfCharWrhandler,       // Callback for write char, set to NULL for read char
         NULL,                       // Callback on set notification
         NULL,                       // Tx completed callback
         NULL,                       // pointer to char default values
@@ -345,7 +345,7 @@ uint32_t ImuSrvcInit()
 	return BleSrvcInit(&g_ImuSrvc, &s_ImuSrvcCfg);
 }
 
-void ImuConfSrvcWrhandler(BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len)
+void ImuConfCharWrhandler(BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len)
 {
 
 }
@@ -374,11 +374,17 @@ void ImuQuatDataSend(long Quat[4])
 		return;
 
 	long q[4];
-
+#if 0
 	q[0] = Quat[0];
 	q[1] = Quat[2];
 	q[2] = Quat[1];
 	q[3] = -Quat[3];
+#else
+	q[0] = Quat[0];
+	q[1] = Quat[1];
+	q[2] = Quat[2];
+	q[3] = Quat[3];
+#endif
 
 	uint32_t err = BleSrvcCharNotify(&g_ImuSrvc, IMUCHAR_IDX_QUAT, (uint8_t*)q, sizeof(long) * 4);
 	if (err != 0)

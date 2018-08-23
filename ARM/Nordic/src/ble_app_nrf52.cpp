@@ -122,6 +122,7 @@ typedef struct _BleAppData {
 	ble_advdata_t AdvData;
 	ble_advdata_t SrData;
     ble_advdata_manuf_data_t ManufData;
+    ble_advdata_manuf_data_t SRManufData;
 	int MaxMtu;
 	bool bSecure;
 	bool bAdvertising;
@@ -995,26 +996,74 @@ static void sec_req_timeout_handler(void * p_context)
     }
 }
 
-void BleAppAdvManDataSet(uint8_t *pData, int Len)
+void BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int SrLen)
+{
+	uint32_t err;
+
+	if (pAdvData && AdvLen > 0)
+	{
+		int l = min(AdvLen, BLE_GAP_ADV_SET_DATA_SIZE_MAX);
+
+		memcpy(g_BleAppData.ManufData.data.p_data, pAdvData, l);
+
+		err = ble_advdata_encode(&g_BleAppData.AdvData, g_AdvInstance.adv_data.adv_data.p_data, &g_AdvInstance.adv_data.adv_data.len);
+		APP_ERROR_CHECK(err);
+
+	}
+
+	if (pSrData && SrLen > 0)
+	{
+		int l = min(SrLen, BLE_GAP_ADV_SET_DATA_SIZE_MAX);
+
+		memcpy(g_BleAppData.SRManufData.data.p_data, pSrData, l);
+
+		uint32_t err = ble_advdata_encode(&g_BleAppData.SrData, g_AdvInstance.adv_data.scan_rsp_data.p_data,
+										 &g_AdvInstance.adv_data.scan_rsp_data.len);
+		APP_ERROR_CHECK(err);
+	}
+
+	// SDK15 doesn't allow dynamicaly updating adv data.  Have to stop and re-start advertising
+	if (g_BleAppData.bAdvertising == true)
+	{
+	   sd_ble_gap_adv_stop(g_AdvInstance.adv_handle);
+	}
+
+	err = sd_ble_gap_adv_set_configure(&g_AdvInstance.adv_handle, &g_AdvInstance.adv_data, NULL);
+
+	if (g_BleAppData.bAdvertising == true)
+	{
+	   BleAppAdvStart(BLEAPP_ADVMODE_FAST);
+	}
+
+	#if 0
+    int l = min(Len, BLE_GAP_ADV_MAX_SIZE);
+
+    memcpy(g_AdvInstance.manuf_data_array, pData, l);
+    uint32_t ret = ble_advdata_set(&(g_AdvInstance.advdata), &g_BleAppData.SRData);
+#endif
+}
+
+void BleAppScanRespManDataSet(uint8_t *pData, int Len)
 {
    int l = min(Len, BLE_GAP_ADV_SET_DATA_SIZE_MAX);
 
-   memcpy(g_BleAppData.ManufData.data.p_data, pData, l);
+   memcpy(g_BleAppData.SRManufData.data.p_data, pData, l);
 
-   uint32_t err = ble_advdata_encode(&g_BleAppData.AdvData, g_AdvInstance.adv_data.adv_data.p_data, &g_AdvInstance.adv_data.adv_data.len);
+   uint32_t err = ble_advdata_encode(&g_BleAppData.SrData, g_AdvInstance.adv_data.scan_rsp_data.p_data,
+		   	   	   	   	   	   	   	 &g_AdvInstance.adv_data.scan_rsp_data.len);
    APP_ERROR_CHECK(err);
 
-   // SDK15 doesn't allow dynamicaly updating adv data.  Have to stop and re-start advertising
+   // SDK15 doesn't allow dynamically updating adv data.  Have to stop and re-start advertising
    if (g_BleAppData.bAdvertising == true)
    {
-	   sd_ble_gap_adv_stop(g_AdvInstance.adv_handle);
+//	   sd_ble_gap_adv_stop(g_AdvInstance.adv_handle);
    }
 
-   err = sd_ble_gap_adv_set_configure(&g_AdvInstance.adv_handle, &g_AdvInstance.adv_data, NULL);
+//   err = sd_ble_gap_adv_set_configure(&g_AdvInstance.adv_handle, &g_AdvInstance.adv_data, NULL);
 
    if (g_BleAppData.bAdvertising == true)
    {
-	   BleAppAdvStart(BLEAPP_ADVMODE_FAST);
+//	   BleAppAdvStart(BLEAPP_ADVMODE_FAST);
    }
 
 #if 0
@@ -1057,8 +1106,11 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     memset(&initdata, 0, sizeof(ble_advertising_init_t));
 
     g_BleAppData.ManufData.company_identifier = pCfg->VendorID;
-    g_BleAppData.ManufData.data.p_data = (uint8_t*)pCfg->pManData;
-    g_BleAppData.ManufData.data.size = pCfg->ManDataLen;
+    g_BleAppData.ManufData.data.p_data = (uint8_t*)pCfg->pAdvManData;
+    g_BleAppData.ManufData.data.size = pCfg->AdvManDataLen;
+    g_BleAppData.SRManufData.company_identifier = pCfg->VendorID;
+    g_BleAppData.SRManufData.data.p_data = (uint8_t*)pCfg->pSrManData;
+    g_BleAppData.SRManufData.data.size = pCfg->SrManDataLen;
 
     // Build advertising data struct to pass into @ref ble_advertising_init.
 
@@ -1084,18 +1136,22 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     {
         if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
         {
-        		initdata.advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-        		initdata.advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
-			if (pCfg->pManData != NULL)
+        	initdata.advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+        	initdata.advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+			//if (pCfg->pAdvManData != NULL)
 			{
-				initdata.srdata.p_manuf_specific_data = &g_BleAppData.ManufData;
+			//	initdata.srdata.p_manuf_specific_data = &g_BleAppData.ManufData;
 			}
         }
-        else
+        //else
         {
-			if (pCfg->pManData != NULL)
+			if (pCfg->pAdvManData != NULL)
 			{
 				initdata.advdata.p_manuf_specific_data = &g_BleAppData.ManufData;
+			}
+			if (pCfg->pSrManData != NULL)
+			{
+	        	initdata.srdata.p_manuf_specific_data = &g_BleAppData.SRManufData;
 			}
         }
     }
@@ -1103,12 +1159,16 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     {
         if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
         {
-        		initdata.srdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-        		initdata.srdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+			initdata.srdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+			initdata.srdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
         }
-        if (pCfg->pManData != NULL)
+        if (pCfg->pAdvManData != NULL)
         {
-        		initdata.advdata.p_manuf_specific_data = &g_BleAppData.ManufData;
+        	initdata.advdata.p_manuf_specific_data = &g_BleAppData.ManufData;
+        }
+		if (pCfg->pAdvManData != NULL)
+		{
+        	initdata.srdata.p_manuf_specific_data = &g_BleAppData.SRManufData;
         }
     }
 

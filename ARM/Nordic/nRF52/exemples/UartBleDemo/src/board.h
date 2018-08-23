@@ -10,7 +10,7 @@
 
 #include "blueio_board.h"
 
-#define NORDIC_DK
+//#define NORDIC_DK
 
 #ifdef NORDIC_DK
 // Nordic DK PCA10040 board
@@ -36,10 +36,10 @@
 #else
 // BlueIO breakout board
 #define UART_RX_PORT		BLUEIO_UART_RX_PORT
-#define UART_RX_PIN			BLUEIO_UART_RX_PIN
+#define UART_RX_PIN			BLUEIO_UART_TX_PIN
 #define UART_RX_PINOP		BLUEIO_UART_RX_PINOP
 #define UART_TX_PORT		BLUEIO_UART_TX_PORT
-#define UART_TX_PIN			BLUEIO_UART_TX_PIN
+#define UART_TX_PIN			BLUEIO_UART_RX_PIN
 #define UART_TX_PINOP		BLUEIO_UART_TX_PINOP
 #define UART_CTS_PORT		BLUEIO_UART_CTS_PORT
 #define UART_CTS_PIN		BLUEIO_UART_CTS_PIN

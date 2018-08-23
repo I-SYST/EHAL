@@ -148,6 +148,8 @@ const BLEAPP_CFG s_BleAppCfg = {
 	NULL,
 	(uint8_t*)&g_AdvDataBuff,   // Manufacture specific data to advertise
 	sizeof(g_AdvDataBuff),      // Length of manufacture specific data
+	NULL,
+	0,
 	BLEAPP_SECTYPE_NONE,    // Secure connection type
 	BLEAPP_SECEXCHG_NONE,   // Security key exchange
 	NULL,      				// Service uuids to advertise
@@ -218,6 +220,7 @@ static const I2CCFG s_I2cCfg = {
 	5,			// Retry
 	0,			// Number of slave addresses
 	{0,},		// Slave addresses
+	false,
 	false,		// Use interrupt
 	APP_IRQ_PRIORITY_LOW,			// Interrupt prio
 	NULL		// Event callback
@@ -277,7 +280,7 @@ void ReadPTHData()
 	static uint32_t gascnt = 0;
 	TPHSENSOR_DATA data;
 	GASSENSOR_DATA gdata;
-#if 0
+#if 1
 	g_TphSensor.Read(data);
 
 
@@ -310,7 +313,7 @@ void ReadPTHData()
 #endif
 	// Update advertisement data
 //	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
-	BleAppAdvManDataSet((uint8_t*)&gascnt, sizeof(gascnt));
+	BleAppAdvManDataSet((uint8_t*)&gascnt, sizeof(gascnt), NULL, 0);
 
 	gascnt++;
 }
@@ -380,7 +383,6 @@ void HardwareInit()
 
 		return;
 	}
-
 
 	// Inititalize sensor
     g_TphSensor.Init(s_TphSensorCfg, g_pIntrf, &g_Timer);

@@ -834,7 +834,7 @@ static void sec_req_timeout_handler(void * p_context)
     }
 }
 
-void BleAppAdvManDataSet(uint8_t *pData, int Len)
+void BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int SrLen)
 {
    uint32_t ret = ble_advdata_set(&g_BleAppData.AdvData, &g_BleAppData.SRData);
    APP_ERROR_CHECK(ret);
@@ -865,8 +865,8 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     memset(&g_BleAppData.SRData, 0, sizeof(g_BleAppData.SRData));
 
     s_BleAppManData.company_identifier = pCfg->VendorID;
-    s_BleAppManData.data.p_data = (uint8_t*)pCfg->pManData;
-    s_BleAppManData.data.size = pCfg->ManDataLen;
+    s_BleAppManData.data.p_data = (uint8_t*)pCfg->pAdvManData;
+    s_BleAppManData.data.size = pCfg->AdvManDataLen;
 
     g_BleAppData.AdvData.include_appearance = false;
     g_BleAppData.AdvData.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
@@ -892,14 +892,14 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
         {
         	g_BleAppData.AdvData.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
         	g_BleAppData.AdvData.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
-			if (pCfg->pManData != NULL)
+			if (pCfg->pAdvManData != NULL)
 			{
 				g_BleAppData.SRData.p_manuf_specific_data = &s_BleAppManData;
 			}
         }
         else
         {
-			if (pCfg->pManData != NULL)
+			if (pCfg->pAdvManData != NULL)
 			{
 				g_BleAppData.AdvData.p_manuf_specific_data = &s_BleAppManData;
 			}
@@ -912,7 +912,7 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
         	g_BleAppData.SRData.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
         	g_BleAppData.SRData.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
         }
-        if (pCfg->pManData != NULL)
+        if (pCfg->pAdvManData != NULL)
         {
         	g_BleAppData.AdvData.p_manuf_specific_data = &s_BleAppManData;
         }
