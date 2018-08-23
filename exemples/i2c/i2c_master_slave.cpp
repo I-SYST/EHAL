@@ -88,6 +88,7 @@ static const I2CCFG s_I2cCfgMaster = {
 	5,			// Retry
 	0,			// Number of slave addresses
 	{0,},		// Slave addresses
+	true,
 	false,
 	7,			// Interrupt prio
 	NULL		// Event callback
@@ -112,6 +113,7 @@ static const I2CCFG s_I2cCfgSlave = {
 	5,			// Retry
 	1,			// Number of slave addresses
 	{I2C_SLAVE_ADDR, },	// Slave mode response addresses
+	true,
 	true,
 	7,			// Interrupt prio
 	I2CSlaveIntrfHandler	// Event callback
