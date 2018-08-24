@@ -37,6 +37,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "nrf.h"
 
+#include "idelay.h"
 #include "analog_comp_nrf5x.h"
 
 static ANALOG_COMP_DEV *s_pnRF5xLPCompDev = NULL;
@@ -128,9 +129,21 @@ bool AnalogCompInit(ANALOG_COMP_DEV * const pDev, const ANALOG_COMP_CFG *pCfg)
 	// Detect both Up & Down
 	NRF_LPCOMP->ANADETECT = LPCOMP_ANADETECT_ANADETECT_Msk;
 
-	NRF_LPCOMP->INTENSET = LPCOMP_INTENSET_UP_Msk | LPCOMP_INTENSET_DOWN_Msk;
-
 	((AnalogComp*)pDev->pPrivate)->Enable();
+
+	// Anomaly 76 workaround
+	NRF_LPCOMP->EVENTS_READY = 0;
+	NRF_LPCOMP->TASKS_START = 1;
+	while (NRF_LPCOMP->EVENTS_READY == 0);
+
+	usDelay(150);
+
+	NRF_LPCOMP->EVENTS_READY = 0;
+	NRF_LPCOMP->EVENTS_CROSS = 0;
+	NRF_LPCOMP->EVENTS_DOWN = 0;
+	NRF_LPCOMP->EVENTS_UP = 0;
+
+	NRF_LPCOMP->INTENSET = LPCOMP_INTENSET_UP_Msk | LPCOMP_INTENSET_DOWN_Msk;
 
 	NVIC_ClearPendingIRQ(LPCOMP_IRQn);
 	NVIC_SetPriority(LPCOMP_IRQn, pCfg->IntPrio);

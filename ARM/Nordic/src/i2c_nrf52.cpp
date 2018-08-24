@@ -191,6 +191,16 @@ void nRF52I2CEnable(DEVINTRF * const pDev)
     }
 }
 
+void nRF52I2CPowerOff(DEVINTRF * const pDev)
+{
+	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
+
+	// Undocumented Power down I2C.  Nordic Bug with DMA causing high current consumption
+	*(volatile uint32_t *)((uint32_t)dev->pReg + 0xFFC);
+	*(volatile uint32_t *)((uint32_t)dev->pReg + 0xFFC) = 1;
+	*(volatile uint32_t *)((uint32_t)dev->pReg + 0xFFC) = 0;
+}
+
 int nRF52I2CGetRate(DEVINTRF * const pDev)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
@@ -529,6 +539,7 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 	pDev->bDmaEn = pCfgData->bDmaEn;
 	pDev->DevIntrf.Disable = nRF52I2CDisable;
 	pDev->DevIntrf.Enable = nRF52I2CEnable;
+	pDev->DevIntrf.PowerOff = nRF52I2CPowerOff;
 	pDev->DevIntrf.GetRate = nRF52I2CGetRate;
 	pDev->DevIntrf.SetRate = nRF52I2CSetRate;
 	pDev->DevIntrf.StartRx = nRF52I2CStartRx;
