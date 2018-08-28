@@ -32,6 +32,8 @@ Modified by         Date            Description
 
 ----------------------------------------------------------------------------*/
 
+#include "nrf52.h"
+
 #include "device_intrf.h"
 #include "i2c_spi_nrf52_irq.h"
 
@@ -61,6 +63,7 @@ extern "C" void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void)
 	{
 		s_DevIrq[0].Handler(0, s_DevIrq[0].pDev);
 	}
+	NVIC_ClearPendingIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
 }
 
 extern "C" void SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQHandler(void)
@@ -69,6 +72,7 @@ extern "C" void SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQHandler(void)
 	{
 		s_DevIrq[1].Handler(1, s_DevIrq[1].pDev);
 	}
+	NVIC_ClearPendingIRQ(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn);
 }
 
 extern "C" void SPIM2_SPIS2_SPI2_IRQHandler(void)
@@ -77,4 +81,5 @@ extern "C" void SPIM2_SPIS2_SPI2_IRQHandler(void)
     {
         s_DevIrq[2].Handler(2, s_DevIrq[1].pDev);
     }
+    NVIC_ClearPendingIRQ(SPIM2_SPIS2_SPI2_IRQn);
 }
