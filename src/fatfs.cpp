@@ -206,6 +206,7 @@ bool FatFS::Find(char *const pPathName, DIR *pDir)
 	pDir->d_dirent.d_name[0] = '/';
 	pDir->d_dirent.d_name[1] = 0;
 	pDir->d_dirent.FirstClus = 2;
+	pDir->d_dirname = pDir->d_dirent.d_name;
 	//pDir->d_dirent.EntrySect = vRootDirSect;
 	pDir->d_dirent.EntrySect = vRootDirSect;
 	pDir->d_dirent.EntryIdx = 0;
@@ -410,7 +411,7 @@ int FatFS::Create(FATFS_FD * const pFd)
 
 int FatFS::Open(char * const pPathName, int Flags, int Mode)
 {
-	DIR dirinfo;
+	//DIR dirinfo;
 	FATFS_FD *fatfd = NULL;
 	int fd = 0;//FATFS_FDBASE_ID;
 

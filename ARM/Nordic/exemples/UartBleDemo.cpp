@@ -154,7 +154,7 @@ BLESRVC g_UartBleSrvc;
 const BLEAPP_DEVDESC s_UartBleDevDesc {
 	MODEL_NAME,           		// Model name
 	MANUFACTURER_NAME,			// Manufacturer name
-	"123",							// Serial number string
+	"123",						// Serial number string
 	"0.0",						// Firmware version string
 	"0.0",						// Hardware version string
 };

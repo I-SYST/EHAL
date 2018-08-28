@@ -121,7 +121,6 @@ extern "C" void SAADC_IRQHandler()
 			s_AdcnRF52DevData.EvtHandler(s_AdcnRF52DevData.pDevObj, evt);
 		}
 
-        NRF_SAADC->RESULT.AMOUNT = 0;
         NRF_SAADC->EVENTS_RESULTDONE = 0;
         NRF_SAADC->EVENTS_DONE = 0;
         NRF_SAADC->EVENTS_END = 0;
@@ -199,7 +198,6 @@ bool AdcnRF52::Calibrate()
 
 	NRF_SAADC->RESULT.PTR = 0;
 	NRF_SAADC->RESULT.MAXCNT = 0;
-	NRF_SAADC->RESULT.AMOUNT = 0;
 
 	NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
 	NRF_SAADC->TASKS_CALIBRATEOFFSET = 1;
@@ -218,7 +216,6 @@ bool AdcnRF52::Calibrate()
                 NRF_SAADC->EVENTS_STARTED = 0;
                 NRF_SAADC->RESULT.PTR = 0;
             	NRF_SAADC->RESULT.MAXCNT = 0;
-            	NRF_SAADC->RESULT.AMOUNT = 0;
 
                 return true;
             }
@@ -245,7 +242,6 @@ bool AdcnRF52::Init(const ADC_CFG &Cfg, Timer *pTimer, DeviceIntrf *pIntrf)
 
     NRF_SAADC->RESULT.PTR = 0;
     NRF_SAADC->RESULT.MAXCNT = 0;
-    NRF_SAADC->RESULT.AMOUNT = 0;
 
     // Clear all events
     NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
@@ -314,7 +310,6 @@ bool AdcnRF52::Enable()
 {
     NRF_SAADC->RESULT.PTR = 0;
     NRF_SAADC->RESULT.MAXCNT = 0;
-    NRF_SAADC->RESULT.AMOUNT = 0;
 
     NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
     NRF_SAADC->EVENTS_RESULTDONE = 0;
@@ -352,7 +347,6 @@ void AdcnRF52::Disable()
 
     NRF_SAADC->RESULT.PTR = 0;
     NRF_SAADC->RESULT.MAXCNT = 0;
-    NRF_SAADC->RESULT.AMOUNT = 0;
 
     // Clear all events
     NRF_SAADC->EVENTS_CALIBRATEDONE = 0;
@@ -691,7 +685,6 @@ int AdcnRF52::Read(ADC_DATA *pBuff, int Len)
 					cnt++;
 				}
 			}
-			NRF_SAADC->RESULT.AMOUNT = 0;
 			NRF_SAADC->EVENTS_DONE = 0;
 			NRF_SAADC->EVENTS_RESULTDONE = 0;
 		}
@@ -738,7 +731,6 @@ bool AdcnRF52::Read(int Chan, ADC_DATA *pBuff)
 		pBuff->Data = (float)s_AdcnRF52DevData.ResData[Chan] * s_AdcnRF52DevData.GainFactor[Chan];
 		pBuff->Timestamp = s_AdcnRF52DevData.SampleCnt;
 
-		NRF_SAADC->RESULT.AMOUNT = 0;
 		NRF_SAADC->EVENTS_DONE = 0;
 		NRF_SAADC->EVENTS_RESULTDONE = 0;
 	}

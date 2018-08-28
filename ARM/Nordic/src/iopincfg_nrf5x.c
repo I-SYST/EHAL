@@ -220,6 +220,7 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
 
 #endif
 
+	reg->PIN_CNF[PinNo] &= ~(GPIO_PIN_CNF_SENSE_Msk << GPIO_PIN_CNF_SENSE_Pos);
 	switch (Sense)
 	{
 		case IOPINSENSE_LOW_TRANSITION:

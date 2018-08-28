@@ -62,9 +62,9 @@ const BLEAPP_CFG s_BleAppCfg = {
 	0,						// Number of central link
 	0,						// Number of peripheral link
 	BLEAPP_MODE_NOCONNECT,	// Connectionless beacon type
-	DEVICE_NAME,				// Device name
+	DEVICE_NAME,			// Device name
 	ISYST_BLUETOOTH_ID,		// PnP Bluetooth/USB vendor id
-	1,                      	// PnP Product ID
+	1,                      // PnP Product ID
 	0,						// Pnp prod version
 	false,					// Enable device information service (DIS)
 	NULL,					// Pointer device info descriptor
@@ -72,8 +72,8 @@ const BLEAPP_CFG s_BleAppCfg = {
 	sizeof(g_AdvCnt),      	// Length of manufacture specific data
 	NULL,
 	0,
-	BLEAPP_SECTYPE_NONE,    	// Secure connection type
-	BLEAPP_SECEXCHG_NONE,   	// Security key exchange
+	BLEAPP_SECTYPE_NONE,    // Secure connection type
+	BLEAPP_SECEXCHG_NONE,   // Security key exchange
 	NULL,      				// Service uuids to advertise
 	0, 						// Total number of uuids
 	APP_ADV_INTERVAL,       	// Advertising interval in msec
@@ -85,7 +85,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	-1,		// Led port nuber
 	-1,		// Led pin number
 	0,		// Tx power
-	NULL		// RTOS Softdevice handler
+	NULL	// RTOS Softdevice handler
 };
 
 void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
