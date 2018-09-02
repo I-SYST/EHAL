@@ -240,6 +240,7 @@ static const SPICFG s_SpiCfg = {
     SPIDATAPHASE_SECOND_CLK, // Data phase
     SPICLKPOL_LOW,         // clock polarity
     SPICSEL_AUTO,
+	true,
 	false,
     APP_IRQ_PRIORITY_LOW,      // Interrupt priority
     NULL
@@ -268,6 +269,7 @@ static const I2CCFG s_I2cCfg = {
 	5,			// Retry
 	0,			// Number of slave addresses
 	{0,},		// Slave addresses
+	true,
 	false,		// use interrupt
 	APP_IRQ_PRIORITY_LOW,// Interrupt prio
 	NULL		// Event callback
