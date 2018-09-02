@@ -545,6 +545,8 @@ bool TphgBme680::Mode(SENSOR_OPMODE OpMode, uint32_t Freq)
 
 			vCtrlReg |= BME680_REG_CTRL_MEAS_MODE_FORCED;
 			break;
+		case SENSOR_OPMODE_TIMER:
+			break;
 	}
 
 	//StartSampling();

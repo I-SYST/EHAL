@@ -100,10 +100,10 @@
 #define SPI_SCK_PIN         		11
 #define SPI_SCK_PINOP       		1
 
-#define BME280_CS_IDX          	0
-#define BME280_CS_PORT         	0
-#define BME280_CS_PIN          	26
-#define BME280_CS_PINOP        	1
+#define BMEx80_CS_IDX          	0
+#define BMEx80_CS_PORT         	0
+#define BMEx80_CS_PIN          	26
+#define BMEx80_CS_PINOP        	1
 
 #endif
 
