@@ -11,7 +11,7 @@
 #include "blueio_board.h"
 
 //#define NORDIC_DK
-#define NEBLINA
+//#define NEBLINA
 
 #ifdef NORDIC_DK
 #define UART_TX_PIN			9//7

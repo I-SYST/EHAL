@@ -19,7 +19,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-#include "uart.h"
+#include "coredev/uart.h"
 
 #define HEXDUMP_BYTES_PER_LINE               16
 #define HEXDUMP_HEXBYTE_AREA                 3 // Two bytes for hexbyte and space to separate

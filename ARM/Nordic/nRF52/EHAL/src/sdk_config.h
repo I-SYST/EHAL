@@ -12769,13 +12769,6 @@
 #define BLE_LBS_C_BLE_OBSERVER_PRIO 2
 #endif
 
-// <o> BLE_LESC_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the BLE LESC module.
-
-#ifndef BLE_LESC_OBSERVER_PRIO
-#define BLE_LESC_OBSERVER_PRIO 2
-#endif
-
 // <o> BLE_LLS_BLE_OBSERVER_PRIO  
 // <i> Priority with which BLE events are dispatched to the Link Loss Service.
 
@@ -12907,6 +12900,13 @@
 
 #ifndef NRF_BLE_QWR_BLE_OBSERVER_PRIO
 #define NRF_BLE_QWR_BLE_OBSERVER_PRIO 2
+#endif
+
+// <o> NRF_BLE_SCAN_OBSERVER_PRIO
+// <i> Priority for dispatching the BLE events to the Scanning Module.
+
+#ifndef NRF_BLE_SCAN_OBSERVER_PRIO
+#define NRF_BLE_SCAN_OBSERVER_PRIO 1
 #endif
 
 // <o> PM_BLE_OBSERVER_PRIO - Priority with which BLE events are dispatched to the Peer Manager module. 

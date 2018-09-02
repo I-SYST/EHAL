@@ -62,6 +62,7 @@ Modified by          Date              Description
 #include "nrf_dfu_settings.h"
 #include "nrf_crypto.h"
 #include "nrf_ble_lesc.h"
+#include "nrf_ble_scan.h"
 
 //#include "nrf_crypto_keys.h"
 //#include "nrf_log.h"
@@ -80,7 +81,7 @@ extern "C" void nrf_sdh_soc_evts_poll(void * p_context);
 #define APP_FEATURE_NOT_SUPPORTED       BLE_GATT_STATUS_ATTERR_APP_BEGIN + 2        /**< Reply when unsupported features are requested. */
 
 #define BLEAPP_OBSERVER_PRIO           1                                           /**< Application's BLE observer priority. You shouldn't need to modify this value. */
-#define BLEAPP_CONN_CFG_TAG            1                                           /**< A tag identifying the SoftDevice BLE configuration. */
+//#define BLEAPP_CONN_CFG_TAG            1                                           /**< A tag identifying the SoftDevice BLE configuration. */
 
 #define APP_TIMER_OP_QUEUE_SIZE         10                                           /**< Size of timer operation queues. */
 
@@ -800,17 +801,12 @@ static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
 
 //    printf("evt %d\r\n", p_ble_evt->header.evt_id);
 
-   // ble_conn_state_on_ble_evt(p_ble_evt);
-
-    if ((role == BLE_GAP_ROLE_CENTRAL) || (p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT) || g_BleAppData.AppRole & BLEAPP_ROLE_CENTRAL)
+    if ((role == BLE_GAP_ROLE_CENTRAL) || /*(p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT) ||*/ g_BleAppData.AppRole & BLEAPP_ROLE_CENTRAL)
     {
         BleCentralEvtUserHandler((ble_evt_t *)p_ble_evt);
     }
     else
     {
-//        pm_on_ble_evt(p_ble_evt);
-        //ble_advertising_on_ble_evt(p_ble_evt);
-//        ble_conn_params_on_ble_evt(p_ble_evt, p_context);
         BlePeriphEvtUserHandler((ble_evt_t *)p_ble_evt);
     }
     on_ble_evt(p_ble_evt);
@@ -957,48 +953,18 @@ void BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int Sr
 	// SDK15 doesn't allow dynamicaly updating adv data.  Have to stop and re-start advertising
 	if (g_BleAppData.bAdvertising == true)
 	{
-	   sd_ble_gap_adv_stop(g_AdvInstance.adv_handle);
+		sd_ble_gap_adv_stop(g_AdvInstance.adv_handle);
 	}
 
 	err = sd_ble_gap_adv_set_configure(&g_AdvInstance.adv_handle, &g_AdvInstance.adv_data, NULL);
+	APP_ERROR_CHECK(err);
 
 	if (g_BleAppData.bAdvertising == true)
 	{
-	   BleAppAdvStart(BLEAPP_ADVMODE_FAST);
+		BleAppAdvStart(BLEAPP_ADVMODE_FAST);
 	}
 
 	#if 0
-    int l = min(Len, BLE_GAP_ADV_MAX_SIZE);
-
-    memcpy(g_AdvInstance.manuf_data_array, pData, l);
-    uint32_t ret = ble_advdata_set(&(g_AdvInstance.advdata), &g_BleAppData.SRData);
-#endif
-}
-
-void BleAppScanRespManDataSet(uint8_t *pData, int Len)
-{
-   int l = min(Len, BLE_GAP_ADV_SET_DATA_SIZE_MAX);
-
-   memcpy(g_BleAppData.SRManufData.data.p_data, pData, l);
-
-   uint32_t err = ble_advdata_encode(&g_BleAppData.SrData, g_AdvInstance.adv_data.scan_rsp_data.p_data,
-		   	   	   	   	   	   	   	 &g_AdvInstance.adv_data.scan_rsp_data.len);
-   APP_ERROR_CHECK(err);
-
-   // SDK15 doesn't allow dynamically updating adv data.  Have to stop and re-start advertising
-   if (g_BleAppData.bAdvertising == true)
-   {
-//	   sd_ble_gap_adv_stop(g_AdvInstance.adv_handle);
-   }
-
-//   err = sd_ble_gap_adv_set_configure(&g_AdvInstance.adv_handle, &g_AdvInstance.adv_data, NULL);
-
-   if (g_BleAppData.bAdvertising == true)
-   {
-//	   BleAppAdvStart(BLEAPP_ADVMODE_FAST);
-   }
-
-#if 0
     int l = min(Len, BLE_GAP_ADV_MAX_SIZE);
 
     memcpy(g_AdvInstance.manuf_data_array, pData, l);

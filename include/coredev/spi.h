@@ -100,7 +100,7 @@ typedef enum __SPI_Chip_Select {
 
 #pragma pack(push, 4)
 
-// Configuration data used to initialize device
+/// Configuration data used to initialize device
 typedef struct __SPI_Config {
 	int DevNo;				//!< SPI interface number identify by chip select (CS0, CS1,..,CSn)
 	SPIMODE Mode;			//!< Master/Slave mode
@@ -113,12 +113,13 @@ typedef struct __SPI_Config {
 	SPIDATAPHASE DataPhase;	//!< Data Out Phase.
 	SPICLKPOL ClkPol;		//!< Clock Out Polarity.
 	SPICSEL ChipSel;		//!< Chip select mode
+	bool bDmaEn;			//!< true - Use DMA mode only on supported devices
 	bool bIntEn;			//!< Interrupt enable
 	int IntPrio;			//!< Interrupt priority
 	DEVINTRF_EVTCB EvtCB;	//!< Event callback
 } SPICFG;
 
-// Device driver data require by low level functions
+/// Device driver data require by low level functions
 typedef struct {
 	SPICFG Cfg;				//!< Config data
 	DEVINTRF DevIntrf;		//!< device interface implementation

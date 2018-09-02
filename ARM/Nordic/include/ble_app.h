@@ -95,7 +95,7 @@ typedef enum __BleApp_SecurityType {
 #define BLEAPP_DEVNAME_MAX_SIZE			BLE_GAP_DEVNAME_DEFAULT_LEN
 #define BLEAPP_INFOSTR_MAX_SIZE			20
 
-typedef void (*BLEEVTHANDLER)(ble_evt_t *pEvt);
+#define BLEAPP_CONN_CFG_TAG            1     /**< A tag identifying the SoftDevice BLE configuration. */
 
 #pragma pack(push, 4)
 
@@ -221,7 +221,6 @@ void BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int Sr
 void BleAppAdvTimeoutHandler();
 void BleAppAdvStart(BLEAPP_ADVMODE AdvMode);
 void BleAppAdvStop();
-void BleAppScanRespManDataSet(uint8_t *pData, int Len);
 
 #ifdef __cplusplus
 }
