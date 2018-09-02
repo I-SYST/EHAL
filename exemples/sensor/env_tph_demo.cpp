@@ -120,7 +120,7 @@ static const IOPINCFG s_SpiPins[] = {
      IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
     {SPI_MOSI_PORT, SPI_MOSI_PIN, SPI_MOSI_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-    {BME280_CS_PORT, BME280_CS_PIN, BME280_CS_PINOP,
+    {BMEx80_CS_PORT, BMEx80_CS_PIN, BMEx80_CS_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
 };
 
@@ -136,6 +136,7 @@ static const SPICFG s_SpiCfg = {
     SPIDATAPHASE_SECOND_CLK, // Data phase
     SPICLKPOL_LOW,         // clock polarity
     SPICSEL_AUTO,
+	true, //DMA
 	false,
     6, //APP_IRQ_PRIORITY_LOW,      // Interrupt priority
     NULL
@@ -155,6 +156,7 @@ static const I2CCFG s_I2cCfg = {
 	5,			// Retry
 	0,			// Number of slave addresses
 	{0,},		// Slave addresses
+	true,	// DMA
 	false,		// Use interrupt
 	7,			// Interrupt prio
 	NULL		// Event callback

@@ -220,7 +220,7 @@ static const I2CCFG s_I2cCfg = {
 	5,			// Retry
 	0,			// Number of slave addresses
 	{0,},		// Slave addresses
-	false,
+	true,
 	false,		// Use interrupt
 	APP_IRQ_PRIORITY_LOW,			// Interrupt prio
 	NULL		// Event callback

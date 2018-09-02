@@ -99,7 +99,7 @@ static const SPICFG s_SpiMasterCfg = {
     SPIDATAPHASE_SECOND_CLK, // Data phase
     SPICLKPOL_LOW,         // clock polarity
     SPICSEL_AUTO,
-	false,	// DMA
+	true,	// DMA
 	true,
     6, //APP_IRQ_PRIORITY_LOW,      // Interrupt priority
     NULL
@@ -134,7 +134,7 @@ static const SPICFG s_SpiSlaveCfg = {
     SPIDATAPHASE_SECOND_CLK, // Data phase
     SPICLKPOL_LOW,         // clock polarity
     SPICSEL_AUTO,
-	false,	// DMA
+	true,	// DMA
 	true,
     6, //APP_IRQ_PRIORITY_LOW,      // Interrupt priority
 	SpiSlaveHandler
