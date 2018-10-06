@@ -100,9 +100,13 @@ typedef int (*DEVINTRF_EVTCB)(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t
 /// This structure is the actual interface for both C++ & C code
 /// It is used to provide C compatibility instead of using C++ interface which is only for C++
 ///
+/// This data structure is visible for implementer of interface.
+/// It is seen as handle for application to pass to the interface function calls.
+/// Application firmware should not access any member of this structure directly.
+///
 struct __device_intrf {
 	void *pDevData;			//!< Private device interface implementation data
-	int	IntPrio;				//!< Interrupt priority.  Value is implementation specific
+	int	IntPrio;			//!< Interrupt priority.  Value is implementation specific
 	DEVINTRF_EVTCB EvtCB;	//!< Interrupt based event callback function pointer. Must be set to NULL if not used
 	bool Busy;		        //!< Busy flag to be set check and set at start and reset at end of transmission
 	int MaxRetry;			//!< Max retry when data could not be transfered (Rx/Tx returns zero count)
@@ -115,16 +119,19 @@ struct __device_intrf {
 	// If a function is not used. It must be implemented as do nothing function
 
 	/**
-	 * @brief	Turn off the interface.  If this is a physical interface, provide a
-	 * way to turn off for energy saving. Make sure the turn off procedure can
-	 * be turned back on without going through the full init sequence
+	 * @brief	Put the interface to sleep for maximum energy saving.
+	 *
+	 * If this is a physical interface, provide a way to put the interface to sleep
+	 * for maximum energy saving possible.  This function must be implemented in
+	 * such a way that the interface can be re-enable without going through full
+	 * initialization sequence.
 	 *
 	 * @param	pDevIntrf : Pointer to an instance of the Device Interface
 	 */
 	void (*Disable)(DEVINTRF * const pDevIntrf);
 
 	/**
-	 * @brief	Turn on the interface.
+	 * @brief	Wake up the interface.
 	 *
 	 * @param	pDevIntrf : Pointer to an instance of the Device Interface
 	 */
@@ -183,7 +190,7 @@ struct __device_intrf {
 	/**
 	 * @brief	Completion of read data phase. Do require post processing
 	 * after data has been received via RxData
-	 * This function must clear the busy state for re-entrancy
+	 * This function must clear the busy state for reentrancy
 	 *
 	 * @param	pDevIntrf : Pointer to an instance of the Device Interface
 	 *
@@ -261,7 +268,7 @@ extern "C" {
 #endif
 
 /**
- * @brief	Turn off the interface.
+ * @brief	Disable interface.  Put the interface in lowest power mode.
  *
  * If this is a physical interface, provide a
  * way to turn off for energy saving. Make sure the turn off procedure can
@@ -279,7 +286,7 @@ static inline void DeviceIntrfDisable(DEVINTRF * const pDev) {
 }
 
 /**
- * @brief	Turn on the interface.
+ * @brief	Wake up the interface.
  *
  * @param	pDev	: Pointer to an instance of the Device Interface
  *
@@ -385,10 +392,6 @@ int DeviceIntrfRead(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int AdC
 int DeviceIntrfWrite(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
                      uint8_t *pData, int DataLen);
 
-// Initiate receive
-// WARNING this function must be used in pair with StopRx
-// Re-entrance protection flag is used
-// On success, StopRx must be after transmission is completed to release flag
 /**
  * @brief	Prepare start condition to receive data with subsequence RxData.
  *
@@ -396,7 +399,7 @@ int DeviceIntrfWrite(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int Ad
  * SPI or precondition for DMA transfer or whatever requires it or not
  * This function must check & set the busy state for re-entrancy
  *
- * On success StopRx must be called to release busy flag
+ * NOTE: On success StopRx must be called to release busy flag
  *
  * @param	pDevIntrf : Pointer to an instance of the Device Interface
  * @param	DevAddr   : The device selection id scheme
@@ -519,12 +522,12 @@ static inline void DeviceIntrfReset(DEVINTRF * const pDev) {
 }
 
 /**
- * @brief	Power off device for power saving.
+ * @brief	Power off interface completely for power saving.
  *
- * This function will power off device completely. Not all device provide this
- * type of functionality.  Once power off is call, full initialization cycle is
- * required.  Therefore their is no PowerOn counter part of this function contrary
- * to the Enable/Disable functions.
+ * This function will power off the interface completely. Not all interface
+ * provides this type of functionality.  Once power off is call, full
+ * initialization cycle is required.  Therefore there is no PowerOn counter
+ * part of this function contrary to the Enable/Disable functions.
  *
  * @param	pDev : Pointer to an instance of the Device Interface
  *
@@ -581,25 +584,25 @@ public:
 	virtual int Rate(void) = 0;
 
 	/**
-	 * @brief	Turn off the interface.
+	 * @brief	Turn off/Deep sleep the interface.
 	 *
 	 * If this is a physical interface, provide a
 	 * way to turn off for energy saving. Make sure the turn off procedure can
-	 * be turned back on without going through the full init sequence
+	 * be turned back on without going through the full initialization sequence
 	 */
 	virtual void Disable(void) { DeviceIntrfDisable(*this); }
 
 	/**
-	 * @brief	Turn on the interface.
+	 * @brief	Turn on/wake up the interface.
 	 */
 	virtual void Enable(void) { DeviceIntrfEnable(*this); }
 
 	/**
-	 * @brief	Power off device for power saving.
+	 * @brief	Power off device completely for power saving.
 	 *
 	 * This function will power off device completely. Not all device provide this
-	 * type of functionality.  Once power off is call, full initialization cycle is
-	 * required.  Therefore their is no PowerOn counter part of this function contrary
+	 * type of functionality.  Once power off is called, full initialization cycle is
+	 * required.  Therefore there is no PowerOn counter part of this function contrary
 	 * to the Enable/Disable functions.
 	 *
      * @return  None
@@ -681,7 +684,7 @@ public:
      *
      * This can be in case such as start condition for I2C or Chip Select for
      * SPI or precondition for DMA transfer or whatever requires it or not
-     * This function must check & set the busy state for re-entrancy
+     * This function must check & set the busy state for reentrancy
      *
      * On success StopRx must be called to release busy flag
      *
@@ -710,7 +713,7 @@ public:
 	 * @brief	Completion of read data phase.
 	 *
 	 * Do require post processing after data has been received via RxData
-	 * This function must clear the busy state for re-entrancy.\n
+	 * This function must clear the busy state for reentrancy.\n
 	 * Call this function only if StartRx was successful.
 	 */
 	virtual void StopRx(void) = 0;
@@ -724,7 +727,7 @@ public:
 	 *
 	 * This can be in case such as start condition for I2C or Chip Select for
 	 * SPI or precondition for DMA transfer or whatever requires it or not
-	 * This function must check & set the busy state for re-entrancy
+	 * This function must check & set the busy state for reentrancy
 	 *
 	 * On success StopRx must be called to release busy flag
 	 *
@@ -754,7 +757,7 @@ public:
 	 *
 	 * Do require post processing
 	 * after all data was transmitted via TxData.
-	 * This function must clear the busy state for re-entrancy
+	 * This function must clear the busy state for reentrancy
 	 * Call this function only if StartTx was successful.
 	 */
 	virtual void StopTx(void) = 0;
