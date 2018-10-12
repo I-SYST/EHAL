@@ -5,7 +5,7 @@
 
 This file must be named iopinctrl.h no matter which target
 
-This is nRF51 implementation
+This is nRF5x implementation
 
 
 @author	Hoang Nguyen Hoan

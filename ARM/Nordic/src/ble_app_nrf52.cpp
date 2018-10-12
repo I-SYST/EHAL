@@ -974,6 +974,9 @@ void BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int Sr
 
 void BleAppAdvStart(BLEAPP_ADVMODE AdvMode)
 {
+	if (g_BleAppData.bAdvertising == true)
+		return;
+
 	g_BleAppData.bAdvertising = true;
 	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
 	{
@@ -1382,7 +1385,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
     {
-    		BleAppConnectable(pBleAppCfg, bEraseBond);
+    	BleAppConnectable(pBleAppCfg, bEraseBond);
     }
 
     if (pBleAppCfg->CentLinkCount > 0)
@@ -1437,6 +1440,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
 void BleAppRun()
 {
+	g_BleAppData.bAdvertising = false;
 
 	if ((g_BleAppData.AppRole & (BLEAPP_ROLE_PERIPHERAL | BLEAPP_ROLE_CENTRAL)) != BLEAPP_ROLE_CENTRAL)
 	{
