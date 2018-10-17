@@ -946,6 +946,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/log</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/pwr_mgmt</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -1456,6 +1461,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/fstorage/nrf_fstorage_sd.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/log/src</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/pwr_mgmt/nrf_pwr_mgmt.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/pwr_mgmt/nrf_pwr_mgmt.c</locationURI>
@@ -1629,6 +1639,36 @@
 			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_sw</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/log/src/nrf_log_backend_flash.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/log/src/nrf_log_backend_flash.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/log/src/nrf_log_backend_serial.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/log/src/nrf_log_backend_serial.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/log/src/nrf_log_backend_uart.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/log/src/nrf_log_backend_uart.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/log/src/nrf_log_default_backends.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/log/src/nrf_log_default_backends.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/log/src/nrf_log_frontend.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/log/src/nrf_log_frontend.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/log/src/nrf_log_str_formatter.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/log/src/nrf_log_str_formatter.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/nrfx/drivers/src/nrfx_rng.c</name>
