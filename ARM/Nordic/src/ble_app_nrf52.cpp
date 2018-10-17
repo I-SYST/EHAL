@@ -209,6 +209,15 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
     app_error_handler(DEAD_BEEF, line_num, p_file_name);
 }
 
+void BleAppDisconnect()
+{
+	if (g_BleAppData.ConnHdl != BLE_CONN_HANDLE_INVALID)
+    {
+		uint32_t err_code = sd_ble_gap_disconnect(g_BleAppData.ConnHdl, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
+		APP_ERROR_CHECK(err_code);
+    }
+}
+
 void BleAppGapDeviceNameSet(const char* ppDeviceName)
 {
     uint32_t                err_code;

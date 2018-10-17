@@ -221,6 +221,7 @@ void BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int Sr
 void BleAppAdvTimeoutHandler();
 void BleAppAdvStart(BLEAPP_ADVMODE AdvMode);
 void BleAppAdvStop();
+void BleAppDisconnect();
 
 #ifdef __cplusplus
 }
