@@ -171,7 +171,7 @@ static inline void SPIStopTx(SPIDEV * const pDev) { DeviceIntrfStopTx(&pDev->Dev
 /**
  * @brief	Set SPI slave data for read command.
  *
- * This function sets internal pointer to the location of data to be returned to I2C master upon
+ * This function sets internal pointer to the location of data to be returned to SPI master upon
  * receiving read command.
  *
  * @param	pDev	: Pointer SPI driver data initialized be SPIInit function
@@ -186,7 +186,7 @@ void SPISetSlaveRxBuffer(SPIDEV * const pDev, int SlaveIdx, uint8_t * const pBuf
 /**
  * @brief	Set I2C slave buff for write command.
  *
- * This function sets internal pointer to the location of buffer to data from I2C master upon
+ * This function sets internal pointer to the location of buffer to data from SPI master upon
  * receiving write command.
  *
  * @param	pDev	: Pointer I2C driver data initialized be I2CInit function
@@ -217,7 +217,8 @@ public:
 	bool Init(const SPICFG &CfgData) { return SPIInit(&vDevData, &CfgData); }
 
 	operator DEVINTRF * const () { return &vDevData.DevIntrf; }
-	operator SPIDEV& () { return vDevData; };	// Get config data
+	operator SPIDEV& () { return vDevData; };			// Get config data
+	operator SPIDEV * const () { return &vDevData; };	// Get ponter to config data
 	int Rate(int RateHz) { return vDevData.DevIntrf.SetRate(&vDevData.DevIntrf, RateHz); }
 	int Rate(void) { return vDevData.DevIntrf.GetRate(&vDevData.DevIntrf); }	// Get rate in Hz
 	void Enable(void) { DeviceIntrfEnable(&vDevData.DevIntrf); }
@@ -248,7 +249,7 @@ public:
 	/**
 	 * @brief	Set SPI slave rx buffer to receive data from master.
 	 *
-	 * This function sets internal pointer to the location of data to be returned to I2C master upon
+	 * This function sets internal pointer to the location of data to be returned to SPI master upon
 	 * receiving read command.
 	 *
 	 * @param	SlaveIdx: Slave address index to assign the buffer
@@ -264,7 +265,7 @@ public:
 	/**
 	 * @brief	Set I2C slave tx data buffer to se to master.
 	 *
-	 * This function sets internal pointer to the location of buffer to data from I2C master upon
+	 * This function sets internal pointer to the location of buffer to data from SPI master upon
 	 * receiving write command.
 	 *
 	 * @param	SlaveIdx: Slave address index to assign the data buffer
