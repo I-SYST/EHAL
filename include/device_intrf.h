@@ -684,7 +684,8 @@ public:
      *
      * This can be in case such as start condition for I2C or Chip Select for
      * SPI or precondition for DMA transfer or whatever requires it or not
-     * This function must check & set the busy state for reentrancy
+     *
+     * NOTE: This function must check & set the busy state for reentrancy
      *
      * On success StopRx must be called to release busy flag
      *
@@ -727,7 +728,8 @@ public:
 	 *
 	 * This can be in case such as start condition for I2C or Chip Select for
 	 * SPI or precondition for DMA transfer or whatever requires it or not
-	 * This function must check & set the busy state for reentrancy
+	 *
+	 * NOTE: This function must check & set the busy state for reentrancy
 	 *
 	 * On success StopRx must be called to release busy flag
 	 *
@@ -757,7 +759,8 @@ public:
 	 *
 	 * Do require post processing
 	 * after all data was transmitted via TxData.
-	 * This function must clear the busy state for reentrancy
+	 *
+	 * NOTE: This function must clear the busy state for reentrancy
 	 * Call this function only if StartTx was successful.
 	 */
 	virtual void StopTx(void) = 0;
