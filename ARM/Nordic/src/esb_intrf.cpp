@@ -424,7 +424,7 @@ bool EsbIntrfInit(ESBINTRF *pEsbIntrf, const ESBINTRF_CFG *pCfg)
     pEsbIntrf->DevIntrf.StartTx = EsbIntrfStartTx;
     pEsbIntrf->DevIntrf.TxData = EsbIntrfTxData;
     pEsbIntrf->DevIntrf.StopTx = EsbIntrfStopTx;
-    pEsbIntrf->DevIntrf.Busy = false;
+    pEsbIntrf->DevIntrf.bBusy = false;
     pEsbIntrf->DevIntrf.MaxRetry = 0;
     pEsbIntrf->DevIntrf.EvtCB = pCfg->EvtCB;
 

@@ -184,6 +184,9 @@ bool nRF52SPIStartRx(DEVINTRF * const pDev, int DevCs)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev->pDevData;
 
+	if (dev->pSpiDev->Cfg.ChipSel == SPICSEL_MAN)
+		return true;
+
 	if (DevCs < 0 || DevCs >= dev->pSpiDev->Cfg.NbIOPins - SPI_SS_IOPIN_IDX)
 		return false;
 
@@ -231,14 +234,20 @@ void nRF52SPIStopRx(DEVINTRF * const pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
-	IOPinSet(dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PortNo,
-			 dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PinNo);
+	if (dev->pSpiDev->Cfg.ChipSel == SPICSEL_AUTO)
+	{
+		IOPinSet(dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PortNo,
+				dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PinNo);
+	}
 }
 
 // Initiate transmit
 bool nRF52SPIStartTx(DEVINTRF * const pDev, int DevCs)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
+
+	if (dev->pSpiDev->Cfg.ChipSel == SPICSEL_MAN)
+		return true;
 
 	if (DevCs < 0 || DevCs >= dev->pSpiDev->Cfg.NbIOPins - SPI_SS_IOPIN_IDX)
 		return false;
@@ -288,8 +297,11 @@ void nRF52SPIStopTx(DEVINTRF * const pDev)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 
-	IOPinSet(dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PortNo,
-			   dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PinNo);
+	if (dev->pSpiDev->Cfg.ChipSel == SPICSEL_AUTO)
+	{
+		IOPinSet(dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PortNo,
+				dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PinNo);
+	}
 }
 
 void SPIIrqHandler(int DevNo, DEVINTRF * const pDev)
@@ -407,7 +419,7 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	pDev->DevIntrf.StopTx = nRF52SPIStopTx;
 	pDev->DevIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->DevIntrf.EvtCB = pCfgData->EvtCB;
-	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.EnCnt = 1;
 	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
 

@@ -560,7 +560,7 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 	pDev->DevIntrf.Reset = nRF52I2CReset;
 	pDev->DevIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->DevIntrf.EvtCB = pCfgData->EvtCB;
-	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
 
 	reg->SHORTS = 0;

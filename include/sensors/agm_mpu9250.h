@@ -1,10 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : agm_mpu9250.h
+/**-------------------------------------------------------------------------
+@file	agm_mpu9250.h
 
-Author : Hoang Nguyen Hoan          			Nov. 18, 2017
+@brief	Implementation of TDK MPU-9250 accel, gyro, mag sensor
 
-Desc   : Implementation of TDK MPU-9250 accel, gyro, mag sensor
+@author	Hoang Nguyen Hoan
+@date	Nov. 18, 2017
 
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -28,9 +30,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 
 #ifndef __AGM_MPU9250_H__
@@ -47,8 +46,8 @@ Modified by          Date              Description
 #define MPU9250_I2C_DEV_ADDR1			0x69		// AD0 high
 
 
-// Accel & Gyro registers
-//
+/// Accel & Gyro registers
+///
 
 #define MPU9250_AG_XG_OFFSET_H			0x13
 #define MPU9250_AG_XG_OFFSET_L			0x14

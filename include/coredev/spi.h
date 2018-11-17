@@ -79,9 +79,8 @@ typedef enum __SPI_Data_Bit_Order {
 } SPIDATABIT;
 
 typedef enum __SPI_Chip_Select {
-	SPICSEL_AUTO,	//!< Select control by hardware
-	SPICSEL_MAN,	//!< Select control by software
-	SPICSEL_EXT,	//!< Select control externally by application
+	SPICSEL_AUTO,	//!< Select control internally by hardware or driver
+	SPICSEL_MAN,	//!< Select control externally by application
 } SPICSEL;
 
 #define SPI_MAX_RETRY			5

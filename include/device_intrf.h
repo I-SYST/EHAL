@@ -63,6 +63,19 @@ typedef enum {
 	DEVINTRF_EVT_COMPLETED,		//!< Transfer completed
 } DEVINTRF_EVT;
 
+/// Enumerating interface types
+typedef enum __Dev_Intrf_Type {
+    DEVINTRF_TYPE_UNKOWN,       //!< Software or unknown type interface
+    DEVINTRF_TYPE_BLE,          //!< Bluetooth
+    DEVINTRF_TYPE_ETH,          //!< Ethernet
+    DEVINTRF_TYPE_I2C,          //!< I2C (TWI)
+    DEVINTRF_TYPE_CEL,          //!< Cellular (GSM, LTE,...)
+    DEVINTRF_TYPE_SPI,          //!< SPI
+    DEVINTRF_TYPE_UART,         //!< UART or Serial port
+    DEVINTRF_TYPE_USB,          //!< USB
+    DEVINTRF_TYPE_WIFI,         //!< Wifi
+} DEVINTRF_TYPE;
+
 /// @brief	Device Interface forward data structure type definition.
 /// This structure is the base object.  Pointer to an instance of this is passed
 /// to all function calls.  See structure definition bellow for more details
@@ -108,11 +121,13 @@ struct __device_intrf {
 	void *pDevData;			//!< Private device interface implementation data
 	int	IntPrio;			//!< Interrupt priority.  Value is implementation specific
 	DEVINTRF_EVTCB EvtCB;	//!< Interrupt based event callback function pointer. Must be set to NULL if not used
-	bool Busy;		        //!< Busy flag to be set check and set at start and reset at end of transmission
+	bool bBusy;		        //!< Busy flag to be set check and set at start and reset at end of transmission
 	int MaxRetry;			//!< Max retry when data could not be transfered (Rx/Tx returns zero count)
 	int EnCnt;				//!< Count the number of time device is enabled, this used as ref count where multiple
 							//!< devices are using the same interface. It is to avoid it being disabled while another
 							//!< device is still using it
+	DEVINTRF_TYPE Type;     //!< Identify the type of interface
+	bool bDma;				//!< Enable DMA transfer support. Not all hardware interface supports this feature
 
 	// Bellow are all mandatory functions to implement
 	// On init, all implementation must fill these function, no NULL allowed
@@ -408,7 +423,7 @@ int DeviceIntrfWrite(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int Ad
  * 			false - failed.
  */
 static inline bool DeviceIntrfStartRx(DEVINTRF * const pDev, int DevAddr) {
-    if (AtomicTestAndSet(&pDev->Busy))
+    if (AtomicTestAndSet(&pDev->bBusy))
         return false;
 
     bool retval = pDev->StartRx(pDev, DevAddr);
@@ -416,7 +431,7 @@ static inline bool DeviceIntrfStartRx(DEVINTRF * const pDev, int DevAddr) {
     // In case of returned false, app would not call Stop to release busy flag
     // so we need to do that here before returning
     if (retval == false) {
-        AtomicClear(&pDev->Busy);
+        AtomicClear(&pDev->bBusy);
     }
 
     return retval;
@@ -446,7 +461,7 @@ static inline int DeviceIntrfRxData(DEVINTRF * const pDev, uint8_t *pBuff, int B
  */
 static inline void DeviceIntrfStopRx(DEVINTRF * const pDev) {
     pDev->StopRx(pDev);
-    AtomicClear(&pDev->Busy);
+    AtomicClear(&pDev->bBusy);
 }
 
 // Initiate receive
@@ -469,7 +484,7 @@ static inline void DeviceIntrfStopRx(DEVINTRF * const pDev) {
  * 			false - failed
  */
 static inline bool DeviceIntrfStartTx(DEVINTRF * const pDev, int DevAddr) {
-    if (AtomicTestAndSet(&pDev->Busy))
+    if (AtomicTestAndSet(&pDev->bBusy))
         return false;
 
     bool retval =  pDev->StartTx(pDev, DevAddr);
@@ -477,7 +492,7 @@ static inline bool DeviceIntrfStartTx(DEVINTRF * const pDev, int DevAddr) {
     // In case of returned false, app would not call Stop to release busy flag
     // so we need to do that here before returning
     if (retval == false) {
-        AtomicClear(&pDev->Busy);
+        AtomicClear(&pDev->bBusy);
     }
 
     return retval;
@@ -508,7 +523,7 @@ static inline int DeviceIntrfTxData(DEVINTRF * const pDev, uint8_t *pBuff, int B
  */
 static inline void DeviceIntrfStopTx(DEVINTRF * const pDev) {
     pDev->StopTx(pDev);
-    AtomicClear(&pDev->Busy);
+    AtomicClear(&pDev->bBusy);
 }
 
 /**
@@ -537,6 +552,14 @@ static inline void DeviceIntrfPowerOff(DEVINTRF * const pDev) {
 	if (pDev->PowerOff) pDev->PowerOff(pDev);
 }
 
+/**
+ * @brief   Get interface type
+ *
+ * @return  Interface type
+ */
+static inline DEVINTRF_TYPE DeviceIntrfGetType(DEVINTRF * const pDev) {
+    return pDev->Type;
+}
 
 #ifdef __cplusplus
 }
@@ -557,6 +580,13 @@ public:
 	 * @return	Pointer to internal DEVINTRF to be used with C interface functions
 	 */
 	virtual operator DEVINTRF * const () = 0;	// Get device interface data (handle)
+
+	/**
+	 * @brief   Get interface type
+	 *
+	 * @return  Interface type
+	 */
+	virtual DEVINTRF_TYPE Type() { DeviceIntrfGetType(*this); }
 
 	/**
 	 * @brief	Set data rate of the interface in Hertz.

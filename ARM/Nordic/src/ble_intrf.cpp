@@ -368,7 +368,7 @@ bool BleIntrfInit(BLEINTRF *pBleIntrf, const BLEINTRF_CFG *pCfg)
 	pBleIntrf->DevIntrf.StartTx = BleIntrfStartTx;
 	pBleIntrf->DevIntrf.TxData = BleIntrfTxData;
 	pBleIntrf->DevIntrf.StopTx = BleIntrfStopTx;
-	pBleIntrf->DevIntrf.Busy = false;
+	pBleIntrf->DevIntrf.bBusy = false;
 	pBleIntrf->DevIntrf.MaxRetry = 0;
 	pBleIntrf->DevIntrf.EvtCB = pCfg->EvtCB;
 	pBleIntrf->TransBuffLen = 0;

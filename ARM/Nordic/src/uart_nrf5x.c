@@ -506,7 +506,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	pDev->DevIntrf.StartTx = nRFUARTStartTx;
 	pDev->DevIntrf.TxData = nRFUARTTxData;
 	pDev->DevIntrf.StopTx = nRFUARTStopTx;
-	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = UART_RETRY_MAX;
 
     s_nRFUartDev[devno].pReg->TASKS_STARTTX = 1;
