@@ -55,13 +55,14 @@ typedef struct __EsbDeviceInterfConfig {
     nrf_esb_mode_t      Mode;
     nrf_esb_tx_power_t  TxPower;
     int     Rate;
-    int     PacketSize;     // data packet size
-    int     NbRetry;
-    int     RxFifoMemSize;  // Total memory size for CFIFO
-    uint8_t *pRxFifoMem;    // Pointer to memory to be used by CFIFO
-    int     TxFifoMemSize;  // Total memory size for CFIFO
+    int     PacketSize;     //!< data packet size
+    int     NbRetry;		//!<
+    int     RxFifoMemSize;  //!< Total memory size for CFIFO
+    uint8_t *pRxFifoMem;    //!< Pointer to memory to be used by CFIFO
+    int     TxFifoMemSize;  //!< Total memory size for CFIFO
     uint8_t *pTxFifoMem;    // Pointer to memory to be used by CFIFO
-    DEVINTRF_EVTCB EvtCB;   // Event callback
+    uint8_t	IntPrio;		//!< Interrupt priority
+    DEVINTRF_EVTCB EvtCB;   //!< Event callback
 } ESBINTRF_CFG;
 
 // BLE interf instance data
@@ -72,6 +73,9 @@ typedef struct __BleDeviceInterf {
     HCFIFO      hRxFifo;
     HCFIFO      hTxFifo;
     nrf_esb_config_t EsbCfg;
+    uint8_t BaseAddr0[4];
+    uint8_t BaseAddr1[4];
+    uint8_t PipePrefix[8];
 } ESBINTRF;
 #pragma pack(pop)
 
