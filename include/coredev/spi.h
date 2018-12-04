@@ -144,8 +144,8 @@ static inline int SPIGetRate(SPIDEV * const pDev) { return pDev->DevIntrf.GetRat
 static inline int SPISetRate(SPIDEV * const pDev, int Rate) {
 	return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate);
 }
-static inline void SPIEnable(SPIDEV * const pDev) { pDev->DevIntrf.Enable(&pDev->DevIntrf); }
-static inline void SPIDisable(SPIDEV * const pDev) { pDev->DevIntrf.Disable(&pDev->DevIntrf); }
+static inline void SPIEnable(SPIDEV * const pDev) { DeviceIntrfEnable(&pDev->DevIntrf); }
+static inline void SPIDisable(SPIDEV * const pDev) { DeviceIntrfDisable(&pDev->DevIntrf); }
 static inline int SPIRx(SPIDEV * const pDev, int DevCs, uint8_t *pBuff, int Bufflen) {
 	return DeviceIntrfRx(&pDev->DevIntrf, DevCs, pBuff, Bufflen);
 }
