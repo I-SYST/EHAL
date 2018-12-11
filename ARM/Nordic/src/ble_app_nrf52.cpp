@@ -1025,7 +1025,17 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     // Build advertising data struct to pass into @ref ble_advertising_init.
 
     initdata.advdata.include_appearance = false;
-    initdata.advdata.flags              = BLE_GAP_ADV_FLAG_BR_EDR_NOT_SUPPORTED;//BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+
+    if (pCfg->AdvTimeout != 0)
+    {
+        // ADV for a limited time, use this flag
+        initdata.advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_LIMITED_DISC_MODE;
+    }
+    else
+    {
+        // Always ADV use this flag
+        initdata.advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+    }
 
     if (pCfg->pDevName != NULL)
     {
@@ -1201,7 +1211,7 @@ void gatt_init(void)
     err_code = nrf_ble_gatt_init(&s_Gatt, gatt_evt_handler);
     APP_ERROR_CHECK(err_code);
 
-    err_code = nrf_ble_gatt_att_mtu_periph_set(&s_Gatt, 23);
+    err_code = nrf_ble_gatt_att_mtu_periph_set(&s_Gatt, g_BleAppData.MaxMtu);
     APP_ERROR_CHECK(err_code);
 }
 
