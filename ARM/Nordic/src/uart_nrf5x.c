@@ -486,6 +486,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	s_nRFUartDev[devno].bRxReady = false;
 	s_nRFUartDev[devno].bTxReady = true;
 
+	pDev->DevIntrf.Type = DEVINTRF_TYPE_UART;
 	pDev->DataBits = pCfg->DataBits;
 	pDev->FlowControl = pCfg->FlowControl;
 	pDev->StopBits = pCfg->StopBits;

@@ -34,7 +34,7 @@ Modified by         Date            Description
 #include "nrf.h"
 
 #include "idelay.h"
-#include "spi_nrf51.h"
+#include "coredev/spi.h"
 #include "iopinctrl.h"
 
 #define NRF51_SPI_MAXDEV        2
@@ -225,7 +225,7 @@ int nRF51SPITxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
 			break;
 		}
 
-		//int d = dev->pReg->RXD;
+		int d = dev->pReg->RXD;
 
 		DataLen--;
 		pData++;
@@ -332,6 +332,7 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 
 	nRF51SPISetRate(&pDev->DevIntrf, pCfgData->Rate);
 
+	pDev->DevIntrf.Type = DEVINTRF_TYPE_SPI;
 	pDev->DevIntrf.Disable = nRF51SPIDisable;
 	pDev->DevIntrf.Enable = nRF51SPIEnable;
 	pDev->DevIntrf.GetRate = nRF51SPIGetRate;
@@ -345,7 +346,7 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	pDev->DevIntrf.Reset = nRF51SPIReset;
 	pDev->DevIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->DevIntrf.EvtCB = pCfgData->EvtCB;
-	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.EnCnt = 1;
 	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
 

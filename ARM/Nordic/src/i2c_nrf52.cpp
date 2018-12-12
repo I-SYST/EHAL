@@ -536,6 +536,7 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 
 	nRF52I2CSetRate(&pDev->DevIntrf, pCfgData->Rate);
 
+	pDev->DevIntrf.Type = DEVINTRF_TYPE_I2C;
 	pDev->bDmaEn = pCfgData->bDmaEn;
 	pDev->DevIntrf.Disable = nRF52I2CDisable;
 	pDev->DevIntrf.Enable = nRF52I2CEnable;

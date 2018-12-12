@@ -488,6 +488,7 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 
 	nRF52SPISetRate(&pDev->DevIntrf, pCfgData->Rate);
 
+	pDev->DevIntrf.Type = DEVINTRF_TYPE_SPI;
 	pDev->DevIntrf.Disable = nRF52SPIDisable;
 	pDev->DevIntrf.Enable = nRF52SPIEnable;
 	pDev->DevIntrf.GetRate = nRF52SPIGetRate;

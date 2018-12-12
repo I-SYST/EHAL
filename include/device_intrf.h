@@ -586,7 +586,7 @@ public:
 	 *
 	 * @return  Interface type
 	 */
-	virtual DEVINTRF_TYPE Type() { DeviceIntrfGetType(*this); }
+	virtual DEVINTRF_TYPE Type() { return DeviceIntrfGetType(*this); }
 
 	/**
 	 * @brief	Set data rate of the interface in Hertz.

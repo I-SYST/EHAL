@@ -335,6 +335,7 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 
 	nRF51I2CSetRate(&pDev->DevIntrf, pCfgData->Rate);
 
+	pDev->DevIntrf.Type = DEVINTRF_TYPE_I2C;
 	pDev->DevIntrf.Disable = nRF51I2CDisable;
 	pDev->DevIntrf.Enable = nRF51I2CEnable;
 	pDev->DevIntrf.GetRate = nRF51I2CGetRate;
@@ -348,7 +349,7 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 	pDev->DevIntrf.Reset = nRF51I2CReset;
 	pDev->DevIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->DevIntrf.EvtCB = pCfgData->EvtCB;
-	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
 
 	// Clear all errors
