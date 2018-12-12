@@ -111,7 +111,7 @@ void BleSrvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt)
 				    if (p_evt_write->op == BLE_GATTS_OP_EXEC_WRITE_REQ_NOW)
 					//if (p_evt_write->handle == 0)
 					{
-						printf("Long Write\r\n");
+						//printf("Long Write\r\n");
 						GATLWRHDR *hdr = (GATLWRHDR *)pSrvc->pLongWrBuff;
 					    uint8_t *p = (uint8_t*)pSrvc->pLongWrBuff + sizeof(GATLWRHDR);
 						while (hdr->Handle == pSrvc->pCharArray[i].Hdl.value_handle)
@@ -142,7 +142,7 @@ void BleSrvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt)
 						else if ((p_evt_write->handle == pSrvc->pCharArray[i].Hdl.value_handle) &&
 								 (pSrvc->pCharArray[i].WrCB != NULL))
 						{
-							printf("Write value handle\r\n");
+							//printf("Write value handle\r\n");
 							pSrvc->pCharArray[i].WrCB(pSrvc, p_evt_write->data, 0, p_evt_write->len);
 						}
 						else
