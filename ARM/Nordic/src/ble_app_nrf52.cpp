@@ -1084,8 +1084,9 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 
 			if (pCfg->pAdvManData != NULL)
 			{
-				initdata.srdata.p_manuf_specific_data = &g_BleAppData.ManufData;
+				initdata.advdata.p_manuf_specific_data = &g_BleAppData.ManufData;
 			}
+
         }
         else
         {
