@@ -226,21 +226,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sysstatusdef.h</locationURI>
 		</link>
 		<link>
-			<name>include/timer_nrf5x.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/timer_nrf5x.h</locationURI>
-		</link>
-		<link>
-			<name>include/timer_nrf_app_timer.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/timer_nrf_app_timer.h</locationURI>
-		</link>
-		<link>
-			<name>include/uart_nrf5x.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/uart_nrf5x.h</locationURI>
-		</link>
-		<link>
 			<name>include/utf8.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/utf8.h</locationURI>
@@ -339,11 +324,6 @@
 			<name>src/fatfs.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/fatfs.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/i2c_nrf52.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_nrf52.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/imu</name>
@@ -446,21 +426,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sysstatus.c</locationURI>
 		</link>
 		<link>
-			<name>src/timer_hf_nrf5x.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/timer_hf_nrf5x.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/timer_lf_nrf5x.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/timer_lf_nrf5x.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/timer_nrf_app_timer.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/timer_nrf_app_timer.cpp</locationURI>
-		</link>
-		<link>
 			<name>src/uart_nrf5x.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrf5x.c</locationURI>
@@ -521,9 +486,19 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/i2c.h</locationURI>
 		</link>
 		<link>
+			<name>include/coredev/i2c_spi_nrf52_irq.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/i2c_spi_nrf52_irq.h</locationURI>
+		</link>
+		<link>
 			<name>include/coredev/iopincfg.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/iopincfg.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/iopinctrl.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/iopinctrl.h</locationURI>
 		</link>
 		<link>
 			<name>include/coredev/spi.h</name>
@@ -536,9 +511,24 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/timer.h</locationURI>
 		</link>
 		<link>
+			<name>include/coredev/timer_nrf5x.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/timer_nrf5x.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/timer_nrf_app_timer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/timer_nrf_app_timer.h</locationURI>
+		</link>
+		<link>
 			<name>include/coredev/uart.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/uart.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/uart_nrf5x.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/uart_nrf5x.h</locationURI>
 		</link>
 		<link>
 			<name>include/imu/imu.h</name>
@@ -584,6 +574,11 @@
 			<name>include/sensors/ag_bmi160.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/ag_bmi160.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/agm_icm20948.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_icm20948.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/agm_lsm9ds1.h</name>
@@ -701,9 +696,29 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/i2c.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/coredev/i2c_nrf52.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_nrf52.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/i2c_spi_nrf52_irq.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_spi_nrf52_irq.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/iopincfg_nrf5x.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/iopincfg_nrf5x.c</locationURI>
+		</link>
+		<link>
 			<name>src/coredev/spi.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/spi.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/spi_nrf52.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/spi_nrf52.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/timer.cpp</name>
@@ -711,9 +726,29 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/timer.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/coredev/timer_hf_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_hf_nrf5x.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/timer_lf_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_lf_nrf5x.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/timer_nrf_app_timer.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_nrf_app_timer.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/coredev/uart.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/uart.c</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/uart_nrf5x.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrf5x.c</locationURI>
 		</link>
 		<link>
 			<name>src/imu/imu invensense.cpp</name>
@@ -794,6 +829,11 @@
 			<name>src/sensors/ag_bmi160.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/ag_bmi160.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/agm_icm20948.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/agm_icm20948.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sensors/agm_mpu9250.cpp</name>

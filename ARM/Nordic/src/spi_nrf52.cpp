@@ -43,8 +43,9 @@ typedef struct {
 	SPIDEV *pSpiDev;
 	uint32_t Clk;
 	union {
-		NRF_SPIM_Type *pReg;	// Master register map
-		NRF_SPIS_Type *pSReg;	// Slave register map
+		NRF_SPIM_Type *pRegDma;	// Master register map
+		NRF_SPIS_Type *pSRegDma;// Slave register map
+		NRF_SPI_Type  *pReg;
 	};
 } NRF52_SPIDEV;
 #pragma pack(pop)
@@ -69,9 +70,9 @@ bool nRF52SPIWaitDMA(NRF52_SPIDEV * const pDev, uint32_t Timeout)
 	uint32_t val = 0;
 
 	do {
-		if (pDev->pReg->EVENTS_END)
+		if (pDev->pRegDma->EVENTS_END)
 		{
-			pDev->pReg->EVENTS_END = 0; // clear event
+			pDev->pRegDma->EVENTS_END = 0; // clear event
 			return true;
 		}
 	} while (Timeout-- > 0);
@@ -79,14 +80,29 @@ bool nRF52SPIWaitDMA(NRF52_SPIDEV * const pDev, uint32_t Timeout)
 	return false;
 }
 
+bool nRF52SPIWaitReady(NRF52_SPIDEV * const pDev, uint32_t Timeout)
+{
+    uint32_t val = 0;
+
+    do {
+        if (pDev->pReg->EVENTS_READY)
+        {
+            pDev->pReg->EVENTS_READY = 0; // clear event
+            return true;
+        }
+    } while (Timeout-- > 0);
+
+    return false;
+}
+
 bool nRF52SPIWaitRX(NRF52_SPIDEV * const pDev, uint32_t Timeout)
 {
 	uint32_t val = 0;
 
 	do {
-		if (pDev->pReg->EVENTS_ENDRX)
+		if (pDev->pRegDma->EVENTS_ENDRX)
 		{
-			pDev->pReg->EVENTS_ENDRX = 0; // clear event
+			pDev->pRegDma->EVENTS_ENDRX = 0; // clear event
 			return true;
 		}
 	} while (Timeout-- > 0);
@@ -112,37 +128,37 @@ int nRF52SPISetRate(DEVINTRF * const pDev, int DataRate)
 
 	if (DataRate < 250000)
 	{
-		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_K125;
+		dev->pRegDma->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_K125;
 		dev->Clk = 125000;
 	}
 	else if (DataRate < 500000)
 	{
-		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_K250;
+		dev->pRegDma->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_K250;
 		dev->Clk = 250000;
 	}
 	else if (DataRate < 1000000)
 	{
-		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_K500;
+		dev->pRegDma->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_K500;
 		dev->Clk = 500000;
 	}
 	else if (DataRate < 2000000)
 	{
-		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M1;
+		dev->pRegDma->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M1;
 		dev->Clk = 1000000;
 	}
 	else if (DataRate < 4000000)
 	{
-		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M2;
+		dev->pRegDma->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M2;
 		dev->Clk = 2000000;
 	}
 	else if (DataRate < 8000000)
 	{
-		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M4;
+		dev->pRegDma->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M4;
 		dev->Clk = 4000000;
 	}
 	else
 	{
-		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M8;
+		dev->pRegDma->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M8;
 		dev->Clk = 8000000;
 	}
 
@@ -157,11 +173,15 @@ void nRF52SPIDisable(DEVINTRF * const pDev)
 
 	if (dev->pSpiDev->Cfg.Mode == SPIMODE_SLAVE)
 	{
-		dev->pReg->ENABLE = (SPIS_ENABLE_ENABLE_Disabled << SPIS_ENABLE_ENABLE_Pos);
+		dev->pRegDma->ENABLE = (SPIS_ENABLE_ENABLE_Disabled << SPIS_ENABLE_ENABLE_Pos);
+	}
+	else if (pDev->bDma)
+	{
+		dev->pRegDma->ENABLE = (SPIM_ENABLE_ENABLE_Disabled << SPIM_ENABLE_ENABLE_Pos);
 	}
 	else
 	{
-		dev->pReg->ENABLE = (SPIM_ENABLE_ENABLE_Disabled << SPIM_ENABLE_ENABLE_Pos);
+        dev->pReg->ENABLE = (SPI_ENABLE_ENABLE_Disabled << SPI_ENABLE_ENABLE_Pos);
 	}
 }
 
@@ -171,11 +191,15 @@ void nRF52SPIEnable(DEVINTRF * const pDev)
 
 	if (dev->pSpiDev->Cfg.Mode == SPIMODE_SLAVE)
 	{
-		dev->pReg->ENABLE = (SPIS_ENABLE_ENABLE_Enabled << SPIS_ENABLE_ENABLE_Pos);
+		dev->pRegDma->ENABLE = (SPIS_ENABLE_ENABLE_Enabled << SPIS_ENABLE_ENABLE_Pos);
 	}
+	//else if (pDev->bDma)
+	//{
+	//	dev->pRegDma->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
+	//}
 	else
 	{
-		dev->pReg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
+        dev->pReg->ENABLE = (SPI_ENABLE_ENABLE_Enabled << SPI_ENABLE_ENABLE_Pos);
 	}
 }
 
@@ -198,35 +222,61 @@ bool nRF52SPIStartRx(DEVINTRF * const pDev, int DevCs)
 }
 
 // Receive Data only, no Start/Stop condition
-int nRF52SPIRxData(DEVINTRF * const pDev, uint8_t *pBuff, int BuffLen)
+int nRF52SPIRxDataDma(DEVINTRF * const pDev, uint8_t *pBuff, int BuffLen)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 	int cnt = 0;
 
-	while (BuffLen > 0)
+    dev->pRegDma->TXD.PTR = 0;
+    dev->pRegDma->TXD.MAXCNT = 0;
+    dev->pRegDma->TXD.LIST = 0;
+    dev->pRegDma->RXD.PTR = (uint32_t)pBuff;
+    dev->pRegDma->RXD.LIST = SPIM_RXD_LIST_LIST_ArrayList << SPIM_RXD_LIST_LIST_Pos;
+
+    while (BuffLen > 0)
 	{
 		int l = min(BuffLen, NRF52_SPI_DMA_MAXCNT);
 
-		dev->pReg->RXD.PTR = (uint32_t)pBuff;
-		dev->pReg->RXD.MAXCNT = l;
-		dev->pReg->RXD.LIST = 0; // Scatter/Gather not supported
-		dev->pReg->TXD.PTR = 0;
-		dev->pReg->TXD.MAXCNT = 0;
-		dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
-		dev->pReg->EVENTS_END = 0;
-		dev->pReg->EVENTS_ENDRX = 0;
-		dev->pReg->TASKS_START = 1;
+		dev->pRegDma->RXD.MAXCNT = l;
+		dev->pRegDma->EVENTS_END = 0;
+		dev->pRegDma->EVENTS_ENDRX = 0;
+		dev->pRegDma->TASKS_START = 1;
 
 		if (nRF52SPIWaitRX(dev, 100000) == false)
 			break;
 
-        l = dev->pReg->RXD.AMOUNT;
+        l = dev->pRegDma->RXD.AMOUNT;
 		BuffLen -= l;
 		pBuff += l;
 		cnt += l;
 	}
 
 	return cnt;
+}
+
+// Receive Data only, no Start/Stop condition
+int nRF52SPIRxData(DEVINTRF * const pDev, uint8_t *pBuff, int BuffLen)
+{
+    NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
+    int cnt = 0;
+
+    dev->pReg->EVENTS_READY = 0;
+
+    while (BuffLen > 0)
+    {
+        dev->pReg->TXD = 0xFF;
+
+        if (nRF52SPIWaitReady(dev, 100000) == false)
+            break;
+
+        *pBuff = dev->pReg->RXD;
+
+        BuffLen--;
+        pBuff++;
+        cnt++;
+    }
+
+    return cnt;
 }
 
 // Stop receive
@@ -260,36 +310,67 @@ bool nRF52SPIStartTx(DEVINTRF * const pDev, int DevCs)
 }
 
 // Transmit Data only, no Start/Stop condition
-int nRF52SPITxData(DEVINTRF * const pDev, uint8_t *pData, int DataLen)
+int nRF52SPITxDataDma(DEVINTRF * const pDev, uint8_t *pData, int DataLen)
 {
 	NRF52_SPIDEV *dev = (NRF52_SPIDEV *)pDev-> pDevData;
 	int cnt = 0;
 
-	while (DataLen > 0)
+    dev->pRegDma->RXD.PTR = 0;
+    dev->pRegDma->RXD.MAXCNT = 0;
+    dev->pRegDma->RXD.LIST = 0;
+    dev->pRegDma->TXD.PTR = (uint32_t)pData;
+    dev->pRegDma->TXD.LIST = SPIM_TXD_LIST_LIST_ArrayList << SPIM_TXD_LIST_LIST_Pos;
+
+    while (DataLen > 0)
 	{
 		int l = min(DataLen, NRF52_SPI_DMA_MAXCNT);
-		dev->pReg->RXD.PTR = 0;
-		dev->pReg->RXD.MAXCNT = 0;
-		dev->pReg->RXD.LIST = 0; // Scatter/Gather not supported
-		dev->pReg->TXD.PTR = (uint32_t)pData;
-		dev->pReg->TXD.MAXCNT = l;
-		dev->pReg->TXD.LIST = 0; // Scatter/Gather not supported
-		dev->pReg->EVENTS_END = 0;
-		dev->pReg->EVENTS_ENDTX = 0;
-		dev->pReg->TASKS_START = 1;
+		dev->pRegDma->TXD.MAXCNT = l;
+		dev->pRegDma->EVENTS_END = 0;
+		dev->pRegDma->EVENTS_ENDTX = 0;
+		dev->pRegDma->TASKS_START = 1;
 
 		if (nRF52SPIWaitDMA(dev, 100000) == false)
 		{
 		    break;
 		}
 
-		l = dev->pReg->TXD.AMOUNT;
+		l = dev->pRegDma->TXD.AMOUNT;
 		DataLen -= l;
 		pData += l;
 		cnt += l;
 	}
 
 	return cnt;
+}
+
+// Send Data only, no Start/Stop condition
+int nRF52SPITxData(DEVINTRF *pDev, uint8_t *pData, int DataLen)
+{
+    NRF52_SPIDEV *dev = (NRF52_SPIDEV*)pDev->pDevData;
+    int cnt = 0;
+
+    if (pData == NULL)
+    {
+        return 0;
+    }
+
+    while (DataLen > 0)
+    {
+        dev->pReg->TXD = *pData;
+
+        if (nRF52SPIWaitReady(dev, 10000) == false)
+        {
+            break;
+        }
+
+        int d = dev->pReg->RXD;
+
+        DataLen--;
+        pData++;
+        cnt++;
+    }
+
+    return cnt;
 }
 
 // Stop transmit
@@ -310,40 +391,40 @@ void SPIIrqHandler(int DevNo, DEVINTRF * const pDev)
 
 	if (dev->pSpiDev->Cfg.Mode == SPIMODE_SLAVE)
 	{
-		if (dev->pSReg->EVENTS_ENDRX)
+		if (dev->pSRegDma->EVENTS_ENDRX)
 		{
 			if (dev->pSpiDev->Cfg.EvtCB)
 			{
 				dev->pSpiDev->Cfg.EvtCB(pDev, DEVINTRF_EVT_RX_FIFO_FULL, NULL, 0);
 			}
-			dev->pSReg->EVENTS_ENDRX = 0;
-			dev->pSReg->STATUS = dev->pSReg->STATUS;
+			dev->pSRegDma->EVENTS_ENDRX = 0;
+			dev->pSRegDma->STATUS = dev->pSRegDma->STATUS;
 		}
 
-		if (dev->pSReg->EVENTS_END)
+		if (dev->pSRegDma->EVENTS_END)
 		{
 			if (dev->pSpiDev->Cfg.EvtCB)
 			{
-				dev->pSpiDev->Cfg.EvtCB(pDev, DEVINTRF_EVT_COMPLETED, (uint8_t*)dev->pSReg->RXD.PTR, dev->pSReg->RXD.AMOUNT);
+				dev->pSpiDev->Cfg.EvtCB(pDev, DEVINTRF_EVT_COMPLETED, (uint8_t*)dev->pSRegDma->RXD.PTR, dev->pSRegDma->RXD.AMOUNT);
 			}
-			dev->pSReg->EVENTS_END = 0;
+			dev->pSRegDma->EVENTS_END = 0;
 		}
 
-		if (dev->pSReg->EVENTS_ACQUIRED)
+		if (dev->pSRegDma->EVENTS_ACQUIRED)
 		{
 			if (dev->pSpiDev->Cfg.EvtCB)
 			{
 				dev->pSpiDev->Cfg.EvtCB(pDev, DEVINTRF_EVT_STATECHG, NULL, 0);
 			}
-			dev->pSReg->STATUS = dev->pSReg->STATUS;
+			dev->pSRegDma->STATUS = dev->pSRegDma->STATUS;
 
-			dev->pSReg->RXD.PTR = (uint32_t)dev->pSpiDev->pRxBuff[0];
-			dev->pSReg->RXD.MAXCNT = dev->pSpiDev->RxBuffLen[0];
-			dev->pSReg->TXD.PTR = (uint32_t)dev->pSpiDev->pTxData[0];
-			dev->pSReg->TXD.MAXCNT = dev->pSpiDev->TxDataLen[0];
+			dev->pSRegDma->RXD.PTR = (uint32_t)dev->pSpiDev->pRxBuff[0];
+			dev->pSRegDma->RXD.MAXCNT = dev->pSpiDev->RxBuffLen[0];
+			dev->pSRegDma->TXD.PTR = (uint32_t)dev->pSpiDev->pTxData[0];
+			dev->pSRegDma->TXD.MAXCNT = dev->pSpiDev->TxDataLen[0];
 
-			dev->pSReg->EVENTS_ACQUIRED = 0;
-			dev->pSReg->TASKS_RELEASE = 1;
+			dev->pSRegDma->EVENTS_ACQUIRED = 0;
+			dev->pSRegDma->TASKS_RELEASE = 1;
 		}
 	}
 }
@@ -358,7 +439,7 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 		return false;
 
 	// Get the correct register map
-	reg = s_nRF52SPIDev[pCfgData->DevNo].pReg;
+	reg = s_nRF52SPIDev[pCfgData->DevNo].pRegDma;
 
 	// Configure I/O pins
 	IOPinCfg(pCfgData->pIOPinMap, pCfgData->NbIOPins);
@@ -422,12 +503,25 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.EnCnt = 1;
 	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
+	pDev->DevIntrf.bDma = pCfgData->bDmaEn;
+
+	if (pCfgData->Mode == SPIMODE_SLAVE)
+	{
+		// Force DMA for slave mode
+		pDev->DevIntrf.bDma = true;
+	}
+
+	if (pDev->DevIntrf.bDma == true)
+	{
+		pDev->DevIntrf.RxData = nRF52SPIRxDataDma;
+		pDev->DevIntrf.TxData = nRF52SPITxDataDma;
+	}
 
 	uint32_t inten = 0;
 
     if (pCfgData->Mode == SPIMODE_SLAVE)
 	{
-		NRF_SPIS_Type *sreg = s_nRF52SPIDev[pCfgData->DevNo].pSReg;
+		NRF_SPIS_Type *sreg = s_nRF52SPIDev[pCfgData->DevNo].pSRegDma;
 
 		sreg->PSEL.SCK = pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo;
 		sreg->PSEL.MISO = pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo;
@@ -452,24 +546,40 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 		reg->PSEL.SCK = pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo;
 		reg->PSEL.MISO = pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo;
 		reg->PSEL.MOSI = pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PinNo;
-    	reg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
+
+		if (pDev->DevIntrf.bDma == true)
+		{
+			reg->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
+		}
+		else
+		{
+			reg->ENABLE = (SPI_ENABLE_ENABLE_Enabled << SPI_ENABLE_ENABLE_Pos);
+		}
+
+        s_nRF52SPIDev[pCfgData->DevNo].pReg->EVENTS_READY = 0;
 	}
 
     if (pCfgData->bIntEn)
     {
     	SetI2cSpiIntHandler(pCfgData->DevNo, &pDev->DevIntrf, SPIIrqHandler);
 
-    	if (pCfgData->DevNo == 0)
+    	switch (pCfgData->DevNo)
     	{
-    		NVIC_ClearPendingIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
-    		NVIC_SetPriority(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn, pCfgData->IntPrio);
-    		NVIC_EnableIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
-    	}
-    	else
-    	{
-    		NVIC_ClearPendingIRQ(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn);
-    		NVIC_SetPriority(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn, pCfgData->IntPrio);
-    		NVIC_EnableIRQ(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn);
+    	    case 0:
+                NVIC_ClearPendingIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
+                NVIC_SetPriority(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn, pCfgData->IntPrio);
+                NVIC_EnableIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
+                break;
+    	    case 1:
+                NVIC_ClearPendingIRQ(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn);
+                NVIC_SetPriority(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn, pCfgData->IntPrio);
+                NVIC_EnableIRQ(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn);
+                break;
+    	    case 2:
+                NVIC_ClearPendingIRQ(SPIM2_SPIS2_SPI2_IRQn);
+                NVIC_SetPriority(SPIM2_SPIS2_SPI2_IRQn, pCfgData->IntPrio);
+                NVIC_EnableIRQ(SPIM2_SPIS2_SPI2_IRQn);
+                break;
     	}
 
     	reg->INTENSET = inten;
