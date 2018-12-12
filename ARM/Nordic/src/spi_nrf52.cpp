@@ -524,10 +524,10 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	{
 		NRF_SPIS_Type *sreg = s_nRF52SPIDev[pCfgData->DevNo].pSRegDma;
 
-		sreg->PSEL.SCK = pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo;
-		sreg->PSEL.MISO = pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo;
-		sreg->PSEL.MOSI = pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PinNo;
-		sreg->PSEL.CSN = pCfgData->pIOPinMap[SPI_SS_IOPIN_IDX].PinNo;
+        sreg->PSEL.SCK = (pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PortNo << 5);
+        sreg->PSEL.MISO = (pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PortNo << 5);
+        sreg->PSEL.MOSI = (pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PortNo << 5);
+		sreg->PSEL.CSN = (pCfgData->pIOPinMap[SPI_SS_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->pIOPinMap[SPI_SS_IOPIN_IDX].PortNo << 5);
 
 		sreg->STATUS = sreg->STATUS;
 		sreg->EVENTS_ENDRX = 0;
@@ -544,9 +544,9 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	}
 	else
 	{
-		reg->PSEL.SCK = pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo;
-		reg->PSEL.MISO = pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo;
-		reg->PSEL.MOSI = pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PinNo;
+		reg->PSEL.SCK = (pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PortNo << 5);
+		reg->PSEL.MISO = (pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PortNo << 5);
+		reg->PSEL.MOSI = (pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PortNo << 5);
 
 		if (pDev->DevIntrf.bDma == true)
 		{

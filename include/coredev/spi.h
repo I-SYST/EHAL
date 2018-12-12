@@ -88,8 +88,6 @@ typedef enum __SPI_Chip_Select {
 #define SPI_SLAVEMODE_MAX_DEV	4	//!< Max number of device (CS) supported in slave mode
  	 	 	 	 	 	 	 	 	//!< the real implementation may support less depending on hardware
 
-#define SPI_MAX_NB_IOPIN		4
-
 /// SPI pins indexes
 #define SPI_SCK_IOPIN_IDX		0
 #define SPI_MISO_IOPIN_IDX		1

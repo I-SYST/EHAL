@@ -106,7 +106,7 @@ bool nRF52I2CWaitRxComplete(NRF52_I2CDEV * const pDev, int Timeout)
             return false;
         }
 
-        if (pDev->pI2cDev->bDmaEn)
+        if (pDev->pI2cDev->DevIntrf.bDma)
         {
 			if (pDev->pDmaReg->EVENTS_LASTRX)
 			{
@@ -139,7 +139,7 @@ bool nRF52I2CWaitTxComplete(NRF52_I2CDEV * const pDev, int Timeout)
 
             return false;
         }
-        if (pDev->pI2cDev->bDmaEn)
+        if (pDev->pI2cDev->DevIntrf.bDma)
         {
 			if (pDev->pDmaReg->EVENTS_LASTTX)
 			{
@@ -174,7 +174,7 @@ void nRF52I2CEnable(DEVINTRF * const pDev)
 {
 	NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
-    if (dev->pI2cDev->bDmaEn)
+    if (dev->pI2cDev->DevIntrf.bDma)
     {
 		if (dev->pI2cDev->Mode == I2CMODE_SLAVE)
 		{
@@ -307,7 +307,7 @@ void nRF52I2CStopRx(DEVINTRF * const pDev)
     dev->pReg->TASKS_RESUME = 1;
     dev->pReg->TASKS_STOP = 1;
 
-    if (dev->pI2cDev->bDmaEn == false)
+    if (dev->pI2cDev->DevIntrf.bDma == false)
     {
         // must read dummy last byte to generate NACK & STOP condition
     	nRF52I2CWaitRxComplete(dev, 100000);
@@ -339,7 +339,7 @@ int nRF52I2CTxDataDMA(DEVINTRF * const pDev, uint8_t *pData, int DataLen)
 
 		dev->pReg->EVENTS_ERROR = 0;
 		dev->pReg->EVENTS_STOPPED = 0;
-	    if (dev->pI2cDev->bDmaEn)
+	    if (dev->pI2cDev->DevIntrf.bDma)
 	    {
 			dev->pDmaReg->TXD.PTR = (uint32_t)pData;
 			dev->pDmaReg->TXD.MAXCNT = l;
@@ -388,7 +388,7 @@ void nRF52I2CStopTx(DEVINTRF * const pDev)
 {
     NRF52_I2CDEV *dev = (NRF52_I2CDEV*)pDev->pDevData;
 
-    if (dev->pI2cDev->bDmaEn)
+    if (dev->pI2cDev->DevIntrf.bDma)
     {
 		if (dev->pDmaReg->EVENTS_LASTTX == 1)
 		{
@@ -525,8 +525,8 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
     IOPinSet(pCfgData->Pins[I2C_SDA_IOPIN_IDX].PortNo, pCfgData->Pins[I2C_SDA_IOPIN_IDX].PinNo);
     IOPinSet(pCfgData->Pins[I2C_SCL_IOPIN_IDX].PortNo, pCfgData->Pins[I2C_SCL_IOPIN_IDX].PinNo);
 
-    reg->PSEL.SCL = pCfgData->Pins[I2C_SCL_IOPIN_IDX].PinNo;
-    reg->PSEL.SDA = pCfgData->Pins[I2C_SDA_IOPIN_IDX].PinNo;
+    reg->PSEL.SCL = (pCfgData->Pins[I2C_SCL_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->Pins[I2C_SCL_IOPIN_IDX].PortNo << 5);
+    reg->PSEL.SDA = (pCfgData->Pins[I2C_SDA_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->Pins[I2C_SDA_IOPIN_IDX].PortNo << 5);
 
     //pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
     pDev->Mode = pCfgData->Mode;
@@ -537,7 +537,7 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 	nRF52I2CSetRate(&pDev->DevIntrf, pCfgData->Rate);
 
 	pDev->DevIntrf.Type = DEVINTRF_TYPE_I2C;
-	pDev->bDmaEn = pCfgData->bDmaEn;
+	pDev->DevIntrf.bDma = pCfgData->bDmaEn;
 	pDev->DevIntrf.Disable = nRF52I2CDisable;
 	pDev->DevIntrf.Enable = nRF52I2CEnable;
 	pDev->DevIntrf.PowerOff = nRF52I2CPowerOff;
@@ -547,7 +547,7 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 	pDev->DevIntrf.StopRx = nRF52I2CStopRx;
 	pDev->DevIntrf.StartTx = nRF52I2CStartTx;
 
-	if (pDev->bDmaEn)
+	if (pDev->DevIntrf.bDma)
 	{
 		pDev->DevIntrf.RxData = nRF52I2CRxDataDMA;
 		pDev->DevIntrf.TxData = nRF52I2CTxDataDMA;
@@ -587,7 +587,7 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
     uint32_t enval = (TWI_ENABLE_ENABLE_Enabled << TWI_ENABLE_ENABLE_Pos);
     uint32_t inten = 0;
 
-    if (pDev->bDmaEn)
+    if (pDev->DevIntrf.bDma)
     {
     	enval = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
     }
