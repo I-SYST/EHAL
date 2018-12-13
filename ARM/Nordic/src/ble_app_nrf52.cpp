@@ -1056,14 +1056,23 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     {
         if (pCfg->NbAdvUuid > 0 && pCfg->pAdvUuids != NULL)
         {
-        	initdata.advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
-        	initdata.advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
-			//if (pCfg->pAdvManData != NULL)
+			if (pCfg->pAdvManData != NULL)
 			{
-			//	initdata.srdata.p_manuf_specific_data = &g_BleAppData.ManufData;
+				initdata.advdata.p_manuf_specific_data = &g_BleAppData.ManufData;
+	        	initdata.srdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+	        	initdata.srdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+			}
+			else
+			{
+	        	initdata.advdata.uuids_complete.uuid_cnt = pCfg->NbAdvUuid;
+	        	initdata.advdata.uuids_complete.p_uuids  = (ble_uuid_t*)pCfg->pAdvUuids;
+				if (pCfg->pSrManData != NULL)
+				{
+		        	initdata.srdata.p_manuf_specific_data = &g_BleAppData.SRManufData;
+				}
 			}
         }
-        //else
+        else
         {
 			if (pCfg->pAdvManData != NULL)
 			{
