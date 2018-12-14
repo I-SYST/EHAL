@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2009-2017 ARM Limited. All rights reserved.
+Copyright (c) 2009-2018 ARM Limited. All rights reserved.
 
     SPDX-License-Identifier: Apache-2.0
 
@@ -38,6 +38,7 @@ static bool errata_98(void);
 static bool errata_103(void);
 static bool errata_115(void);
 static bool errata_120(void);
+static bool errata_136(void);
 
 
 #if defined ( __CC_ARM )
@@ -129,6 +130,14 @@ void SystemInit(void)
         *(volatile uint32_t *)0x40029640ul = 0x200ul;
     }
     
+    /* Workaround for Errata 136 "System: Bits in RESETREAS are set when they should not be" found at the Errata document
+       for your device located at https://infocenter.nordicsemi.com/  */
+    if (errata_136()){
+        if (NRF_POWER->RESETREAS & POWER_RESETREAS_RESETPIN_Msk){
+            NRF_POWER->RESETREAS =  ~POWER_RESETREAS_RESETPIN_Msk;
+        }
+    }
+    
     /* Enable the FPU if the compiler used floating point unit instructions. __FPU_USED is a MACRO defined by the
      * compiler. Since the FPU consumes energy, remember to disable FPU use in the compiler if floating point unit
      * operations are not used in your code. */
@@ -177,28 +186,46 @@ void SystemInit(void)
 
 static bool errata_36(void)
 {
-    if ((*(uint32_t *)0x10000130ul == 0x8ul) && (*(uint32_t *)0x10000134ul == 0x0ul)){
-        return true;
+    if (*(uint32_t *)0x10000130ul == 0x8ul){
+        if (*(uint32_t *)0x10000134ul == 0x0ul){
+            return true;
+        }
+        if (*(uint32_t *)0x10000134ul == 0x1ul){
+            return true;
+        }
+        if (*(uint32_t *)0x10000134ul == 0x2ul){
+            return true;
+        }
     }
     
-    return false;
+    return true;
 }
 
 
 static bool errata_66(void)
 {
-    if ((*(uint32_t *)0x10000130ul == 0x8ul) && (*(uint32_t *)0x10000134ul == 0x0ul)){
-        return true;
+    if (*(uint32_t *)0x10000130ul == 0x8ul){
+        if (*(uint32_t *)0x10000134ul == 0x0ul){
+            return true;
+        }
+        if (*(uint32_t *)0x10000134ul == 0x1ul){
+            return true;
+        }
+        if (*(uint32_t *)0x10000134ul == 0x2ul){
+            return true;
+        }
     }
     
-    return false;
+    return true;
 }
 
 
 static bool errata_98(void)
 {
-    if ((*(uint32_t *)0x10000130ul == 0x8ul) && (*(uint32_t *)0x10000134ul == 0x0ul)){
-        return true;
+    if (*(uint32_t *)0x10000130ul == 0x8ul){
+        if (*(uint32_t *)0x10000134ul == 0x0ul){
+            return true;
+        }
     }
     
     return false;
@@ -207,8 +234,10 @@ static bool errata_98(void)
 
 static bool errata_103(void)
 {
-    if ((*(uint32_t *)0x10000130ul == 0x8ul) && (*(uint32_t *)0x10000134ul == 0x0ul)){
-        return true;
+    if (*(uint32_t *)0x10000130ul == 0x8ul){
+        if (*(uint32_t *)0x10000134ul == 0x0ul){
+            return true;
+        }
     }
     
     return false;
@@ -217,8 +246,10 @@ static bool errata_103(void)
 
 static bool errata_115(void)
 {
-    if ((*(uint32_t *)0x10000130ul == 0x8ul) && (*(uint32_t *)0x10000134ul == 0x0ul)){
-        return true;
+    if (*(uint32_t *)0x10000130ul == 0x8ul){
+        if (*(uint32_t *)0x10000134ul == 0x0ul){
+            return true;
+        }
     }
     
     return false;
@@ -227,11 +258,31 @@ static bool errata_115(void)
 
 static bool errata_120(void)
 {
-    if ((*(uint32_t *)0x10000130ul == 0x8ul) && (*(uint32_t *)0x10000134ul == 0x0ul)){
-        return true;
+    if (*(uint32_t *)0x10000130ul == 0x8ul){
+        if (*(uint32_t *)0x10000134ul == 0x0ul){
+            return true;
+        }
     }
     
     return false;
+}
+
+
+static bool errata_136(void)
+{
+    if (*(uint32_t *)0x10000130ul == 0x8ul){
+        if (*(uint32_t *)0x10000134ul == 0x0ul){
+            return true;
+        }
+        if (*(uint32_t *)0x10000134ul == 0x1ul){
+            return true;
+        }
+        if (*(uint32_t *)0x10000134ul == 0x2ul){
+            return true;
+        }
+    }
+    
+    return true;
 }
 
 /*lint --flb "Leave library region" */
