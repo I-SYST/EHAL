@@ -486,9 +486,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/i2c.h</locationURI>
 		</link>
 		<link>
-			<name>include/coredev/i2c_spi_nrf52_irq.h</name>
+			<name>include/coredev/i2c_spi_nrf5x_irq.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/i2c_spi_nrf52_irq.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/i2c_spi_nrf5x_irq.h</locationURI>
 		</link>
 		<link>
 			<name>include/coredev/iopincfg.h</name>
@@ -701,9 +701,9 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_nrf5x.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/coredev/i2c_spi_nrf52_irq.cpp</name>
+			<name>src/coredev/i2c_spi_nrf5x_irq.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_spi_nrf52_irq.cpp</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_spi_nrf5x_irq.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/iopincfg_nrf5x.c</name>
@@ -716,9 +716,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/spi.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/coredev/spi_nrf52.cpp</name>
+			<name>src/coredev/spi_nrf5x.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/spi_nrf52.cpp</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/spi_nrf5x.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/timer.cpp</name>

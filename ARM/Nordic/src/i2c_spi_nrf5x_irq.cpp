@@ -1,9 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : i2c_spi_nrf52_irq.cpp
+/**-------------------------------------------------------------------------
+@file	i2c_spi_nrf5x_irq.cpp
 
-Author : Hoang Nguyen Hoan          July 20, 2018
+@brief	Shared IRQ handler for I2C, SPI
 
-Desc   : Shared IRQ handler for I2C, SPI
+@author	Hoang Nguyen Hoan
+@date	July 20, 2018
+
+@lincense
 
 Copyright (c) 2018, I-SYST inc., all rights reserved
 
@@ -27,15 +30,12 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by         Date            Description
-
 ----------------------------------------------------------------------------*/
 
-#include "nrf52.h"
+#include "nrf.h"
 
 #include "device_intrf.h"
-#include "i2c_spi_nrf52_irq.h"
+#include "i2c_spi_nrf5x_irq.h"
 
 typedef struct {
 	DEVINTRF *pDev;				// Device interface data
@@ -57,24 +57,41 @@ void SetI2cSpiIntHandler(int DevNo, DEVINTRF *pDev, IRQHANDLER Handler)
 	s_DevIrq[DevNo].Handler = Handler;
 }
 
+#ifdef NRF52_SERIES
 extern "C" void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void)
+#else
+extern "C" void SPI0_TWI0_IRQHandler(void)
+#endif
 {
 	if (s_DevIrq[0].pDev != NULL)
 	{
 		s_DevIrq[0].Handler(0, s_DevIrq[0].pDev);
 	}
+#ifdef NRF52_SERIES
 	NVIC_ClearPendingIRQ(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
+#else
+	NVIC_ClearPendingIRQ(SPI0_TWI0_IRQn);
+#endif
 }
 
+#ifdef NRF52_SERIES
 extern "C" void SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQHandler(void)
+#else
+extern "C" void SPI1_TWI1_IRQHandler(void)
+#endif
 {
 	if (s_DevIrq[1].pDev != NULL)
 	{
 		s_DevIrq[1].Handler(1, s_DevIrq[1].pDev);
 	}
+#ifdef NRF52_SERIES
 	NVIC_ClearPendingIRQ(SPIM1_SPIS1_TWIM1_TWIS1_SPI1_TWI1_IRQn);
+#else
+	NVIC_ClearPendingIRQ(SPI1_TWI1_IRQn);
+#endif
 }
 
+#ifdef NRF52_SERIES
 extern "C" void SPIM2_SPIS2_SPI2_IRQHandler(void)
 {
     if (s_DevIrq[2].pDev != NULL)
@@ -83,3 +100,4 @@ extern "C" void SPIM2_SPIS2_SPI2_IRQHandler(void)
     }
     NVIC_ClearPendingIRQ(SPIM2_SPIS2_SPI2_IRQn);
 }
+#endif

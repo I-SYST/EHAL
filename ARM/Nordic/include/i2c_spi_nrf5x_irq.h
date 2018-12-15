@@ -1,9 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : i2c_spi_nrf52_irq.h
+/**-------------------------------------------------------------------------
+@file	i2c_spi_nrf5x_irq.h
 
-Author : Hoang Nguyen Hoan          July 20, 2018
+@brief	Shared IRQ handler for I2C, SPI
 
-Desc   : Shared IRQ handler for I2C, SPI
+@author	Hoang Nguyen Hoan
+@date	July 20, 2018
+
+@license
 
 Copyright (c) 2018, I-SYST inc., all rights reserved
 
@@ -27,13 +30,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by         Date            Description
-
 ----------------------------------------------------------------------------*/
 
-#ifndef __I2C_SPI_NRF52_IRQ_H__
-#define __I2C_SPI_NRF52_IRQ_H__
+#ifndef __I2C_SPI_NRF5X_IRQ_H__
+#define __I2C_SPI_NRF5X_IRQ_H__
 
 typedef void (*IRQHANDLER)(int DevNo, DEVINTRF *pDev);
 
@@ -47,4 +47,4 @@ void SetI2cSpiIntHandler(int DevNo, DEVINTRF * const pDev, IRQHANDLER Handler);
 }
 #endif
 
-#endif // __I2C_SPI_NRF52_IRQ_H__
+#endif // __I2C_SPI_NRF5X_IRQ_H__

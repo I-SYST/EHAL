@@ -536,9 +536,19 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_nrf5x.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/coredev/i2c_spi_nrf5x_irq.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_spi_nrf5x_irq.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/coredev/spi.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/spi.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/spi_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/spi_nrf5x.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/timer.cpp</name>

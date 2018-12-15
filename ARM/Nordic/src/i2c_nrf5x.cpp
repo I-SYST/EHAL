@@ -1,5 +1,5 @@
 /**-------------------------------------------------------------------------
-@file	i2c_nrf52.cpp
+@file	i2c_nrf5x.cpp
 
 @brief	I2C implementation on nRF52 series MCU using EasyDMA
 
@@ -37,14 +37,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "iopinctrl.h"
 #include "idelay.h"
 
-#ifdef NRF52
-#include "i2c_spi_nrf52_irq.h"
-#endif
+#include "i2c_spi_nrf5x_irq.h"
 
 #define NRF5X_I2C_MAXDEV        2
 #define NRF5X_I2C_MAXSLAVE		2
 
-#ifdef NRF52
+#ifdef NRF52_SERIES
 #define NRF52_I2C_DMA_MAXCNT    255
 #endif
 
@@ -55,10 +53,10 @@ typedef struct {
 	int DevNo;
 	I2CDEV *pI2cDev;
 	union {
-		NRF_TWI_Type *pReg;		// Register map
-#ifdef NRF52
-		NRF_TWIM_Type *pDmaReg;	// Register map
-		NRF_TWIS_Type *pDmaSReg;// Register map
+		NRF_TWI_Type *pReg;		// Master register map
+#ifdef NRF52_SERIES
+		NRF_TWIM_Type *pDmaReg;	// Master DMA register map
+		NRF_TWIS_Type *pDmaSReg;// Slave DMA register map
 #endif
 	};
 	uint8_t TRData[NRF5X_I2C_MAXSLAVE][NRF5X_I2C_TRBUFF_SIZE];
@@ -94,7 +92,7 @@ bool nRF5xI2CWaitStop(NRF5X_I2CDEV * const pDev, int Timeout)
             // not be updated with correct value
             pDev->pReg->EVENTS_STOPPED = 0;
 
-#ifdef NRF52
+#ifdef NRF52_SERIES
             pDev->pDmaReg->EVENTS_TXSTARTED = 0;
             pDev->pDmaReg->EVENTS_RXSTARTED = 0;
 #endif
@@ -114,7 +112,7 @@ bool nRF5xI2CWaitRxComplete(NRF5X_I2CDEV * const pDev, int Timeout)
 
             return false;
         }
-#ifdef NRF52
+#ifdef NRF52_SERIES
         if (pDev->pI2cDev->DevIntrf.bDma)
         {
 			if (pDev->pDmaReg->EVENTS_LASTRX)
@@ -150,7 +148,7 @@ bool nRF5xI2CWaitTxComplete(NRF5X_I2CDEV * const pDev, int Timeout)
             return false;
         }
 
-#ifdef NRF52
+#ifdef NRF52_SERIES
         if (pDev->pI2cDev->DevIntrf.bDma)
         {
 			if (pDev->pDmaReg->EVENTS_LASTTX)
@@ -187,7 +185,7 @@ void nRF5xI2CEnable(DEVINTRF * const pDev)
 {
 	NRF5X_I2CDEV *dev = (NRF5X_I2CDEV*)pDev->pDevData;
 
-#ifdef NRF52
+#ifdef NRF52_SERIES
     if (dev->pI2cDev->DevIntrf.bDma)
     {
 		if (dev->pI2cDev->Mode == I2CMODE_SLAVE)
@@ -261,7 +259,7 @@ int nRF5xI2CRxDataDMA(DEVINTRF * const pDev, uint8_t *pBuff, int BuffLen)
 	NRF5X_I2CDEV *dev = (NRF5X_I2CDEV*)pDev->pDevData;
 	uint32_t d;
 	int cnt = 0;
-#ifdef NRF52
+#ifdef NRF52_SERIES
 	while (BuffLen > 0)
 	{
 		int l = min(BuffLen, NRF52_I2C_DMA_MAXCNT);
@@ -349,7 +347,7 @@ int nRF5xI2CTxDataDMA(DEVINTRF * const pDev, uint8_t *pData, int DataLen)
 	uint32_t d;
 	int cnt = 0;
 
-#ifdef NRF52
+#ifdef NRF52_SERIES
 	while (DataLen > 0)
 	{
 		int l = min(DataLen, NRF52_I2C_DMA_MAXCNT);
@@ -406,7 +404,7 @@ void nRF5xI2CStopTx(DEVINTRF * const pDev)
 {
     NRF5X_I2CDEV *dev = (NRF5X_I2CDEV*)pDev->pDevData;
 
-#ifdef NRF52
+#ifdef NRF52_SERIES
     if (dev->pI2cDev->DevIntrf.bDma)
     {
 		if (dev->pDmaReg->EVENTS_LASTTX == 1)
@@ -456,7 +454,7 @@ void I2CIrqHandler(int DevNo, DEVINTRF * const pDev)
     if (dev->pI2cDev->Mode == I2CMODE_SLAVE)
     {
     	// Slave mode
-#ifdef NRF52
+#ifdef NRF52_SERIES
     	if (dev->pDmaSReg->EVENTS_READ)
     	{
     		// Read command received
@@ -538,7 +536,7 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 	}
 
 	// Get the correct register map
-#ifdef NRF52
+#ifdef NRF52_SERIES
 	NRF_TWIM_Type *reg = s_nRF5xI2CDev[pCfgData->DevNo].pDmaReg;
 #else
 	NRF_TWI_Type *reg = s_nRF5xI2CDev[pCfgData->DevNo].pReg;
@@ -551,7 +549,7 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
     IOPinSet(pCfgData->Pins[I2C_SDA_IOPIN_IDX].PortNo, pCfgData->Pins[I2C_SDA_IOPIN_IDX].PinNo);
     IOPinSet(pCfgData->Pins[I2C_SCL_IOPIN_IDX].PortNo, pCfgData->Pins[I2C_SCL_IOPIN_IDX].PinNo);
 
-#ifdef NRF52
+#ifdef NRF52_SERIES
     reg->PSEL.SCL = (pCfgData->Pins[I2C_SCL_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->Pins[I2C_SCL_IOPIN_IDX].PortNo << 5);
     reg->PSEL.SDA = (pCfgData->Pins[I2C_SDA_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->Pins[I2C_SDA_IOPIN_IDX].PortNo << 5);
 #else
@@ -607,7 +605,7 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 
     usDelay(1000);
 
-#ifdef NRF52
+#ifdef NRF52_SERIES
     reg->EVENTS_LASTRX = 0;
     reg->EVENTS_LASTTX = 0;
     reg->EVENTS_RXSTARTED = 0;
@@ -619,7 +617,7 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
     uint32_t enval = (TWI_ENABLE_ENABLE_Enabled << TWI_ENABLE_ENABLE_Pos);
     uint32_t inten = 0;
 
-#ifdef NRF52
+#ifdef NRF52_SERIES
     if (pDev->DevIntrf.bDma)
     {
     	enval = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
