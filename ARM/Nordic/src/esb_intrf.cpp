@@ -117,9 +117,11 @@ int EsbIntrfGetRate(DEVINTRF *pDevIntrf)
 
     switch (dev->Rate)
     {
+#if !(defined(NRF52840_XXAA) || defined(NRF52810_XXAA))
         case NRF_ESB_BITRATE_250KBPS:
             rate = 250000;
             break;
+#endif
         case NRF_ESB_BITRATE_1MBPS:
         case NRF_ESB_BITRATE_1MBPS_BLE:
             rate = 1000000;
@@ -412,11 +414,14 @@ bool EsbIntrfInit(ESBINTRF *pEsbIntrf, const ESBINTRF_CFG *pCfg)
         pEsbIntrf->hTxFifo = CFifoInit(pCfg->pTxFifoMem, pCfg->TxFifoMemSize, sizeof(nrf_esb_payload_t), true);
     }
 
+#if !(defined(NRF52840_XXAA) || defined(NRF52810_XXAA))
     if (pCfg->Rate < 1000000)
     {
         pEsbIntrf->Rate = NRF_ESB_BITRATE_250KBPS;
     }
-    else if (pCfg->Rate < 2000000)
+    else
+#endif
+    if (pCfg->Rate < 2000000)
     {
         pEsbIntrf->Rate = NRF_ESB_BITRATE_1MBPS;
     }
