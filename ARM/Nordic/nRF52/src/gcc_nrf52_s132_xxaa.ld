@@ -17,14 +17,13 @@ GROUP(-lgcc -lc -lnosys -lCMSIS)
 
 MEMORY
 {
-	/*
-		Reserve flash for Sooftdevice 0x00000-0x23000 
-		Reserve flash for DFU 0x78000-0x80000
-	*/
+	/* nRF52832 has 512KB Flash (0x80000), 64KB RAM (0x10000) */
+
 	FLASH (rx) : ORIGIN = 0x26000, LENGTH = 0x5a000
 	RAM (rwx) :  ORIGIN = 0x20002900, LENGTH = 0xD700
+
 	/** Location of non initialized RAM. Non initialized RAM is used for exchanging bond information
-	*  from application to bootloader when using buttonluss DFU OTA.
+	*  from application to bootloader when using buttonless DFU OTA.
 	*/
 	NOINIT (rwx) :  ORIGIN = 0x20007F80, LENGTH = 0x80
 

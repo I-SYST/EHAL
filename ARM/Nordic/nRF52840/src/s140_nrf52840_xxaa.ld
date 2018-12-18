@@ -11,21 +11,26 @@ SEARCH_DIR("../../../../../../EHAL/ARM/src")
 SEARCH_DIR("../../../../EHAL/ARM/nRF52840/CMSIS/Release")
 SEARCH_DIR("../../../../../EHAL/ARM/nRF52840/CMSIS/Release")
 SEARCH_DIR("../../../../../../EHAL/ARM/nRF52840/CMSIS/Release")
+SEARCH_DIR("../../../../../../../EHAL/ARM/Nordic/nRF52840/CMSIS/Release")
+SEARCH_DIR("../../../../../../../../EHAL/ARM/Nordic/nRF52840/CMSIS/Release")
 GROUP(-lgcc -lc -lnosys -lCMSIS)
 
 MEMORY
 {
-	FLASH (rx) : ORIGIN = 0x22000, LENGTH = 0xde000
-	RAM (rwx) :  ORIGIN = 0x20002088, LENGTH = 0x3df78
+	/* nRF52840 has 1MB Flash (0x100000), 256KB RAM (0x40000) */
+	
+	FLASH (rx) : ORIGIN = 0x26000, LENGTH = 0xda000
+	RAM (rwx) :  ORIGIN = 0x20002900, LENGTH = 0x3d700
 
 	/** Location of non initialized RAM. Non initialized RAM is used for exchanging bond information
-	*  from application to bootloader when using buttonluss DFU OTA.
+	*  from application to bootloader when using buttonless DFU OTA.
 	*/
 	NOINIT (rwx) :  ORIGIN = 0x20007F80, LENGTH = 0x80
 
 	/** Location of bootloader setting in flash. */
-	BOOTLOADER_SETTINGS (rw) : ORIGIN = 0x000FF000, LENGTH = 0x1000
+	BOOTLOADER_SETTINGS (rw) : ORIGIN = 0x0007F000, LENGTH = 0x1000
 }
+
 
 SECTIONS
 {
@@ -58,6 +63,12 @@ SECTIONS
 	  	PROVIDE(__stop_log_const_data = .);
 	} > FLASH
 	
+    .crypto_data :
+    {
+        PROVIDE(__start_crypto_data = .);
+        KEEP(*(SORT(.crypto_data*)))
+        PROVIDE(__stop_crypto_data = .);
+    } > FLASH
 	
 	.cli_command :
 	{
@@ -107,6 +118,12 @@ SECTIONS
 		KEEP(*(SORT(.sdh_soc_observers*)))
 		PROVIDE(__stop_sdh_soc_observers = .);
 	} > FLASH
+    .nrf_queue :
+  {
+    PROVIDE(__start_nrf_queue = .);
+    KEEP(*(.nrf_queue))
+    PROVIDE(__stop_nrf_queue = .);
+  } > FLASH
 } INSERT AFTER .text
 
 SECTIONS
