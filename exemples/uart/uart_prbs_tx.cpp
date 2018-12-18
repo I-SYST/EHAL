@@ -59,22 +59,23 @@ static IOPINCFG s_UartPins[] = {
 
 // UART configuration data
 const UARTCFG g_UartCfg = {
-	0,
-	s_UartPins,
-	sizeof(s_UartPins) / sizeof(IOPINCFG),
-	1000000,			// Rate
-	8,
-	UART_PARITY_NONE,
-	1,					// Stop bit
-	UART_FLWCTRL_NONE,
-	true,
-	1, 					// use APP_IRQ_PRIORITY_LOW with Softdevice
-	nRFUartEvthandler,
-	true,				// fifo blocking mode
-	0,
-	NULL,
-	FIFOSIZE,
-	g_TxBuff,
+	.DevNo = 0,
+	.pIoMap = s_UartPins,
+	.IoMapLen = sizeof(s_UartPins) / sizeof(IOPINCFG),
+	.Rate = 1000000,			// Rate
+	.DataBits = 8,
+	.Parity = UART_PARITY_NONE,
+	.StopBits = 1,					// Stop bit
+	.FlowControl = UART_FLWCTRL_NONE,
+	.bIntMode = true,
+	.IntPrio = 1, 					// use APP_IRQ_PRIORITY_LOW with Softdevice
+	.EvtCallback = nRFUartEvthandler,
+	.bFifoBlocking = true,				// fifo blocking mode
+	.RxMemSize = 0,
+	.pRxMem = NULL,
+	.TxMemSize = FIFOSIZE,
+	.pTxMem = g_TxBuff,
+	.bDMAMode = true,
 };
 
 #ifdef DEMO_C
