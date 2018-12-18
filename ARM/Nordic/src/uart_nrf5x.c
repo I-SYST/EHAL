@@ -44,8 +44,8 @@ Modified by          Date              Description
 #include "idelay.h"
 #include "atomic.h"
 
-#define NRF51UART_FIFO_MAX		6
-#define NRF51UART_RXTIMEOUT		15
+#define NRF5XUART_FIFO_MAX		6
+#define NRF5XUART_RXTIMEOUT		15
 #define NRF52_UART_DMA_MAX_LEN	255
 
 // Device driver data require by low level functions
@@ -117,14 +117,11 @@ static int s_nRF51RxTimeOutCnt = 0;
 uint32_t g_nRF51RxDropCnt = 0;
 uint32_t g_nRF51RxErrCnt = 0;
 
-#define NRFUART_CFIFO_SIZE		CFIFO_MEMSIZE(16)
+#define NRFUART_BUFF_SIZE		16
+#define NRFUART_CFIFO_SIZE		CFIFO_MEMSIZE(NRFUART_BUFF_SIZE)
 
 static uint8_t s_nRFUARTRxFifoMem[NRFUART_CFIFO_SIZE];
 static uint8_t s_nRFUARTTxFifoMem[NRFUART_CFIFO_SIZE];
-
-#ifdef NRF52_SERIES
-static uint8_t s_nRFUARTRxDmaMem[NRFUART_CFIFO_SIZE + 1];
-#endif
 
 bool nRFUARTWaitForRxReady(NRF5X_UARTDEV * const pDev, uint32_t Timeout)
 {
@@ -163,58 +160,33 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 #ifdef NRF52_SERIES
 	if (pDev->pDmaReg->EVENTS_ENDRX)
 	{
-		int l = pDev->pDmaReg->RXD.AMOUNT;
-		uint8_t *sp = s_nRFUARTRxDmaMem;
-
-		while (l > 0)
-		{
-			int cnt = l;
-
-			uint8_t *p = CFifoPutMultiple(pDev->pUartDev->hRxFifo, &cnt);
-			if (p == NULL)
-				break;
-			memcpy(p, sp, cnt);
-			l -= cnt;
-			sp += cnt;
-		}
-		if (l > 0)
-		{
-			memcpy(s_nRFUARTRxDmaMem, sp, l);
-			sp = &s_nRFUARTRxDmaMem[l];
-		}
-		pDev->pDmaReg->RXD.MAXCNT = NRFUART_CFIFO_SIZE - l;
-		pDev->pDmaReg->RXD.PTR = (uint32_t)sp;
+		// No DMA support for RX, just clear the event
 		pDev->pDmaReg->EVENTS_ENDRX = 0;
-		pDev->pDmaReg->TASKS_STARTRX = 1;
 	}
 #endif
 
 	if (pDev->pReg->EVENTS_RXDRDY || pDev->pReg->EVENTS_RXTO)
 	{
 		s_nRF51RxTimeOutCnt = 0;
-		//int l = 0;
 		uint8_t *d;
 
-		if (pDev->pUartDev->DevIntrf.bDma == false)
-		{
-			cnt = 0;
-			//while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10) && cnt < NRF51UART_FIFO_MAX) {
-			//while (s_nRFUartDev.pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX) {
-			do {
-				pDev->bRxReady = false;
-				pDev->pReg->EVENTS_RXDRDY = 0;
-				d = CFifoPut(pDev->pUartDev->hRxFifo);
-				if (d == NULL)
-				{
-					pDev->bRxReady = true;
-					g_nRF51RxDropCnt++;
-					break;
-				}
-				*d = pDev->pReg->RXD;
-				cnt++;
-			}// while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10));
-			while (pDev->pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX) ;
-		}
+
+		cnt = 0;
+
+		do {
+			pDev->bRxReady = false;
+			pDev->pReg->EVENTS_RXDRDY = 0;
+			d = CFifoPut(pDev->pUartDev->hRxFifo);
+			if (d == NULL)
+			{
+				pDev->bRxReady = true;
+				g_nRF51RxDropCnt++;
+				break;
+			}
+			*d = pDev->pReg->RXD;
+			cnt++;
+		} while (pDev->pReg->EVENTS_RXDRDY && cnt < NRF5XUART_FIFO_MAX) ;
+
 		if (pDev->pUartDev->EvtCallback)
 		{
 			len = CFifoUsed(pDev->pUartDev->hRxFifo);
@@ -268,7 +240,7 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 				pDev->bTxReady = false;
 				pDev->pReg->TXD = *p;
 				cnt++;
-			} while (pDev->pReg->EVENTS_TXDRDY && cnt < NRF51UART_FIFO_MAX);
+			} while (pDev->pReg->EVENTS_TXDRDY && cnt < NRF5XUART_FIFO_MAX);
 		}
 
 		if (pDev->pUartDev->EvtCallback)
@@ -308,7 +280,7 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 				*d = pDev->pReg->RXD;
 				cnt++;
 			} //while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10));
-			while (pDev->pReg->EVENTS_RXDRDY && cnt < NRF51UART_FIFO_MAX);
+			while (pDev->pReg->EVENTS_RXDRDY && cnt < NRF5XUART_FIFO_MAX);
 
 			if (pDev->pUartDev->EvtCallback)
 			{
@@ -683,8 +655,8 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	else
 	{
 		s_nRFUartDev[devno].pDmaReg->ENABLE = (UARTE_ENABLE_ENABLE_Enabled << UARTE_ENABLE_ENABLE_Pos);
-		s_nRFUartDev[devno].pDmaReg->RXD.MAXCNT = NRFUART_CFIFO_SIZE;
-		s_nRFUartDev[devno].pDmaReg->RXD.PTR = (uint32_t)s_nRFUARTRxDmaMem;
+
+		// Not using DMA transfer on Rx. It is useless on UART as we need to process 1 char at a time
 		s_nRFUartDev[devno].pDmaReg->EVENTS_ENDRX = 0;
 		s_nRFUartDev[devno].pDmaReg->TASKS_STARTRX = 1;
 	}

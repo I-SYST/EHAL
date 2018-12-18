@@ -11,6 +11,7 @@
 #include "blueio_board.h"
 
 #define NORDIC_DK
+
 #ifdef NORDIC_DK
 // PCA10056
 #define UART_RX_PORT		0
