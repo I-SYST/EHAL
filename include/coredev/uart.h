@@ -182,12 +182,17 @@ extern "C" {
 bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfgData);
 void UARTSetCtrlLineState(UARTDEV * const pDev, uint32_t LineState);
 UARTDEV * const UARTGetInstance(int DevNo);
-static inline int UARTGetRate(UARTDEV * const pDev) { return pDev->DevIntrf.GetRate(&pDev->DevIntrf); }
-static inline int UARTSetRate(UARTDEV * const pDev, int Rate) { return pDev->DevIntrf.SetRate(&pDev->DevIntrf, Rate); }
+
+static inline int UARTGetRate(UARTDEV * const pDev) { return DeviceIntrfGetRate(&pDev->DevIntrf); }
+static inline int UARTSetRate(UARTDEV * const pDev, int Rate) { return DeviceIntrfSetRate(&pDev->DevIntrf, Rate); }
 static inline void UARTEnable(UARTDEV * const pDev) { DeviceIntrfEnable(&pDev->DevIntrf); }
 static inline void UARTDisable(UARTDEV * const pDev) { DeviceIntrfDisable(&pDev->DevIntrf); }
-int UARTRx(UARTDEV * const pDev, uint8_t *pBuff, int Bufflen);
-int UARTTx(UARTDEV * const pDev, uint8_t *pData, int Datalen);
+static inline int UARTRx(UARTDEV * const pDev, uint8_t *pBuff, int Bufflen) {
+	return DeviceIntrfRx(&pDev->DevIntrf, 0, pBuff, Bufflen);
+}
+static inline int UARTTx(UARTDEV * const pDev, uint8_t *pData, int Datalen) {
+	return DeviceIntrfTx(&pDev->DevIntrf, 0, pData, Datalen);
+}
 void UARTprintf(UARTDEV * const pDev, const char *pFormat, ...);
 void UARTvprintf(UARTDEV * const pDev, const char *pFormat, va_list vl);
 void UARTRetargetEnable(UARTDEV * const pDev, int FileNo);
@@ -213,8 +218,8 @@ public:
 	}
 
 	operator DEVINTRF * const () { return &vDevData.DevIntrf; }
+	operator UARTDEV *  const () { return &vDevData; }
 
-	// ++ ** Require implementation
 	// Set data baudrate
 	virtual int Rate(int DataRate) { return UARTSetRate(&vDevData, DataRate); }
 	// Get current data baudrate
@@ -222,7 +227,7 @@ public:
     void Enable(void) { DeviceIntrfEnable(&vDevData.DevIntrf); }
     void Disable(void) { DeviceIntrfDisable(&vDevData.DevIntrf); }
 	virtual void SetCtrlLineState(int LineState) { UARTSetCtrlLineState(&vDevData, LineState); }
-	virtual int Rx(uint8_t *pBuff, uint32_t Len) { return ((DeviceIntrf *)this)->Rx(0, pBuff, Len); }
+	virtual int Rx(uint8_t *pBuff, int Len) { return DeviceIntrfRx(&vDevData.DevIntrf, 0, pBuff, Len); }
 	// Initiate receive
 	virtual bool StartRx(int DevAddr) { return DeviceIntrfStartRx(&vDevData.DevIntrf, DevAddr); }
 	// Receive Data only, no Start/Stop condition
@@ -231,7 +236,7 @@ public:
 	}
 	// Stop receive
 	virtual void StopRx(void) { DeviceIntrfStopRx(&vDevData.DevIntrf); }
-	virtual int Tx(uint8_t *pData, uint32_t Len) { return ((DeviceIntrf*)this)->Tx(0, pData, Len); }
+	virtual int Tx(uint8_t *pData, uint32_t Len) { return DeviceIntrfTx(&vDevData.DevIntrf, 0, pData, Len); }
 	// Initiate transmit
 	virtual bool StartTx(int DevAddr) { return DeviceIntrfStartTx(&vDevData.DevIntrf, DevAddr); }
 	// Transmit Data only, no Start/Stop condition
@@ -240,7 +245,6 @@ public:
 	}
 	// Stop transmit
 	virtual void StopTx(void) { DeviceIntrfStopTx(&vDevData.DevIntrf); }
-	// -- **
 	void printf(const char *pFormat, ...) {
 		va_list vl;
 	    va_start(vl, pFormat);
@@ -248,7 +252,6 @@ public:
 	    va_end(vl);
 	}
 
-	operator UARTDEV *  const () { return &vDevData; }
     virtual bool RequestToSend(int NbBytes) {
         if (CFifoAvail(vDevData.hTxFifo) < NbBytes)
             return false;

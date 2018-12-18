@@ -26,6 +26,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>include/analog_comp_nrf5x.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/analog_comp_nrf5x.h</locationURI>
+		</link>
+		<link>
 			<name>include/atomic.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/atomic.h</locationURI>
@@ -41,9 +46,9 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/ble_app.h</locationURI>
 		</link>
 		<link>
-			<name>include/ble_interf.h</name>
+			<name>include/ble_intrf.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/ble_interf.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ble_intrf.h</locationURI>
 		</link>
 		<link>
 			<name>include/ble_service.h</name>
@@ -56,6 +61,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/blueio_board.h</locationURI>
 		</link>
 		<link>
+			<name>include/blueio_types.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/blueio_types.h</locationURI>
+		</link>
+		<link>
 			<name>include/bluetooth</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -66,9 +76,19 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/cfifo.h</locationURI>
 		</link>
 		<link>
+			<name>include/converters</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>include/convutil.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/convutil.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>include/crc.h</name>
@@ -101,14 +121,14 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/diskio_flash.h</locationURI>
 		</link>
 		<link>
+			<name>include/esb_intrf.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/esb_intrf.h</locationURI>
+		</link>
+		<link>
 			<name>include/fatfs.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/fatfs.h</locationURI>
-		</link>
-		<link>
-			<name>include/i2c.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/i2c.h</locationURI>
 		</link>
 		<link>
 			<name>include/idelay.h</name>
@@ -116,14 +136,19 @@
 			<locationURI>PARENT-3-PROJECT_LOC/include/idelay.h</locationURI>
 		</link>
 		<link>
+			<name>include/imu</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>include/intelhex.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/intelhex.h</locationURI>
 		</link>
 		<link>
-			<name>include/iopincfg.h</name>
+			<name>include/iopinctrl.h</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/iopincfg.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/iopinctrl.h</locationURI>
 		</link>
 		<link>
 			<name>include/isha1.h</name>
@@ -141,29 +166,29 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/istddef.h</locationURI>
 		</link>
 		<link>
-			<name>include/ledmx.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/ledmx.h</locationURI>
-		</link>
-		<link>
-			<name>include/ledmxfont.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/ledmxfont.h</locationURI>
-		</link>
-		<link>
-			<name>include/ledmxio.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/ledmxio.h</locationURI>
-		</link>
-		<link>
 			<name>include/md5.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/md5.h</locationURI>
 		</link>
 		<link>
+			<name>include/miscdev</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>include/prbs.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/prbs.h</locationURI>
+		</link>
+		<link>
+			<name>include/pulse_train.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/pulse_train.h</locationURI>
+		</link>
+		<link>
+			<name>include/pwm.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/pwm.h</locationURI>
 		</link>
 		<link>
 			<name>include/sdcard.h</name>
@@ -179,11 +204,6 @@
 			<name>include/sensors</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>include/spi.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/spi.h</locationURI>
 		</link>
 		<link>
 			<name>include/stddev.h</name>
@@ -206,16 +226,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sysstatusdef.h</locationURI>
 		</link>
 		<link>
-			<name>include/uart.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/uart.h</locationURI>
-		</link>
-		<link>
-			<name>include/uart_nrf5x.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/uart_nrf5x.h</locationURI>
-		</link>
-		<link>
 			<name>include/utf8.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/utf8.h</locationURI>
@@ -229,6 +239,16 @@
 			<name>src/CppRuntimeOverload.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/CppRuntimeOverload.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/FreeRTOS</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/analog_comp_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/analog_comp_nrf5x.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/base64.c</name>
@@ -261,6 +281,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/cfifo.c</locationURI>
 		</link>
 		<link>
+			<name>src/converters</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/coredev</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/crc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/crc.c</locationURI>
@@ -286,19 +316,19 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/diskio_impl.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/esb_intrf.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/esb_intrf.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/fatfs.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/fatfs.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/i2c.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/i2c.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/i2c_nrf52.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_nrf52.cpp</locationURI>
+			<name>src/imu</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/intelhex.c</name>
@@ -326,14 +356,44 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/ledmxio_nrf5x.c</locationURI>
 		</link>
 		<link>
+			<name>src/micro-ecc</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK_Mesh</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrf_sdh_soc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_sdh_soc.c</locationURI>
+		</link>
+		<link>
 			<name>src/prbs.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/prbs.c</locationURI>
+		</link>
+		<link>
+			<name>src/pulse_train.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/pulse_train.c</locationURI>
+		</link>
+		<link>
+			<name>src/pwm_nrf52.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/pwm_nrf52.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sbuffer.c</name>
@@ -366,11 +426,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sysstatus.c</locationURI>
 		</link>
 		<link>
-			<name>src/uart.c</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/uart.c</locationURI>
-		</link>
-		<link>
 			<name>src/uart_nrf5x.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrf5x.c</locationURI>
@@ -396,6 +451,121 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/bluetooth/bleadv_mandata.h</locationURI>
 		</link>
 		<link>
+			<name>include/bluetooth/blesrvc_blueio.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/bluetooth/blesrvc_blueio.h</locationURI>
+		</link>
+		<link>
+			<name>include/converters/adc_device.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/converters/adc_device.h</locationURI>
+		</link>
+		<link>
+			<name>include/converters/adc_ltc2495.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/converters/adc_ltc2495.h</locationURI>
+		</link>
+		<link>
+			<name>include/converters/adc_nrf52_saadc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/adc_nrf52_saadc.h</locationURI>
+		</link>
+		<link>
+			<name>include/converters/analog_comp.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/converters/analog_comp.h</locationURI>
+		</link>
+		<link>
+			<name>include/converters/dac_device.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/converters/dac_device.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/i2c.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/i2c.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/i2c_spi_nrf52_irq.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/i2c_spi_nrf52_irq.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/iopincfg.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/iopincfg.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/iopinctrl.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/iopinctrl.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/spi.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/spi.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/timer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/timer.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/timer_nrf5x.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/timer_nrf5x.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/timer_nrf_app_timer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/timer_nrf_app_timer.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/uart.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/uart.h</locationURI>
+		</link>
+		<link>
+			<name>include/coredev/uart_nrf5x.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/uart_nrf5x.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/imu.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/imu_invensense.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_invensense.h</locationURI>
+		</link>
+		<link>
+			<name>include/miscdev/buzzer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/buzzer.h</locationURI>
+		</link>
+		<link>
+			<name>include/miscdev/ledmx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmx.h</locationURI>
+		</link>
+		<link>
+			<name>include/miscdev/ledmxfont.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmxfont.h</locationURI>
+		</link>
+		<link>
+			<name>include/miscdev/modem.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/modem.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/a_adxl362.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/a_adxl362.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/accel_sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/accel_sensor.h</locationURI>
@@ -406,6 +576,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/ag_bmi160.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/agm_icm20948.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_icm20948.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/agm_lsm9ds1.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_lsm9ds1.h</locationURI>
@@ -414,6 +589,11 @@
 			<name>include/sensors/agm_mpu9250.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_mpu9250.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/agm_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_sensor.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/gas_sensor.h</name>
@@ -429,6 +609,11 @@
 			<name>include/sensors/mag_sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/mag_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/sensor.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/tph_bme280.h</name>
@@ -456,6 +641,46 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sys/dirent.h</locationURI>
 		</link>
 		<link>
+			<name>src/FreeRTOS/croutine.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/FreeRTOS/FreeRTOS/Source/croutine.c</locationURI>
+		</link>
+		<link>
+			<name>src/FreeRTOS/event_groups.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/FreeRTOS/FreeRTOS/Source/event_groups.c</locationURI>
+		</link>
+		<link>
+			<name>src/FreeRTOS/list.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/FreeRTOS/FreeRTOS/Source/list.c</locationURI>
+		</link>
+		<link>
+			<name>src/FreeRTOS/portable</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/FreeRTOS/queue.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/FreeRTOS/FreeRTOS/Source/queue.c</locationURI>
+		</link>
+		<link>
+			<name>src/FreeRTOS/stream_buffer.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/FreeRTOS/FreeRTOS/Source/stream_buffer.c</locationURI>
+		</link>
+		<link>
+			<name>src/FreeRTOS/tasks.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/FreeRTOS/FreeRTOS/Source/tasks.c</locationURI>
+		</link>
+		<link>
+			<name>src/FreeRTOS/timers.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/FreeRTOS/FreeRTOS/Source/timers.c</locationURI>
+		</link>
+		<link>
 			<name>src/converters/adc_ltc2495.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/converters/adc_ltc2495.cpp</locationURI>
@@ -463,7 +688,87 @@
 		<link>
 			<name>src/converters/adc_nrf52_saadc.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/ARM/Nordic/src/adc_nrf52_saadc.cpp</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/adc_nrf52_saadc.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/i2c.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/i2c.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/i2c_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_nrf5x.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/i2c_spi_nrf5x_irq.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_spi_nrf5x_irq.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/iopincfg_nrf5x.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/iopincfg_nrf5x.c</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/spi.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/spi.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/spi_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/spi_nrf5x.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/timer.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/timer.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/timer_hf_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_hf_nrf5x.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/timer_lf_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_lf_nrf5x.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/timer_nrf_app_timer.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_nrf_app_timer.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/uart.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/uart.c</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/uart_nrf5x.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrf5x.c</locationURI>
+		</link>
+		<link>
+			<name>src/imu/imu invensense.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu%20invensense.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/imu/imu.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/micro-ecc/uECC.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/micro-ecc/uECC.c</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/buzzer.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/buzzer.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/miscdev/ledmx.c</name>
@@ -473,7 +778,12 @@
 		<link>
 			<name>src/miscdev/ledmxfont.c</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmx.c</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmxfont.c</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/modem.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/modem.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble</name>
@@ -481,7 +791,7 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf</name>
+			<name>src/nRF5_SDK/fprintf</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -491,7 +801,12 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/micro-ecc</name>
+			<name>src/nRF5_SDK/nrfx</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/proprietary_rf</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -499,6 +814,26 @@
 			<name>src/nRF5_SDK/softdevice</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/a_adxl362.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/a_adxl362.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/ag_bmi160.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/ag_bmi160.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/agm_icm20948.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/agm_icm20948.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sensors/agm_mpu9250.cpp</name>
@@ -521,12 +856,37 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/tphg_bme680.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/FreeRTOS/portable/GCC</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/ble_advertising</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/ble_db_discovery</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_dtm</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_link_ctx_manager</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_racp</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_radio_notification</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -546,37 +906,57 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/ble/nrf_ble_qwr</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/nrf_ble_scan</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/peer_manager</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf/clock</name>
+			<name>src/nRF5_SDK/fprintf/nrf_fprintf.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/external/fprintf/nrf_fprintf.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/fprintf/nrf_fprintf_format.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/external/fprintf/nrf_fprintf_format.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/atomic</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf/common</name>
+			<name>src/nRF5_SDK/libraries/atomic_fifo</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf/hal</name>
+			<name>src/nRF5_SDK/libraries/atomic_flags</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf/power</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/drivers_nrf/rng</name>
+			<name>src/nRF5_SDK/libraries/balloc</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/bootloader</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/cli</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -591,12 +971,32 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/experimental_section_vars</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/fds</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/fstorage</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/log</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/memobj</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/pwr_mgmt</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -616,6 +1016,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/strerror</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/timer</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -626,7 +1031,17 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/micro-ecc/micro-ecc</name>
+			<name>src/nRF5_SDK/nrfx/drivers</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/nrfx/legacy</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/proprietary_rf/esb</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -636,14 +1051,94 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/FreeRTOS/portable/GCC/ARM_CM4F</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/ble_advertising/ble_advertising.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_advertising/ble_advertising.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/ble/ble_advertising/ble_advertising.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_advertising/ble_advertising.h</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/ble_db_discovery/ble_db_discovery.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_db_discovery/ble_db_discovery.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_db_discovery/ble_db_discovery.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_db_discovery/ble_db_discovery.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_dtm/ble_dtm.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_dtm/ble_dtm.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_dtm/ble_dtm.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_dtm/ble_dtm.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_dtm/ble_dtm_hw.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_dtm/ble_dtm_hw.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_dtm/ble_dtm_hw_nrf52.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_dtm/ble_dtm_hw_nrf52.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_link_ctx_manager/ble_link_ctx_manager.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_link_ctx_manager/ble_link_ctx_manager.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_link_ctx_manager/ble_link_ctx_manager.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_link_ctx_manager/ble_link_ctx_manager.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_racp/ble_racp.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_racp/ble_racp.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_racp/ble_racp.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_racp/ble_racp.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_radio_notification/ble_radio_notification.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_radio_notification/ble_radio_notification.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_radio_notification/ble_radio_notification.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_radio_notification/ble_radio_notification.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_services/ble_bas</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_services/ble_dfu</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/ble_services/ble_dis</name>
@@ -656,9 +1151,19 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_advdata.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/ble/common/ble_advdata.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_advdata.h</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/common/ble_conn_params.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_conn_params.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/common/ble_conn_params.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_conn_params.h</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/common/ble_conn_state.c</name>
@@ -666,9 +1171,34 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_conn_state.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/ble/common/ble_conn_state.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_conn_state.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/common/ble_date_time.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_date_time.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/common/ble_gatt_db.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_gatt_db.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/common/ble_sensor_location.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_sensor_location.h</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/common/ble_srv_common.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_srv_common.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/common/ble_srv_common.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/common/ble_srv_common.h</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/nrf_ble_gatt/nrf_ble_gatt.c</name>
@@ -676,9 +1206,49 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/nrf_ble_gatt/nrf_ble_gatt.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/ble/nrf_ble_gatt/nrf_ble_gatt.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/nrf_ble_gatt/nrf_ble_gatt.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/nrf_ble_qwr/nrf_ble_qwr.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/nrf_ble_qwr/nrf_ble_qwr.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/nrf_ble_qwr/nrf_ble_qwr.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/nrf_ble_qwr/nrf_ble_qwr.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/nrf_ble_scan/nrf_ble_scan.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/nrf_ble_scan/nrf_ble_scan.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/nrf_ble_scan/nrf_ble_scan.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/nrf_ble_scan/nrf_ble_scan.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/auth_status_tracker.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/auth_status_tracker.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/auth_status_tracker.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/auth_status_tracker.h</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/gatt_cache_manager.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/gatt_cache_manager.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/gatt_cache_manager.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/gatt_cache_manager.h</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/gatts_cache_manager.c</name>
@@ -686,9 +1256,29 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/gatts_cache_manager.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/gatts_cache_manager.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/gatts_cache_manager.h</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/id_manager.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/id_manager.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/id_manager.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/id_manager.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/nrf_ble_lesc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/nrf_ble_lesc.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/nrf_ble_lesc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/nrf_ble_lesc.h</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/peer_data_storage.c</name>
@@ -696,9 +1286,19 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_data_storage.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/peer_data_storage.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_data_storage.h</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/peer_database.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_database.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/peer_database.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_database.h</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/peer_id.c</name>
@@ -706,9 +1306,39 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_id.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/peer_id.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_id.h</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/peer_manager.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_manager.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/peer_manager.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_manager.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/peer_manager_handler.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_manager_handler.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/peer_manager_handler.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_manager_handler.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/peer_manager_internal.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_manager_internal.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/peer_manager_types.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/peer_manager_types.h</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/pm_buffer.c</name>
@@ -716,9 +1346,9 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/pm_buffer.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/ble/peer_manager/pm_mutex.c</name>
+			<name>src/nRF5_SDK/ble/peer_manager/pm_buffer.h</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/pm_mutex.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/pm_buffer.h</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/security_dispatcher.c</name>
@@ -726,39 +1356,49 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/security_dispatcher.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/ble/peer_manager/security_dispatcher.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/security_dispatcher.h</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/peer_manager/security_manager.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/security_manager.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf/clock/nrf_drv_clock.c</name>
+			<name>src/nRF5_SDK/ble/peer_manager/security_manager.h</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/clock/nrf_drv_clock.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/peer_manager/security_manager.h</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf/common/nrf_drv_common.c</name>
+			<name>src/nRF5_SDK/libraries/atomic/nrf_atomic.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/common/nrf_drv_common.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/atomic/nrf_atomic.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf/hal/nrf_nvmc.c</name>
+			<name>src/nRF5_SDK/libraries/atomic_fifo/nrf_atfifo.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/hal/nrf_nvmc.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/atomic_fifo/nrf_atfifo.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf/power/nrf_drv_power.c</name>
+			<name>src/nRF5_SDK/libraries/atomic_flags/nrf_atflags.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/power/nrf_drv_power.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/atomic_flags/nrf_atflags.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/drivers_nrf/rng/nrf_drv_rng.c</name>
+			<name>src/nRF5_SDK/libraries/balloc/nrf_balloc.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/drivers_nrf/rng/nrf_drv_rng.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/balloc/nrf_balloc.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/bootloader/dfu</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/cli/nrf_cli.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/cli/nrf_cli.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crc32/crc32.c</name>
@@ -771,6 +1411,26 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_aead.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_aead.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_aes.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_aes.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_aes_shared.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_aes_shared.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_ecc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_ecc.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_ecdh.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_ecdh.c</locationURI>
@@ -781,9 +1441,29 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_ecdsa.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_eddsa.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-5-PROJECT_LOC%7D/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_eddsa.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_error.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_error.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_hash.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_hash.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_hkdf.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_hkdf.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_hmac.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_hmac.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_init.c</name>
@@ -791,29 +1471,24 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_init.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_keys.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_keys.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_mem.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_mem.c</locationURI>
-		</link>
-		<link>
 			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_rng.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_rng.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/experimental_memobj/nrf_memobj.c</name>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_shared.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/NRF5_SDK/components/libraries/experimental_memobj/nrf_memobj.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_shared.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/nrf_crypto_svc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/nrf_crypto_svc.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/experimental_section_vars/nrf_section_iter.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/NRF5_SDK/components/libraries/experimental_section_vars/nrf_section_iter.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/experimental_section_vars/nrf_section_iter.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/fds/fds.c</name>
@@ -823,17 +1498,32 @@
 		<link>
 			<name>src/nRF5_SDK/libraries/fstorage/nrf_fstorage.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/NRF5_SDK/components/libraries/fstorage/nrf_fstorage.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/fstorage/nrf_fstorage.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/fstorage/nrf_fstorage_nvmc.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/NRF5_SDK/components/libraries/fstorage/nrf_fstorage_nvmc.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/fstorage/nrf_fstorage_nvmc.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/fstorage/nrf_fstorage_sd.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/NRF5_SDK/components/libraries/fstorage/nrf_fstorage_sd.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/fstorage/nrf_fstorage_sd.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/log/src</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/memobj/nrf_memobj.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-5-PROJECT_LOC%7D/external/nRF5_SDK/components/libraries/memobj/nrf_memobj.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/pwr_mgmt/nrf_pwr_mgmt.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/pwr_mgmt/nrf_pwr_mgmt.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/queue/nrf_queue.c</name>
@@ -849,6 +1539,11 @@
 			<name>src/nRF5_SDK/libraries/sha256/sha256.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/sha256/sha256.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/strerror/nrf_strerror.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/strerror/nrf_strerror.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/timer/app_timer.c</name>
@@ -881,9 +1576,14 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/util/sdk_mapped_flags.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/micro-ecc/micro-ecc/uECC.c</name>
+			<name>src/nRF5_SDK/nrfx/drivers/src</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/nrfx/legacy/nrf_drv_rng.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/external/micro-ecc/micro-ecc/uECC.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/integration/nrfx/legacy/nrf_drv_rng.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/proprietary_rf/esb/nrf_esb.c</name>
@@ -894,11 +1594,6 @@
 			<name>src/nRF5_SDK/softdevice/common/nrf_sdh.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh.c</locationURI>
-		</link>
-		<link>
-			<name>src/nRF5_SDK/softdevice/common/nrf_sdh_ant.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh_ant.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/softdevice/common/nrf_sdh_ble.c</name>
@@ -916,64 +1611,804 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh_soc.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/CMakeLists.txt</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/CMakeLists.txt</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/FreeRTOS/portable/GCC/ARM_CM4F/port.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/FreeRTOS/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_services/ble_bas/ble_bas.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_bas/ble_bas.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_services/ble_bas/ble_bas.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_bas/ble_bas.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_services/ble_dfu/ble_dfu.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_dfu/ble_dfu.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_services/ble_dfu/ble_dfu.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_dfu/ble_dfu.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_services/ble_dfu/ble_dfu_bonded.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/ble/ble_services/ble_dfu/ble_dfu_unbonded.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/ble/ble_services/ble_dis/ble_dis.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_dis/ble_dis.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c</name>
+			<name>src/nRF5_SDK/ble/ble_services/ble_dis/ble_dis.h</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/dfu/nrf_dfu_flash.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/ble/ble_services/ble_dis/ble_dis.h</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_settings.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/dfu/nrf_dfu_settings.c</locationURI>
+			<locationURI>$%7BPARENT-5-PROJECT_LOC%7D/external/nRF5_SDK/components/libraries/bootloader/dfu/nrf_dfu_settings.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_crypto_sw</name>
+			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_hw</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdh.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdh.c</locationURI>
+			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_sw</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdsa.c</name>
+			<name>src/nRF5_SDK/libraries/log/src/nrf_log_backend_flash.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_ecdsa.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/log/src/nrf_log_backend_flash.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_init.c</name>
+			<name>src/nRF5_SDK/libraries/log/src/nrf_log_backend_serial.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_init.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/log/src/nrf_log_backend_serial.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_keys.c</name>
+			<name>src/nRF5_SDK/libraries/log/src/nrf_log_backend_uart.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_keys.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/log/src/nrf_log_backend_uart.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/micro_ecc/micro_ecc_lib_shared.c</name>
+			<name>src/nRF5_SDK/libraries/log/src/nrf_log_default_backends.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/micro_ecc/micro_ecc_lib_shared.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/log/src/nrf_log_default_backends.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_crypto_sw/nrf_crypto_sw_hash.c</name>
+			<name>src/nRF5_SDK/libraries/log/src/nrf_log_frontend.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw/nrf_crypto_sw_hash.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/log/src/nrf_log_frontend.c</locationURI>
 		</link>
 		<link>
-			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_crypto_sw/nrf_crypto_sw_rng.c</name>
+			<name>src/nRF5_SDK/libraries/log/src/nrf_log_str_formatter.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_crypto_sw/nrf_crypto_sw_rng.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/log/src/nrf_log_str_formatter.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/nrfx/drivers/src/nrfx_rng.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/modules/nrfx/drivers/src/nrfx_rng.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/flash_manager.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/flash_manager.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/mesh_config.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/mesh_config.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/mesh_config_entry.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/mesh_config_entry.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/mesh_config_listener.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/mesh_config_listener.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/mesh_opt_core.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/mesh_opt_core.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh_assert.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh_assert.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh_assert_armcc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh_assert_armcc.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh_assert_gcc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh_assert_gcc.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh_assert_lint.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh_assert_lint.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh_config_core.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh_config_core.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh_configure.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh_configure.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh_defines.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh_defines.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh_events.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh_events.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh_externs.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh_externs.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh_opt.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh_opt.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh_section.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh_section.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/api/nrf_mesh_utils.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/api/nrf_mesh_utils.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/aes.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/aes.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/aes_cmac.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/aes_cmac.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/beacon.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/beacon.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/bearer_event.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/bearer_event.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/bitfield.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/bitfield.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/bl_if.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/bl_if.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/bl_info_types.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/bl_info_types.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/cache.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/cache.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/ccm_soft.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/ccm_soft.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/core_tx.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/core_tx.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/core_tx_adv.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/core_tx_adv.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/core_tx_instaburst.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/core_tx_instaburst.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/debug_pins.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/debug_pins.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/enc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/enc.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/event.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/event.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/fifo.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/fifo.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/flash_manager_defrag.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/flash_manager_defrag.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/flash_manager_internal.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/flash_manager_internal.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/fsm.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/fsm.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/fsm_assistant.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/fsm_assistant.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/hal.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/hal.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/heartbeat.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/heartbeat.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/internal_event.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/internal_event.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/list.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/list.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/log.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/log.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/mesh_config_backend.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/mesh_config_backend.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/mesh_config_backend_file.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/mesh_config_backend_file.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/mesh_config_backend_glue.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/mesh_config_backend_glue.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/mesh_config_flashman_glue.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/mesh_config_flashman_glue.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/mesh_flash.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/mesh_flash.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/mesh_opt.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/mesh_opt.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/msg_cache.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/msg_cache.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/msqueue.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/msqueue.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/net_beacon.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/net_beacon.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/net_packet.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/net_packet.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/net_state.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/net_state.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/network.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/network.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/nrf_flash.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/nrf_flash.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/nrf_mesh_keygen.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/nrf_mesh_keygen.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/packet.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/packet.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/packet_buffer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/packet_buffer.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/packet_mesh.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/packet_mesh.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/packet_mgr.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/packet_mgr.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/queue.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/queue.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/rand.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/rand.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/replay_cache.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/replay_cache.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/timer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/timer.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/timer_scheduler.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/timer_scheduler.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/timeslot.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/timeslot.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/toolchain.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/toolchain.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/transport.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/transport.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/uri.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/uri.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/include/utils.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/include/utils.h</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/aes.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/aes.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/aes_cmac.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/aes_cmac.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/beacon.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/beacon.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/bearer_event.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/bearer_event.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/cache.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/cache.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/ccm_soft.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/ccm_soft.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/core_tx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/core_tx.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/core_tx_adv.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/core_tx_adv.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/core_tx_instaburst.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/core_tx_instaburst.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/enc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/enc.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/event.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/event.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/fifo.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/fifo.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/flash_manager.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/flash_manager.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/flash_manager_defrag.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/flash_manager_defrag.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/flash_manager_internal.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/flash_manager_internal.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/fsm.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/fsm.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/hal.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/hal.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/heartbeat.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/heartbeat.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/internal_event.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/internal_event.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/list.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/list.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/log.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/log.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/mesh_config.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/mesh_config.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/mesh_config_backend.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/mesh_config_backend.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/mesh_config_flashman_glue.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/mesh_config_flashman_glue.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/mesh_flash.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/mesh_flash.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/mesh_opt.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/mesh_opt.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/msg_cache.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/msg_cache.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/msqueue.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/msqueue.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/net_beacon.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/net_beacon.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/net_packet.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/net_packet.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/net_state.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/net_state.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/network.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/network.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/nrf_flash.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/nrf_flash.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/nrf_mesh.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/nrf_mesh.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/nrf_mesh_configure.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/nrf_mesh_configure.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/nrf_mesh_keygen.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/nrf_mesh_keygen.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/nrf_mesh_opt.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/nrf_mesh_opt.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/nrf_mesh_utils.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/nrf_mesh_utils.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/packet_buffer.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/packet_buffer.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/packet_mgr.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/packet_mgr.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/queue.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/queue.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/rand.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/rand.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/replay_cache.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/replay_cache.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/timer.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/timer.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/timer_scheduler.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/timer_scheduler.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/timeslot.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/timeslot.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/toolchain.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/toolchain.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/transport.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/transport.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK_Mesh/mesh/core/src/uri.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/mesh/core/src/uri.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_aes.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_aes.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_aes_aead.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_aes_aead.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_chacha_poly_aead.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_chacha_poly_aead.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_ecc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_ecc.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_ecdh.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_ecdh.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_ecdsa.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_ecdsa.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_eddsa.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_eddsa.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_hash.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_hash.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_hmac.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_hmac.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_init.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_init.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_mutex.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_mutex.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_rng.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_rng.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/cc310/cc310_backend_shared.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/cc310/cc310_backend_shared.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_hw/nrf_hw_backend_init.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_hw/nrf_hw_backend_init.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_hw/nrf_hw_backend_rng.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_hw/nrf_hw_backend_rng.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/libraries/crypto/backend/nrf_sw/nrf_sw_backend_hash.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/libraries/crypto/backend/nrf_sw/nrf_sw_backend_hash.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

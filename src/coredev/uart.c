@@ -42,31 +42,6 @@ Modified by          Date              Description
 extern char s_Buffer[];	// defined in sbuffer.c
 extern int s_BufferSize;
 
-int UARTRx(UARTDEV * const pDev, uint8_t *pBuff, int Bufflen)
-{
-	int len = 0;
-
-    return DeviceIntrfRx(&pDev->DevIntrf, 0, pBuff, Bufflen);
-/*    pDev->DevIntrf.StartRx(&pDev->DevIntrf, 0);
-    len = pDev->DevIntrf.RxData(&pDev->DevIntrf, pBuff, Bufflen);
-    pDev->DevIntrf.StopRx(&pDev->DevIntrf);
-
-    return len;*/
-}
-
-int UARTTx(UARTDEV * const pDev, uint8_t *pData, int Datalen)
-{
-	int len = 0;
-
-	return DeviceIntrfTx(&pDev->DevIntrf, 0, pData, Datalen);
-/*
-    pDev->DevIntrf.StartTx(&pDev->DevIntrf, 0);
-    len = pDev->DevIntrf.TxData(&pDev->DevIntrf, pData, Datalen);
-    pDev->DevIntrf.StopTx(&pDev->DevIntrf);
-
-    return len;*/
-}
-
 void UARTprintf(UARTDEV * const pDev, const char *pFormat, ...)
 {
 	va_list vl;
