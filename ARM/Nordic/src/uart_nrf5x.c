@@ -1,9 +1,10 @@
-/*--------------------------------------------------------------------------
-File   : uart_nrf5x.c
+/**-------------------------------------------------------------------------
+@file	uart_nrf5x.c
 
-Author : Hoang Nguyen Hoan          Aug. 30, 2015
+@brief	nRF5x UART implementation
 
-Desc   : nRF5x UART implementation
+@author	Hoang Nguyen Hoan
+@date	Aug. 30, 2015
 
 Copyright (c) 2015, I-SYST, all rights reserved
 
@@ -27,9 +28,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 #include <string.h>
 #include <stdio.h>
@@ -44,9 +42,10 @@ Modified by          Date              Description
 #include "idelay.h"
 #include "atomic.h"
 
-#define NRF5XUART_FIFO_MAX		6
-#define NRF5XUART_RXTIMEOUT		15
-#define NRF52_UART_DMA_MAX_LEN	255
+#define NRF5X_UART_HWFIFO_SIZE		6
+#define NRF5X_UART_RXTIMEOUT		15
+#define NRF52_UART_DMA_MAX_LEN		255
+#define NRF5X_UART_BUFF_SIZE		16
 
 // Device driver data require by low level functions
 typedef struct _nRF_UART_Dev {
@@ -64,6 +63,7 @@ typedef struct _nRF_UART_Dev {
 	uint32_t TxPin;
 	uint32_t CtsPin;
 	uint32_t RtsPin;
+	uint8_t TxDmaCache[NRF5X_UART_BUFF_SIZE];
 } NRF5X_UARTDEV;
 
 typedef struct {
@@ -117,11 +117,11 @@ static int s_nRF51RxTimeOutCnt = 0;
 uint32_t g_nRF51RxDropCnt = 0;
 uint32_t g_nRF51RxErrCnt = 0;
 
-#define NRFUART_BUFF_SIZE		16
-#define NRFUART_CFIFO_SIZE		CFIFO_MEMSIZE(NRFUART_BUFF_SIZE)
+#define NRF5X_UART_CFIFO_SIZE		CFIFO_MEMSIZE(NRF5X_UART_BUFF_SIZE)
 
-static uint8_t s_nRFUARTRxFifoMem[NRFUART_CFIFO_SIZE];
-static uint8_t s_nRFUARTTxFifoMem[NRFUART_CFIFO_SIZE];
+static uint8_t s_nRFUARTRxFifoMem[NRF5X_UART_CFIFO_SIZE];
+static uint8_t s_nRFUARTTxFifoMem[NRF5X_UART_CFIFO_SIZE];
+
 
 bool nRFUARTWaitForRxReady(NRF5X_UARTDEV * const pDev, uint32_t Timeout)
 {
@@ -153,7 +153,7 @@ bool nRFUARTWaitForTxReady(NRF5X_UARTDEV * const pDev, uint32_t Timeout)
 
 static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 {
-	uint8_t buff[NRFUART_CFIFO_SIZE];
+	//uint8_t buff[NRFUART_CFIFO_SIZE];
 	int len = 0;
 	int cnt = 0;
 
@@ -185,7 +185,7 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 			}
 			*d = pDev->pReg->RXD;
 			cnt++;
-		} while (pDev->pReg->EVENTS_RXDRDY && cnt < NRF5XUART_FIFO_MAX) ;
+		} while (pDev->pReg->EVENTS_RXDRDY && cnt < NRF5X_UART_HWFIFO_SIZE) ;
 
 		if (pDev->pUartDev->EvtCallback)
 		{
@@ -194,10 +194,10 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 			{
 				pDev->pReg->EVENTS_RXTO = 0;
 				pDev->bRxReady = false;
-				cnt = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXTIMEOUT, buff, len);
+				cnt = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXTIMEOUT, NULL, len);
 			}
 			else
-				cnt = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXDATA, buff, len);
+				cnt = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXDATA, NULL, len);
 		}
 	}
 
@@ -205,17 +205,37 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 	if (pDev->pDmaReg->EVENTS_ENDTX)
 	{
 		pDev->pDmaReg->EVENTS_ENDTX = 0;
-		int l = min(CFifoUsed(pDev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
+		int l = NRF5X_UART_BUFF_SIZE;//min(CFifoUsed(pDev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
 		uint8_t *p = CFifoGetMultiple(pDev->pUartDev->hTxFifo, &l);
 		if (p)
 		{
+			pDev->bTxReady = false;
+
+			// Transfer to tx cache before sending as CFifo will immediately make the memory
+			// block available for reuse in the Put request. This could cause an overwrite
+			// if uart tx has not completed in time.
+			memcpy(&pDev->TxDmaCache, p, l);
+
 			pDev->pDmaReg->TXD.MAXCNT = l;
-			pDev->pDmaReg->TXD.PTR = (uint32_t)p;
+			pDev->pDmaReg->TXD.PTR = (uint32_t)&pDev->TxDmaCache;
 			pDev->pDmaReg->TASKS_STARTTX = 1;
 		}
 		else
 		{
 			pDev->bTxReady = true;
+		}
+		if (pDev->pUartDev->EvtCallback)
+		{
+			//uint8_t buff[NRFUART_CFIFO_SIZE];
+
+			//len = min(NRFUART_CFIFO_SIZE, CFifoAvail(s_nRFUartDev.pUartDev->hTxFifo));
+			len = CFifoAvail(pDev->pUartDev->hTxFifo);
+			len = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_TXREADY, NULL, len);
+			if (len > 0)
+			{
+				//s_nRFUartDev.bTxReady = false;
+				//nRFUARTTxData(&s_nRFUartDev.pUartDev->SerIntrf, buff, len);
+			}
 		}
 	}
 #endif
@@ -240,20 +260,20 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 				pDev->bTxReady = false;
 				pDev->pReg->TXD = *p;
 				cnt++;
-			} while (pDev->pReg->EVENTS_TXDRDY && cnt < NRF5XUART_FIFO_MAX);
-		}
+			} while (pDev->pReg->EVENTS_TXDRDY && cnt < NRF5X_UART_HWFIFO_SIZE);
 
-		if (pDev->pUartDev->EvtCallback)
-		{
-			//uint8_t buff[NRFUART_CFIFO_SIZE];
-
-			//len = min(NRFUART_CFIFO_SIZE, CFifoAvail(s_nRFUartDev.pUartDev->hTxFifo));
-			len = CFifoAvail(pDev->pUartDev->hTxFifo);
-			len = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_TXREADY, buff, len);
-			if (len > 0)
+			if (pDev->pUartDev->EvtCallback)
 			{
-				//s_nRFUartDev.bTxReady = false;
-				//nRFUARTTxData(&s_nRFUartDev.pUartDev->SerIntrf, buff, len);
+				//uint8_t buff[NRFUART_CFIFO_SIZE];
+
+				//len = min(NRFUART_CFIFO_SIZE, CFifoAvail(s_nRFUartDev.pUartDev->hTxFifo));
+				len = CFifoAvail(pDev->pUartDev->hTxFifo);
+				len = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_TXREADY, NULL, len);
+				if (len > 0)
+				{
+					//s_nRFUartDev.bTxReady = false;
+					//nRFUARTTxData(&s_nRFUartDev.pUartDev->SerIntrf, buff, len);
+				}
 			}
 		}
 	}
@@ -279,20 +299,19 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 				pDev->bRxReady = false;
 				*d = pDev->pReg->RXD;
 				cnt++;
-			} //while (nRFUARTWaitForRxReady(&s_nRFUartDev, 10));
-			while (pDev->pReg->EVENTS_RXDRDY && cnt < NRF5XUART_FIFO_MAX);
+			} while (pDev->pReg->EVENTS_RXDRDY && cnt < NRF5X_UART_HWFIFO_SIZE);
 
 			if (pDev->pUartDev->EvtCallback)
 			{
 				len = CFifoUsed(pDev->pUartDev->hRxFifo);
-				pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXDATA, buff, len);
+				pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXDATA, NULL, len);
 			}
 		}
 		pDev->pReg->ERRORSRC = pDev->pReg->ERRORSRC;
 		len = 0;
 		if (pDev->pUartDev->EvtCallback)
 		{
-			pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_LINESTATE, buff, len);
+			pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_LINESTATE, NULL, len);
 		}
 		pDev->pReg->TASKS_STARTRX = 1;
 	}
@@ -303,10 +322,10 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 		pDev->pUartDev->LineState &= ~UART_LINESTATE_CTS;
         if (pDev->pUartDev->EvtCallback)
         {
-            buff[0] = 0;//UART_LINESTATE_CTS;
+            uint8_t buff = 0;//UART_LINESTATE_CTS;
     //        buff[1] = 0;//UART_LINESTATE_CTS;
             len = 1;
-            pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_LINESTATE, buff, len);
+            pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_LINESTATE, &buff, len);
         }
 		//NRF_UART0->TASKS_STARTTX = 1;
 		//s_nRFUartDev.bTxReady = true;
@@ -319,10 +338,10 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 		//NRF_UART0->TASKS_STOPTX = 1;
         if (pDev->pUartDev->EvtCallback)
         {
-            buff[0] = UART_LINESTATE_CTS;
+            uint8_t buff = UART_LINESTATE_CTS;
 //            buff[1] = UART_LINESTATE_CTS;
             len = 1;
-            pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_LINESTATE, buff, len);
+            pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_LINESTATE, &buff, len);
         }
 	}
 }
@@ -434,13 +453,19 @@ static int nRFUARTTxData(DEVINTRF * const pDev, uint8_t *pData, int Datalen)
         {
         	if (pDev->bDma == true)
         	{
-        		int l = min(CFifoUsed(dev->pUartDev->hTxFifo), 255);
+        		int l = NRF5X_UART_BUFF_SIZE;//min(CFifoUsed(dev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
         		uint8_t *p = CFifoGetMultiple(dev->pUartDev->hTxFifo, &l);
         		if (p)
         		{
         			dev->bTxReady = false;
+
+        			// Transfer to tx cache before sending as CFifo will immediately make the memory
+        			// block available for reuse in the Put request. This could cause an overwrite
+        			// if uart tx has not completed in time.
+        			memcpy(&dev->TxDmaCache, p, l);
+
 					dev->pDmaReg->TXD.MAXCNT = l;
-					dev->pDmaReg->TXD.PTR = (uint32_t)p;
+					dev->pDmaReg->TXD.PTR = (uint32_t)&dev->TxDmaCache;
 					dev->pDmaReg->TASKS_STARTTX = 1;
         		}
         	}
@@ -476,7 +501,7 @@ static void nRFUARTDisable(DEVINTRF * const pDev)
 	dev->pReg->PSELRTS = -1;
 	dev->pReg->PSELCTS = -1;
 
-	dev->pReg->ENABLE = 0;//&= ~(UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
+	dev->pReg->ENABLE = 0;
 }
 
 static void nRFUARTEnable(DEVINTRF * const pDev)
@@ -494,11 +519,14 @@ static void nRFUARTEnable(DEVINTRF * const pDev)
 
 	if (pDev->bDma == true)
 	{
-		dev->pDmaReg->ENABLE  |= (UARTE_ENABLE_ENABLE_Enabled << UARTE_ENABLE_ENABLE_Pos);
+		dev->pDmaReg->ENABLE |= (UARTE_ENABLE_ENABLE_Enabled << UARTE_ENABLE_ENABLE_Pos);
+		// Not using DMA transfer on Rx. It is useless on UART as we need to process 1 char at a time
+		dev->pDmaReg->EVENTS_ENDRX = 0;
+		dev->pDmaReg->TASKS_STARTRX = 1;
 	}
 	else
 	{
-		dev->pReg->ENABLE  |= (UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
+		dev->pReg->ENABLE |= (UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
 		dev->pReg->TASKS_STARTRX = 1;
 		dev->pReg->TASKS_STARTTX = 1;
 	}
@@ -526,7 +554,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	}
 	else
 	{
-		pDev->hRxFifo = CFifoInit(s_nRFUARTRxFifoMem, NRFUART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
+		pDev->hRxFifo = CFifoInit(s_nRFUARTRxFifoMem, NRF5X_UART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	if (pCfg->pTxMem && pCfg->TxMemSize > 0)
@@ -535,7 +563,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	}
 	else
 	{
-		pDev->hTxFifo = CFifoInit(s_nRFUARTTxFifoMem, NRFUART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
+		pDev->hTxFifo = CFifoInit(s_nRFUARTTxFifoMem, NRF5X_UART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIoMap;
