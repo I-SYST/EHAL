@@ -177,12 +177,29 @@ int nRF5xSPISetRate(DEVINTRF * const pDev, int DataRate)
 		dev->pReg->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M4;
 		dev->pSpiDev->Cfg.Rate = 4000000;
 	}
+#ifdef NRF52840_XXAA
+	else if (DataRate < 16000000)
+	{
+		dev->pReg->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M8;
+		dev->pSpiDev->Cfg.Rate = 8000000;
+	}
+	else if (DataRate < 32000000)
+	{
+		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M16;
+		dev->pSpiDev->Cfg.Rate = 16000000;
+	}
+	else
+	{
+		dev->pReg->FREQUENCY = SPIM_FREQUENCY_FREQUENCY_M32;
+		dev->pSpiDev->Cfg.Rate = 32000000;
+	}
+#else
 	else
 	{
 		dev->pReg->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M8;
 		dev->pSpiDev->Cfg.Rate = 8000000;
 	}
-
+#endif
 	return dev->pSpiDev->Cfg.Rate;
 }
 
