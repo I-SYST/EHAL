@@ -6,6 +6,8 @@
 @author	Hoang Nguyen Hoan
 @date	Aug. 30, 2015
 
+@license
+
 Copyright (c) 2015, I-SYST, all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
@@ -157,14 +159,6 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 	int len = 0;
 	int cnt = 0;
 
-#ifdef NRF52_SERIES
-	if (pDev->pDmaReg->EVENTS_ENDRX)
-	{
-		// No DMA support for RX, just clear the event
-		pDev->pDmaReg->EVENTS_ENDRX = 0;
-	}
-#endif
-
 	if (pDev->pReg->EVENTS_RXDRDY || pDev->pReg->EVENTS_RXTO)
 	{
 		s_nRF51RxTimeOutCnt = 0;
@@ -202,41 +196,10 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 	}
 
 #ifdef NRF52_SERIES
-	if (pDev->pDmaReg->EVENTS_ENDTX)
+	if (pDev->pDmaReg->EVENTS_ENDRX)
 	{
-		pDev->pDmaReg->EVENTS_ENDTX = 0;
-		int l = NRF5X_UART_BUFF_SIZE;//min(CFifoUsed(pDev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
-		uint8_t *p = CFifoGetMultiple(pDev->pUartDev->hTxFifo, &l);
-		if (p)
-		{
-			pDev->bTxReady = false;
-
-			// Transfer to tx cache before sending as CFifo will immediately make the memory
-			// block available for reuse in the Put request. This could cause an overwrite
-			// if uart tx has not completed in time.
-			memcpy(&pDev->TxDmaCache, p, l);
-
-			pDev->pDmaReg->TXD.MAXCNT = l;
-			pDev->pDmaReg->TXD.PTR = (uint32_t)&pDev->TxDmaCache;
-			pDev->pDmaReg->TASKS_STARTTX = 1;
-		}
-		else
-		{
-			pDev->bTxReady = true;
-		}
-		if (pDev->pUartDev->EvtCallback)
-		{
-			//uint8_t buff[NRFUART_CFIFO_SIZE];
-
-			//len = min(NRFUART_CFIFO_SIZE, CFifoAvail(s_nRFUartDev.pUartDev->hTxFifo));
-			len = CFifoAvail(pDev->pUartDev->hTxFifo);
-			len = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_TXREADY, NULL, len);
-			if (len > 0)
-			{
-				//s_nRFUartDev.bTxReady = false;
-				//nRFUARTTxData(&s_nRFUartDev.pUartDev->SerIntrf, buff, len);
-			}
-		}
+		// No DMA support for RX, just clear the event
+		pDev->pDmaReg->EVENTS_ENDRX = 0;
 	}
 #endif
 
@@ -277,6 +240,46 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 			}
 		}
 	}
+
+#ifdef NRF52_SERIES
+	if (pDev->pDmaReg->EVENTS_ENDTX || pDev->pDmaReg->EVENTS_TXSTOPPED)
+	{
+		pDev->pDmaReg->EVENTS_ENDTX = 0;
+		pDev->pDmaReg->EVENTS_TXSTOPPED = 0;
+		int l = NRF5X_UART_BUFF_SIZE;//min(CFifoUsed(pDev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
+		uint8_t *p = CFifoGetMultiple(pDev->pUartDev->hTxFifo, &l);
+		if (p)
+		{
+			pDev->bTxReady = false;
+
+			// Transfer to tx cache before sending as CFifo will immediately make the memory
+			// block available for reuse in the Put request. This could cause an overwrite
+			// if uart tx has not completed in time.
+			memcpy(&pDev->TxDmaCache, p, l);
+
+			pDev->pDmaReg->TXD.MAXCNT = l;
+			pDev->pDmaReg->TXD.PTR = (uint32_t)&pDev->TxDmaCache;
+			pDev->pDmaReg->TASKS_STARTTX = 1;
+		}
+		else
+		{
+			pDev->bTxReady = true;
+		}
+		if (pDev->pUartDev->EvtCallback)
+		{
+			//uint8_t buff[NRFUART_CFIFO_SIZE];
+
+			//len = min(NRFUART_CFIFO_SIZE, CFifoAvail(s_nRFUartDev.pUartDev->hTxFifo));
+			len = CFifoAvail(pDev->pUartDev->hTxFifo);
+			len = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_TXREADY, NULL, len);
+			if (len > 0)
+			{
+				//s_nRFUartDev.bTxReady = false;
+				//nRFUARTTxData(&s_nRFUartDev.pUartDev->SerIntrf, buff, len);
+			}
+		}
+	}
+#endif
 
 	if (pDev->pReg->EVENTS_ERROR)
 	{
@@ -604,7 +607,6 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 		s_nRFUartDev[devno].pReg->CONFIG |= UART_CONFIG_PARITY_Included << UART_CONFIG_PARITY_Pos;
 	}
 
-//	s_nRFUartDev[devno].pReg->ENABLE = (UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
 	s_nRFUartDev[devno].pReg->EVENTS_RXDRDY = 0;
 	s_nRFUartDev[devno].pReg->EVENTS_TXDRDY = 0;
 	s_nRFUartDev[devno].pReg->EVENTS_ERROR = 0;
