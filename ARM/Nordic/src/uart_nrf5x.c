@@ -59,12 +59,17 @@ typedef struct _nRF_UART_Dev {
 #endif
 	};
 	UARTDEV	*pUartDev;				// Pointer to generic UART dev. data
+	uint32_t RxDropCnt;
+	uint32_t RxTimeoutCnt;
+	uint32_t TxDropCnt;
+	uint32_t ErrCnt;
 	volatile bool bRxReady;
 	volatile bool bTxReady;
 	uint32_t RxPin;
 	uint32_t TxPin;
 	uint32_t CtsPin;
 	uint32_t RtsPin;
+	uint8_t RxDmaCache[NRF5X_UART_BUFF_SIZE];
 	uint8_t TxDmaCache[NRF5X_UART_BUFF_SIZE];
 } NRF5X_UARTDEV;
 
@@ -94,11 +99,12 @@ const NRFRATECVT s_BaudnRF[] = {
 
 static const int s_NbBaudnRF = sizeof(s_BaudnRF) / sizeof(NRFRATECVT);
 
-NRF5X_UARTDEV s_nRFUartDev[] = {
+static NRF5X_UARTDEV s_nRFUartDev[] = {
 	{
 		0,
 		NRF_UART0,
 		NULL,
+		0, 0, 0,
 		false,
 		true,
 	},
@@ -107,6 +113,7 @@ NRF5X_UARTDEV s_nRFUartDev[] = {
 		1,
 		.pDmaReg = NRF_UARTE1,
 		NULL,
+		0, 0, 0,
 		false,
 		true,
 	},
@@ -114,10 +121,6 @@ NRF5X_UARTDEV s_nRFUartDev[] = {
 };
 
 static const int s_NbUartDev = sizeof(s_nRFUartDev) / sizeof(NRF5X_UARTDEV);
-
-static int s_nRF51RxTimeOutCnt = 0;
-uint32_t g_nRF51RxDropCnt = 0;
-uint32_t g_nRF51RxErrCnt = 0;
 
 #define NRF5X_UART_CFIFO_SIZE		CFIFO_MEMSIZE(NRF5X_UART_BUFF_SIZE)
 
@@ -158,23 +161,30 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 	//uint8_t buff[NRFUART_CFIFO_SIZE];
 	int len = 0;
 	int cnt = 0;
+	uint8_t rxto = pDev->pUartDev->DevIntrf.bDma == true ? pDev->pDmaReg->EVENTS_RXTO : pDev->pReg->EVENTS_RXTO;
 
-	if (pDev->pReg->EVENTS_RXDRDY || pDev->pReg->EVENTS_RXTO)
+	if (rxto && pDev->pUartDev->DevIntrf.bDma == true)
 	{
-		s_nRF51RxTimeOutCnt = 0;
+		pDev->RxTimeoutCnt++;
+		pDev->pDmaReg->TASKS_FLUSHRX = 1;
+		pDev->pDmaReg->EVENTS_RXTO = 0;
+	}
+
+	if (pDev->pReg->EVENTS_RXDRDY || rxto)
+	{
+		//s_nRF51RxTimeOutCnt = 0;
 		uint8_t *d;
 
-
+		pDev->pReg->EVENTS_RXDRDY = 0;
 		cnt = 0;
-
 		do {
 			pDev->bRxReady = false;
-			pDev->pReg->EVENTS_RXDRDY = 0;
+
 			d = CFifoPut(pDev->pUartDev->hRxFifo);
 			if (d == NULL)
 			{
 				pDev->bRxReady = true;
-				g_nRF51RxDropCnt++;
+				pDev->RxDropCnt++;// g_nRF51RxDropCnt++;
 				break;
 			}
 			*d = pDev->pReg->RXD;
@@ -200,6 +210,46 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 	{
 		// No DMA support for RX, just clear the event
 		pDev->pDmaReg->EVENTS_ENDRX = 0;
+#if 0
+		int cnt = pDev->pDmaReg->RXD.AMOUNT;
+		uint8_t *pcache = pDev->RxDmaCache;
+
+		while (cnt > 0)
+		{
+			int l = cnt;
+			uint8_t *p = CFifoPutMultiple(pDev->pUartDev->hRxFifo, &l);
+			if (p == NULL)
+			{
+				break;
+			}
+
+			memcpy(p, pcache, l);
+			pcache += l;
+			cnt -= l;
+		}
+
+		if (cnt > 0)
+		{
+			memcpy(pDev->RxDmaCache, pcache, cnt);
+		}
+		pDev->bRxReady = false;
+		pDev->pDmaReg->RXD.MAXCNT = NRF5X_UART_BUFF_SIZE - cnt;
+		pDev->pDmaReg->RXD.PTR = (uint32_t)&pDev->RxDmaCache[cnt];
+		pDev->pDmaReg->TASKS_STARTRX = 1;
+
+		if (pDev->pUartDev->EvtCallback)
+		{
+			len = CFifoUsed(pDev->pUartDev->hRxFifo);
+			if (pDev->pReg->EVENTS_RXTO)
+			{
+				pDev->pReg->EVENTS_RXTO = 0;
+				pDev->bRxReady = false;
+				cnt = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXTIMEOUT, NULL, len);
+			}
+			else
+				cnt = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXDATA, NULL, len);
+		}
+#endif
 	}
 #endif
 
@@ -286,7 +336,7 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 		pDev->pReg->EVENTS_ERROR = 0;
 		if (pDev->pReg->ERRORSRC & 1)	// Overrrun
 		{
-			g_nRF51RxErrCnt++;
+			pDev->ErrCnt++;//g_nRF51RxErrCnt++;
 			len = 0;
 			cnt = 0;
 			//int l = 0;
@@ -511,6 +561,11 @@ static void nRFUARTEnable(DEVINTRF * const pDev)
 {
 	NRF5X_UARTDEV *dev = (NRF5X_UARTDEV *)pDev->pDevData;
 
+	dev->ErrCnt = 0;
+	dev->RxTimeoutCnt = 0;
+	dev->RxDropCnt = 0;
+	dev->TxDropCnt = 0;
+
 	dev->pReg->PSELRXD = dev->RxPin;
 	dev->pReg->PSELTXD = dev->TxPin;
 	dev->pReg->PSELCTS = dev->CtsPin;
@@ -533,6 +588,16 @@ static void nRFUARTEnable(DEVINTRF * const pDev)
 		dev->pReg->TASKS_STARTRX = 1;
 		dev->pReg->TASKS_STARTTX = 1;
 	}
+}
+
+void nRFUARTPowerOff(DEVINTRF * const pDev)
+{
+	NRF5X_UARTDEV *dev = (NRF5X_UARTDEV *)pDev->pDevData;
+
+	// Undocumented Power down.  Nordic Bug with DMA causing high current consumption
+	*(volatile uint32_t *)((uint32_t)dev->pReg + 0xFFC);
+	*(volatile uint32_t *)((uint32_t)dev->pReg + 0xFFC) = 1;
+	*(volatile uint32_t *)((uint32_t)dev->pReg + 0xFFC) = 0;
 }
 
 bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
@@ -571,7 +636,6 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 
 	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIoMap;
 
-	//NRF_GPIO->OUTSET = (1 << pincfg[UARTPIN_TX_IDX].PinNo);
 	IOPinSet(pincfg[UARTPIN_TX_IDX].PortNo, pincfg[UARTPIN_TX_IDX].PinNo);
 	IOPinCfg(pincfg, pCfg->IoMapLen);
 
@@ -579,8 +643,6 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	s_nRFUartDev[devno].pUartDev = pDev;
 
 	pDev->DevIntrf.bDma = devno == 0 ? pCfg->bDMAMode : true;
-
-	//NRF_UART0->POWER = UART_POWER_POWER_Enabled << UART_POWER_POWER_Pos;
 
 #ifdef NRF51
 	s_nRFUartDev[devno].RxPin = pincfg[UARTPIN_RX_IDX].PinNo;
@@ -650,6 +712,10 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 
 	s_nRFUartDev[devno].bRxReady = false;
 	s_nRFUartDev[devno].bTxReady = true;
+	s_nRFUartDev[devno].ErrCnt = 0;
+	s_nRFUartDev[devno].RxTimeoutCnt = 0;
+	s_nRFUartDev[devno].RxDropCnt = 0;
+	s_nRFUartDev[devno].TxDropCnt = 0;
 
 	pDev->DevIntrf.Type = DEVINTRF_TYPE_UART;
 	pDev->DataBits = pCfg->DataBits;
@@ -674,6 +740,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	pDev->DevIntrf.StopTx = nRFUARTStopTx;
 	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = UART_RETRY_MAX;
+	pDev->DevIntrf.PowerOff = nRFUARTPowerOff;
 
 
 	if (pDev->DevIntrf.bDma == false)
@@ -687,6 +754,11 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 		s_nRFUartDev[devno].pDmaReg->ENABLE = (UARTE_ENABLE_ENABLE_Enabled << UARTE_ENABLE_ENABLE_Pos);
 
 		// Not using DMA transfer on Rx. It is useless on UART as we need to process 1 char at a time
+		// cannot wait until DMA buffer is filled.
+#if 0
+		s_nRFUartDev[devno].pDmaReg->RXD.MAXCNT = NRF5X_UART_BUFF_SIZE;
+		s_nRFUartDev[devno].pDmaReg->RXD.PTR = (uint32_t)s_nRFUartDev[devno].RxDmaCache;
+#endif
 		s_nRFUartDev[devno].pDmaReg->EVENTS_ENDRX = 0;
 		s_nRFUartDev[devno].pDmaReg->TASKS_STARTRX = 1;
 	}
@@ -695,12 +767,26 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 
 	if (pCfg->bIntMode)
 	{
-		s_nRFUartDev[devno].pReg->INTENSET = (UART_INTENSET_RXDRDY_Set << UART_INTENSET_RXDRDY_Pos) |
-						  (UART_INTENSET_RXTO_Set << UART_INTENSET_RXTO_Pos) |
-						  (UART_INTENSET_TXDRDY_Set << UART_INTENSET_TXDRDY_Pos) |
-						  (UART_INTENSET_ERROR_Set << UART_INTENSET_ERROR_Pos) |
-						  (UART_INTENSET_CTS_Set << UART_INTENSET_CTS_Pos) |
-						  (UART_INTENSET_NCTS_Set << UART_INTENSET_NCTS_Pos);
+		if (pDev->DevIntrf.bDma == true)
+		{
+			s_nRFUartDev[devno].pDmaReg->INTENSET = (UARTE_INTENSET_RXDRDY_Set << UARTE_INTENSET_RXDRDY_Pos) |
+							  (UARTE_INTENSET_RXTO_Set << UARTE_INTENSET_RXTO_Pos) |
+							  //(UARTE_INTENSET_TXDRDY_Set << UARTE_INTENSET_TXDRDY_Pos) |
+							  (UARTE_INTENSET_ERROR_Set << UARTE_INTENSET_ERROR_Pos) |
+							  (UARTE_INTENSET_CTS_Set << UARTE_INTENSET_CTS_Pos) |
+							  (UARTE_INTENSET_NCTS_Set << UARTE_INTENSET_NCTS_Pos) |
+							  (UARTE_INTENSET_ENDTX_Set << UARTE_INTENSET_ENDTX_Pos) |
+							  (UARTE_INTENSET_ENDRX_Set << UARTE_INTENSET_ENDRX_Pos);
+		}
+		else
+		{
+			s_nRFUartDev[devno].pReg->INTENSET = (UART_INTENSET_RXDRDY_Set << UART_INTENSET_RXDRDY_Pos) |
+							  (UART_INTENSET_RXTO_Set << UART_INTENSET_RXTO_Pos) |
+							  (UART_INTENSET_TXDRDY_Set << UART_INTENSET_TXDRDY_Pos) |
+							  (UART_INTENSET_ERROR_Set << UART_INTENSET_ERROR_Pos) |
+							  (UART_INTENSET_CTS_Set << UART_INTENSET_CTS_Pos) |
+							  (UART_INTENSET_NCTS_Set << UART_INTENSET_NCTS_Pos);
+		}
 
 		switch (devno)
 		{

@@ -42,7 +42,11 @@ typedef struct {
 	IRQHANDLER Handler ;		// Device interface interrupt handler
 } IRQDATA;
 
+#ifdef NRF52840_XXAA
+#define MAX_NB_DEV		4
+#else
 #define MAX_NB_DEV		3
+#endif
 
 static IRQDATA s_DevIrq[MAX_NB_DEV] = { {NULL, }, };
 
@@ -96,8 +100,20 @@ extern "C" void SPIM2_SPIS2_SPI2_IRQHandler(void)
 {
     if (s_DevIrq[2].pDev != NULL)
     {
-        s_DevIrq[2].Handler(2, s_DevIrq[1].pDev);
+        s_DevIrq[2].Handler(2, s_DevIrq[2].pDev);
     }
     NVIC_ClearPendingIRQ(SPIM2_SPIS2_SPI2_IRQn);
 }
+
+#ifdef NRF52840_XXAA
+extern "C" void SPIM3_IRQHandler(void)
+{
+    if (s_DevIrq[3].pDev != NULL)
+    {
+        s_DevIrq[3].Handler(3, s_DevIrq[3].pDev);
+    }
+    NVIC_ClearPendingIRQ(SPIM3_IRQn);
+}
 #endif
+#endif
+

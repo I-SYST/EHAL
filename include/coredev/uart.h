@@ -92,7 +92,7 @@ typedef enum {
 #define UARTPIN_DTR_IDX			6
 #define UARTPIN_RI_IDX			7
 
-#define UART_RETRY_MAX			500
+#define UART_RETRY_MAX			100
 
 typedef struct __Uart_Dev UARTDEV;
 
