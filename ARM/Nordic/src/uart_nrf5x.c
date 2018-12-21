@@ -604,10 +604,14 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 {
 	// Config I/O pins
 	if (pDev == NULL || pCfg == NULL)
+	{
 		return false;
+	}
 
 	if (pCfg->pIoMap == NULL || pCfg->IoMapLen <= 0)
+	{
 		return false;
+	}
 
 	if (pCfg->DevNo < 0 || pCfg->DevNo >= s_NbUartDev)
 	{

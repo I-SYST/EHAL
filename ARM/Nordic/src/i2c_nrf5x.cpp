@@ -40,10 +40,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "i2c_spi_nrf5x_irq.h"
 
 #define NRF5X_I2C_MAXDEV        2
-#define NRF5X_I2C_MAXSLAVE		2
 
 #ifdef NRF52_SERIES
+#define NRF5X_I2CSLAVE_MAXDEV	2
 #define NRF52_I2C_DMA_MAXCNT    255
+#else
+#define NRF5X_I2CSLAVE_MAXDEV	0
 #endif
 
 #define NRF5X_I2C_TRBUFF_SIZE	4
@@ -59,7 +61,7 @@ typedef struct {
 		NRF_TWIS_Type *pDmaSReg;// Slave DMA register map
 #endif
 	};
-	uint8_t TRData[NRF5X_I2C_MAXSLAVE][NRF5X_I2C_TRBUFF_SIZE];
+	uint8_t TRData[NRF5X_I2CSLAVE_MAXDEV][NRF5X_I2C_TRBUFF_SIZE];
 } NRF5X_I2CDEV;
 #pragma pack(pop)
 
@@ -530,7 +532,12 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 		return false;
 	}
 
-	if (pCfgData->DevNo < 0 || pCfgData->DevNo > 2)
+    if (pCfgData->Mode == I2CMODE_SLAVE && pCfgData->DevNo >= NRF5X_I2CSLAVE_MAXDEV)
+    {
+    	return false;
+    }
+
+    if (pCfgData->DevNo < 0 || pCfgData->DevNo >= NRF5X_I2C_MAXDEV)
 	{
 		return false;
 	}
@@ -626,7 +633,7 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
     if (pCfgData->Mode == I2CMODE_SLAVE)
     {
     	NRF_TWIS_Type *sreg = s_nRF5xI2CDev[pCfgData->DevNo].pDmaSReg;
-        pDev->NbSlaveAddr = min(pCfgData->NbSlaveAddr, NRF5X_I2C_MAXSLAVE);
+        pDev->NbSlaveAddr = min(pCfgData->NbSlaveAddr, NRF5X_I2CSLAVE_MAXDEV);
 
         sreg->CONFIG = 0;
         sreg->ORC = 0xff;

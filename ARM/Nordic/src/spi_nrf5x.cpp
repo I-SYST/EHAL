@@ -498,8 +498,21 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	uint32_t err_code;
 	uint32_t cfgreg = 0;
 
-	if (pCfgData->DevNo < 0 || pCfgData->DevNo >= NRF5X_SPI_MAXDEV || pCfgData->NbIOPins < 3)
+	if (pDev == NULL || pCfgData == NULL)
+	{
 		return false;
+	}
+
+	if (pCfgData->Mode == SPIMODE_SLAVE && pCfgData->DevNo >= NRF5X_SPISLAVE_MAXDEV)
+	{
+		return false;
+	}
+
+	if (pCfgData->DevNo < 0 || pCfgData->DevNo >= NRF5X_SPI_MAXDEV || pCfgData->NbIOPins < 3)
+	{
+		return false;
+	}
+
 
 	// Get the correct register map
 	reg = s_nRF52SPIDev[pCfgData->DevNo].pReg;
@@ -586,11 +599,6 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	{
 		NRF_SPIS_Type *sreg = s_nRF52SPIDev[pCfgData->DevNo].pDmaSReg;
 
-		if (pCfgData->DevNo > NRF5X_SPISLAVE_MAXDEV)
-		{
-			return false;
-		}
-
 #ifdef NRF52_SERIES
         sreg->PSEL.SCK = (pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PortNo << 5);
         sreg->PSEL.MISO = (pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PortNo << 5);
@@ -618,11 +626,6 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	}
 	else
 	{
-		if (pCfgData->DevNo > NRF5X_SPI_MAXDEV)
-		{
-			return false;
-		}
-
 		reg->PSELSCK = (pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->pIOPinMap[SPI_SCK_IOPIN_IDX].PortNo << 5);
 		reg->PSELMISO = (pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->pIOPinMap[SPI_MISO_IOPIN_IDX].PortNo << 5);
 		reg->PSELMOSI = (pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PinNo & 0x1f) | (pCfgData->pIOPinMap[SPI_MOSI_IOPIN_IDX].PortNo << 5);
