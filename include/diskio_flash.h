@@ -113,6 +113,7 @@ g_FlashDisk.Erase();			// Masse erase flash
 
 @license
 
+Copyright (c) 2016, I-SYST, all rights reserved
 Copyright (c) 2016, Motsai, all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
@@ -122,7 +123,7 @@ names : I-SYST or its contributors may be used to endorse or
 promote products derived from this software without specific prior written
 permission.
 
-For info or contributing contact : nh.hoang at motsai dot com
+For info or contributing contact : hnhoan at i-syst dot com
 
 THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
 EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED

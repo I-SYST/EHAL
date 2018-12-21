@@ -1,11 +1,13 @@
-/*--------------------------------------------------------------------------
-File   : ag_bmi160.h
+/**-------------------------------------------------------------------------
+@file	ag_bmi160.h
 
-Author : Hoang Nguyen Hoan          						Nov. 18, 2017
-
-Desc   : implementation of BOSCH BMI160 sensor
+@brief	implementation of BOSCH BMI160 sensor
 			Accel, Gyro
 
+@author	Hoang Nguyen Hoan
+@date	Nov. 18, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -28,9 +30,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
@@ -403,7 +402,6 @@ private:
 	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
 
-	bool vbSpi;
 	bool vbInitialized;
 };
 

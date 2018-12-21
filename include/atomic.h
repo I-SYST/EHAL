@@ -1,9 +1,8 @@
-/*--------------------------------------------------------------------------
-File   : atomic.h
+/**-------------------------------------------------------------------------
+@file	atomic.h
 
-Author : Hoang Nguyen Hoan          Sep. 12, 1996
+@brief	Atomic operations.
 
-Desc   : Atomic operations.
          Because of it's platform dependent nature, this file requires conditional
          compilation for each platform port.
 
@@ -12,7 +11,12 @@ Desc   : Atomic operations.
             __TCS__           - Trimedia
             __ADSPBLACKFIN__  - ADSP Blackfin
 
-Copyright (c) 1996-2008, I-SYST, all rights reserved
+@author	Hoang Nguyen Hoan
+@date	Sep. 12, 1996
+
+@license
+
+Copyright (c) 1996-2018, I-SYST, all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -34,9 +38,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by         Date           	Description
-Hoan				17 nov. 2014	Adapt to GNU GCC
 ----------------------------------------------------------------------------*/
 #ifndef __ATOMIC_H__
 #define __ATOMIC_H__

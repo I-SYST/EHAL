@@ -491,7 +491,6 @@ private:
 	// All sensor init must call this first prio to initializing itself
 	bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer);
 
-	bool vbSpi;
 	bool vbInitialized;
 	uint8_t vMagCtrl1Val;
 	int16_t vMagSenAdj[3];

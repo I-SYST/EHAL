@@ -58,14 +58,15 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 		vpTimer = pTimer;
 	}
 
-	if (DevAddr == MPU9250_I2C_DEV_ADDR0 || DevAddr == MPU9250_I2C_DEV_ADDR1)
+/*	if (DevAddr == MPU9250_I2C_DEV_ADDR0 || DevAddr == MPU9250_I2C_DEV_ADDR1)
 	{
 		// I2C mode
 		vbSpi = false;
 	}
-	else
+	else*/
+	if (pIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
-		vbSpi = true;
+//		vbSpi = true;
 
 		// in SPI mode, use i2c master mode to access Mag device (AK8963C)
 		userctrl |= MPU9250_AG_USER_CTRL_I2C_MST_EN | MPU9250_AG_USER_CTRL_I2C_IF_DIS;
@@ -689,7 +690,7 @@ bool AgmMpu9250::Read(MAGSENSOR_DATA &Data)
 
 int AgmMpu9250::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
 {
-	if (vbSpi == true)
+	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
 		*pCmdAddr |= 0x80;
 	}
@@ -700,7 +701,7 @@ int AgmMpu9250::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int Buff
 
 int AgmMpu9250::Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen)
 {
-	if (vbSpi == true)
+	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
 		*pCmdAddr &= 0x7F;
 	}
@@ -712,7 +713,7 @@ int AgmMpu9250::Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t
 {
 	int retval = 0;
 
-	if (vbSpi)
+	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
 		uint8_t regaddr;
 		uint8_t d[8];
@@ -756,7 +757,7 @@ int AgmMpu9250::Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_
 {
 	int retval = 0;
 
-	if (vbSpi)
+	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
 		uint8_t regaddr;
 		uint8_t d[8];

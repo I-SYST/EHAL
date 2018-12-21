@@ -1,10 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : timer_lf_nrf5x.cpp
+/**-------------------------------------------------------------------------
+@file	timer_lf_nrf5x.cpp
 
-Author : Hoang Nguyen Hoan          				Sep. 7, 2017
+@brief	timer class implementation on Nordic nRF5x series using the RTC (real time counter)
 
-Desc   : timer class implementation on Nordic nRF5x series
-		using the RTC (real time counter)
+@author	Hoang Nguyen Hoan
+@date	Sep. 7, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -27,9 +29,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #include "nrf.h"

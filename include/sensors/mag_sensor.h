@@ -1,10 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : mag_sensor.h
+/**-------------------------------------------------------------------------
+@file	mag_sensor.h
 
-Author : Hoang Nguyen Hoan          			Nov. 18, 2017
+@brief	Generic magnetometer sensor abstraction
 
-Desc   : Generic magnetometer sensor abstraction
+@author	Hoang Nguyen Hoan
+@date	Nov. 18, 2017
 
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -27,9 +29,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 

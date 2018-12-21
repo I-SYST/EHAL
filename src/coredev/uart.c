@@ -1,9 +1,12 @@
-/*--------------------------------------------------------------------------
-File   : uart.c
+/**-------------------------------------------------------------------------
+@file	uart.c
 
-Author : Hoang Nguyen Hoan          Sept. 16, 2011
+@brief	Generic uart implementation
 
-Desc   : Generic uart implementation
+@author	Hoang Nguyen Hoan
+@date	Sept. 16, 2011
+
+@license
 
 Copyright (c) 2011, I-SYST, all rights reserved
 
@@ -26,9 +29,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #include <string.h>
@@ -55,7 +55,8 @@ void UARTvprintf(UARTDEV * const pDev, const char *pFormat, va_list vl)
     vsnprintf(s_Buffer, s_BufferSize, pFormat, vl);
     int len = strlen(s_Buffer);
     uint8_t *p = (uint8_t*)s_Buffer;
-    int to = 20;
+    int to = 10;
+
     while (len > 0 && to > 0)
     {
     	int l;

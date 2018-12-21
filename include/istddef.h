@@ -11,7 +11,7 @@ Mostly for compatibilities.
 
 @license
 
-Copyright (c) 2011, I-SYST inc., all rights reserved
+Copyright (c) 2012-2018, I-SYST inc., all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -91,7 +91,7 @@ typedef struct {
 } VERS;
 #pragma pack(pop)
 
-#define APPINFO_NAMESIZE_MAX			16		//!< Max size in bytes for application name
+#define APPINFO_NAMESIZE_MAX		16		//!< Max size in bytes for application name
 #define APPINFO_PRIVATESIZE_MAX		16		//!< Max size in bytes for private data
 
 #pragma pack(push, 4)
@@ -103,8 +103,8 @@ typedef struct {
 /// This data is usually static const located at specific location where bootloader/dfu can
 /// access to validate.
 typedef struct {
-	char Name[APPINFO_NAMESIZE_MAX];			//!< Application signature
-	VERS Vers;								//!< Version number
+	char Name[APPINFO_NAMESIZE_MAX];	//!< Application signature
+	VERS Vers;							//!< Version number
 	uint8_t Private[APPINFO_PRIVATESIZE_MAX];//!< APPINFO_PRIVATESIZE_MAX bytes private data
 } APP_INFO;
 #pragma pack(pop)
@@ -113,8 +113,8 @@ typedef struct {
 extern "C" {
 #endif
 
+// min function
 #ifndef min
-
 /// An inline min function when there isn't one available.
 static inline int min(int x, int y) { return x > y ? y : x; }
 #endif
