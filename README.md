@@ -31,7 +31,9 @@ external vendors' SDK and library required :
 
 [Micro-ECC](https://github.com/kmackay/micro-ecc) : Encryption library
 
-[Motion_Driver](https://www.invensense.com/) : Create a user at https://www.invensense.com/. Under "Downloads" download "Embedded MotionDriver 6.12". Unzip the downloaded motion_driver_6.12 folder and navigate to motion_driver_6.12/mpl libraries/arm/gcc4.9.3. Unzip the require libraries and copy to folders indicated in the folder tree bellow (external/MPL/lib/...). For the include (.h) files, navigate to motion_driver_6.12/arm/STM32F4_MD6/Projects/eMD6 and copy core folder to external/MPL as indicated bellow.
+[MPU-9250 Motion_Driver](https://www.invensense.com/developers) : Create a user at https://www.invensense.com/developers. Under "Downloads" download "Embedded MotionDriver 6.12". Unzip the downloaded motion_driver_6.12 folder and navigate to motion_driver_6.12/mpl libraries/arm/gcc4.9.3. Unzip the require libraries and copy to folders indicated in the folder tree bellow (external/MPL/lib/...). For the include (.h) files, navigate to motion_driver_6.12/arm/STM32F4_MD6/Projects/eMD6 and copy core folder to external/MPL as indicated bellow.
+
+[ICM-20948 Motion_Driver](https://www.invensense.com/developers) : Create a user at https://www.invensense.com/developers. Under "Downloads" download "DK-20948 eMD-SmartMotion ...". Unzip the downloaded file and navigate to EMD-Core/sources. Copy the folder Invn to external/Invn as indected in the folder tree bellow.
 
 KSDK      : Kinetis SDK
 
@@ -65,7 +67,7 @@ There are 2 main libraries in the EHAL for each ARM based MCU.
  |   |-- Micro-ECC       - Micro-ECC (download from https://github.com/kmackay/micro-ecc)
  |   |-- KSDK            - Kinetis SDK
  |   |-- BSEC            - Bosch Sensortec Environmental Cluster (BSEC) Software (https://www.bosch-sensortec.com/bst/products/all_products/bsec) for #BME680
- |   |-- MPL             - Invensense Motion Driver (download https://www.invensense.com)
+ |   |-- MPL             - Invensense Motion Driver (download https://www.invensense.com/developers)
  |   |   |-- core        - Copy core from motion_driver_6.12/arm/STM32F4_MD6/Projects/eMD6 here
  |   |   |-- lib
  |   |   |   |-- m0      - Unzip the liblibmplmpu_m0.zip, copy liblibmplmpu.a here
@@ -73,6 +75,9 @@ There are 2 main libraries in the EHAL for each ARM based MCU.
  |   |   |   |-- m4hfp   - Unzip the liblibmplmpu_m4_hardfp.zip, copy liblibmplmpu.a here
  |   |   |   |-- m4nfp   - Unzip the liblibmplmpu_m4_npfp.zip, copy liblibmplmpu.a here
  |   |   |   |-- m4sfp   - Unzip the liblibmplmpu_m4_softfp.zip, copy liblibmplmpu.a here
+ |   |-- Invn            - Invensense SmartMotion Driver (download https://www.invensense.com/developers) 
+ |   |   |-- Devices
+ |   |   |...
  |   |...
  |   |
  |-- EHAL      - Put the EHAL here
