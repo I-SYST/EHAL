@@ -765,7 +765,7 @@ int AgmMpu9250::Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_
 		d[0] = MPU9250_AG_I2C_SLV0_ADDR;
 		d[1] = DevAddr;
 		d[2] = *pCmdAddr;
-		d[3] = MPU9250_AG_I2C_SLV0_CTRL_I2C_SLV0_EN;
+		d[3] = MPU9250_AG_I2C_SLV0_CTRL_I2C_SLV0_EN | 1;
 
 		while (DataLen > 0)
 		{

@@ -39,10 +39,10 @@ Modified by          Date              Description
 
 #include <stdint.h>
 
-#include "iopincfg.h"
-#include "accel_sensor.h"
-#include "gyro_sensor.h"
-#include "mag_sensor.h"
+#include "coredev/iopincfg.h"
+#include "sensors/accel_sensor.h"
+#include "sensors/gyro_sensor.h"
+#include "sensors/mag_sensor.h"
 
 #pragma pack(push, 1)
 
@@ -50,8 +50,75 @@ Modified by          Date              Description
 
 class AgmLsm9ds1 : public AccelSensor, public GyroSensor, public MagSensor {
 public:
-	bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer);
-	bool Read(ACCELSENSOR_DATA *pData);
+	/**
+	 * @brief	Initialize accelerometer sensor.
+	 *
+	 * NOTE: This sensor must be the first to be initialized.
+	 *
+	 * @param 	Cfg		: Accelerometer configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
+	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+
+	/**
+	 * @brief	Initialize gyroscope sensor.
+	 *
+	 * NOTE : Accelerometer must be initialized first prior to this one.
+	 *
+	 * @param 	Cfg		: Accelerometer configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
+	virtual bool Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL);
+
+	/**
+	 * @brief	Initialize magnetometer sensor.
+	 *
+	 * NOTE : Accelerometer must be initialized first prior to this one.
+	 *
+	 * @param 	Cfg		: Accelerometer configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
+	virtual bool Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL);
+
+	virtual bool Enable();
+	virtual void Disable();
+	virtual void Reset();
+
+	/**
+	 * @brief	Enable/Disable wake on motion event
+	 *
+	 * @param bEnable
+	 * @param Threshold
+	 * @return
+	 */
+	virtual bool WakeOnEvent(bool bEnable, int Threshold);
+
+	virtual bool StartSampling();
+	virtual uint32_t LowPassFreq(uint32_t Freq);
+
+	virtual uint16_t Scale(uint16_t Value);			// Accel
+	virtual uint32_t Sensitivity(uint32_t Value);	// Gyro
+
+
+	virtual bool Read(ACCELSENSOR_DATA &Data);
+	virtual bool Read(GYROSENSOR_DATA &Data);
+	virtual bool Read(MAGSENSOR_DATA &Data);
+
+	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
+	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
+	int Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
+	int Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
+	bool UpdateData();
+	virtual void IntHandler();
 
 private:
 };

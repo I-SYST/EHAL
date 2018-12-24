@@ -31,24 +31,36 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
+#include "Devices/Drivers/Icm20948/Icm20948.h"
+#include "Devices/Drivers/Icm20948/Icm20948Defs.h"
+#include "Devices/Drivers/Icm20948/Icm20948Dmp3Driver.h"
+
+#include "Devices/Drivers/Icm20948/Icm20948DataBaseControl.h"
 
 #include "idelay.h"
 #include "coredev/i2c.h"
 #include "coredev/spi.h"
 #include "sensors/agm_icm20948.h"
 
+static inv_icm20948_t icm_device;
+
+static const uint8_t dmp3_image[] = {
+#include "imu/icm20948_img.dmp3a.h"
+};
+
 bool AgmIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 {
-	if (vbInitialized)
+	//if (vbInitialized)
+	if (Valid())
 		return true;;
 
 	if (pIntrf == NULL)
 		return false;
 
-	uint8_t regaddr;
+	uint16_t regaddr;
 	uint8_t d;
-	uint8_t userctrl = 0;///*MPU9250_AG_USER_CTRL_FIFO_EN | MPU9250_AG_USER_CTRL_DMP_EN |*/ MPU9250_AG_USER_CTRL_I2C_MST_EN;
-	uint8_t mst = 0;
+	uint8_t userctrl = 0;//ICM20948_USER_CTRL_FIFO_EN | ICM20948_USER_CTRL_DMP_EN;///*MPU9250_AG_USER_CTRL_FIFO_EN | MPU9250_AG_USER_CTRL_DMP_EN |*/ MPU9250_AG_USER_CTRL_I2C_MST_EN;
+	uint8_t lpconfig = ICM20948_LP_CONFIG_ACCEL_CYCLE | ICM20948_LP_CONFIG_GYRO_CYCLE;
 
 	Interface(pIntrf);
 	DeviceAddess(DevAddr);
@@ -58,24 +70,19 @@ bool AgmIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 		vpTimer = pTimer;
 	}
 
-/*	if (DevAddr == ICM20948_I2C_DEV_ADDR0 || DevAddr == ICM20948_I2C_DEV_ADDR1)
-	{
-		// I2C mode
-		vbSpi = false;
-	}
-	else*/
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
-//		vbSpi = true;
+		// in SPI mode, use i2c master mode to access Mag device (AK09916)
+		userctrl |= ICM20948_USER_CTRL_I2C_IF_DIS | ICM20948_USER_CTRL_I2C_MST_EN;
 
-		// in SPI mode, use i2c master mode to access Mag device (AK8963C)
-		//userctrl |= MPU9250_AG_USER_CTRL_I2C_MST_EN | MPU9250_AG_USER_CTRL_I2C_IF_DIS;
-		//mst = MPU9250_AG_I2C_MST_CTRL_WAIT_FOR_ES | 13;
+		//lpconfig |= ICM20948_LP_CONFIG_I2C_MST_CYCLE;
 	}
+
+	vCurrBank = -1;
 
 	// Read chip id
 	regaddr = ICM20948_WHO_AM_I;
-	d = Read8((uint8_t*)&regaddr, 1);
+	d = Read8((uint8_t*)&regaddr, 2);
 
 	if (d != ICM20948_WHO_AM_I_ID)
 	{
@@ -92,85 +99,84 @@ bool AgmIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	// the chip would not respond properly to motion detection
 	usDelay(500000);
 
+	//inv_icm20948_initialize_lower_driver(&icm_device, SERIAL_INTERFACE_SPI, NULL, 0);//, dmp3_image_size);
+
+	regaddr = ICM20948_USER_CTRL;
+	Write8((uint8_t*)&regaddr, 2, userctrl);
+
 	regaddr = ICM20948_PWR_MGMT_1;
-	Write8(&regaddr, 1, ICM20948_PWR_MGMT_1_SLEEP | 1);
+	Write8((uint8_t*)&regaddr, 2, 1);
+
+	regaddr = ICM20948_PWR_MGMT_2;
+	Write8((uint8_t*)&regaddr, 2, 0x7f);
+
+	// Init master I2C interface
+
+	regaddr = ICM20948_FIFO_EN_1;
+	Write8((uint8_t*)&regaddr, 2, ICM20948_FIFO_EN_1_SLV_0_FIFO_EN);
+
+	//regaddr = ICM20948_LP_CONFIG;
+	//Write8((uint8_t*)&regaddr, 2, lpconfig);
+
+
+	regaddr = ICM20948_I2C_MST_CTRL;
+	d = 0;
+	Write8((uint8_t*)&regaddr, 2, d);
+
+	regaddr = ICM20948_I2C_MST_ODR_CONFIG;
+	Write8((uint8_t*)&regaddr, 2, 0);
+
+	regaddr = ICM20948_AK09916_WIA1;
+	uint8_t x[2];
+	Read(AK09916_I2C_ADDR1, (uint8_t*)&regaddr, 1, x, 2);
+
+	if (d != ICM20948_AK09916_WIA1_ID)
+	{
+		return false;
+	}
+
+	vbInitialized  = true;
 
 	return true;
 }
 
 bool AgmIcm20948::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
-	uint8_t regaddr;
+	uint16_t regaddr;
 	uint8_t d;
 
 	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
 		return false;
 
-	//regaddr = MPU9250_AG_LP_ACCEL_ODR;
+	return true;
 
-	if (CfgData.Freq < 400)
+	// ODR = 1.125 kHz/(1+ACCEL_SMPLRT_DIV[11:0])
+
+	// Find closes DIV value
+	uint16_t div = 0;
+	int diff = 1200;
+
+	for (int i = 0; i < 0x1000; i++)
 	{
-		Write8(&regaddr, 1, 0);
-		vSampFreq = 240;	// 0.24 Hz
+		uint32_t f = 1125 / (1 + i);
+		int df = CfgData.Freq > f ? CfgData.Freq - f : f - CfgData.Freq;
+
+		if (df < diff)
+		{
+			diff = df;
+			div = i;
+			vSampFreq = f;
+		}
 	}
-	else if (CfgData.Freq < 900)
-	{
-		Write8(&regaddr, 1, 1);
-		vSampFreq = 490;	// 0.49 Hz
-	}
-	else if (CfgData.Freq < 1500)
-	{
-		Write8(&regaddr, 1, 2);
-		vSampFreq = 980;	// 0.98 Hz
-	}
-	else if (CfgData.Freq < 2500)
-	{
-		Write8(&regaddr, 1, 3);
-		vSampFreq = 1950;	// 1.95 Hz
-	}
-	else if (CfgData.Freq < 3500)
-	{
-		Write8(&regaddr, 1, 4);
-		vSampFreq = 3910;	// 3.91 Hz
-	}
-	else if (CfgData.Freq < 10000)
-	{
-		Write8(&regaddr, 1, 5);
-		vSampFreq = 7810;	// 7.81 Hz
-	}
-	else if (CfgData.Freq < 20000)
-	{
-		Write8(&regaddr, 1, 6);
-		vSampFreq = 15630;	// 15.63 Hz
-	}
-	else if (CfgData.Freq < 50000)
-	{
-		Write8(&regaddr, 1, 7);
-		vSampFreq = 31250;	// 31.25 Hz
-	}
-	else if (CfgData.Freq < 100000)
-	{
-		Write8(&regaddr, 1, 8);
-		vSampFreq = 62500;	// 62.5 Hz
-	}
-	else if (CfgData.Freq < 200000)
-	{
-		Write8(&regaddr, 1, 9);
-		vSampFreq = 125000;	// 125 Hz
-	}
-	else if (CfgData.Freq < 500)
-	{
-		Write8(&regaddr, 1, 10);
-		vSampFreq = 250000;	// 250 Hz
-	}
-	else
-	{
-		Write8(&regaddr, 1, 11);
-		vSampFreq = 500000;	// 500 Hz
-	}
+
+	regaddr = ICM20948_ACCEL_SMPLRT_DIV_1;
+	Write8((uint8_t*)&regaddr, 2, div >> 8);
+
+	regaddr = ICM20948_ACCEL_SMPLRT_DIV_2;
+	Write8((uint8_t*)&regaddr, 2, div & 0xFF);
 
 	Scale(CfgData.Scale);
-	LowPassFreq(vSampFreq / 2000);
+	//LowPassFreq(vSampFreq / 2000);
 
 	//regaddr = MPU9250_AG_INT_ENABLE;
 	//Write8(&regaddr, 1, MPU9250_AG_INT_ENABLE_DMP_EN);
@@ -190,7 +196,7 @@ bool AgmIcm20948::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer
 	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
 		return false;
 
-	uint8_t regaddr;
+	uint16_t regaddr;
 	uint8_t d = 0;
 	uint8_t fchoice = 0;
 	uint32_t f = CfgData.Freq >> 1;
@@ -258,17 +264,19 @@ bool AgmIcm20948::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 		return false;
 
 	msDelay(200);
-#if 0
-	regaddr = MPU9250_MAG_WIA;
-	Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, d, 1);
 
-	if (d[0] != MPU9250_MAG_WIA_DEVICE_ID)
+	regaddr = ICM20948_AK09916_WIA1;
+	Read(AK09916_I2C_ADDR1, &regaddr, 1, d, 2);
+
+	if (d[0] != ICM20948_AK09916_WIA1_ID)
 	{
+		Read(AK09916_I2C_ADDR2, &regaddr, 1, d, 2);
+
 		return false;
 	}
 
 	msDelay(1);
-
+#if 0
 	// Read ROM sensitivity adjustment values
 	regaddr = MPU9250_MAG_CTRL1;
 	d[0] = MPU9250_MAG_CTRL1_MODE_PWRDOWN;
@@ -358,6 +366,25 @@ bool AgmIcm20948::Enable()
 
 void AgmIcm20948::Disable()
 {
+	uint16_t regaddr;
+	uint8_t d;
+
+	// Disable Accel & Gyro
+	regaddr = ICM20948_PWR_MGMT_2;
+	d = ICM20948_PWR_MGMT_2_DISABLE_GYRO_MASK | ICM20948_PWR_MGMT_2_DISABLE_ACCEL_MASK;
+	Write8((uint8_t*)&regaddr, 2, 0);
+
+	regaddr = ICM20948_USER_CTRL;
+	Write8((uint8_t*)&regaddr, 2, 0);
+
+	regaddr = ICM20948_LP_CONFIG;
+	Write8((uint8_t*)&regaddr, 2, 0);
+
+	regaddr = ICM20948_PWR_MGMT_1;
+	d = ICM20948_PWR_MGMT_1_TEMP_DIS | ICM20948_PWR_MGMT_1_SLEEP;// | ICM20948_PWR_MGMT_1_CLKSEL_STOP;
+	Write8((uint8_t*)&regaddr, 2, d);
+
+
 #if 0
 	uint8_t regaddr = MPU9250_AG_PWR_MGMT_2;
 
@@ -391,9 +418,9 @@ msDelay(2000);
 
 void AgmIcm20948::Reset()
 {
-	uint8_t regaddr = ICM20948_PWR_MGMT_1;
+	uint16_t regaddr = ICM20948_PWR_MGMT_1;
 
-	Write8(&regaddr, 1, ICM20948_PWR_MGMT_1_DEVICE_RESET);
+	Write8((uint8_t*)&regaddr, 2, ICM20948_PWR_MGMT_1_DEVICE_RESET);
 }
 
 bool AgmIcm20948::StartSampling()
@@ -404,7 +431,7 @@ bool AgmIcm20948::StartSampling()
 // Implement wake on motion
 bool AgmIcm20948::WakeOnEvent(bool bEnable, int Threshold)
 {
-    uint8_t regaddr;
+    uint16_t regaddr;
 
 	if (bEnable == true)
 	{
@@ -415,10 +442,10 @@ bool AgmIcm20948::WakeOnEvent(bool bEnable, int Threshold)
 	else
 	{
 //	    regaddr = MPU9250_AG_INT_ENABLE;
-	    Write8(&regaddr, 1, 0);
+	    Write8((uint8_t*)&regaddr, 2, 0);
 
 //	    regaddr = MPU9250_AG_PWR_MGMT_1;
-		Write8(&regaddr, 1, 0);
+		Write8((uint8_t*)&regaddr, 2, 0);
 	}
 
 	return true;
@@ -539,6 +566,12 @@ bool AgmIcm20948::Read(MAGSENSOR_DATA &Data)
 
 int AgmIcm20948::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
 {
+	if (CmdAddrLen == 2)
+	{
+		SelectBank(pCmdAddr[1]);
+		CmdAddrLen--;
+	}
+
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
 		*pCmdAddr |= 0x80;
@@ -550,6 +583,12 @@ int AgmIcm20948::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int Buf
 
 int AgmIcm20948::Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen)
 {
+	if (CmdAddrLen == 2)
+	{
+		SelectBank(pCmdAddr[1]);
+		CmdAddrLen--;
+	}
+
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
 		*pCmdAddr &= 0x7F;
@@ -564,35 +603,88 @@ int AgmIcm20948::Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_
 
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
-		uint8_t regaddr;
+		uint16_t regaddr;
+		uint8_t userctrl;
+		uint8_t lpconfig;
+
+		regaddr = ICM20948_USER_CTRL;
+		//Write8(&regaddr, 1, ICM20948_USER_CTRL_I2C_IF_DIS | ICM20948_USER_CTRL_I2C_MST_EN);
+		userctrl = Read8((uint8_t*)&regaddr, 2) | ICM20948_USER_CTRL_I2C_MST_EN;
+
+		regaddr = ICM20948_LP_CONFIG;
+		lpconfig = Read8((uint8_t*)&regaddr, 2);
+
+		//Write8((uint8_t*)&regaddr, 2, 0);
+
+#if 1
 		uint8_t d[8];
-#if 0
-		d[0] = MPU9250_AG_I2C_SLV0_ADDR;
-		d[1] = DevAddr | MPU9250_AG_I2C_SLV0_ADDR_I2C_SLVO_RD;
-		d[2] = *pCmdAddr;
+
+
+//		regaddr = ICM20948_I2C_SLV0_CTRL;
+//		Write8(&regaddr, 1, 0);
+
+		regaddr = ICM20948_I2C_SLV0_ADDR;
+
+		//d[0] = ICM20948_I2C_SLV0_ADDR;
+		d[0] = (DevAddr & ICM20948_I2C_SLV0_ADDR_I2C_ID_0_MASK) | ICM20948_I2C_SLV0_ADDR_I2C_SLV0_RD;
+		d[1] = *pCmdAddr;
 
 		while (BuffLen > 0)
 		{
-			int cnt = min(15, BuffLen);
+			int cnt = min(ICM20948_I2C_SLV_MAXLEN, BuffLen);
 
-			d[3] = MPU9250_AG_I2C_SLV0_CTRL_I2C_SLV0_EN |cnt;
+			SelectBank(3);
 
-			Write(d, 4, NULL, 0);
+			d[2] = ICM20948_I2C_SLV0_CTRL_I2C_SLV0_EN | (cnt & ICM20948_I2C_SLV0_CTRL_I2C_SLV0_LENG_MASK);
+
+			Write((uint8_t*)&regaddr, 2, d, 3);
+
+			regaddr = ICM20948_USER_CTRL;
+			Write8((uint8_t*)&regaddr, 2, userctrl);
 
 			// Delay require for transfer to complete
 			//usDelay(500 + (cnt << 4));
-			msDelay(1);
+			msDelay(100);
 
-			regaddr = MPU9250_AG_EXT_SENS_DATA_00;
+			Write8((uint8_t*)&regaddr, 2, userctrl & ~ICM20948_USER_CTRL_I2C_MST_EN);
 
-			cnt = Read(&regaddr, 1, pBuff, cnt);
-			if (cnt <=0)
+			regaddr = ICM20948_EXT_SLV_SENS_DATA_00;
+			cnt = Read((uint8_t*)&regaddr, 1, pBuff, cnt);
+			if (cnt <= 0)
 				break;
 
 			pBuff += cnt;
 			BuffLen -= cnt;
 			retval += cnt;
 		}
+		regaddr = ICM20948_LP_CONFIG;
+
+		//Write8((uint8_t*)&regaddr, 2, lpconfig);
+#else
+		regaddr = ICM20948_I2C_SLV0_ADDR;
+		Write8((uint8_t*)&regaddr, 2, (DevAddr & ICM20948_I2C_SLV0_ADDR_I2C_ID_0_MASK) | ICM20948_I2C_SLV0_ADDR_I2C_SLV0_RD);
+
+		regaddr = ICM20948_I2C_SLV0_REG;
+		Write8((uint8_t*)&regaddr, 2, *pCmdAddr);
+
+		regaddr = ICM20948_I2C_SLV0_CTRL;
+		Write8((uint8_t*)&regaddr, 2, ICM20948_I2C_SLV0_CTRL_I2C_SLV0_EN | (1 & ICM20948_I2C_SLV0_CTRL_I2C_SLV0_LENG_MASK));
+
+		regaddr = ICM20948_USER_CTRL;
+		Write8((uint8_t*)&regaddr, 2, userctrl);
+
+		msDelay(100);
+
+		Write8((uint8_t*)&regaddr, 2, userctrl & ~ICM20948_USER_CTRL_I2C_MST_EN);
+		regaddr = ICM20948_EXT_SLV_SENS_DATA_00;
+		int cnt = Read((uint8_t*)&regaddr, 2, pBuff, 1);
+
+		BuffLen -= cnt;
+
+		regaddr = ICM20948_I2C_SLV0_CTRL;
+		Write8((uint8_t*)&regaddr, 2, 0);
+
+
 #endif
 	}
 	else
@@ -609,18 +701,18 @@ int AgmIcm20948::Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8
 
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
-		uint8_t regaddr;
+		uint16_t regaddr;
 		uint8_t d[8];
-#if 0
-		d[0] = MPU9250_AG_I2C_SLV0_ADDR;
-		d[1] = DevAddr;
+
+		d[0] = ICM20948_I2C_SLV0_ADDR & 0xff;
+		d[1] = (DevAddr & ICM20948_I2C_SLV0_ADDR_I2C_ID_0_MASK) | ICM20948_I2C_SLV0_ADDR_I2C_SLV0_WR;
 		d[2] = *pCmdAddr;
-		d[3] = MPU9250_AG_I2C_SLV0_CTRL_I2C_SLV0_EN;
+		d[3] = DataLen & ICM20948_I2C_SLV0_CTRL_I2C_SLV0_LENG_MASK;
 
 		while (DataLen > 0)
 		{
-			regaddr = MPU9250_AG_I2C_SLV0_DO;
-			Write8(&regaddr, 1, *pData);
+			regaddr = ICM20948_I2C_SLV0_DO;
+			Write8((uint8_t*)&regaddr, 2, *pData);
 
 			Write(d, 4, NULL, 0);
 
@@ -629,7 +721,6 @@ int AgmIcm20948::Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8
 			DataLen--;
 			retval++;
 		}
-#endif
 	}
 	else
 	{
@@ -639,12 +730,24 @@ int AgmIcm20948::Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8
 	return retval;
 }
 
+bool AgmIcm20948::SelectBank(uint8_t BankNo)
+{
+	if (BankNo > 3 || vCurrBank == BankNo)
+		return false;
+
+	vCurrBank = BankNo;
+
+	uint8_t regaddr = ICM20948_REG_BANK_SEL;
+
+	return Write8(&regaddr, 1, (BankNo << ICM20948_REG_BANK_SEL_USER_BANK_BITPOS) & ICM20948_REG_BANK_SEL_USER_BANK_MASK);
+}
+
 void AgmIcm20948::IntHandler()
 {
-	uint8_t regaddr = 0;//MPU9250_AG_INT_STATUS;
+	uint16_t regaddr = 0;//MPU9250_AG_INT_STATUS;
 	uint8_t d;
 
-	d = Read8(&regaddr, 1);
+	d = Read8((uint8_t*)&regaddr, 2);
 //	if (d & MPU9250_AG_INT_STATUS_RAW_DATA_RDY_INT)
 	{
 		UpdateData();
