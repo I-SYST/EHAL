@@ -162,6 +162,8 @@ bool AnalogCompnRF52LPComp::Init(const ANALOG_COMP_CFG &Cfg)
 bool AnalogCompnRF52LPComp::Enable()
 {
 	NRF_LPCOMP->ENABLE = 1;
+
+	return true;
 }
 
 void AnalogCompnRF52LPComp::Disable()
@@ -172,6 +174,8 @@ void AnalogCompnRF52LPComp::Disable()
 bool AnalogCompnRF52LPComp::Start()
 {
 	NRF_LPCOMP->TASKS_START = 1;
+
+	return true;
 }
 
 void AnalogCompnRF52LPComp::Stop()
