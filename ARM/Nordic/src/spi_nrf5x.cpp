@@ -54,14 +54,16 @@ typedef struct {
 #ifdef NRF52840_XXAA
 #define NRF5X_SPI_MAXDEV		4
 #define NRF5X_SPISLAVE_MAXDEV	3
+#define NRF5X_SPI_DMA_MAXCNT	65535
 #elif defined(NRF52_SERIES)
 #define NRF5X_SPI_MAXDEV		3
 #define NRF5X_SPISLAVE_MAXDEV	3
+#define NRF5X_SPI_DMA_MAXCNT	255
 #else
 #define NRF5X_SPI_MAXDEV		2
 #define NRF5X_SPISLAVE_MAXDEV	1
-#endif
 #define NRF5X_SPI_DMA_MAXCNT	255
+#endif
 
 static NRF52_SPIDEV s_nRF52SPIDev[NRF5X_SPI_MAXDEV] = {
 	{

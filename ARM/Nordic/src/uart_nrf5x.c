@@ -46,8 +46,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define NRF5X_UART_HWFIFO_SIZE		6
 #define NRF5X_UART_RXTIMEOUT		15
-#define NRF52_UART_DMA_MAX_LEN		255
 #define NRF5X_UART_BUFF_SIZE		16
+
+#ifdef NRF52840_XXAA
+#define NRF52_UART_DMA_MAX_LEN		65535
+#else
+#define NRF52_UART_DMA_MAX_LEN		255
+#endif
 
 // Device driver data require by low level functions
 typedef struct _nRF_UART_Dev {
@@ -296,7 +301,7 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 	{
 		pDev->pDmaReg->EVENTS_ENDTX = 0;
 		pDev->pDmaReg->EVENTS_TXSTOPPED = 0;
-		int l = NRF5X_UART_BUFF_SIZE;//min(CFifoUsed(pDev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
+		int l = NRF52_UART_DMA_MAX_LEN;//NRF5X_UART_BUFF_SIZE;//min(CFifoUsed(pDev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
 		uint8_t *p = CFifoGetMultiple(pDev->pUartDev->hTxFifo, &l);
 		if (p)
 		{
@@ -506,7 +511,7 @@ static int nRFUARTTxData(DEVINTRF * const pDev, uint8_t *pData, int Datalen)
         {
         	if (pDev->bDma == true)
         	{
-        		int l = NRF5X_UART_BUFF_SIZE;//min(CFifoUsed(dev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
+        		int l = NRF52_UART_DMA_MAX_LEN;//NRF5X_UART_BUFF_SIZE;//min(CFifoUsed(dev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
         		uint8_t *p = CFifoGetMultiple(dev->pUartDev->hTxFifo, &l);
         		if (p)
         		{
