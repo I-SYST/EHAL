@@ -1,12 +1,13 @@
 /**-------------------------------------------------------------------------
-@file	imu_invensense.h
+@file	imu_invn_icm20948.h
 
-@brief	Implementation of an Inertial Measurement Unit of InvenSense DMP
+@brief	Implementation of an Inertial Measurement Unit for Invensense ICM-20948
 
-This is the IMU abstraction layer implementation for InvenSense DMP
+This is an implementation wrapper over Invensense SmartMotion for the ICM-20948
+9 axis motion sensor
 
 @author	Hoang Nguyen Hoan
-@date	Aug. 1, 2018
+@date	Dec. 26, 2018
 
 @license
 
@@ -33,21 +34,38 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
+#ifndef __IMU_INVN_ICM20948_H__
+#define __IMU_INVN_ICM20948_H__
 
-#ifndef __IMU_INVENSENSE_H__
-#define __IMU_INVENSENSE_H__
-
+#include "device_intrf.h"
 #include "imu/imu.h"
 
-class AgmMpu9250;
-
-class ImuInvenSense : public Imu {
+class ImuInvnIcm20948 : public Imu {
 public:
-	virtual bool Init(AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag);
+
+	bool Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+	virtual bool Enable();
+	virtual void Disable();
+	virtual void Reset();
 	virtual bool UpdateData();
+	virtual void IntHandler();
+
 protected:
+
 private:
-	AgmMpu9250 *vpMpu;
+	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
+	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
+	void UpdateData(enum inv_icm20948_sensor sensortype, uint64_t timestamp, const void * data, const void *arg);
+	static void SensorEventHandler(void * context, enum inv_icm20948_sensor sensor, uint64_t timestamp, const void * data, const void *arg);
+	static int InvnReadReg(void * context, uint8_t reg, uint8_t * rbuffer, uint32_t rlen);
+	static int InvnWriteReg(void * context, uint8_t reg, const uint8_t * wbuffer, uint32_t wlen);
+
+
+	inv_icm20948_t vIcmDevice;
+	int32_t vCfgAccFsr; // Default = +/- 4g. Valid ranges: 2, 4, 8, 16
+	int32_t vCfgGyroFsr; // Default = +/- 2000dps. Valid ranges: 250, 500, 1000, 2000
 };
 
-#endif // __IMU_INVENSENSE_H__
+
+
+#endif // __IMU_INVN_ICM20948_H__

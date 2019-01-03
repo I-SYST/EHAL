@@ -1,10 +1,9 @@
 /**-------------------------------------------------------------------------
-@file	imu.cpp
+@file	imu_mpl_mpu9250.cpp
 
-@brief	Implementation of an Inertial Measurement Unit
+@brief	Implementation of an Inertial Measurement Unit of InvenSense DMP on MPU-9250
 
-This a generic abstraction layer for IMU sensor fusion.  It is a mean to
-provide a common interface to different sensor fusion library out there.
+This is the IMU implementation on InvenSense DMP for the MPU-9250 9 axis motion sensor
 
 @author	Hoang Nguyen Hoan
 @date	Aug. 1, 2018
@@ -55,10 +54,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mpl.h"
 #include "log.h"
 
-#include "imu/imu_invensense.h"
+#include "imu/imu_mpl_mpu9250.h"
 #include "sensors/agm_mpu9250.h"
 
-bool ImuInvenSense::Init(AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag)
+bool ImuMplMpu9250::Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer)
+{
+	if (Valid())
+		return true;;
+
+	if (pIntrf == NULL)
+		return false;
+
+	Imu::Init(Cfg, DevAddr, pIntrf, pTimer);
+
+	return true;
+}
+
+bool ImuMplMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag)
 {
 	inv_error_t err;
 
@@ -105,15 +117,35 @@ bool ImuInvenSense::Init(AccelSensor * const pAccel, GyroSensor * const pGyro, M
     //RETURN_IF_ERROR(err_code);
 
 
-    return Imu::Init(pAccel, pGyro, pMag);
+    return Imu::Init(Cfg, pAccel, pGyro, pMag);
 }
 
-bool ImuInvenSense::UpdateData()
+
+bool ImuMplMpu9250::UpdateData()
 {
 
 	return true;
 }
 
+bool ImuMplMpu9250::Enable()
+{
+	return true;
+}
+
+void ImuMplMpu9250::Disable()
+{
+
+}
+
+void ImuMplMpu9250::Reset()
+{
+
+}
+
+void ImuMplMpu9250::IntHandler()
+{
+
+}
 
 
 

@@ -59,7 +59,7 @@ bool AgmIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 
 	uint16_t regaddr;
 	uint8_t d;
-	uint8_t userctrl = 0;//ICM20948_USER_CTRL_FIFO_EN | ICM20948_USER_CTRL_DMP_EN;///*MPU9250_AG_USER_CTRL_FIFO_EN | MPU9250_AG_USER_CTRL_DMP_EN |*/ MPU9250_AG_USER_CTRL_I2C_MST_EN;
+	uint8_t userctrl = 0;//ICM20948_USER_CTRL_FIFO_EN | ICM20948_USER_CTRL_DMP_EN;
 	uint8_t lpconfig = ICM20948_LP_CONFIG_ACCEL_CYCLE | ICM20948_LP_CONFIG_GYRO_CYCLE;
 
 	Interface(pIntrf);
@@ -126,14 +126,16 @@ bool AgmIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	regaddr = ICM20948_I2C_MST_ODR_CONFIG;
 	Write8((uint8_t*)&regaddr, 2, 0);
 
+#if 0
 	regaddr = ICM20948_AK09916_WIA1;
 	uint8_t x[2];
 	Read(AK09916_I2C_ADDR1, (uint8_t*)&regaddr, 1, x, 2);
 
-	if (d != ICM20948_AK09916_WIA1_ID)
+	if (x[0] != ICM20948_AK09916_WIA1_ID)
 	{
 		return false;
 	}
+#endif
 
 	vbInitialized  = true;
 
@@ -147,8 +149,6 @@ bool AgmIcm20948::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Time
 
 	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
 		return false;
-
-	return true;
 
 	// ODR = 1.125 kHz/(1+ACCEL_SMPLRT_DIV[11:0])
 
@@ -271,8 +271,8 @@ bool AgmIcm20948::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 	if (d[0] != ICM20948_AK09916_WIA1_ID)
 	{
 		Read(AK09916_I2C_ADDR2, &regaddr, 1, d, 2);
-
-		return false;
+		if (d[0] != ICM20948_AK09916_WIA1_ID)
+			return false;
 	}
 
 	msDelay(1);

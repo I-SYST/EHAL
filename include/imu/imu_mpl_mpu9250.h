@@ -1,10 +1,9 @@
 /**-------------------------------------------------------------------------
-@file	imu.cpp
+@file	imu_mpl_mpu9250.h
 
-@brief	Implementation of an Inertial Measurement Unit
+@brief	Implementation of an Inertial Measurement Unit of InvenSense DMP on MPU-9250
 
-This a generic abstraction layer for IMU sensor fusion.  It is a mean to
-provide a common interface to different sensor fusion library out there.
+This is the IMU implementation on InvenSense DMP for the MPU-9250 9 axis motion sensor
 
 @author	Hoang Nguyen Hoan
 @date	Aug. 1, 2018
@@ -35,44 +34,27 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
 
+#ifndef __IMU_MPL_MPU9250_H__
+#define __IMU_MPL_MPU9250_H__
+
 #include "imu/imu.h"
 
-bool Imu::Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer)
-{
-	SetEvtHandler(Cfg.EvtHandler);
-	vpTimer = pTimer;
-	Interface(pIntrf);
-	DeviceAddess(DevAddr);
+class AgmMpu9250;
 
-	return true;
-}
+class ImuMplMpu9250 : public Imu {
+public:
+	bool Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+	bool Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag);
+	virtual bool Enable();
+	virtual void Disable();
+	virtual void Reset();
+	virtual bool UpdateData();
+	virtual void IntHandler();
 
-bool Imu::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag)
-{
-	vpAccel = pAccel;
-	vpGyro = pGyro;
-	vpMag = pMag;
-	SetEvtHandler(Cfg.EvtHandler);
+protected:
+private:
+	AgmMpu9250 *vpMpu;
+	DeviceIntrf *vpIntrf;
+};
 
-	return true;
-}
-
-IMU_SENSE Imu::Sense(IMU_SENSE SenseBit, bool bEnDis)
-{
-	if (bEnDis == true)
-	{
-		// Enable
-		vActiveSense |= SenseBit;
-	}
-	else
-	{
-		// disable
-		vActiveSense &= ~SenseBit;
-	}
-
-	return vActiveSense;
-}
-
-
-
-
+#endif // __IMU_MPL_MPU9250_H__

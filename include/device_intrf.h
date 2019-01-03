@@ -208,8 +208,6 @@ struct __device_intrf {
 	 * This function must clear the busy state for reentrancy
 	 *
 	 * @param	pDevIntrf : Pointer to an instance of the Device Interface
-	 *
-	 * @return	None
 	 */
 	void (*StopRx)(DEVINTRF * const pSerDev);
 
@@ -245,8 +243,6 @@ struct __device_intrf {
 	 * This function must clear the busy state for re-entrancy
 	 *
 	 * @param	pDevIntrf : Pointer to an instance of the Device Interface
-	 *
-	 * @return	None
 	 */
 	void (*StopTx)(DEVINTRF * const pDevIntrf);
 
@@ -255,8 +251,6 @@ struct __device_intrf {
 	 * function of not used.
 	 *
      * @param	pDevIntrf : Pointer to an instance of the Device Interface
-     *
-     * @return  None
 	 */
 	void (*Reset)(DEVINTRF * const pDevIntrf);
 
@@ -269,8 +263,6 @@ struct __device_intrf {
 	 * to the Enable/Disable functions.
 	 *
      * @param	pDevIntrf : Pointer to an instance of the Device Interface
-     *
-     * @return  None
 	 */
 	void (*PowerOff)(DEVINTRF * const pDevIntrf);
 
@@ -290,8 +282,6 @@ extern "C" {
  * be turned back on without going through the full initialization sequence
  *
  * @param	pDev	: Pointer to an instance of the Device Interface
- *
- * @return	None
  */
 static inline void DeviceIntrfDisable(DEVINTRF * const pDev) {
 	if (AtomicDec(&pDev->EnCnt) < 1) {
@@ -304,8 +294,6 @@ static inline void DeviceIntrfDisable(DEVINTRF * const pDev) {
  * @brief	Wake up the interface.
  *
  * @param	pDev	: Pointer to an instance of the Device Interface
- *
- * @return	None
  */
 static inline void DeviceIntrfEnable(DEVINTRF * const pDev) {
     if (AtomicInc(&pDev->EnCnt) == 1) {
@@ -381,8 +369,8 @@ int DeviceIntrfTx(DEVINTRF * const pDev, int DevAddr, uint8_t *pData, int DataLe
  * @param	DevAddr   	: The device selection id scheme
  * @param	pAdCmd		: Pointer to buffer containing address or command code to send
  * @param	AdCmdLen	: Size of addr/Cmd in bytes
- * @param	pBuff 	  	: Pointer to memory area to receive data.
- * @param	BuffLen   	: Length of buffer memory in bytes
+ * @param	pRxBuff 	  	: Pointer to memory area to receive data.
+ * @param	RxLen   	: Length of buffer memory in bytes
  *
  * @return	Number of bytes read
  */
@@ -416,8 +404,8 @@ int DeviceIntrfWrite(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int Ad
  *
  * NOTE: On success StopRx must be called to release busy flag
  *
- * @param	pDevIntrf : Pointer to an instance of the Device Interface
- * @param	DevAddr   : The device selection id scheme
+ * @param	pDev	: Pointer to an instance of the Device Interface
+ * @param	DevAddr	: The device selection id scheme
  *
  * @return 	true - Success\n
  * 			false - failed.
@@ -508,8 +496,8 @@ static inline bool DeviceIntrfStartTx(DEVINTRF * const pDev, int DevAddr) {
  *
  * @return	Number of bytes sent
  */
-static inline int DeviceIntrfTxData(DEVINTRF * const pDev, uint8_t *pBuff, int BuffLen) {
-	return pDev->TxData(pDev, pBuff, BuffLen);
+static inline int DeviceIntrfTxData(DEVINTRF * const pDev, uint8_t *pData, int DataLen) {
+	return pDev->TxData(pDev, pData, DataLen);
 }
 
 /**
@@ -545,8 +533,6 @@ static inline void DeviceIntrfReset(DEVINTRF * const pDev) {
  * part of this function contrary to the Enable/Disable functions.
  *
  * @param	pDev : Pointer to an instance of the Device Interface
- *
- * @return  None
  */
 static inline void DeviceIntrfPowerOff(DEVINTRF * const pDev) {
 	if (pDev->PowerOff) pDev->PowerOff(pDev);
@@ -595,7 +581,7 @@ public:
 	 * of transfers per second). It has meaning base on the implementation as
 	 * bits/sec or bytes/sec or whatever the case
 	 *
-	 * @param	Rate : Data rate to be set in Hertz (transfer per second)
+	 * @param	DataRate : Data rate to be set in Hertz (transfer per second)
 	 *
 	 * @return 	Actual transfer rate per second set.  It is the real capable rate
 	 * 			closest to rate being requested.
@@ -634,8 +620,6 @@ public:
 	 * type of functionality.  Once power off is called, full initialization cycle is
 	 * required.  Therefore there is no PowerOn counter part of this function contrary
 	 * to the Enable/Disable functions.
-	 *
-     * @return  None
 	 */
 	void PowerOff() { DeviceIntrfPowerOff(*this); }
 

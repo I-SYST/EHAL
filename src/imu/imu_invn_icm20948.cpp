@@ -1,12 +1,13 @@
 /**-------------------------------------------------------------------------
-@file	agm_invn_icm20948.cpp
+@file	imu_invn_icm20948.cpp
 
-@brief	Implementation of TDK ICM-20948 accel, gyro, mag sensor
+@brief	Implementation of an Inertial Measurement Unit for Invensense ICM-20948
 
-This implementation wraps the Invensen SmartMotion driver
+This is an implementation wrapper over Invensense SmartMotion for the ICM-20948
+9 axis motion sensor
 
 @author	Hoang Nguyen Hoan
-@date	Dec. 24, 2018
+@date	Dec. 26, 2018
 
 @license
 
@@ -41,22 +42,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Devices/Drivers/Icm20948/Icm20948AuxTransport.h"
 #include "Devices/Drivers/Icm20948/Icm20948MPUFifoControl.h"
 #include "Devices/Drivers/Icm20948/Icm20948Setup.h"
-//#include "Devices/Drivers/Ak0991x/Ak0991x.h"
 #include "Devices/SensorTypes.h"
-//#include "Devices/SensorConfig.h"
-//#include "EmbUtils/InvScheduler.h"
-//#include "EmbUtils/RingByteBuffer.h"
-//#include "EmbUtils/Message.h"
-//#include "EmbUtils/ErrorHelper.h"
-//#include "EmbUtils/DataConverter.h"
-//#include "EmbUtils/RingBuffer.h"
-//#include "DynamicProtocol/DynProtocol.h"
-//#include "DynamicProtocol/DynProtocolTransportUart.h"
-
 
 #include "idelay.h"
-#include "coredev/i2c.h"
-#include "coredev/spi.h"
+#include "imu/imu_invn_icm20948.h"
 #include "sensors/agm_invn_icm20948.h"
 
 #define ICM20948_WHO_AM_I_ID		0xEA
@@ -73,33 +62,10 @@ static const float s_CfgMountingMatrix[9]= {
 	0, 1.f, 0,
 	0, 0, 1.f
 };
-/*
-static uint8_t convert_to_generic_ids[INV_ICM20948_SENSOR_MAX] = {
-	INV_SENSOR_TYPE_ACCELEROMETER,
-	INV_SENSOR_TYPE_GYROSCOPE,
-	INV_SENSOR_TYPE_RAW_ACCELEROMETER,
-	INV_SENSOR_TYPE_RAW_GYROSCOPE,
-	INV_SENSOR_TYPE_UNCAL_MAGNETOMETER,
-	INV_SENSOR_TYPE_UNCAL_GYROSCOPE,
-	INV_SENSOR_TYPE_BAC,
-	INV_SENSOR_TYPE_STEP_DETECTOR,
-	INV_SENSOR_TYPE_STEP_COUNTER,
-	INV_SENSOR_TYPE_GAME_ROTATION_VECTOR,
-	INV_SENSOR_TYPE_ROTATION_VECTOR,
-	INV_SENSOR_TYPE_GEOMAG_ROTATION_VECTOR,
-	INV_SENSOR_TYPE_MAGNETOMETER,
-	INV_SENSOR_TYPE_SMD,
-	INV_SENSOR_TYPE_PICK_UP_GESTURE,
-	INV_SENSOR_TYPE_TILT_DETECTOR,
-	INV_SENSOR_TYPE_GRAVITY,
-	INV_SENSOR_TYPE_LINEAR_ACCELERATION,
-	INV_SENSOR_TYPE_ORIENTATION,
-	INV_SENSOR_TYPE_B2S
-};
-*/
-int AgmInvnIcm20948::InvnReadReg(void * context, uint8_t reg, uint8_t * rbuffer, uint32_t rlen)
+
+int ImuInvnIcm20948::InvnReadReg(void * context, uint8_t reg, uint8_t * rbuffer, uint32_t rlen)
 {
-	AgmInvnIcm20948 *dev = (AgmInvnIcm20948*)context;
+	ImuInvnIcm20948 *dev = (ImuInvnIcm20948*)context;
 //	return spi_master_transfer_rx(NULL, reg, rbuffer, rlen);
 //	reg |= 0x80;
 	int cnt = dev->Read(&reg, 1, rbuffer, (int)rlen);
@@ -107,9 +73,9 @@ int AgmInvnIcm20948::InvnReadReg(void * context, uint8_t reg, uint8_t * rbuffer,
 	return cnt > 0 ? 0 : 1;
 }
 
-int AgmInvnIcm20948::InvnWriteReg(void * context, uint8_t reg, const uint8_t * wbuffer, uint32_t wlen)
+int ImuInvnIcm20948::InvnWriteReg(void * context, uint8_t reg, const uint8_t * wbuffer, uint32_t wlen)
 {
-	AgmInvnIcm20948 *dev = (AgmInvnIcm20948*)context;
+	ImuInvnIcm20948 *dev = (ImuInvnIcm20948*)context;
 //	return spi_master_transfer_tx(NULL, reg, wbuffer, wlen);
 
 	int cnt = dev->Write(&reg, 1, (uint8_t*)wbuffer, (int)wlen);
@@ -117,24 +83,23 @@ int AgmInvnIcm20948::InvnWriteReg(void * context, uint8_t reg, const uint8_t * w
 	return cnt > 0 ? 0 : 1;
 }
 
-bool AgmInvnIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
+bool ImuInvnIcm20948::Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer)
 {
-	//if (vbInitialized)
 	if (Valid())
 		return true;;
 
 	if (pIntrf == NULL)
 		return false;
 
-	Interface(pIntrf);
-	DeviceAddess(DevAddr);
+	Imu::Init(Cfg, DevAddr, pIntrf, pTimer);
+	//Interface(pIntrf);
+	//DeviceAddess(DevAddr);
 
 	if (pTimer != NULL)
 	{
 		vpTimer = pTimer;
 	}
 
-	uint8_t d;
 	struct inv_icm20948_serif icm20948_serif;
 
 	icm20948_serif.context   = this;
@@ -147,6 +112,8 @@ bool AgmInvnIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	inv_icm20948_reset_states(&vIcmDevice, &icm20948_serif);
 
 	inv_icm20948_register_aux_compass(&vIcmDevice, INV_ICM20948_COMPASS_ID_AK09916, (uint8_t)AK0991x_DEFAULT_I2C_ADDR);
+
+	uint8_t d;
 
 	int rc = 	rc = inv_icm20948_get_whoami(&vIcmDevice, &d);
 
@@ -175,71 +142,23 @@ bool AgmInvnIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	rc = inv_icm20948_initialize(&vIcmDevice, s_Dmp3Image, sizeof(s_Dmp3Image));
 	/* Initialize auxiliary sensors */
 	inv_icm20948_register_aux_compass( &vIcmDevice, INV_ICM20948_COMPASS_ID_AK09916, AK0991x_DEFAULT_I2C_ADDR);
-//	rc = inv_icm20948_initialize_auxiliary(&vIcmDevice);
+	rc = inv_icm20948_initialize_auxiliary(&vIcmDevice);
 
 	// re-initialize base state structure
 	inv_icm20948_init_structure(&vIcmDevice);
-
-	vbInitialized  = true;
-
-	return true;
-}
-
-bool AgmInvnIcm20948::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
-{
-	uint16_t regaddr;
-	uint8_t d;
-
-	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
-		return false;
-
-	vCfgAccFsr = CfgData.Scale;
 	inv_icm20948_set_fsr(&vIcmDevice, INV_ICM20948_SENSOR_RAW_ACCELEROMETER, (const void *)&vCfgAccFsr);
 	inv_icm20948_set_fsr(&vIcmDevice, INV_ICM20948_SENSOR_ACCELEROMETER, (const void *)&vCfgAccFsr);
-
-	Scale(CfgData.Scale);
-	//LowPassFreq(vSampFreq / 2000);
-
-	//regaddr = MPU9250_AG_INT_ENABLE;
-	//Write8(&regaddr, 1, MPU9250_AG_INT_ENABLE_DMP_EN);
-
-//	Reset();
-
-	msDelay(100);
-
-//	regaddr = MPU9250_AG_PWR_MGMT_1;
-//	Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_CYCLE);
-
-	return true;
-}
-
-bool AgmInvnIcm20948::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
-{
-	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
-		return false;
-
-	vCfgGyroFsr = CfgData.Sensitivity;
-
 	inv_icm20948_set_fsr(&vIcmDevice, INV_ICM20948_SENSOR_RAW_GYROSCOPE, (const void *)&vCfgGyroFsr);
 	inv_icm20948_set_fsr(&vIcmDevice, INV_ICM20948_SENSOR_GYROSCOPE, (const void *)&vCfgGyroFsr);
 	inv_icm20948_set_fsr(&vIcmDevice, INV_ICM20948_SENSOR_GYROSCOPE_UNCALIBRATED, (const void *)&vCfgGyroFsr);
 
-	Sensitivity(CfgData.Sensitivity);
+	rc = inv_icm20948_load(&vIcmDevice, s_Dmp3Image, sizeof(s_Dmp3Image));
 
 	return true;
 }
 
-bool AgmInvnIcm20948::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
-{
-	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
-		return false;
 
-	int rc = inv_icm20948_initialize_auxiliary(&vIcmDevice);
-
-	return rc == 0;
-}
-
-bool AgmInvnIcm20948::Enable()
+bool ImuInvnIcm20948::Enable()
 {
 	int i = INV_SENSOR_TYPE_MAX;
 
@@ -251,7 +170,7 @@ bool AgmInvnIcm20948::Enable()
 	return true;
 }
 
-void AgmInvnIcm20948::Disable()
+void ImuInvnIcm20948::Disable()
 {
 	int i = INV_SENSOR_TYPE_MAX;
 
@@ -259,121 +178,32 @@ void AgmInvnIcm20948::Disable()
 	while(i-- > 0) {
 		int rc = inv_icm20948_enable_sensor(&vIcmDevice, (inv_icm20948_sensor)i, 0);
 	}
+	inv_icm20948_set_chip_power_state(&vIcmDevice, CHIP_AWAKE, 0);
 }
 
-void AgmInvnIcm20948::Reset()
+void ImuInvnIcm20948::Reset()
 {
 	inv_icm20948_soft_reset(&vIcmDevice);
 }
 
-bool AgmInvnIcm20948::StartSampling()
+bool ImuInvnIcm20948::UpdateData()
 {
 	return true;
 }
 
-// Implement wake on motion
-bool AgmInvnIcm20948::WakeOnEvent(bool bEnable, int Threshold)
-{
-    uint16_t regaddr;
-
-	if (bEnable == true)
-	{
-		Reset();
-
-		msDelay(2000);
-	}
-	else
-	{
-//	    regaddr = MPU9250_AG_INT_ENABLE;
-	    Write8((uint8_t*)&regaddr, 2, 0);
-
-//	    regaddr = MPU9250_AG_PWR_MGMT_1;
-		Write8((uint8_t*)&regaddr, 2, 0);
-	}
-
-	return true;
-}
-
-// Accel low pass frequency
-uint32_t AgmInvnIcm20948::LowPassFreq(uint32_t Freq)
-{
-	return AccelSensor::LowPassFreq();
-}
-
-// Accel scale
-uint16_t AgmInvnIcm20948::Scale(uint16_t Value)
-{
-	return AccelSensor::Scale();
-}
-
-// Gyro scale
-uint32_t AgmInvnIcm20948::Sensitivity(uint32_t Value)
-{
-
-	return GyroSensor::Sensitivity();
-}
-
-bool AgmInvnIcm20948::UpdateData()
-{
-//	inv_icm20948_poll_sensor(&vIcmDevice, (void*)this, SensorEventHandler);
-
-	return true;
-}
-
-bool AgmInvnIcm20948::Read(ACCELSENSOR_DATA &Data)
-{
-	Data = AccelSensor::vData;
-
-	return true;
-}
-
-bool AgmInvnIcm20948::Read(GYROSENSOR_DATA &Data)
-{
-	Data = GyroSensor::vData;
-
-	return true;
-}
-
-bool AgmInvnIcm20948::Read(MAGSENSOR_DATA &Data)
-{
-	Data = MagSensor::vData;
-
-	return true;
-}
-
-int AgmInvnIcm20948::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
-{
-	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
-	{
-		*pCmdAddr |= 0x80;
-	}
-
-	return Device::Read(pCmdAddr, CmdAddrLen, pBuff, BuffLen);
-}
-
-int AgmInvnIcm20948::Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen)
-{
-	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
-	{
-		*pCmdAddr &= 0x7F;
-	}
-
-	return Device::Write(pCmdAddr, CmdAddrLen, pData, DataLen);
-}
-
-void AgmInvnIcm20948::IntHandler()
+void ImuInvnIcm20948::IntHandler()
 {
 	inv_icm20948_poll_sensor(&vIcmDevice, (void*)this, SensorEventHandler);
 }
 
-void AgmInvnIcm20948::SensorEventHandler(void * context, enum inv_icm20948_sensor sensortype, uint64_t timestamp, const void * data, const void *arg)
+void ImuInvnIcm20948::SensorEventHandler(void * context, enum inv_icm20948_sensor sensortype, uint64_t timestamp, const void * data, const void *arg)
 {
-	AgmInvnIcm20948 *dev = (AgmInvnIcm20948*)context;
+	ImuInvnIcm20948 *dev = (ImuInvnIcm20948*)context;
 
 	dev->UpdateData(sensortype, timestamp, data, arg);
 }
 
-void AgmInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t timestamp, const void * data, const void *arg)
+void ImuInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t timestamp, const void * data, const void *arg)
 {
 	float raw_bias_data[6];
 	inv_sensor_event_t event;
@@ -458,37 +288,30 @@ void AgmInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t t
 	default:
 		return;
 	}
+
+	if (vEvtHandler != NULL)
+	{
+		vEvtHandler(this, DEV_EVT_DATA_RDY);
+	}
 }
 
-#if 0
-void sensor_event(const inv_sensor_event_t * event, void * arg){
-	/* arg will contained the value provided at init time */
-	(void)arg;
-
-	/*
-	* Encode sensor event and sent to host over UART through IddWrapper protocol
-	*/
-	static DynProtocolEdata_t async_edata; /* static to take on .bss */
-	static uint8_t async_buffer[256]; /* static to take on .bss */
-	uint16_t async_bufferLen;
-
-	async_edata.sensor_id = event->sensor;
-	async_edata.d.async.sensorEvent.status = DYN_PRO_SENSOR_STATUS_DATA_UPDATED;
-	convert_sensor_event_to_dyn_prot_data(event, &async_edata.d.async.sensorEvent.vdata);
-
-	if(DynProtocol_encodeAsync(&protocol,
-		DYN_PROTOCOL_EID_NEW_SENSOR_DATA, &async_edata,
-		async_buffer, sizeof(async_buffer), &async_bufferLen) != 0) {
-			goto error_dma_buf;
+int ImuInvnIcm20948::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
+{
+	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
+	{
+		*pCmdAddr |= 0x80;
 	}
 
-	DynProTransportUart_tx(&transport, async_buffer, async_bufferLen);
-	return;
-
-error_dma_buf:
-	INV_MSG(INV_MSG_LEVEL_WARNING, "sensor_event_cb: encode error, frame dropped");
-
-	return;
+	return Device::Read(pCmdAddr, CmdAddrLen, pBuff, BuffLen);
 }
-#endif
+
+int ImuInvnIcm20948::Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen)
+{
+	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
+	{
+		*pCmdAddr &= 0x7F;
+	}
+
+	return Device::Write(pCmdAddr, CmdAddrLen, pData, DataLen);
+}
 

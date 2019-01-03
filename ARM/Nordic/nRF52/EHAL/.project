@@ -536,9 +536,14 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu.h</locationURI>
 		</link>
 		<link>
-			<name>include/imu/imu_invensense.h</name>
+			<name>include/imu/imu_invn_icm20948.h</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_invensense.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_invn_icm20948.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/imu_mpl_mpu9250.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_mpl_mpu9250.h</locationURI>
 		</link>
 		<link>
 			<name>include/miscdev/buzzer.h</name>
@@ -756,14 +761,19 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrf5x.c</locationURI>
 		</link>
 		<link>
-			<name>src/imu/imu invensense.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu%20invensense.cpp</locationURI>
-		</link>
-		<link>
 			<name>src/imu/imu.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/imu/imu_invn_icm20948.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_invn_icm20948.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/imu/imu_mpl_mpu9250.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_mpl_mpu9250.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/micro-ecc/uECC.c</name>

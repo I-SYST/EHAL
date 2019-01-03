@@ -60,6 +60,14 @@ typedef enum __Dev_Interrupt_Polarity {
 	DEVINTR_POL_HIGH	//!< Interrupt pin active high
 } DEVINTR_POL;
 
+typedef enum __Device_Event {
+	DEV_EVT_DATA_RDY
+} DEV_EVT;
+
+class Device;
+
+typedef void (*DEVEVTCB)(Device * const pDev, DEV_EVT Evt);
+
 #ifdef __cplusplus
 
 /// @brief	Device base class.
@@ -247,6 +255,10 @@ public:
 	 */
 	bool Valid() { return vbValid; }
 
+	DEVINTRF_TYPE InterfaceType() { return vpIntrf != NULL ? vpIntrf->Type() : DEVINTRF_TYPE_UNKOWN; }
+
+	void SetEvtHandler(DEVEVTCB EvtHandler) { vEvtHandler = EvtHandler; }
+
 protected:
 	/**
 	 * @brief	Store device id.
@@ -285,6 +297,7 @@ protected:
 	DeviceIntrf *vpIntrf;		//!< Device's interface
 	uint64_t	vDevId;			//!< This is implementation specific data for device identifier
 	 	 	 	 	 	 	 	//!< could be value read from hardware register or serial number
+	DEVEVTCB 	vEvtHandler;	//!< Event handler callback
 };
 
 extern "C" {

@@ -751,11 +751,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrf5x.c</locationURI>
 		</link>
 		<link>
-			<name>src/imu/imu invensense.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu%20invensense.cpp</locationURI>
-		</link>
-		<link>
 			<name>src/imu/imu.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu.cpp</locationURI>

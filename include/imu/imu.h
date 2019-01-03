@@ -42,8 +42,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sensors/gyro_sensor.h"
 #include "sensors/mag_sensor.h"
 
-#define IMU_FEATURE_EULER				(1<<0)
-#define IMU_FEATURE_QUAT				(1<<1)
+/// IMU sensing/processing types
+#define IMU_SENSE_RAW_ACCEL				(1<<0)		//!< Raw accel sensor data, relevant for when sensor is known
+#define IMU_SENSE_RAW_GYRO				(1<<1)		//!< Raw gyr sensor data, relevant for when sensor is known
+#define IMU_SENSE_RAW_MAG				(1<<2)		//!< Raw mag sensor data, relevant for when sensor is known
+#define IMU_SENSE_ACCEL					(1<<3)		//!< Converted accel data
+#define IMU_SENSE_GYRO					(1<<4)		//!< Converted gyro data
+#define IMU_SENSE_MAG					(1<<5)		//!< Converted mag data
+#define IMU_SENSE_EULER					(1<<6)		//!< Euler angles data
+#define IMU_SENSE_QUAT					(1<<7)		//!< Quaternion data
+
+typedef uint32_t	IMU_SENSE;
 
 typedef struct __Imu_Quat {
 	uint32_t Timestamp;	//!< Time stamp count in msec
@@ -64,21 +73,28 @@ typedef struct __Imu_Euler {
 	int16_t Roll;
 } IMU_EULER;
 
-class Imu {
+typedef struct __Imu_Config {
+	DEVEVTCB EvtHandler;
+} IMU_CFG;
+
+class Imu : virtual public Device {
 public:
 
-	virtual bool Init(AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag);
-	virtual uint32_t Feature() { return vFeatures; }
-	virtual uint32_t Feature(uint32_t Feature, bool bEnDis);
+	virtual bool Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+	virtual bool Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag);
 	virtual bool UpdateData() = 0;
+	virtual void IntHandler() = 0;
 	virtual bool Read(IMU_QUAT &Data) { Data = vQuat; return true; }
 	virtual bool Read(IMU_EULER &Data) { Data = vEuler; return true; }
+	virtual IMU_SENSE Sense() { return vActiveSense; }
+	virtual IMU_SENSE Sense(IMU_SENSE SenseBit, bool bEnDis);
 
 protected:
+	Timer *vpTimer;			//!< Pointer to Timer object for timestamping
 	AccelSensor *vpAccel;	//!< Pointer to accelerometer sensor
 	GyroSensor *vpGyro;		//!< Pointer to gyro sensor
 	MagSensor *vpMag;		//!< Pointer to magnetometer Sensor
-	uint32_t vFeatures;		//!< Orable feature enabled bits - Bit set to 1 : Enabled, 0 : Disabled
+	IMU_SENSE vActiveSense;	//!< Orable feature enabled bits - Bit set to 1 : Enabled, 0 : Disabled
 	IMU_QUAT vQuat;			//!< Last updated quaternion values
 	IMU_EULER vEuler;		//!< Last updated euler value
 };
