@@ -77,6 +77,7 @@ Modified by          Date              Description
 #include "ble_app.h"
 
 extern "C" void nrf_sdh_soc_evts_poll(void * p_context);
+extern "C" ret_code_t nrf_sdh_enable(nrf_clock_lf_cfg_t *clock_lf_cfg);
 
 #define APP_FEATURE_NOT_SUPPORTED       BLE_GATT_STATUS_ATTERR_APP_BEGIN + 2        /**< Reply when unsupported features are requested. */
 
@@ -819,7 +820,7 @@ static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
         BlePeriphEvtUserHandler((ble_evt_t *)p_ble_evt);
     }
     on_ble_evt(p_ble_evt);
-    ble_db_discovery_on_ble_evt(p_ble_evt, p_context);
+   // ble_db_discovery_on_ble_evt(p_ble_evt, p_context);
 }
 
 /**@brief Function for the Peer Manager initialization.
@@ -1269,13 +1270,11 @@ bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
 bool BleAppStackInit(int CentLinkCount, int PeriLinkCount, bool bConnectable)
 {
-	ret_code_t err_code = nrf_sdh_enable_request();
-    APP_ERROR_CHECK(err_code);
-
     // Configure the BLE stack using the default settings.
     // Fetch the start address of the application RAM.
     uint32_t ram_start = 0;
-    err_code = nrf_sdh_ble_default_cfg_set(BLEAPP_CONN_CFG_TAG, &ram_start);
+
+    ret_code_t err_code = nrf_sdh_ble_default_cfg_set(BLEAPP_CONN_CFG_TAG, &ram_start);
     APP_ERROR_CHECK(err_code);
 
 
@@ -1405,6 +1404,8 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 	// initializing the cryptography module
     //nrf_crypto_init();
 
+	err_code = nrf_sdh_enable((nrf_clock_lf_cfg_t *)&pBleAppCfg->ClkCfg);
+    APP_ERROR_CHECK(err_code);
 
     // Initialize SoftDevice.
     BleAppStackInit(pBleAppCfg->CentLinkCount, pBleAppCfg->PeriLinkCount,
