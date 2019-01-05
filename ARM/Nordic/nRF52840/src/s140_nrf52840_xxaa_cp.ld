@@ -19,8 +19,8 @@ MEMORY
 {
 	/* nRF52840 has 1MB Flash (0x100000), 256KB RAM (0x40000) */
 	
-	FLASH (rx) : ORIGIN = 0x26000, LENGTH = 0xda000
-	RAM (rwx) :  ORIGIN = 0x20002900, LENGTH = 0x3d700
+	FLASH (rx) : ORIGIN = 0x26000, LENGTH = 0xDA000
+	RAM (rwx) :  ORIGIN = 0x20005400, LENGTH = 0x3AC00
 
 	/** Location of non initialized RAM. Non initialized RAM is used for exchanging bond information
 	*  from application to bootloader when using buttonless DFU OTA.

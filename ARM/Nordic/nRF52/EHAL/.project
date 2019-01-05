@@ -381,6 +381,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nrf_sdh.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_sdh.c</locationURI>
+		</link>
+		<link>
 			<name>src/nrf_sdh_soc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/nrf_sdh_soc.c</locationURI>

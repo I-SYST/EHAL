@@ -51,7 +51,7 @@ Modified by          Date              Description
 //#include "stddev.h"
 #include "board.h"
 
-#define DEVICE_NAME                     "UARTDemo"                            /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "UARTCentral"                            /**< Name of device. Will be included in the advertising data. */
 
 #define MANUFACTURER_NAME               "I-SYST inc."                       /**< Manufacturer. Will be passed to Device Information Service. */
 #define MODEL_NAME                      "IMM-NRF51x"                            /**< Model number. Will be passed to Device Information Service. */
@@ -244,9 +244,9 @@ void BleCentralEvtUserHandler(ble_evt_t * p_ble_evt)
 			{
 				// Scan data report
 				const ble_gap_evt_adv_report_t * p_adv_report = &p_gap_evt->params.adv_report;
-				if (ble_advdata_name_find(p_adv_report->data.p_data,
-								  p_adv_report->data.len,
-								  "Test"))
+				//if (ble_advdata_name_find(p_adv_report->data.p_data,
+				//				  p_adv_report->data.len,
+				//				  "Test"))
 	//            if (memcmp(addr, p_adv_report->peer_addr.addr, 6) == 0)
 				{
 					g_Uart.printf("Addr: %02x:%02x:%02x:%02x:%02x:%02x,  RSSI %d\r\n",
@@ -361,7 +361,7 @@ int main()
     HardwareInit();
 
     BleAppInit((const BLEAPP_CFG *)&s_BleAppCfg, true);
-    BleScanInit(SCAN_NAME_FILTER, "UartDemo");//, true);
+    //BleScanInit(SCAN_NAME_FILTER, "UartDemo");//, true);
 
     uint32_t ret = sd_ble_gap_scan_start(&g_ScanParams, &g_AdvScanReportData);
     APP_ERROR_CHECK(ret);
