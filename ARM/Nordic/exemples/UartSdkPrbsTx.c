@@ -1,5 +1,5 @@
 /**-------------------------------------------------------------------------
-@example	uart_sdk_prbs_tx.c
+@example	UartSdkPrbsTx.c
 
 @brief	UART PRBS transmit test
 
@@ -48,10 +48,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // This include contain i/o definition the board in use
 #include "board.h"
 
-#define SDK_NRFX
+#define SDK_NRFX	// Use nrfx_uarte, comment out this define to use app_uart_fifo
 
 #ifndef SDK_NRFX
-//#define MAX_TEST_DATA_BYTES     (15U)                /**< max number of test bytes to be used for tx and rx. */
 #define UART_TX_BUF_SIZE 512                         /**< UART TX buffer size. */
 #define UART_RX_BUF_SIZE 512                         /**< UART RX buffer size. */
 
