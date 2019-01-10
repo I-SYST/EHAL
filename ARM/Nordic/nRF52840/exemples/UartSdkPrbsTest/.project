@@ -83,7 +83,7 @@
 		<link>
 			<name>src/nRF5_SDK/nrfx/legacy/nrf_drv_uart.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/integration/nrfx/legacy/nrf_drv_uart.c%20-%20(does%20not%20exist)</locationURI>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/integration/nrfx/legacy/nrf_drv_uart.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/nrfx/drivers/src/nrfx_uart.c</name>

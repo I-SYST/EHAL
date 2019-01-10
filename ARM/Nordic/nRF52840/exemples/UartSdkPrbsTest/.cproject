@@ -152,8 +152,8 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1269718456.1799613462" name="uart_sdk_prbs_tx.c" rcbsApplicability="disable" resourcePath="src/uart_sdk_prbs_tx.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.236890785.1394261108">
-						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.236890785.1394261108" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.236890785"/>
+					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1269718456.70347776" name="nrf_drv_uart.c" rcbsApplicability="disable" resourcePath="src/nRF5_SDK/nrfx/legacy/nrf_drv_uart.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.236890785.199194282">
+						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.236890785.199194282" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.236890785"/>
 					</fileInfo>
 					<sourceEntries>
 						<entry excluding="nRF5_SDK/nrfx/drivers/src/nrfx_uart.c|Vectors_nRF51.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
