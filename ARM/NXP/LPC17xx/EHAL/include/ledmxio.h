@@ -35,7 +35,7 @@ Modified by          Date              Description
 #ifndef __LEDMXIO_H__
 #define __LEDMXIO_H__
 
-#include "ledmx.h"
+#include "miscdev/ledmx.h"
 
 #define LEDMX_MAX_ADDRPIN		4
 

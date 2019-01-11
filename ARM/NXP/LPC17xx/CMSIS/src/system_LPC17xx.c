@@ -53,7 +53,7 @@ Modified by          Date              Description
  */
 uint32_t SystemCoreClock = IRC_FREQ;/*!< System Clock Frequency (Core Clock)*/
 uint32_t SystemClkFreq = IRC_FREQ;	/* System clock frequency, reset default IRC */
-extern uint32_t SystemMicroSecNopCnt;
+extern uint32_t SystemMicroSecLoopCnt;
 
 uint32_t GetSysClk(void)
 {
@@ -100,7 +100,7 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
 
 	/* adjust to cclk divider */
 	SystemCoreClock /= (LPC_SC->CCLKCFG & 0xFF) + 1;
-	SystemMicroSecNopCnt = (SystemCoreClock / 16000000);
+	SystemMicroSecLoopCnt = (SystemCoreClock / 16000000);
 }
 
 uint32_t SystemSetCoreClock(uint32_t CoreFreq, int ClkFreq)
@@ -123,7 +123,7 @@ uint32_t SystemSetCoreClock(uint32_t CoreFreq, int ClkFreq)
 			temp |= 0x10;	/* Oscillator range 15MHz-25MHz */
 
 		LPC_SC->SCS = temp;
-		while ((LPC_SC->SCS & 0x60) == 0x50);	/* Wait for main oscillator ready */
+		while ((LPC_SC->SCS & 0x70) == 0x50);	/* Wait for main oscillator ready */
 
 	}
 	else if (ClkFreq < IRC_FREQ)

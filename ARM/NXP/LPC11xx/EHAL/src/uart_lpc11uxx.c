@@ -316,6 +316,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	// Start tx
 	LPC_USART->TER = LPCUART_TER_TXEN;
 
+	pDev->DevIntrf.Type = DEVINTRF_TYPE_UART;
 	pDev->RxOECnt = 0;
 	pDev->DataBits = pCfg->DataBits;
 	pDev->FlowControl = pCfg->FlowControl;
@@ -335,7 +336,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->DevIntrf.StartTx = LpcUARTStartTx;
 	pDev->DevIntrf.TxData = LpcUARTTxData;
 	pDev->DevIntrf.StopTx = LpcUARTStopTx;
-	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = 0;
 	pDev->EvtCallback = pCfg->EvtCallback;
 

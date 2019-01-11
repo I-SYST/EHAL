@@ -1,12 +1,16 @@
-/*--------------------------------------------------------------------------
-File   : spi_lpc11uxx.h
+/**-------------------------------------------------------------------------
+@file	spi_lpc11uxx.c
 
-Author : Hoang Nguyen Hoan          Feb. 20, 2015
+@brief	SSP/SPI implementation on LPC11Uxx
 
-Desc   : SSP/SPI implementation on LPC11Uxx
 		 Current implementation
 		 	 Master mode
 		 	 Polling
+
+@author	Hoang Nguyen Hoan
+@date	Feb. 20, 2015
+
+@license
 
 Copyright (c) 2015, I-SYST inc., all rights reserved
 
@@ -30,8 +34,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by         Date            Description
 ----------------------------------------------------------------------------*/
 #include "LPC11Uxx.h"
 
@@ -107,6 +109,8 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	dev->pSpiDev = pDev;
 	pDev->DevIntrf.pDevData = (void*)dev;
 	pDev->Cfg = *pCfgData;
+	pDev->DevIntrf.Type = DEVINTRF_TYPE_SPI;
+	pDev->DevIntrf.bDma = pCfgData->bDmaEn;
 	pDev->DevIntrf.Disable = LpcSSPDisable;
 	pDev->DevIntrf.Enable = LpcSSPEnable;
 	pDev->DevIntrf.GetRate = LpcSSPGetRate;
@@ -117,7 +121,7 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	pDev->DevIntrf.StartTx = LpcSSPStartTx;
 	pDev->DevIntrf.TxData = LpcSSPTxData;
 	pDev->DevIntrf.StopTx = LpcSSPStopTx;
-	pDev->DevIntrf.Busy = false;
+	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = 0;
 
 	LpcSSPSetRate(&pDev->DevIntrf, pCfgData->Rate);
