@@ -54,6 +54,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NRF52_UART_DMA_MAX_LEN		255
 #endif
 
+#pragma pack(push, 4)
 // Device driver data require by low level functions
 typedef struct _nRF_UART_Dev {
 	int DevNo;				// UART interface number
@@ -74,7 +75,6 @@ typedef struct _nRF_UART_Dev {
 	uint32_t TxPin;
 	uint32_t CtsPin;
 	uint32_t RtsPin;
-	uint8_t RxDmaCache[NRF5X_UART_BUFF_SIZE];
 	uint8_t TxDmaCache[NRF5X_UART_BUFF_SIZE];
 } NRF5X_UARTDEV;
 
@@ -82,6 +82,8 @@ typedef struct {
 	int Baud;
 	int nRFBaud;
 } NRFRATECVT;
+
+#pragma pack(pop)
 
 const NRFRATECVT s_BaudnRF[] = {
 	{1200, UART_BAUDRATE_BAUDRATE_Baud1200},
@@ -107,7 +109,7 @@ static const int s_NbBaudnRF = sizeof(s_BaudnRF) / sizeof(NRFRATECVT);
 static NRF5X_UARTDEV s_nRFUartDev[] = {
 	{
 		0,
-		NRF_UART0,
+		{ .pReg = NRF_UART0, },
 		NULL,
 		0, 0, 0,
 		false,
@@ -116,7 +118,7 @@ static NRF5X_UARTDEV s_nRFUartDev[] = {
 #ifdef NRF52840_XXAA
 	{
 		1,
-		.pDmaReg = NRF_UARTE1,
+		{ .pDmaReg = NRF_UARTE1, },
 		NULL,
 		0, 0, 0,
 		false,
@@ -129,8 +131,8 @@ static const int s_NbUartDev = sizeof(s_nRFUartDev) / sizeof(NRF5X_UARTDEV);
 
 #define NRF5X_UART_CFIFO_SIZE		CFIFO_MEMSIZE(NRF5X_UART_BUFF_SIZE)
 
-static uint8_t s_nRFUARTRxFifoMem[NRF5X_UART_CFIFO_SIZE];
-static uint8_t s_nRFUARTTxFifoMem[NRF5X_UART_CFIFO_SIZE];
+alignas(4) static uint8_t s_nRFUARTRxFifoMem[NRF5X_UART_CFIFO_SIZE];
+alignas(4) static uint8_t s_nRFUARTTxFifoMem[NRF5X_UART_CFIFO_SIZE];
 
 
 bool nRFUARTWaitForRxReady(NRF5X_UARTDEV * const pDev, uint32_t Timeout)
@@ -307,7 +309,8 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 	{
 		pDev->pDmaReg->EVENTS_ENDTX = 0;
 		pDev->pDmaReg->EVENTS_TXSTOPPED = 0;
-		int l = NRF52_UART_DMA_MAX_LEN;//NRF5X_UART_BUFF_SIZE;//min(CFifoUsed(pDev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
+
+		int l = NRF5X_UART_BUFF_SIZE;//min(CFifoUsed(pDev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
 		uint8_t *p = CFifoGetMultiple(pDev->pUartDev->hTxFifo, &l);
 		if (p)
 		{
@@ -319,7 +322,7 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 			memcpy(&pDev->TxDmaCache, p, l);
 
 			pDev->pDmaReg->TXD.MAXCNT = l;
-			pDev->pDmaReg->TXD.PTR = (uint32_t)&pDev->TxDmaCache;
+			pDev->pDmaReg->TXD.PTR = (uint32_t)pDev->TxDmaCache;
 			pDev->pDmaReg->TASKS_STARTTX = 1;
 		}
 		else
@@ -410,13 +413,13 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 	}
 }
 
-void UART0_IRQHandler()
+extern "C" void UART0_IRQHandler()
 {
 	UART_IRQHandler(&s_nRFUartDev[0]);
 }
 
 #ifdef NRF52840_XXAA
-void UARTE1_IRQHandler()
+extern "C" void UARTE1_IRQHandler()
 {
 	UART_IRQHandler(&s_nRFUartDev[1]);
 }
@@ -518,7 +521,7 @@ static int nRFUARTTxData(DEVINTRF * const pDev, uint8_t *pData, int Datalen)
 #ifdef NRF52_SERIES
         	if (pDev->bDma == true)
         	{
-        		int l = NRF52_UART_DMA_MAX_LEN;//NRF5X_UART_BUFF_SIZE;//min(CFifoUsed(dev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
+        		int l = NRF5X_UART_BUFF_SIZE;//min(CFifoUsed(dev->pUartDev->hTxFifo), NRF52_UART_DMA_MAX_LEN);
         		uint8_t *p = CFifoGetMultiple(dev->pUartDev->hTxFifo, &l);
         		if (p)
         		{
@@ -527,10 +530,10 @@ static int nRFUARTTxData(DEVINTRF * const pDev, uint8_t *pData, int Datalen)
         			// Transfer to tx cache before sending as CFifo will immediately make the memory
         			// block available for reuse in the Put request. This could cause an overwrite
         			// if uart tx has not completed in time.
-        			memcpy(&dev->TxDmaCache, p, l);
+        			memcpy(dev->TxDmaCache, p, l);
 
 					dev->pDmaReg->TXD.MAXCNT = l;
-					dev->pDmaReg->TXD.PTR = (uint32_t)&dev->TxDmaCache;
+					dev->pDmaReg->TXD.PTR = (uint32_t)dev->TxDmaCache;
 					dev->pDmaReg->TASKS_STARTTX = 1;
         		}
         	}
@@ -659,6 +662,10 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 
 	pDev->DevIntrf.pDevData = &s_nRFUartDev[devno];
 	s_nRFUartDev[devno].pUartDev = pDev;
+
+	// Force power on in case it was powered off previously
+	*(volatile uint32_t *)((uint32_t)s_nRFUartDev[devno].pReg + 0xFFC);
+	*(volatile uint32_t *)((uint32_t)s_nRFUartDev[devno].pReg + 0xFFC) = 1;
 
 #ifdef NRF51
 	pDev->DevIntrf.bDma = false;	// DMA not avail on nRF51

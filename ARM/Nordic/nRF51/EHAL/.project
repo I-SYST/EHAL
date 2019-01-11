@@ -381,11 +381,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/timer_nrf_app_timer.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/uart_nrf5x.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrf5x.c</locationURI>
-		</link>
-		<link>
 			<name>src/uart_retarget.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/uart_retarget.c</locationURI>
@@ -559,6 +554,11 @@
 			<name>src/coredev/uart.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/uart.c</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/uart_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrf5x.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/miscdev/ledmx.c</name>

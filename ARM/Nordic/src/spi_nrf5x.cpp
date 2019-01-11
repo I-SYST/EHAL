@@ -562,6 +562,10 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	s_nRF52SPIDev[pCfgData->DevNo].pSpiDev  = pDev;
 	pDev->DevIntrf.pDevData = (void*)&s_nRF52SPIDev[pCfgData->DevNo];
 
+	// Force power on in case it was powered off previously
+	*(volatile uint32_t *)((uint32_t)s_nRF52SPIDev[pCfgData->DevNo].pReg + 0xFFC);
+	*(volatile uint32_t *)((uint32_t)s_nRF52SPIDev[pCfgData->DevNo].pReg + 0xFFC) = 1;
+
 	nRF5xSPISetRate(&pDev->DevIntrf, pCfgData->Rate);
 
 	pDev->DevIntrf.Type = DEVINTRF_TYPE_SPI;

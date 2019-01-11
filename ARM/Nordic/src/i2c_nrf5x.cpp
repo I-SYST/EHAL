@@ -576,6 +576,10 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 	s_nRF5xI2CDev[pCfgData->DevNo].pI2cDev  = pDev;
 	pDev->DevIntrf.pDevData = (void*)&s_nRF5xI2CDev[pCfgData->DevNo];
 
+	// Force power on in case it was powered off previously
+	*(volatile uint32_t *)((uint32_t)s_nRF5xI2CDev[pCfgData->DevNo].pReg + 0xFFC);
+	*(volatile uint32_t *)((uint32_t)s_nRF5xI2CDev[pCfgData->DevNo].pReg + 0xFFC) = 1;
+
 	nRF5xI2CSetRate(&pDev->DevIntrf, pCfgData->Rate);
 
 	pDev->DevIntrf.Type = DEVINTRF_TYPE_I2C;

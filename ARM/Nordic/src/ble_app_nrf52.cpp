@@ -1558,10 +1558,10 @@ extern "C" void SD_EVT_IRQHandler(void)
 // We need this here in order for the Linker to keep the nrf_sdh_soc.c
 // which is require for Softdevice to function properly
 // Create section set "sdh_soc_observers".
-NRF_SDH_STACK_OBSERVER(m_nrf_sdh_soc_evts_poll, NRF_SDH_SOC_STACK_OBSERVER_PRIO) = {
-    .handler   = nrf_sdh_soc_evts_poll,
-    .p_context = NULL,
-};
+//NRF_SDH_STACK_OBSERVER(m_nrf_sdh_soc_evts_poll, NRF_SDH_SOC_STACK_OBSERVER_PRIO) = {
+//    .handler   = nrf_sdh_soc_evts_poll,
+//    .p_context = NULL,
+//};
 
 extern nrf_crypto_backend_info_t const nrf_hw_backend;
 // Just to make the linker to keep the nrf_hw_backend
