@@ -52,6 +52,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "board.h"
 
+#define HM_10
+
 #define DEVICE_NAME                     "UARTDemo"                          /**< Name of device. Will be included in the advertising data. */
 
 #define MANUFACTURER_NAME               "I-SYST inc."                       /**< Manufacturer. Will be passed to Device Information Service. */
@@ -82,6 +84,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLE_UART_UUID_SERVICE		BLE_UUID_NUS_SERVICE			/**< The UUID of the Nordic UART Service. */
 #define BLE_UART_UUID_TX_CHAR		BLE_UUID_NUS_TX_CHARACTERISTIC	/**< The UUID of the TX Characteristic. */
 #define BLE_UART_UUID_RX_CHAR		BLE_UUID_NUS_RX_CHARACTERISTIC	/**< The UUID of the RX Characteristic. */
+#elif defined(HM_10)
+// 0000FFE0-0000-1000-8000-00805F9B34FB
+#define BLE_UART_UUID_BASE			{ 0xFB, 0x34, 0x9B, 0x5F, 0x80, 0x00, 0x00, 0x80, \
+									  0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+
+#define BLE_UART_UUID_SERVICE		0xFFE0					//!< HM-10 custom service
+#define BLE_UART_UUID_RX_CHAR		0xFFE1					//!< HM-10 custom characteristic
 #else
 #define BLE_UART_UUID_BASE			BLUEIO_UUID_BASE
 
@@ -97,11 +106,11 @@ static const ble_uuid_t  s_AdvUuids[] = {
 };
 
 static const char s_RxCharDescString[] = {
-		"UART Rx characteristic",
+	"UART Rx characteristic",
 };
 
 static const char s_TxCharDescString[] = {
-		"UART Tx characteristic",
+	"UART Tx characteristic",
 };
 
 uint8_t g_ManData[8];
@@ -110,28 +119,38 @@ uint8_t g_ManData[8];
 BLESRVC_CHAR g_UartChars[] = {
 	{
 		// Read characteristic
-		BLE_UART_UUID_RX_CHAR,//BLUEIO_UUID_UART_RX_CHAR,
-		20,
+		.Uuid = BLE_UART_UUID_RX_CHAR,
+		.MaxDataLen = 20,
+		.Property =
+#ifdef HM_10
+		BLESVC_CHAR_PROP_WRITE |
+#endif
 		BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN,
-		s_RxCharDescString,	// char UTF-8 description string
-		NULL,				// Callback for write char, set to NULL for read char
-		NULL,				// Callback on set notification
-		NULL,				// Tx completed callback
-		NULL,				// pointer to char default values
-		0,					// Default value length in bytes
+		.pDesc = s_RxCharDescString,		// char UTF-8 description string
+#ifdef HM_10
+		.WrCB = UartTxSrvcCallback,
+#else
+		.WrCB = NULL,						// Callback for write char, set to NULL for read char
+#endif
+		.SetNotifCB = NULL,					// Callback on set notification
+		.TxCompleteCB = NULL,				// Tx completed callback
+		.pDefValue = NULL,					// pointer to char default values
+		.ValueLen = 0,						// Default value length in bytes
 	},
+#ifndef HM_10
 	{
 		// Write characteristic
-		BLE_UART_UUID_TX_CHAR,//BLUEIO_UUID_UART_TX_CHAR,// char UUID
-		20,						// char max data length
-		BLESVC_CHAR_PROP_WRITEWORESP,// char properties define by BLUEIOSVC_CHAR_PROP_...
-		s_TxCharDescString,		// char UTF-8 description string
-		UartTxSrvcCallback,		// Callback for write char, set to NULL for read char
-		NULL,					// Callback on set notification
-		NULL,					// Tx completed callback
-		NULL,					// pointer to char default values
-		0						// Default value length in bytes
+		.Uuid = BLE_UART_UUID_TX_CHAR,		// char UUID
+		.MaxDataLen = 20,					// char max data length
+		.Property = BLESVC_CHAR_PROP_WRITEWORESP,// char properties define by BLUEIOSVC_CHAR_PROP_...
+		.pDesc = s_TxCharDescString,		// char UTF-8 description string
+		.WrCB = UartTxSrvcCallback,			// Callback for write char, set to NULL for read char
+		.SetNotifCB = NULL,					// Callback on set notification
+		.TxCompleteCB = NULL,				// Tx completed callback
+		.pDefValue = NULL,					// pointer to char default values
+		.ValueLen = 0						// Default value length in bytes
 	},
+#endif
 };
 
 static const int s_BleUartNbChar = sizeof(g_UartChars) / sizeof(BLESRVC_CHAR);
@@ -140,63 +159,58 @@ uint8_t g_LWrBuffer[512];
 
 /// Service definition
 const BLESRVC_CFG s_UartSrvcCfg = {
-	BLESRVC_SECTYPE_NONE,		// Secure or Open service/char
-	BLE_UART_UUID_BASE,			// Base UUID
-	BLE_UART_UUID_SERVICE,		// Service UUID
-	s_BleUartNbChar,			// Total number of characteristics for the service
-	g_UartChars,				// Pointer a an array of characteristic
-	g_LWrBuffer,				// pointer to user long write buffer
-	sizeof(g_LWrBuffer)			// long write buffer size
+	.SecType = BLESRVC_SECTYPE_NONE,		// Secure or Open service/char
+	.UuidBase = BLE_UART_UUID_BASE,			// Base UUID
+	.UuidSvc = BLE_UART_UUID_SERVICE,		// Service UUID
+	.NbChar = s_BleUartNbChar,				// Total number of characteristics for the service
+	.pCharArray = g_UartChars,				// Pointer a an array of characteristic
+	.pLongWrBuff = g_LWrBuffer,				// pointer to user long write buffer
+	.LongWrBuffSize = sizeof(g_LWrBuffer),	// long write buffer size
 };
 
 BLESRVC g_UartBleSrvc;
 
 const BLEAPP_DEVDESC s_UartBleDevDesc {
-	MODEL_NAME,           		// Model name
-	MANUFACTURER_NAME,			// Manufacturer name
-	"123",						// Serial number string
-	"0.0",						// Firmware version string
-	"0.0",						// Hardware version string
+	MODEL_NAME,       		// Model name
+	MANUFACTURER_NAME,		// Manufacturer name
+	"123",					// Serial number string
+	"0.0",					// Firmware version string
+	"0.0",					// Hardware version string
 };
 
 const BLEAPP_CFG s_BleAppCfg = {
-	{ // Clock config nrf_clock_lf_cfg_t
 #ifdef IMM_NRF51822
-		NRF_CLOCK_LF_SRC_RC,	// Source RC
-		1, 1, 0
+		.ClkCfg = { NRF_CLOCK_LF_SRC_RC, 1, 1, 0},
 #else
-		NRF_CLOCK_LF_SRC_XTAL,	// Source 32KHz XTAL
-		0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM
+		.ClkCfg = { NRF_CLOCK_LF_SRC_XTAL, 0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM},
 #endif
-
-	},
-	0, 						// Number of central link
-	1, 						// Number of peripheral link
-	BLEAPP_MODE_APPSCHED,	// Use scheduler
-	DEVICE_NAME,				// Device name
-	ISYST_BLUETOOTH_ID,		// PnP Bluetooth/USB vendor id
-	1,						// PnP Product ID
-	0,						// Pnp prod version
-	true,					// Enable device information service (DIS)
-	&s_UartBleDevDesc,
-	g_ManData,				// Manufacture specific data to advertise
-	sizeof(g_ManData),		// Length of manufacture specific data
-	NULL,
-	0,
-	BLEAPP_SECTYPE_NONE,//BLEAPP_SECTYPE_STATICKEY_MITM,//BLEAPP_SECTYPE_NONE,    // Secure connection type
-	BLEAPP_SECEXCHG_NONE,	// Security key exchange
-	NULL,      				// Service uuids to advertise
-	0, 						// Total number of uuids
-	APP_ADV_INTERVAL,		// Advertising interval in msec
-	APP_ADV_TIMEOUT,		// Advertising timeout in sec
-	0,						// Slow advertising interval, if > 0, fallback to
-							// slow interval on adv timeout and advertise until connected
-	MIN_CONN_INTERVAL,
-	MAX_CONN_INTERVAL,
-	BLUEIO_CONNECT_LED_PORT,// Led port nuber
-	BLUEIO_CONNECT_LED_PIN,	// Led pin number
-	0,						// Tx power
-	NULL					// RTOS Softdevice handler
+	.CentLinkCount = 0, 				// Number of central link
+	.PeriLinkCount = 1, 				// Number of peripheral link
+	.AppMode = BLEAPP_MODE_APPSCHED,	// Use scheduler
+	.pDevName = DEVICE_NAME,			// Device name
+	.VendorID = ISYST_BLUETOOTH_ID,		// PnP Bluetooth/USB vendor id
+	.ProductId = 1,						// PnP Product ID
+	.ProductVer = 0,					// Pnp prod version
+	.bEnDevInfoService = true,			// Enable device information service (DIS)
+	.pDevDesc = &s_UartBleDevDesc,
+	.pAdvManData = g_ManData,			// Manufacture specific data to advertise
+	.AdvManDataLen = sizeof(g_ManData),	// Length of manufacture specific data
+	.pSrManData = NULL,
+	.SrManDataLen = 0,
+	.SecType = BLEAPP_SECTYPE_NONE,//BLEAPP_SECTYPE_STATICKEY_MITM,//BLEAPP_SECTYPE_NONE,    // Secure connection type
+	.SecExchg = BLEAPP_SECEXCHG_NONE,	// Security key exchange
+	.pAdvUuids = NULL,      			// Service uuids to advertise
+	.NbAdvUuid = 0, 					// Total number of uuids
+	.AdvInterval = APP_ADV_INTERVAL,	// Advertising interval in msec
+	.AdvTimeout = APP_ADV_TIMEOUT,		// Advertising timeout in sec
+	.AdvSlowInterval = 0,				// Slow advertising interval, if > 0, fallback to
+										// slow interval on adv timeout and advertise until connected
+	.ConnIntervalMin = MIN_CONN_INTERVAL,
+	.ConnIntervalMax = MAX_CONN_INTERVAL,
+	.ConnLedPort = BLUEIO_CONNECT_LED_PORT,// Led port nuber
+	.ConnLedPin = BLUEIO_CONNECT_LED_PIN,// Led pin number
+	.TxPower = 0,						// Tx power
+	.SDEvtHandler = NULL				// RTOS Softdevice handler
 };
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
@@ -211,18 +225,18 @@ static IOPINCFG s_UartPins[] = {
 
 /// UART configuration
 const UARTCFG g_UartCfg = {
-	0,										// Device number zero based
-	s_UartPins,								// UART assigned pins
-	sizeof(s_UartPins) / sizeof(IOPINCFG),	// Total number of UART pins used
-	1000000,									// Baudrate
-	8,										// Data bits
-	UART_PARITY_NONE,						// Parity
-	1,										// Stop bit
-	UART_FLWCTRL_HW,							// Flow control
-	true,									// Interrupt mode
-	APP_IRQ_PRIORITY_LOW,					// Interrupt priority
-	nRFUartEvthandler,						// UART event handler
-	true,									// Blocking FIFO
+	.DevNo = 0,							// Device number zero based
+	.pIoMap = s_UartPins,				// UART assigned pins
+	.IoMapLen = sizeof(s_UartPins) / sizeof(IOPINCFG),	// Total number of UART pins used
+	.Rate = 115200,						// Baudrate
+	.DataBits = 8,						// Data bits
+	.Parity = UART_PARITY_NONE,			// Parity
+	.StopBits = 1,						// Stop bit
+	.FlowControl = UART_FLWCTRL_NONE,	// Flow control
+	.bIntMode = true,					// Interrupt mode
+	.IntPrio = APP_IRQ_PRIORITY_LOW,	// Interrupt priority
+	.EvtCallback = nRFUartEvthandler,	// UART event handler
+	.bFifoBlocking = true,				// Blocking FIFO
 };
 
 /// UART object instance
