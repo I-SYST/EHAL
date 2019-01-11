@@ -54,6 +54,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NRF52_UART_DMA_MAX_LEN		255
 #endif
 
+#define NRF5X_UART_CFIFO_SIZE		CFIFO_MEMSIZE(NRF5X_UART_BUFF_SIZE)
+
 #pragma pack(push, 4)
 // Device driver data require by low level functions
 typedef struct _nRF_UART_Dev {
@@ -76,6 +78,8 @@ typedef struct _nRF_UART_Dev {
 	uint32_t CtsPin;
 	uint32_t RtsPin;
 	uint8_t TxDmaCache[NRF5X_UART_BUFF_SIZE];
+	uint8_t RxFifoMem[NRF5X_UART_CFIFO_SIZE];
+	uint8_t TxFifoMem[NRF5X_UART_CFIFO_SIZE];
 } NRF5X_UARTDEV;
 
 typedef struct {
@@ -128,12 +132,6 @@ static NRF5X_UARTDEV s_nRFUartDev[] = {
 };
 
 static const int s_NbUartDev = sizeof(s_nRFUartDev) / sizeof(NRF5X_UARTDEV);
-
-#define NRF5X_UART_CFIFO_SIZE		CFIFO_MEMSIZE(NRF5X_UART_BUFF_SIZE)
-
-alignas(4) static uint8_t s_nRFUARTRxFifoMem[NRF5X_UART_CFIFO_SIZE];
-alignas(4) static uint8_t s_nRFUARTTxFifoMem[NRF5X_UART_CFIFO_SIZE];
-
 
 bool nRFUARTWaitForRxReady(NRF5X_UARTDEV * const pDev, uint32_t Timeout)
 {
@@ -643,7 +641,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	}
 	else
 	{
-		pDev->hRxFifo = CFifoInit(s_nRFUARTRxFifoMem, NRF5X_UART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
+		pDev->hRxFifo = CFifoInit(s_nRFUartDev[devno].RxFifoMem, NRF5X_UART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	if (pCfg->pTxMem && pCfg->TxMemSize > 0)
@@ -652,7 +650,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	}
 	else
 	{
-		pDev->hTxFifo = CFifoInit(s_nRFUARTTxFifoMem, NRF5X_UART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
+		pDev->hTxFifo = CFifoInit(s_nRFUartDev[devno].TxFifoMem, NRF5X_UART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIoMap;
