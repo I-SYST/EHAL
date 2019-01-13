@@ -44,11 +44,11 @@
 #include <IOKit/IOBSD.h>
 
 #include "uart_osx.h"
-
+/*
 static OSXUARTDEV s_UartDev[] = {
     
 };
-
+*/
 void UARTSetCtrlLineState(UARTDEV *pDev, uint32_t LineState)
 {
     
@@ -215,13 +215,13 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfgData)
     //printf("Output baud rate changed to %d\n", (int) cfgetospeed(&options));
     
     // Cause the new options to take effect immediately.
-    if (tcsetattr(hdev, TCSANOW, &options) == -1) {
+ /*   if (tcsetattr(hdev, TCSANOW, &options) == -1) {
         printf("Error calling ioctl(..., IOSSIOSPEED, ...) %s - %s(%d).\n",
                pathname, strerror(errno), errno);
         close(hdev);
         return false;
     }
-    
+   */
     // The IOSSIOSPEED ioctl can be used to set arbitrary baud rates
     // other than those specified by POSIX. The driver for the underlying serial hardware
     // ultimately determines which baud rates can be used. This ioctl sets both the input
@@ -295,7 +295,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfgData)
     pDev->DevIntrf.StartTx = OsxUARTStartTx;
     pDev->DevIntrf.TxData = OsxUARTTxData;
     pDev->DevIntrf.StopTx = OsxUARTStopTx;
-    pDev->DevIntrf.Busy = false;
+    pDev->DevIntrf.bBusy = false;
     
     return true;
 }

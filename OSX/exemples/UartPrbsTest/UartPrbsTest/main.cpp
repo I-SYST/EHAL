@@ -39,29 +39,31 @@ Modified by          Date              Description
 #include <chrono>
 #include <time.h>
 
-#include "uart.h"
+#include "coredev/uart.h"
 #include "prbs.h"
 
 
-char s_DevPath[] = {"/dev/cu.usbmodem142122"};
+char s_DevPath[] = {"/dev/cu.usbmodem00304160000942"};
 
 // UART configuration data
 const UARTCFG g_UartCfg = {
-	0,
-	s_DevPath,
-	static_cast<int>(strlen(s_DevPath)),
-	1000000,	// Rate
-	8,
-	UART_PARITY_NONE,
-	1,	// Stop bit
-	UART_FLWCTRL_NONE,
-	true,
-	1, //  use APP_IRQ_PRIORITY_LOW with Softdevice
-	nullptr,
-	0,
-	nullptr,
-	0,
-	nullptr,
+    .DevNo = 0,
+    .pIoMap = s_DevPath,
+    .IoMapLen = static_cast<int>(strlen(s_DevPath)),
+    .Rate = 1000000,            // Rate
+    .DataBits = 8,
+    .Parity = UART_PARITY_NONE,
+    .StopBits = 1,                    // Stop bit
+    .FlowControl = UART_FLWCTRL_NONE,
+    .bIntMode = true,
+    .IntPrio = 1,                     // use APP_IRQ_PRIORITY_LOW with Softdevice
+    .EvtCallback = nullptr,
+    .bFifoBlocking = true,                // fifo blocking mode
+    .RxMemSize = 0,
+    .pRxMem = NULL,
+    .TxMemSize = 0,//FIFOSIZE,
+    .pTxMem = NULL,//g_TxBuff,
+    .bDMAMode = true,
 };
 
 #define DEMO_C
