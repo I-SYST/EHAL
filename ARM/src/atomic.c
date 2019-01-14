@@ -1,11 +1,14 @@
-/*--------------------------------------------------------------------------
-File   : atomic.c
+/**-------------------------------------------------------------------------
+@file	atomic.c
 
-Author : Hoang Nguyen Hoan          Mar. 22, 2015
+@brief	Implementation of require atomic functions for std::atomic
 
-Desc   : atomic implemention using interrupt for Cortex-m0
+@author	Hoang Nguyen Hoan
+@date	Mar. 22, 2015
 
-Copyright (c) 2011, I-SYST, all rights reserved
+@license
+
+Copyright (c) 2015, I-SYST, all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -26,9 +29,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #include "atomic.h"
@@ -52,18 +52,3 @@ int __atomic_fetch_sub_4(int *d, int val, int mem)
 
 	return *d;
 }
-/*
-uint32_t DisableInterrupt()
-{
-	uint32_t primask = __get_PRIMASK();
-	__disable_irq();
-
-	return primask;
-}
-
-void EnableInterrupt(uint32_t State)
-{
-	__set_PRIMASK(State);
-}
-
-*/

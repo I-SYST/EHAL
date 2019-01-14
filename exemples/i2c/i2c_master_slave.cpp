@@ -166,6 +166,8 @@ int I2CSlaveIntrfHandler(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t *pBu
 			s_bWriteRqst = false;
 			break;
 	}
+
+	return 0;
 }
 
 void HardwareInit()
