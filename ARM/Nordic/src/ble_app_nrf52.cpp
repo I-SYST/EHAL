@@ -1,9 +1,13 @@
 /*--------------------------------------------------------------------------
-File   : ble_app.cpp
+@file	ble_app.cpp
 
-Author : Hoang Nguyen Hoan          Dec 26, 2016
+@brief	Nordic SDK based BLE peripheral application creation helper
 
-Desc   : Nordic SDK based BLE peripheral application creation helper
+
+@author	Hoang Nguyen Hoan
+@date	Dec 26, 2016
+
+@license
 
 Copyright (c) 2016, I-SYST inc., all rights reserved
 
@@ -75,6 +79,7 @@ Modified by          Date              Description
 #include "coredev/iopincfg.h"
 #include "iopinctrl.h"
 #include "ble_app.h"
+#include "ble_dev.h"
 
 extern "C" void nrf_sdh_soc_evts_poll(void * p_context);
 extern "C" ret_code_t nrf_sdh_enable(nrf_clock_lf_cfg_t *clock_lf_cfg);
@@ -110,6 +115,11 @@ extern "C" ret_code_t nrf_sdh_enable(nrf_clock_lf_cfg_t *clock_lf_cfg);
 #define BLEAPP_ROLE_PERIPHERAL			1
 #define BLEAPP_ROLE_CENTRAL				2
 
+// These are to be passed as parameters
+#define SCAN_INTERVAL           MSEC_TO_UNITS(100, UNIT_0_625_MS)      /**< Determines scan interval in units of 0.625 millisecond. */
+#define SCAN_WINDOW             MSEC_TO_UNITS(50, UNIT_0_625_MS)		/**< Determines scan window in units of 0.625 millisecond. */
+#define SCAN_TIMEOUT            0                                 		/**< Timout when scanning. 0x0000 disables timeout. */
+
 #pragma pack(push, 4)
 
 typedef struct _BleAppData {
@@ -119,7 +129,7 @@ typedef struct _BleAppData {
 	int ConnLedPort;
 	int ConnLedPin;
 	int PeriphDevCnt;
-	BLEAPP_PERIPH *pPeriphDev;
+//	BLEAPP_PERIPH *pPeriphDev;
 	uint32_t (*SDEvtHandler)(void) ;
 	ble_advdata_t AdvData;
 	ble_advdata_t SrData;
@@ -147,7 +157,52 @@ BLEAPP_DATA g_BleAppData = {
 
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
 //static nrf_ble_gatt_t s_Gatt;                                     /**< GATT module instance. */
-static ble_db_discovery_t s_DbDiscovery;
+#if 1
+ble_db_discovery_t s_DbDiscovery = {
+	.services = {},
+	.srv_count = 0,
+	.curr_char_ind = 0,
+	.curr_srv_ind = 0,
+	.discovery_in_progress = 0,
+	.discovery_pending = 0,
+	.discoveries_count = 0,
+	.conn_handle = BLE_CONN_HANDLE_INVALID
+};
+
+NRF_SDH_BLE_OBSERVER(s_DbDiscovery_obs,
+                     BLE_DB_DISC_BLE_OBSERVER_PRIO,
+                     ble_db_discovery_on_ble_evt, &s_DbDiscovery);
+
+NRF_BLE_SCAN_DEF(g_Scan);
+
+static ble_gap_scan_params_t const s_BleScanParams =
+{
+#if (NRF_SD_BLE_API_VERSION >= 6)
+	1,
+	0,
+#endif
+    1,		// Active scan
+#if (NRF_SD_BLE_API_VERSION <= 2)
+	0,	// .selective
+	NULL,	// .p_whitelist
+#endif
+#if (NRF_SD_BLE_API_VERSION >= 3)
+	0,				// Use whitelist
+	1, 				// Report directed advertisement
+#endif
+	SCAN_INTERVAL,	// Scan interval
+	SCAN_WINDOW,	// Scan window
+	SCAN_TIMEOUT,	// Scan timeout
+};
+
+static uint8_t g_BleScanBuff[BLE_GAP_SCAN_BUFFER_EXTENDED_MAX];
+
+static ble_data_t g_BleScanReportData = {
+	.p_data = g_BleScanBuff,
+	.len = BLE_GAP_SCAN_BUFFER_EXTENDED_MAX
+};
+
+#endif
 
 /**@brief Bluetooth SIG debug mode Private Key */
 __ALIGN(4) __WEAK extern const uint8_t g_lesc_private_key[32] = {
@@ -383,6 +438,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
 {
     uint32_t                         err_code;
     ble_gap_evt_t        const * p_gap_evt = &p_ble_evt->evt.gap_evt;
+    uint16_t role = ble_conn_state_role(p_ble_evt->evt.gap_evt.conn_handle);
 
 //    printf("on_ble_evt %x\r\n", p_ble_evt->header.evt_id);
 
@@ -393,13 +449,13 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
         	BleConnLedOn();
         	g_BleAppData.ConnHdl = p_ble_evt->evt.gap_evt.conn_handle;
 
-/*            memset(&s_DbDiscovery, 0x00, sizeof(ble_db_discovery_t));
-            err_code = ble_db_discovery_start(&s_DbDiscovery, g_BleAppData.ConnHdl);
-            if (err_code != NRF_ERROR_BUSY)
+        	if (role == BLE_GAP_ROLE_CENTRAL)
             {
-                APP_ERROR_CHECK(err_code);
+        		printf("Start Discovery\r\n");
+        		//memset(&s_DbDiscovery, 0x00, sizeof(ble_db_discovery_t));
+
+        		//BlePeriphDiscService(g_BleAppData.ConnHdl, NULL);
             }
-*/
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
@@ -586,6 +642,8 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
 #if (NRF_SD_BLE_API_VERSION >= 3)
         case BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST:
            //printf("%x:BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST %d\r\n", p_ble_evt->header.evt_id, g_BleAppData.MaxMtu);
+        	if (role == BLE_GAP_ROLE_CENTRAL)
+        		break;
             err_code = sd_ble_gatts_exchange_mtu_reply(p_ble_evt->evt.gatts_evt.conn_handle,
             										   g_BleAppData.MaxMtu);
             										   //NRF_BLE_MAX_MTU_SIZE);
@@ -736,17 +794,29 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
  *
  * @param[in] p_event  Pointer to the database discovery event.
  */
+
 static void BleAppDBDiscoveryHandler(ble_db_discovery_evt_t * p_evt)
 {
     ble_gatt_db_char_t * p_chars = p_evt->params.discovered_db.charateristics;
 
-    // Check if the NUS was discovered.
-    if (p_evt->evt_type == BLE_DB_DISCOVERY_COMPLETE)
+    printf("BleAppDBDiscoveryHandler %d %d %d\r\n", p_evt->evt_type, s_DbDiscovery.discovery_in_progress,
+    		s_DbDiscovery.discovery_pending);
+    if (p_evt->evt_type == BLE_DB_DISCOVERY_COMPLETE)// && s_DbDiscovery.discovery_in_progress == false)
     {
-    		g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].ConnHdl = p_evt->conn_handle;
-    		g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].SrvcCnt = s_DbDiscovery.srv_count;
-    		memcpy(g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].Srvc, s_DbDiscovery.services,
-    				s_DbDiscovery.srv_count * sizeof(ble_gatt_db_srv_t));
+    	BLEPERIPH_DEV dev;
+
+    	dev.ConnHdl = p_evt->conn_handle;
+    	dev.NbSrvc = s_DbDiscovery.discoveries_count;
+		//memcpy(dev.Srvc, s_DbDiscovery.services,
+		//	   s_DbDiscovery.discoveries_count * sizeof(ble_gatt_db_srv_t));
+		printf("Srv count : %d\r\n", s_DbDiscovery.discoveries_count);
+
+		BleDevDiscovered(&dev);
+/*
+		g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].ConnHdl = p_evt->conn_handle;
+		g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].SrvcCnt = s_DbDiscovery.srv_count;
+		memcpy(g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].Srvc, s_DbDiscovery.services,
+				s_DbDiscovery.srv_count * sizeof(ble_gatt_db_srv_t));
 
         uint32_t i;
 
@@ -769,7 +839,7 @@ static void BleAppDBDiscoveryHandler(ble_db_discovery_evt_t * p_evt)
 
         	    err_code = sd_ble_gattc_write(p_evt->conn_handle, &write_params);
         	    APP_ERROR_CHECK(err_code);
-        	}
+        	}*/
         	/*
             switch (p_chars[i].characteristic.uuid.uuid)
             {
@@ -792,7 +862,7 @@ static void BleAppDBDiscoveryHandler(ble_db_discovery_evt_t * p_evt)
             nus_c_evt.evt_type    = BLE_NUS_C_EVT_DISCOVERY_COMPLETE;
             p_ble_nus_c->evt_handler(p_ble_nus_c, &nus_c_evt);
         }*/
-        }
+//        }
     }
 }
 
@@ -820,7 +890,6 @@ static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
         BlePeriphEvtUserHandler((ble_evt_t *)p_ble_evt);
     }
     on_ble_evt(p_ble_evt);
-   // ble_db_discovery_on_ble_evt(p_ble_evt, p_context);
 }
 
 /**@brief Function for the Peer Manager initialization.
@@ -1212,10 +1281,11 @@ uint16_t BleAppGetConnHandle()
 }
 
 /**@brief Function for handling events from the GATT library. */
-void gatt_evt_handler(nrf_ble_gatt_t * p_gatt, const nrf_ble_gatt_evt_t * p_evt)
+void BleGattEvtHandler(nrf_ble_gatt_t * p_gatt, const nrf_ble_gatt_evt_t * p_evt)
 {
     if ((g_BleAppData.ConnHdl == p_evt->conn_handle) && (p_evt->evt_id == NRF_BLE_GATT_EVT_ATT_MTU_UPDATED))
     {
+    	g_BleAppData.MaxMtu = p_evt->params.att_mtu_effective - 3;//OPCODE_LENGTH - HANDLE_LENGTH;
        // m_ble_nus_max_data_len = p_evt->params.att_mtu_effective - OPCODE_LENGTH - HANDLE_LENGTH;
         //NRF_LOG_INFO("Data len is set to 0x%X(%d)\r\n", m_ble_nus_max_data_len, m_ble_nus_max_data_len);
     }
@@ -1223,15 +1293,24 @@ void gatt_evt_handler(nrf_ble_gatt_t * p_gatt, const nrf_ble_gatt_evt_t * p_evt)
 }
 
 /**@brief Function for initializing the GATT library. */
-void gatt_init(void)
+void BleAppGattInit(void)
 {
     ret_code_t err_code;
 
-    err_code = nrf_ble_gatt_init(&s_Gatt, gatt_evt_handler);
+    err_code = nrf_ble_gatt_init(&s_Gatt, BleGattEvtHandler);
     APP_ERROR_CHECK(err_code);
 
-    err_code = nrf_ble_gatt_att_mtu_periph_set(&s_Gatt, g_BleAppData.MaxMtu);
-    APP_ERROR_CHECK(err_code);
+    if (g_BleAppData.AppRole & BLEAPP_ROLE_PERIPHERAL)
+    {
+    	err_code = nrf_ble_gatt_att_mtu_periph_set(&s_Gatt, g_BleAppData.MaxMtu);
+      APP_ERROR_CHECK(err_code);
+    }
+
+    if (g_BleAppData.AppRole & BLEAPP_ROLE_CENTRAL)
+    {
+    	err_code = nrf_ble_gatt_att_mtu_central_set(&s_Gatt, g_BleAppData.MaxMtu);
+    	APP_ERROR_CHECK(err_code);
+    }
 }
 
 /**@brief Function for handling File Data Storage events.
@@ -1255,7 +1334,7 @@ bool BleAppConnectable(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
 	BleAppGapParamInit(pBleAppCfg);
 
-	gatt_init();
+	//gatt_init();
 
 	if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
 		conn_params_init();
@@ -1433,6 +1512,8 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 		APP_ERROR_CHECK(err_code);
     }
 
+    BleAppGattInit();
+
     BleAppInitUserData();
 
     if (pBleAppCfg->pDevName != NULL)
@@ -1514,6 +1595,65 @@ void BleAppRun()
 			sd_app_evt_wait();
 		}
     }
+}
+
+void BleAppScan()
+{
+	ret_code_t err_code = sd_ble_gap_scan_start(NULL, &g_BleScanReportData);
+	APP_ERROR_CHECK(err_code);
+}
+
+void BleAppScanStop()
+{
+	ret_code_t err_code = sd_ble_gap_scan_stop();
+	APP_ERROR_CHECK(err_code);
+}
+
+bool BleAppScanInit(ble_uuid128_t * const pBaseUid, ble_uuid_t * const pServUid)
+{
+    ble_uuid128_t base_uid = *pBaseUid;
+    uint8_t uidtype = BLE_UUID_TYPE_VENDOR_BEGIN;
+
+    ret_code_t err_code = sd_ble_uuid_vs_add(&base_uid, &uidtype);
+    APP_ERROR_CHECK(err_code);
+
+    //ble_db_discovery_evt_register(pServUid);
+
+	err_code = sd_ble_gap_scan_start(&s_BleScanParams, &g_BleScanReportData);
+	APP_ERROR_CHECK(err_code);
+
+	return err_code == NRF_SUCCESS;
+}
+
+bool BleAppConnect(ble_gap_addr_t * const pDevAddr, ble_gap_conn_params_t * const pConnParam)
+{
+	ret_code_t err_code = sd_ble_gap_connect(pDevAddr, &s_BleScanParams,
+                                  	  	  	 pConnParam,
+											 BLEAPP_CONN_CFG_TAG);
+    APP_ERROR_CHECK(err_code);
+
+    return err_code == NRF_SUCCESS;
+}
+
+bool BleAppEnableNotify(uint16_t ConnHandle, uint16_t CharHandle)//ble_uuid_t * const pCharUid)
+{
+    uint32_t                 err_code;
+    ble_gattc_write_params_t write_params;
+    uint8_t                  buf[BLE_CCCD_VALUE_LEN];
+
+    buf[0] = BLE_GATT_HVX_NOTIFICATION;
+    buf[1] = 0;
+
+    write_params.write_op = BLE_GATT_OP_WRITE_REQ;
+    write_params.handle   = CharHandle;
+    write_params.offset   = 0;
+    write_params.len      = sizeof(buf);
+    write_params.p_value  = buf;
+
+    err_code = sd_ble_gattc_write(ConnHandle, &write_params);
+    APP_ERROR_CHECK(err_code);
+
+    return err_code == NRF_SUCCESS;
 }
 
 /**@brief   Function for polling SoftDevice events.

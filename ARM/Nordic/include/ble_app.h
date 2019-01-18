@@ -99,12 +99,6 @@ typedef enum __BleApp_SecurityType {
 
 #pragma pack(push, 4)
 
-typedef struct __BleApp_PeripheralData {
-	uint16_t ConnHdl;	// Connection handle
-    uint8_t SrvcCnt;		// Number of services
-    ble_gatt_db_srv_t Srvc[BLE_DB_DISCOVERY_MAX_SRV];  // service data
-} BLEAPP_PERIPH;
-
 /// BLE App Device Info
 typedef struct __BleApp_DevInfo {
 	const char ModelName[BLEAPP_INFOSTR_MAX_SIZE];	//!< Model name
@@ -146,7 +140,7 @@ typedef struct __BleApp_Config {
 	uint32_t (*SDEvtHandler)(void) ;//!< Require for BLEAPP_MODE_RTOS
 	int	MaxMtu;						//!< Max MTU size or 0 for default
 	int PeriphDevCnt;				//!< Max number of peripheral connection
-	BLEAPP_PERIPH *pPeriphDev;		//!< Connected peripheral data table
+//	BLEPERIPH_DEV *pPeriphDev;		//!< Connected peripheral data table
 } BLEAPP_CFG;
 
 #pragma pack(pop)
@@ -199,6 +193,8 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt);
  */
 void BleCentralEvtUserHandler(ble_evt_t * p_ble_evt);
 
+void BleDevServiceDiscovered(uint16_t ConnHdl, uint16_t Count, ble_gattc_service_t * const pServices);
+
 //*** Require implementation if app operating mode is BLEAPP_MODE_RTOS
 // This function should normal wait for RTOS to signal an event on sent by
 // Softdevice
@@ -222,6 +218,11 @@ void BleAppAdvTimeoutHandler();
 void BleAppAdvStart(BLEAPP_ADVMODE AdvMode);
 void BleAppAdvStop();
 void BleAppDisconnect();
+
+bool BleAppScanInit(ble_uuid128_t * const pBaseUid, ble_uuid_t * const pServUid);
+//bool BleAppScanStart();
+void BleAppScan();
+bool BleAppConnect(ble_gap_addr_t * const pDevAddr, ble_gap_conn_params_t * const pConnParam);
 
 #ifdef __cplusplus
 }
