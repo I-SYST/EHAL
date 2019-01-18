@@ -97,14 +97,14 @@ There are 2 main libraries in the EHAL for each ARM based MCU.
  |   |   |
  |   |   |-- NXP         - NXP based MCU
  |   |   |   |-- LPC11xx      - LPC11xx processor workspace
- |   |   |   |   |-- CMSIS
+ |   |   |   |   |-- CMSIS    - Static library containing startup code, interrupt vector, etc...
  |   |   |   |   |-- EHAL     - Embedded Hardware Abstraction Library project for NXP
  |   |   |   |   |   |-- include
  |   |   |   |   |   |-- src
  |   |   |   |   |-- exemples - Example code
  |   |   |   |   |
  |   |   |   |-- LPC17xx      - LPC17xx processor workspace
- |   |   |   |   |-- CMSIS
+ |   |   |   |   |-- CMSIS    - Static library containing startup code, interrupt vector, etc...
  |   |   |   |   |-- EHAL     - Embedded Hardware Abstraction Library project for NXP
  |   |   |   |   |   |-- include
  |   |   |   |   |   |-- src
@@ -112,13 +112,13 @@ There are 2 main libraries in the EHAL for each ARM based MCU.
  |   |   |
  |   |   |-- Nordic      - Nordic Semiconductor based  MCU
  |   |   |   |-- nRF51        - nRF51 processor workspace
- |   |   |   |   |-- CMSIS        - static library of CMSIS system functions for nRF51
+ |   |   |   |   |-- CMSIS        - Static library containing startup code, interrupt vector, etc...
  |   |   |   |   |-- EHAL         - Embedded Hardware Abstraction Library project for Nordic
  |   |   |   |   |   |-- include
  |   |   |   |   |   |-- src
  |   |   |   |   |-- exemples     - exemple projects
  |   |   |   |-- nRF52        - nRF52 processor workspace
- |   |   |   |   |-- CMSIS        - static library of CMSIS system functions for nRF52
+ |   |   |   |   |-- CMSIS        - Static library containing startup code, interrupt vector, etc...
  |   |   |   |   |-- EHAL         - Embedded Hardware Abstraction Library project for Nordic
  |   |   |   |   |   |-- include
  |   |   |   |   |   |-- src
