@@ -1,11 +1,14 @@
-/*--------------------------------------------------------------------------
-File   : UartBleCentralDemo.cpp
+/**-------------------------------------------------------------------------
+@file	UartBleCentralDemo.cpp
 
-Author : Hoang Nguyen Hoan          Feb. 4, 2017
+@brief	Uart BLE Central demo
 
-Desc   : Uart BLE Central demo
-		 This application demo shows UART Rx/Tx over BLE custom service
-		 using EHAL library.
+This application demo shows UART Rx/Tx over BLE central using EHAL library.
+
+@author	Hoang Nguyen Hoan
+@date	Feb. 4, 2017
+
+@license
 
 Copyright (c) 2016, I-SYST inc., all rights reserved
 
@@ -28,9 +31,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #include "app_util_platform.h"
@@ -58,80 +58,12 @@ Modified by          Date              Description
 #define MANUFACTURER_ID                 ISYST_BLUETOOTH_ID                               /**< Manufacturer ID, part of System ID. Will be passed to Device Information Service. */
 #define ORG_UNIQUE_ID                   ISYST_BLUETOOTH_ID                               /**< Organizational Unique ID, part of System ID. Will be passed to Device Information Service. */
 
-#define APP_ADV_INTERVAL                MSEC_TO_UNITS(64, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
-#define APP_ADV_TIMEOUT      			0                                         /**< The advertising timeout (in units of seconds). */
-
 #define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)             /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
 #define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)             /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
 
 #define SCAN_INTERVAL           MSEC_TO_UNITS(1000, UNIT_0_625_MS)      /**< Determines scan interval in units of 0.625 millisecond. */
 #define SCAN_WINDOW             MSEC_TO_UNITS(100, UNIT_0_625_MS)                                  /**< Determines scan window in units of 0.625 millisecond. */
 #define SCAN_TIMEOUT            0                                 /**< Timout when scanning. 0x0000 disables timeout. */
-
-void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
-
-static const ble_uuid_t  s_AdvUuids[] = {
-	{BLUEIO_UUID_UART_SERVICE, BLE_UUID_TYPE_VENDOR_BEGIN}
-};
-
-static const char s_RxCharDescString[] = {
-		"UART Rx characteristic",
-};
-
-static const char s_TxCharDescString[] = {
-		"UART Tx characteristic",
-};
-
-uint8_t g_ManData[8];
-
-BLESRVC_CHAR g_UartChars[] = {
-	{
-		// Read characteristic
-		BLUEIO_UUID_UART_RX_CHAR,
-		20,
-		BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY,
-		s_RxCharDescString,         // char UTF-8 description string
-		NULL,                       // Callback for write char, set to NULL for read char
-		NULL,						// Callback on set notification
-		NULL,						// Tx completed callback
-		NULL,						// pointer to char default values
-		0,							// Default value length in bytes
-	},
-	{
-		// Write characteristic
-		BLUEIO_UUID_UART_TX_CHAR,	// char UUID
-		20,                         // char max data length
-		BLESVC_CHAR_PROP_WRITEWORESP,	// char properties define by BLUEIOSVC_CHAR_PROP_...
-		s_TxCharDescString,			// char UTF-8 description string
-		UartTxSrvcCallback,         // Callback for write char, set to NULL for read char
-		NULL,						// Callback on set notification
-		NULL,						// Tx completed callback
-		NULL,						// pointer to char default values
-		0							// Default value length in bytes
-	},
-};
-
-uint8_t g_LWrBuffer[512];
-
-const BLESRVC_CFG s_UartSrvcCfg = {
-	BLESRVC_SECTYPE_NONE,	// Secure or Open service/char
-	BLUEIO_UUID_BASE,           // Base UUID
-	BLUEIO_UUID_UART_SERVICE,   // Service UUID
-	2,                          // Total number of characteristics for the service
-	g_UartChars,                // Pointer a an array of characteristic
-	g_LWrBuffer,                // pointer to user long write buffer
-	sizeof(g_LWrBuffer)         // long write buffer size
-};
-
-BLESRVC g_UartBleSrvc;
-
-const BLEAPP_DEVDESC s_UartBleDevDesc {
-	MODEL_NAME,           // Model name
-	MANUFACTURER_NAME,          // Manufacturer name
-	"",                     // Serial number string
-	"0.0",                  // Firmware version string
-	"0.0",                  // Hardware version string
-};
 
 const BLEAPP_CFG s_BleAppCfg = {
 	{ // Clock config nrf_clock_lf_cfg_t
