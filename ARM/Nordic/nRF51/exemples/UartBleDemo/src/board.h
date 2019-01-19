@@ -10,7 +10,7 @@
 
 #include "blueio_board.h"
 
-#define NORDIC_DK
+//#define NORDIC_DK
 
 #ifdef NORDIC_DK
 // Nordic DK PCA10040 board

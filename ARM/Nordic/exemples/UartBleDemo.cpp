@@ -52,7 +52,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "board.h"
 
-#define HM_10
+//#define HM_10
 
 #define DEVICE_NAME                     "UARTDemo"                          /**< Name of device. Will be included in the advertising data. */
 
@@ -94,9 +94,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #else
 #define BLE_UART_UUID_BASE			BLUEIO_UUID_BASE
 
-#define BLE_UART_UUID_SERVICE		BLUEIO_UUID_SERVICE		//!< BlueIO default service
-#define BLE_UART_UUID_TX_CHAR		BLUEIO_UUID_RDCHAR		//!< Data characteristic
-#define BLE_UART_UUID_RX_CHAR		BLUEIO_UUID_WRCHAR		//!< Command control characteristic
+#define BLE_UART_UUID_SERVICE		BLUEIO_UUID_UART_SERVICE		//!< BlueIO default service
+#define BLE_UART_UUID_TX_CHAR		BLUEIO_UUID_UART_RX_CHAR		//!< Data characteristic
+#define BLE_UART_UUID_RX_CHAR		BLUEIO_UUID_UART_TX_CHAR		//!< Command control characteristic
 #endif
 
 void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
@@ -170,7 +170,7 @@ const BLESRVC_CFG s_UartSrvcCfg = {
 
 BLESRVC g_UartBleSrvc;
 
-const BLEAPP_DEVDESC s_UartBleDevDesc {
+const BLEAPP_DEVDESC s_UartBleDevDesc = {
 	MODEL_NAME,       		// Model name
 	MANUFACTURER_NAME,		// Manufacturer name
 	"123",					// Serial number string
@@ -368,7 +368,7 @@ int main()
 {
     HardwareInit();
 
-    g_Uart.printf("Hello\r\n");
+    g_Uart.printf("UART over BLE Demo\r\n");
 
     //g_Uart.Disable();
 
