@@ -45,10 +45,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// Accelerometer sensor data in G
 /// Data format in 8 bits fixed point. i.e. g value in float = X / 256.0;
 typedef struct __AccelSensor_Data {
-	uint32_t Timestamp;	//!< Time stamp count in msec
-	int16_t X;			//!< X axis
-	int16_t Y;			//!< Y axis
-	int16_t Z;			//!< Z axis
+	uint32_t Timestamp;	//!< Time stamp count in usec
+	union {
+		int16_t Val[3];
+		struct {
+			int16_t X;			//!< X axis
+			int16_t Y;			//!< Y axis
+			int16_t Z;			//!< Z axis
+		};
+	};
 } ACCELSENSOR_DATA;
 
 typedef void (*ACCELINTCB)(ACCELSENSOR_DATA *pData);

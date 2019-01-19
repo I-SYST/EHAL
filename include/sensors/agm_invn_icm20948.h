@@ -114,6 +114,7 @@ public:
 
 	bool UpdateData();
 	virtual void IntHandler();
+	void UpdateData(enum inv_icm20948_sensor sensortype, uint64_t timestamp, const void * data, const void *arg);
 
 	operator inv_icm20948_t * const () { return &vIcmDevice; }
 
@@ -126,7 +127,6 @@ private:
 	// Default base initialization. Does detection and set default config for all sensor.
 	// All sensor init must call this first prio to initializing itself
 	bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer);
-	void UpdateData(enum inv_icm20948_sensor sensortype, uint64_t timestamp, const void * data, const void *arg);
 
 	bool vbInitialized;
 	inv_icm20948_t vIcmDevice;

@@ -39,16 +39,64 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "device_intrf.h"
 #include "imu/imu.h"
+#include "sensors/agm_invn_icm20948.h"
 
 class ImuInvnIcm20948 : public Imu {
 public:
 
-	bool Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+	//bool Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+	bool Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag);
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
 	virtual bool UpdateData();
 	virtual void IntHandler();
+	virtual IMU_SENSE Sense(IMU_SENSE SenseBit, bool bEnDis);
+
+	virtual bool Read(IMU_QUAT &Data) { return Imu::Read(Data); }
+	virtual bool Read(IMU_EULER &Data) { return Imu::Read(Data); }
+
+	/**
+	 * @brief	Read last updated sensor data
+	 *
+	 * This function read the currently stored data last updated by UdateData().
+	 * Device implementation can add validation if needed and return true or false
+	 * in the case of data valid or not.  This default implementation only returns
+	 * the stored data with success.
+	 *
+	 * @param 	Data : Reference to data storage for the returned data
+	 *
+	 * @return	True - Success.
+	 */
+	virtual bool Read(ACCELSENSOR_DATA &Data) { return Imu::Read(Data); }
+
+	/**
+	 * @brief	Read last updated sensor data
+	 *
+	 * This function read the currently stored data last updated by UdateData().
+	 * Device implementation can add validation if needed and return true or false
+	 * in the case of data valid or not.  This default implementation only returns
+	 * the stored data with success.
+	 *
+	 * @param 	Data : Reference to data storage for the returned data
+	 *
+	 * @return	True - Success.
+	 */
+	virtual bool Read(GYROSENSOR_DATA &Data) { return Imu::Read(Data); }
+
+	/**
+	 * @brief	Read last updated sensor data
+	 *
+	 * This function read the currently stored data last updated by UdateData().
+	 * Device implementation can add validation if needed and return true or false
+	 * in the case of data valid or not.  This default implementation only returns
+	 * the stored data with success.
+	 *
+	 * @param 	Data : Reference to data storage for the returned data
+	 *
+	 * @return	True - Success.
+	 */
+	virtual bool Read(MAGSENSOR_DATA &Data) { return Imu::Read(Data); }
 
 protected:
 
@@ -60,7 +108,7 @@ private:
 	static int InvnReadReg(void * context, uint8_t reg, uint8_t * rbuffer, uint32_t rlen);
 	static int InvnWriteReg(void * context, uint8_t reg, const uint8_t * wbuffer, uint32_t wlen);
 
-
+	inv_icm20948_t *vpIcmDevice;
 	inv_icm20948_t vIcmDevice;
 	int32_t vCfgAccFsr; // Default = +/- 4g. Valid ranges: 2, 4, 8, 16
 	int32_t vCfgGyroFsr; // Default = +/- 2000dps. Valid ranges: 250, 500, 1000, 2000

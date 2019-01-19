@@ -140,8 +140,8 @@ bool AgmInvnIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	icm20948_serif.context   = this;
 	icm20948_serif.read_reg  = InvnReadReg;
 	icm20948_serif.write_reg = InvnWriteReg;
-	icm20948_serif.max_read  = 1024*16; /* maximum number of bytes allowed per serial read */
-	icm20948_serif.max_write = 1024*16; /* maximum number of bytes allowed per serial write */
+	icm20948_serif.max_read  = 255; /* maximum number of bytes allowed per serial read */
+	icm20948_serif.max_write = 255; /* maximum number of bytes allowed per serial write */
 	icm20948_serif.is_spi = vpIntrf->Type() == DEVINTRF_TYPE_SPI;
 
 	inv_icm20948_reset_states(&vIcmDevice, &icm20948_serif);
@@ -397,8 +397,15 @@ void AgmInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t t
 		memcpy(&(event.data.gyr.accuracy_flag), arg, sizeof(event.data.gyr.accuracy_flag));
 		break;
 	case INV_ICM20948_SENSOR_GYROSCOPE:
-		memcpy(event.data.gyr.vect, data, sizeof(event.data.gyr.vect));
-		memcpy(&(event.data.gyr.accuracy_flag), arg, sizeof(event.data.gyr.accuracy_flag));
+		{
+		//memcpy(event.data.gyr.vect, data, sizeof(event.data.gyr.vect));
+		//memcpy(&(event.data.gyr.accuracy_flag), arg, sizeof(event.data.gyr.accuracy_flag));
+			float *p = (float*)data;
+			GyroSensor::vData.X = p[0] * 256.0;
+			GyroSensor::vData.Y = p[1] * 256.0;
+			GyroSensor::vData.Z = p[2] * 256.0;
+			GyroSensor::vData.Timestamp = timestamp;
+		}
 		break;
 	case INV_ICM20948_SENSOR_GRAVITY:
 		memcpy(event.data.acc.vect, data, sizeof(event.data.acc.vect));
@@ -406,12 +413,26 @@ void AgmInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t t
 		break;
 	case INV_ICM20948_SENSOR_LINEAR_ACCELERATION:
 	case INV_ICM20948_SENSOR_ACCELEROMETER:
-		memcpy(event.data.acc.vect, data, sizeof(event.data.acc.vect));
-		memcpy(&(event.data.acc.accuracy_flag), arg, sizeof(event.data.acc.accuracy_flag));
+		{
+			float *p = (float*)data;
+			//memcpy(event.data.acc.vect, data, sizeof(event.data.acc.vect));
+			//memcpy(&(event.data.acc.accuracy_flag), arg, sizeof(event.data.acc.accuracy_flag));
+			AccelSensor::vData.X = p[0] * 256.0;
+			AccelSensor::vData.Y = p[1] * 256.0;
+			AccelSensor::vData.Z = p[2] * 256.0;
+			AccelSensor::vData.Timestamp = timestamp;
+		}
 		break;
 	case INV_ICM20948_SENSOR_GEOMAGNETIC_FIELD:
-		memcpy(event.data.mag.vect, data, sizeof(event.data.mag.vect));
-		memcpy(&(event.data.mag.accuracy_flag), arg, sizeof(event.data.mag.accuracy_flag));
+		{
+			float *p = (float*)data;
+			//memcpy(event.data.mag.vect, data, sizeof(event.data.mag.vect));
+			//memcpy(&(event.data.mag.accuracy_flag), arg, sizeof(event.data.mag.accuracy_flag));
+			MagSensor::vData.X = p[0] * 256.0;
+			MagSensor::vData.Y = p[1] * 256.0;
+			MagSensor::vData.Z = p[2] * 256.0;
+			MagSensor::vData.Timestamp = timestamp;
+		}
 		break;
 	case INV_ICM20948_SENSOR_GEOMAGNETIC_ROTATION_VECTOR:
 	case INV_ICM20948_SENSOR_ROTATION_VECTOR:

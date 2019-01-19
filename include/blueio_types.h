@@ -46,19 +46,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLUEIO_DATA_TYPE_APP			0		//!< Application custom data
 #define BLUEIO_DATA_TYPE_TPH			1		//!< Environmental sensor data (Temperature, Pressure, Humidity)
 #define BLUEIO_DATA_TYPE_GAS			2		//!< Gas sensor data
-#define BLUEIO_DATA_TYPE_ACCEL		3		//!< Accelerometer sensor data
-#define BLUEIO_DATA_TYPE_GYRO		4		//!< Gyroscope sensor data
+#define BLUEIO_DATA_TYPE_ACCEL			3		//!< Accelerometer sensor data
+#define BLUEIO_DATA_TYPE_GYRO			4		//!< Gyroscope sensor data
 #define BLUEIO_DATA_TYPE_MAG			5		//!< Magnetometer sensor data
-#define BLUEIO_DATA_TYPE_PROXY		6		//!< Proximity sensor data
+#define BLUEIO_DATA_TYPE_PROXY			6		//!< Proximity sensor data
 #define BLUEIO_DATA_TYPE_ADC			7		//!< Analog converter data
-#define BLUEIO_DATA_TYPE_GPIO		8		//!< GPIO pins state
+#define BLUEIO_DATA_TYPE_GPIO			8		//!< GPIO pins state
 #define BLUEIO_DATA_TYPE_BUT			9		//!< Button/Switch state
 #define BLUEIO_DATA_TYPE_MOT			10		//!< Motion detection
 #define BLUEIO_DATA_TYPE_I2C			11		//!< I2C interface data
 #define BLUEIO_DATA_TYPE_SPI			12		//!< SPI interface data
-#define BLUEIO_DATA_TYPE_UART		13		//!< UART interface data
+#define BLUEIO_DATA_TYPE_UART			13		//!< UART interface data
 #define BLUEIO_DATA_TYPE_PPI			14		//!< PPI interface data
-#define BLUEIO_DATA_TYPE_AUDIO		15		//!< Audio data
+#define BLUEIO_DATA_TYPE_AUDIO			15		//!< Audio data
 
 #pragma pack(push, 1)
 

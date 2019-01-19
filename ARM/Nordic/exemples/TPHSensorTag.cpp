@@ -49,10 +49,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string.h>
 
+#include "app_util_platform.h"
+#include "app_scheduler.h"
+
 #include "istddef.h"
 #include "ble_app.h"
 #include "ble_service.h"
-//#include "nrf_power.h"
 
 #include "bsec_interface.h"
 
@@ -62,8 +64,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "coredev/spi.h"
 #include "custom_board.h"
 #include "coredev/iopincfg.h"
-#include "app_util_platform.h"
-#include "app_scheduler.h"
+#include "iopinctrl.h"
 #include "tph_bme280.h"
 #include "tph_ms8607.h"
 #include "tphg_bme680.h"
@@ -88,16 +89,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // NOTE :	RTC timer 0 used by radio, RTC Timer 1 used by SDK
 //			Only RTC timer 2 is usable with Softdevice for nRF52, not avail on nRF51
 //
-#define USE_TIMER_UPDATE
+//#define USE_TIMER_UPDATE
 //#endif
 
-#define APP_ADV_INTERVAL                MSEC_TO_UNITS(200, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
+#define APP_ADV_INTERVAL                MSEC_TO_UNITS(1000, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #ifdef USE_TIMER_UPDATE
 // Use timer to update date
 #define APP_ADV_TIMEOUT_IN_SECONDS      0                                         /**< The advertising timeout (in units of seconds). */
 #else
 // Use advertisement timeout to update data
-#define APP_ADV_TIMEOUT_IN_SECONDS      10                                         /**< The advertising timeout (in units of seconds). */
+#define APP_ADV_TIMEOUT_IN_SECONDS      MSEC_TO_UNITS(120000, UNIT_10_MS)           /**< The advertising timeout (in units of seconds). */
 #endif
 
 void TimerHandler(Timer *pTimer, uint32_t Evt);
@@ -156,7 +157,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	0, 						// Total number of uuids
 	APP_ADV_INTERVAL,       // Advertising interval in msec
 	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
-	100,                          // Slow advertising interval, if > 0, fallback to
+	0,//MSEC_TO_UNITS(1000, UNIT_0_625_MS) ,   // Slow advertising interval, if > 0, fallback to
 								// slow interval on adv timeout and advertise until connected
 	0,
 	0,
@@ -232,6 +233,25 @@ I2C g_I2c;
 DeviceIntrf *g_pIntrf = &g_I2c;
 #endif
 
+static const IOPINCFG s_GpioPins[] = {
+	{BLUEIO_BUT1_PORT, BLUEIO_BUT1_PIN, BLUEIO_BUT1_PINOP,	// Button 1
+	 IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
+	{BLUEIO_BUT2_PORT, BLUEIO_BUT2_PIN, BLUEIO_BUT2_PINOP,	// Button 2
+	 IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
+	{BLUEIO_TAG_EVIM_IMU_INT_PORT, BLUEIO_TAG_EVIM_IMU_INT_PIN, BLUEIO_TAG_EVIM_IMU_INT_PINOP, 			// MPU9250 Interrupt
+	 IOPINDIR_INPUT, IOPINRES_PULLDOWN, IOPINTYPE_NORMAL},
+	{BLUEIO_TAG_EVIM_LED2_RED_PORT, BLUEIO_TAG_EVIM_LED2_RED_PIN, BLUEIO_TAG_EVIM_LED2_RED_PINOP,		// RGB LED2 Red
+	 IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+	{BLUEIO_TAG_EVIM_LED2_GREEN_PORT, BLUEIO_TAG_EVIM_LED2_GREEN_PIN, BLUEIO_TAG_EVIM_LED2_GREEN_PINOP,	// RGB LED2 Green
+	 IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_OPENDRAIN},
+	{BLUEIO_TAG_EVIM_LED2_BLUE_PORT, BLUEIO_TAG_EVIM_LED2_BLUE_PIN, BLUEIO_TAG_EVIM_LED2_BLUE_PINOP,	// RGB LED2 Blue
+	 IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_OPENDRAIN},
+//	    {BLUEIO_TAG_EVIM_SPI2_SCK_PORT, BLUEIO_TAG_EVIM_SPI2_SCK_PIN, BLUEIO_TAG_EVIM_SPI2_SCK_PINOP,
+//	     IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+};
+
+static const int s_NbGpioPins = sizeof(s_GpioPins) / sizeof(IOPINCFG);
+
 // Configure environmental sensor
 static TPHSENSOR_CFG s_TphSensorCfg = {
 #ifdef NEBLINA_MODULE
@@ -240,7 +260,7 @@ static TPHSENSOR_CFG s_TphSensorCfg = {
 	BME680_I2C_DEV_ADDR0,   // I2C device address
 #endif
 	SENSOR_OPMODE_SINGLE,
-	100,						// Sampling frequency in mHz
+	10,						// Sampling frequency in mHz
 	2,
 	1,
 	1,
@@ -254,7 +274,7 @@ static const GASSENSOR_HEAT s_HeaterProfile[] = {
 static const GASSENSOR_CFG s_GasSensorCfg = {
 	BME680_I2C_DEV_ADDR0,	// Device address
 	SENSOR_OPMODE_SINGLE,	// Operating mode
-	100,
+	10,
 	sizeof(s_HeaterProfile) / sizeof(GASSENSOR_HEAT),
 	s_HeaterProfile
 };
@@ -281,6 +301,9 @@ void ReadPTHData()
 	TPHSENSOR_DATA data;
 	GASSENSOR_DATA gdata;
 #if 1
+
+	g_I2c.Enable();
+
 	g_TphSensor.Read(data);
 
 
@@ -310,10 +333,13 @@ void ReadPTHData()
 	}
 
 	g_TphSensor.StartSampling();
+
+	g_I2c.Disable();
+
 #endif
 	// Update advertisement data
-//	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff));
-	BleAppAdvManDataSet((uint8_t*)&gascnt, sizeof(gascnt), NULL, 0);
+	BleAppAdvManDataSet(g_AdvDataBuff, sizeof(g_AdvDataBuff), NULL, 0);
+//	BleAppAdvManDataSet((uint8_t*)&gascnt, sizeof(gascnt), NULL, 0);
 
 	gascnt++;
 }
@@ -361,6 +387,13 @@ void HardwareInit()
 {
 	// Set this only if nRF is power at 2V or more
 	//nrf_power_dcdcen_set(true);
+	NRF_POWER->DCDCEN = 1;
+
+    IOPinCfg(s_GpioPins, s_NbGpioPins);
+
+	IOPinSet(0, BLUEIO_TAG_BME680_LED2_BLUE_PIN);
+	IOPinSet(0, BLUEIO_TAG_BME680_LED2_GREEN_PIN);
+	IOPinSet(0, BLUEIO_TAG_BME680_LED2_RED_PIN);
 
 	g_Timer.Init(s_TimerCfg);
 
@@ -387,12 +420,20 @@ void HardwareInit()
 	// Inititalize sensor
     g_TphSensor.Init(s_TphSensorCfg, g_pIntrf, &g_Timer);
 
-    if (g_TphSensor.DeviceID() == BME680_ID)
+//    g_TphSensor.Disable();
+
+//	g_I2c.Disable();
+
+//	while(1) __WFE();
+
+
+	if (g_TphSensor.DeviceID() == BME680_ID)
     {
     	g_GasSensor.Init(s_GasSensorCfg, g_pIntrf, NULL);
     }
 
-	g_TphSensor.StartSampling();
+
+    g_TphSensor.StartSampling();
 
 	usDelay(300000);
 
@@ -415,6 +456,8 @@ void HardwareInit()
 	memcpy(g_AdvData.Data, ((uint8_t*)&tphdata) + 4, sizeof(BLEADV_MANDATA_TPHSENSOR));
 
 
+	g_I2c.Disable();
+
 #ifdef USE_TIMER_UPDATE
 	// Only with SDK14
 
@@ -428,7 +471,7 @@ int main()
 
     BleAppInit((const BLEAPP_CFG *)&s_BleAppCfg, true);
 
-	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS, AppTimerHandler);
+	//uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS, AppTimerHandler);
 
     BleAppRun();
 

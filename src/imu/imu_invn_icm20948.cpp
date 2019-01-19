@@ -63,6 +63,7 @@ static const float s_CfgMountingMatrix[9]= {
 	0, 0, 1.f
 };
 
+#if 0
 int ImuInvnIcm20948::InvnReadReg(void * context, uint8_t reg, uint8_t * rbuffer, uint32_t rlen)
 {
 	ImuInvnIcm20948 *dev = (ImuInvnIcm20948*)context;
@@ -154,9 +155,27 @@ bool ImuInvnIcm20948::Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * c
 
 	rc = inv_icm20948_load(&vIcmDevice, s_Dmp3Image, sizeof(s_Dmp3Image));
 
+	vpIcmDevice= &vIcmDevice;
+
 	return true;
 }
+#endif
 
+bool ImuInvnIcm20948::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag)
+{
+	if (pAccel == NULL)
+	{
+		return false;
+	}
+
+	Imu::Init(Cfg, pAccel, pGyro, pMag);
+
+	//vpSensorDev = (AgmInvnIcm20948*)pAccel;
+	vEvtHandler = Cfg.EvtHandler;
+	vpIcmDevice = *(AgmInvnIcm20948*)pAccel;
+
+	return true;
+}
 
 bool ImuInvnIcm20948::Enable()
 {
@@ -164,7 +183,7 @@ bool ImuInvnIcm20948::Enable()
 
 	/* Disable all sensors */
 	while(i-- > 0) {
-		int rc = inv_icm20948_enable_sensor(&vIcmDevice, (inv_icm20948_sensor)i, 1);
+		int rc = inv_icm20948_enable_sensor(vpIcmDevice, (inv_icm20948_sensor)i, 1);
 	}
 
 	return true;
@@ -176,14 +195,19 @@ void ImuInvnIcm20948::Disable()
 
 	/* Disable all sensors */
 	while(i-- > 0) {
-		int rc = inv_icm20948_enable_sensor(&vIcmDevice, (inv_icm20948_sensor)i, 0);
+		int rc = inv_icm20948_enable_sensor(vpIcmDevice, (inv_icm20948_sensor)i, 0);
 	}
-	inv_icm20948_set_chip_power_state(&vIcmDevice, CHIP_AWAKE, 0);
+	inv_icm20948_set_chip_power_state(vpIcmDevice, CHIP_AWAKE, 0);
 }
 
 void ImuInvnIcm20948::Reset()
 {
 	inv_icm20948_soft_reset(&vIcmDevice);
+}
+
+IMU_SENSE ImuInvnIcm20948::Sense(IMU_SENSE SenseBit, bool bEnDis)
+{
+	return Imu::Sense();
 }
 
 bool ImuInvnIcm20948::UpdateData()
@@ -193,7 +217,15 @@ bool ImuInvnIcm20948::UpdateData()
 
 void ImuInvnIcm20948::IntHandler()
 {
-	inv_icm20948_poll_sensor(&vIcmDevice, (void*)this, SensorEventHandler);
+	//if (vpIcmDev)
+	{
+
+//		inv_icm20948_poll_sensor(*vpIcmDev, (void*)this, SensorEventHandler);
+	}
+	//else
+	{
+		inv_icm20948_poll_sensor(vpIcmDevice, (void*)this, SensorEventHandler);
+	}
 }
 
 void ImuInvnIcm20948::SensorEventHandler(void * context, enum inv_icm20948_sensor sensortype, uint64_t timestamp, const void * data, const void *arg)
@@ -214,7 +246,7 @@ void ImuInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t t
 	event.timestamp = timestamp;
 	switch (sensortype)
 	{
-	case INV_ICM20948_SENSOR_GYROSCOPE_UNCALIBRATED:
+/*	case INV_ICM20948_SENSOR_GYROSCOPE_UNCALIBRATED:
 		memcpy(raw_bias_data, data, sizeof(raw_bias_data));
 		memcpy(event.data.gyr.vect, &raw_bias_data[0], sizeof(event.data.gyr.vect));
 		memcpy(event.data.gyr.bias, &raw_bias_data[3], sizeof(event.data.gyr.bias));
@@ -238,15 +270,25 @@ void ImuInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t t
 	case INV_ICM20948_SENSOR_ACCELEROMETER:
 		memcpy(event.data.acc.vect, data, sizeof(event.data.acc.vect));
 		memcpy(&(event.data.acc.accuracy_flag), arg, sizeof(event.data.acc.accuracy_flag));
+		vAccData.X = event.data.acc.vect[0] * 256.0;
+		vAccData.Y = event.data.acc.vect[1] * 256.0;
+		vAccData.Z = event.data.acc.vect[2] * 256.0;
+		vAccData.Timestamp = timestamp;
+		printf("a %d : %d %d %d\r\n", vAccData.Timestamp, vAccData.X, vAccData.Y, vAccData.Z);
 		break;
 	case INV_ICM20948_SENSOR_GEOMAGNETIC_FIELD:
 		memcpy(event.data.mag.vect, data, sizeof(event.data.mag.vect));
 		memcpy(&(event.data.mag.accuracy_flag), arg, sizeof(event.data.mag.accuracy_flag));
-		break;
+		break;*/
 	case INV_ICM20948_SENSOR_GEOMAGNETIC_ROTATION_VECTOR:
 	case INV_ICM20948_SENSOR_ROTATION_VECTOR:
 		memcpy(&(event.data.quaternion.accuracy), arg, sizeof(event.data.quaternion.accuracy));
 		memcpy(event.data.quaternion.quat, data, sizeof(event.data.quaternion.quat));
+		vQuat.Q1 = event.data.quaternion.quat[0] * 256.0;
+		vQuat.Q2 = event.data.quaternion.quat[1] * 256.0;
+		vQuat.Q3 = event.data.quaternion.quat[2] * 256.0;
+		vQuat.Q4 = event.data.quaternion.quat[3] * 256.0;
+		vQuat.Timestamp = timestamp;
 		break;
 	case INV_ICM20948_SENSOR_GAME_ROTATION_VECTOR:
 	{
@@ -259,6 +301,11 @@ void ImuInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t t
 		gyro_accuracy = (uint8_t)inv_icm20948_get_gyro_accuracy();
 
 		event.data.quaternion.accuracy_flag = min(accel_accuracy, gyro_accuracy);
+		vQuat.Q1 = event.data.quaternion.quat[0] * 256.0;
+		vQuat.Q2 = event.data.quaternion.quat[1] * 256.0;
+		vQuat.Q3 = event.data.quaternion.quat[2] * 256.0;
+		vQuat.Q4 = event.data.quaternion.quat[3] * 256.0;
+		vQuat.Timestamp = timestamp;
 	}
 		break;
 	case INV_ICM20948_SENSOR_ACTIVITY_CLASSIFICATON:
@@ -281,11 +328,12 @@ void ImuInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t t
 		//we just want to copy x,y,z from orientation data
 		memcpy(&(event.data.orientation), data, 3*sizeof(float));
 		break;
-	case INV_ICM20948_SENSOR_RAW_ACCELEROMETER:
+/*	case INV_ICM20948_SENSOR_RAW_ACCELEROMETER:
 	case INV_ICM20948_SENSOR_RAW_GYROSCOPE:
 		memcpy(event.data.raw3d.vect, data, sizeof(event.data.raw3d.vect));
-		break;
+		break;*/
 	default:
+		((AgmInvnIcm20948*)vpAccel)->UpdateData(sensortype, timestamp, data, arg);
 		return;
 	}
 

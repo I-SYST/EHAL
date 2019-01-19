@@ -86,6 +86,49 @@ public:
 	virtual void IntHandler() = 0;
 	virtual bool Read(IMU_QUAT &Data) { Data = vQuat; return true; }
 	virtual bool Read(IMU_EULER &Data) { Data = vEuler; return true; }
+
+	/**
+	 * @brief	Read last updated sensor data
+	 *
+	 * This function read the currently stored data last updated by UdateData().
+	 * Device implementation can add validation if needed and return true or false
+	 * in the case of data valid or not.  This default implementation only returns
+	 * the stored data with success.
+	 *
+	 * @param 	Data : Reference to data storage for the returned data
+	 *
+	 * @return	True - Success.
+	 */
+	virtual bool Read(ACCELSENSOR_DATA &Data) { return vpAccel->Read(Data); }
+
+	/**
+	 * @brief	Read last updated sensor data
+	 *
+	 * This function read the currently stored data last updated by UdateData().
+	 * Device implementation can add validation if needed and return true or false
+	 * in the case of data valid or not.  This default implementation only returns
+	 * the stored data with success.
+	 *
+	 * @param 	Data : Reference to data storage for the returned data
+	 *
+	 * @return	True - Success.
+	 */
+	virtual bool Read(GYROSENSOR_DATA &Data) { return vpGyro->Read(Data); }
+
+	/**
+	 * @brief	Read last updated sensor data
+	 *
+	 * This function read the currently stored data last updated by UdateData().
+	 * Device implementation can add validation if needed and return true or false
+	 * in the case of data valid or not.  This default implementation only returns
+	 * the stored data with success.
+	 *
+	 * @param 	Data : Reference to data storage for the returned data
+	 *
+	 * @return	True - Success.
+	 */
+	virtual bool Read(MAGSENSOR_DATA &Data) { return vpMag->Read(Data); }
+
 	virtual IMU_SENSE Sense() { return vActiveSense; }
 	virtual IMU_SENSE Sense(IMU_SENSE SenseBit, bool bEnDis);
 

@@ -70,7 +70,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// Default BlueIO control/data service UUID
 #define BLUEIO_UUID_SERVICE 		0x1		//!< BlueIO default service
 #define BLUEIO_UUID_RDCHAR 			0x2		//!< Data characteristic
+#define BLUEIO_UUID_RDCHAR_PROP		(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY)
 #define BLUEIO_UUID_WRCHAR 			0x3		//!< Command control characteristic
+#define BLUEIO_UUID_WRCHAR_PROP		(BLESVC_CHAR_PROP_WRITE)
 
 /// Default BLueIO UART service UUID
 #define BLUEIO_UUID_UART_SERVICE 		0x101		//!< BlueIO Uart service
@@ -78,27 +80,33 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLUEIO_UUID_UART_TX_CHAR		0x103		//!< UART Tx characteristic
 
 /// BlueIO data type
-#define BLUEIOSRVC_DATA_ID_BLECFG			0							//!< BLE configuration settings
-#define BLUEIOSRVC_DATA_ID_TPH				BLUEIO_DATA_TYPE_TPH			//!< Environmental sensor data (Temperature, Pressure, Humidity)
-#define BLUEIOSRVC_DATA_ID_GAS				BLUEIO_DATA_TYPE_GAS			//!< Gas sensor data
-#define BLUEIOSRVC_DATA_ID_ACCEL			BLUEIO_DATA_TYPE_ACCEL		//!< Accelerometer sensor data
-#define BLUEIOSRVC_DATA_ID_GYRO				BLUEIO_DATA_TYPE_GYRO		//!< Gyroscope sensor data
-#define BLUEIOSRVC_DATA_ID_MAG				BLUEIO_DATA_TYPE_MAG			//!< Magnetometer sensor data
-#define BLUEIOSRVC_DATA_ID_PROXY			BLUEIO_DATA_TYPE_PROXY		//!< Proximity sensor data
-#define BLUEIOSRVC_DATA_ID_ADC				BLUEIO_DATA_TYPE_ADC			//!< Analog converter data
-#define BLUEIOSRVC_DATA_ID_GPIO				BLUEIO_DATA_TYPE_GPIO		//!< GPIO pins data
-#define BLUEIOSRVC_DATA_ID_BUT				BLUEIO_DATA_TYPE_BUT			//!< Button state
-#define BLUEIOSRVC_DATA_ID_MOT              BLUEIO_DATA_TYPE_MOT			//!< Motion detection
-#define BLUEIOSRVC_DATA_ID_AUDIO			BLUEIO_DATA_TYPE_AUDIO		//!< Audio data
-#define BLUEIOSRVC_DATA_ID_DFU				0xFF							//!< Re-boot to DFU mode
+#define BLUEIO_PACKET_ID_BLECFG			0							//!< BLE configuration settings
+#define BLUEIO_PACKET_ID_TPH			BLUEIO_DATA_TYPE_TPH		//!< Environmental sensor data (Temperature, Pressure, Humidity)
+#define BLUEIO_PACKET_ID_GAS			BLUEIO_DATA_TYPE_GAS		//!< Gas sensor data
+#define BLUEIO_PACKET_ID_ACCEL			BLUEIO_DATA_TYPE_ACCEL		//!< Accelerometer sensor data
+#define BLUEIO_PACKET_ID_GYRO			BLUEIO_DATA_TYPE_GYRO		//!< Gyroscope sensor data
+#define BLUEIO_PACKET_ID_MAG			BLUEIO_DATA_TYPE_MAG		//!< Magnetometer sensor data
+#define BLUEIO_PACKET_ID_PROXY			BLUEIO_DATA_TYPE_PROXY		//!< Proximity sensor data
+#define BLUEIO_PACKET_ID_ADC			BLUEIO_DATA_TYPE_ADC		//!< Analog converter data
+#define BLUEIO_PACKET_ID_GPIO			BLUEIO_DATA_TYPE_GPIO		//!< GPIO pins data
+#define BLUEIO_PACKET_ID_BUT			BLUEIO_DATA_TYPE_BUT		//!< Button state
+#define BLUEIO_PACKET_ID_MOT            BLUEIO_DATA_TYPE_MOT		//!< Motion detection
+#define BLUEIO_PACKET_ID_I2C			BLUEIO_DATA_TYPE_I2C		//!< I2C interface data
+#define BLUEIO_PACKET_ID_SPI			BLUEIO_DATA_TYPE_SPI		//!< SPI interface data
+#define BLUEIO_PACKET_ID_UART			BLUEIO_DATA_TYPE_UART		//!< UART interface data
+#define BLUEIO_PACKET_ID_PPI			BLUEIO_DATA_TYPE_PPI		//!< PPI interface data
+#define BLUEIO_PACKET_ID_AUDIO			BLUEIO_DATA_TYPE_AUDIO		//!< Audio data
+#define BLUEIO_PACKET_ID_DFU			0xFF						//!< Re-boot to DFU mode
 
-#define BLUEIOSRVC_DATA_LEN_MAX				48
+#define BLUEIOSRVC_DATA_LEN_MAX			48
 
 #pragma pack(push, 1)
-typedef struct __BlueioSrvc_Data {
-	uint8_t Id;		// Data types (see defined code above)
+
+/// BLUEIO Cmd/Data packet definition
+typedef struct __Blueio_Packet {
+	uint8_t Id;		// Packet id (see defined code above)
 	uint8_t Data[BLUEIOSRVC_DATA_LEN_MAX];	// Type specific data follows can be more than
-} BLUEIO_SRVC_DATA;
+} BLUEIO_PACKET;
 
 #define BLUEIOSRVC_RDCHAR_IDX				0
 #define BLUEIOSRVC_WDCHAR_IDX				1
@@ -140,12 +148,14 @@ typedef enum __Gpio_Write_Cmd {
 
 typedef struct __Gpio_Write {
 	GPIOWR_CMD 	Cmd;
+	uint8_t		PortNo;
 	uint8_t 	PinNo;
 	uint8_t 	Value;
 } GPIO_WR;
 
 // Read data format
 typedef struct __Gpio_Read {
+	uint8_t	PortNo;
 	uint8_t PinNo;
 	uint8_t Value;
 } GPIO_RD;
@@ -158,7 +168,7 @@ typedef struct __Button_Read {
 } BUT_RD;
 
 typedef struct __Adc_Read {
-	uint8_t Chan;	//!< ADC channel number
+	uint8_t Chan;		//!< ADC channel number
 	float Value;		//!< ADC value in volts
 } ADC_RD;
 

@@ -52,7 +52,39 @@ public:
 	virtual void IntHandler();
 
 protected:
+	/**
+	 * @brief	Read device's register/memory block
+	 *
+	 * @param 	pCmdAddr 	: Buffer containing command or address to be written
+	 * 						  prior reading data back
+	 * @param	CmdAddrLen 	: Command buffer size
+	 * @param	pBuff		: Data buffer container
+	 * @param	BuffLen		: Data buffer size
+	 *
+	 * @return	Actual number of bytes read
+	 */
+	virtual int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen) {
+		return vpIntrf->Read(vDevAddr, pCmdAddr, CmdAddrLen, pBuff, BuffLen);
+	}
+
+	/**
+	 * @brief	Write to device's register/memory block
+	 *
+	 * @param 	pCmdAddr 	: Buffer containing command or address to be written
+	 * 						  prior writing data back
+	 * @param	CmdAddrLen 	: Command buffer size
+	 * @param	pData		: Data buffer to be written to the device
+	 * @param	DataLen		: Size of data
+	 *
+	 * @return	Actual number of bytes written
+	 */
+	virtual int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen) {
+		return vpIntrf->Write(vDevAddr, pCmdAddr, CmdAddrLen, pData, DataLen);
+	}
+
+
 private:
+
 	AgmMpu9250 *vpMpu;
 	DeviceIntrf *vpIntrf;
 };

@@ -57,6 +57,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "imu/imu_mpl_mpu9250.h"
 #include "sensors/agm_mpu9250.h"
 
+int drv_mpu9250_write(unsigned char slave_addr, unsigned char reg_addr, unsigned char length, unsigned char const * p_data)
+{
+	return 0;
+}
+
+
 bool ImuMplMpu9250::Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer)
 {
 	if (Valid())
@@ -66,6 +72,42 @@ bool ImuMplMpu9250::Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * con
 		return false;
 
 	Imu::Init(Cfg, DevAddr, pIntrf, pTimer);
+
+	inv_error_t err;
+
+	inv_init_storage_manager();
+
+    /* initialize the start callback manager */
+    err = inv_init_start_manager();
+
+    /* initialize the data builder */
+    err = inv_init_data_builder();
+
+    err = inv_enable_results_holder();
+
+    /* This algorithm updates the accel biases when in motion. A more accurate
+     * bias measurement can be made when running the self-test. */
+    err = inv_enable_in_use_auto_calibration();
+
+    /* Compute 6-axis and 9-axis quaternions. */
+    err = inv_enable_quaternion();
+
+    err = inv_enable_9x_sensor_fusion();
+
+    /* Update gyro biases when not in motion. */
+    err = inv_enable_fast_nomot();
+
+    /* Update gyro biases when temperature changes. */
+    err = inv_enable_gyro_tc();
+
+    /* Compass calibration algorithms. */
+    err = inv_enable_vector_compass_cal();
+
+    err = inv_enable_magnetic_disturbance();
+
+    //err = inv_enable_eMPL_outputs();
+
+    //err = inv_enable_heading_from_gyro();
 
 	return true;
 }

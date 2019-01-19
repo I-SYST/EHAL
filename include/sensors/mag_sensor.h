@@ -45,9 +45,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// Magnetometer sensor data
 typedef struct __MagSensor_Data {
 	uint32_t Timestamp;	//!< Time stamp count in msec
-	int16_t X;			//!< X axis
-	int16_t Y;			//!< Y axis
-	int16_t Z;			//!< Z axis
+	union {
+		int16_t Val[3];
+		struct {
+			int16_t X;			//!< X axis
+			int16_t Y;			//!< Y axis
+			int16_t Z;			//!< Z axis
+		};
+	};
 } MAGSENSOR_DATA;
 
 /// Mag configuration data

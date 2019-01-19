@@ -387,22 +387,24 @@ bool AgmMpu9250::Enable()
 void AgmMpu9250::Disable()
 {
 	uint8_t regaddr = MPU9250_AG_PWR_MGMT_2;
-
-Reset();
-msDelay(2000);
+	uint8_t d;
+//Reset();
+//msDelay(2000);
 
 	regaddr = MPU9250_AG_PWR_MGMT_1;
-	Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_SLEEP | MPU9250_AG_PWR_MGMT_1_PD_PTAT |
-						MPU9250_AG_PWR_MGMT_1_GYRO_STANDBY);
+	d = Read8(&regaddr, 1);
+	d |= MPU9250_AG_PWR_MGMT_1_SLEEP;
+	Write8(&regaddr, 1, d);//MPU9250_AG_PWR_MGMT_1_SLEEP | MPU9250_AG_PWR_MGMT_1_PD_PTAT |
+						//MPU9250_AG_PWR_MGMT_1_CYCLE | 3);//MPU9250_AG_PWR_MGMT_1_GYRO_STANDBY);
 
-	//return;
+	return;
 
 	regaddr = MPU9250_AG_USER_CTRL;
 	Write8(&regaddr, 1, MPU9250_AG_USER_CTRL_I2C_MST_EN);
 
 	// Disable Mag
 	regaddr = MPU9250_MAG_CTRL1;
-	uint8_t d = 0;
+	//uint8_t d = 0;
 	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
 
 	// Disable Accel Gyro
@@ -411,8 +413,11 @@ msDelay(2000);
 		 MPU9250_AG_PWR_MGMT_2_DIS_ZA | MPU9250_AG_PWR_MGMT_2_DIS_YA | MPU9250_AG_PWR_MGMT_2_DIS_XA);
 
 	regaddr = MPU9250_AG_PWR_MGMT_1;
-	Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_SLEEP | MPU9250_AG_PWR_MGMT_1_PD_PTAT |
-						MPU9250_AG_PWR_MGMT_1_GYRO_STANDBY);
+	d = Read8(&regaddr, 1);
+	d |= MPU9250_AG_PWR_MGMT_1_SLEEP;
+	Write8(&regaddr, 1, d);//MPU9250_AG_PWR_MGMT_1_SLEEP | MPU9250_AG_PWR_MGMT_1_PD_PTAT |
+//	Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_SLEEP | MPU9250_AG_PWR_MGMT_1_PD_PTAT |
+//						MPU9250_AG_PWR_MGMT_1_GYRO_STANDBY);
 
 }
 

@@ -48,9 +48,14 @@ Modified by          Date              Description
 /// Gyroscope sensor data
 typedef struct __GyroSensor_Data {
 	uint32_t Timestamp;	//!< Time stamp count in usec
-	int16_t X;			//!< X axis
-	int16_t Y;			//!< Y axis
-	int16_t Z;			//!< Z axis
+	union {
+		int16_t Val[3];
+		struct {
+			int16_t X;			//!< X axis
+			int16_t Y;			//!< Y axis
+			int16_t Z;			//!< Z axis
+		};
+	};
 } GYROSENSOR_DATA;
 
 typedef struct __GyroSensor_Config {
