@@ -53,7 +53,7 @@ Modified by          Date              Description
 #include "ble_dis.h"
 #include "nrf_ble_gatt.h"
 #include "peer_manager.h"
-#include "ble_db_discovery.h"
+//#include "ble_db_discovery.h"
 #include "app_timer.h"
 #include "app_util_platform.h"
 #include "app_scheduler.h"
@@ -157,7 +157,7 @@ BLEAPP_DATA g_BleAppData = {
 
 pm_peer_id_t g_PeerMngrIdToDelete = PM_PEER_ID_INVALID;
 //static nrf_ble_gatt_t s_Gatt;                                     /**< GATT module instance. */
-#if 1
+#if 0
 ble_db_discovery_t s_DbDiscovery = {
 	.services = {},
 	.srv_count = 0,
@@ -172,6 +172,7 @@ ble_db_discovery_t s_DbDiscovery = {
 NRF_SDH_BLE_OBSERVER(s_DbDiscovery_obs,
                      BLE_DB_DISC_BLE_OBSERVER_PRIO,
                      ble_db_discovery_on_ble_evt, &s_DbDiscovery);
+#endif
 
 NRF_BLE_SCAN_DEF(g_Scan);
 
@@ -202,7 +203,7 @@ static ble_data_t g_BleScanReportData = {
 	.len = BLE_GAP_SCAN_BUFFER_EXTENDED_MAX
 };
 
-#endif
+//#endif
 
 /**@brief Bluetooth SIG debug mode Private Key */
 __ALIGN(4) __WEAK extern const uint8_t g_lesc_private_key[32] = {
@@ -794,7 +795,7 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
  *
  * @param[in] p_event  Pointer to the database discovery event.
  */
-
+#if 0
 static void BleAppDBDiscoveryHandler(ble_db_discovery_evt_t * p_evt)
 {
     ble_gatt_db_char_t * p_chars = p_evt->params.discovered_db.charateristics;
@@ -865,7 +866,7 @@ static void BleAppDBDiscoveryHandler(ble_db_discovery_evt_t * p_evt)
 //        }
     }
 }
-
+#endif
 
 /**@brief Function for dispatching a SoftDevice event to all modules with a SoftDevice
  *        event handler.
@@ -1508,8 +1509,8 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     if (pBleAppCfg->CentLinkCount > 0)
 	{
 		g_BleAppData.AppRole |= BLEAPP_ROLE_CENTRAL;
-		ret_code_t err_code = ble_db_discovery_init(BleAppDBDiscoveryHandler);
-		APP_ERROR_CHECK(err_code);
+//		ret_code_t err_code = ble_db_discovery_init(BleAppDBDiscoveryHandler);
+//		APP_ERROR_CHECK(err_code);
     }
 
     BleAppGattInit();

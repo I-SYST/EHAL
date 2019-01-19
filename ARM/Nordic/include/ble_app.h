@@ -193,7 +193,7 @@ void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt);
  */
 void BleCentralEvtUserHandler(ble_evt_t * p_ble_evt);
 
-void BleDevServiceDiscovered(uint16_t ConnHdl, uint16_t Count, ble_gattc_service_t * const pServices);
+//void BleDevServiceDiscovered(uint16_t ConnHdl, uint16_t Count, ble_gattc_service_t * const pServices);
 
 //*** Require implementation if app operating mode is BLEAPP_MODE_RTOS
 // This function should normal wait for RTOS to signal an event on sent by
@@ -223,6 +223,7 @@ bool BleAppScanInit(ble_uuid128_t * const pBaseUid, ble_uuid_t * const pServUid)
 //bool BleAppScanStart();
 void BleAppScan();
 bool BleAppConnect(ble_gap_addr_t * const pDevAddr, ble_gap_conn_params_t * const pConnParam);
+bool BleAppEnableNotify(uint16_t ConnHandle, uint16_t CharHandle);
 
 #ifdef __cplusplus
 }

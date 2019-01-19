@@ -67,8 +67,8 @@ public:
 	virtual bool Init(BLEDEV_CFG &Cfg, DeviceIntrf * const pIntrf);
 	virtual bool Connect();
 	virtual void Disconnect();
-	virtual int Send(uint8_t * const pData, int DataLen);
-	virtual int Receive(uint8_t * const pBuff, int BuffLen);
+	virtual int BleSend(uint8_t * const pData, int DataLen);
+	virtual int BleReceive(uint8_t * const pBuff, int BuffLen);
 
 protected:
 private:
@@ -92,7 +92,8 @@ bool BleAppDiscoverDevice(BLEPERIPH_DEV * const pDev);
  * @param	pDev :	Pointer to peripheral device data
  */
 void BleDevDiscovered(BLEPERIPH_DEV *pDev);
-int FindService(BLEPERIPH_DEV * const pDev, uint16_t Uuid);
+int BleDevFindService(BLEPERIPH_DEV * const pDev, uint16_t Uuid);
+int BleDevFindCharacteristic(BLEPERIPH_DEV * const pDev, int SrvcIdx, uint16_t Uuid);
 
 #ifdef __cplusplus
 }

@@ -75,11 +75,24 @@ bool BleAppDiscoverDevice(BLEPERIPH_DEV * const pDev)
     return err_code == NRF_SUCCESS;
 }
 
-int FindService(BLEPERIPH_DEV * const pDev, uint16_t Uuid)
+int BleDevFindService(BLEPERIPH_DEV * const pDev, uint16_t Uuid)
 {
     for (int i = 0; i < pDev->NbSrvc; i++)
     {
     	if (pDev->Services[i].srv_uuid.uuid == Uuid)
+    	{
+    		return i;
+    	}
+    }
+
+    return -1;
+}
+
+int BleDevFindCharacteristic(BLEPERIPH_DEV * const pDev, int SrvcIdx, uint16_t Uuid)
+{
+    for (int i = 0; i < pDev->Services[SrvcIdx].char_count; i++)
+    {
+    	if (pDev->Services[SrvcIdx].charateristics[i].characteristic.uuid.uuid == Uuid)
     	{
     		return i;
     	}

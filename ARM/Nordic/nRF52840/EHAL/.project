@@ -276,6 +276,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/ble_service.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/bluetooth</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/cfifo.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/cfifo.c</locationURI>
@@ -444,6 +449,11 @@
 			<name>src/utf8cvt.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/utf8cvt.cpp</locationURI>
+		</link>
+		<link>
+			<name>include/bluetooth/ble_dev.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ble_dev.h</locationURI>
 		</link>
 		<link>
 			<name>include/bluetooth/bleadv_mandata.h</name>
@@ -679,6 +689,11 @@
 			<name>src/FreeRTOS/timers.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/FreeRTOS/FreeRTOS/Source/timers.c</locationURI>
+		</link>
+		<link>
+			<name>src/bluetooth/ble_dev.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ble_dev.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/converters/adc_ltc2495.cpp</name>
