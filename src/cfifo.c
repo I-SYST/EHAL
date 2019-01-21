@@ -1,12 +1,17 @@
-/*--------------------------------------------------------------------------
-File   : cfifo.c
+/**--------------------------------------------------------------------------
+@file 	cfifo.c
 
-Author : Hoang Nguyen Hoan          Jan. 3, 2014
+@brief	Implementation of an overly simple circular FIFO buffer.
 
-Desc   : Circular FIFO buffer manager
+There is no queuing implementation and non blocking to be able to be use in
+interrupt. User must ensure thread safety when used in a threaded environment.
 
+@author Hoang Nguyen Hoan
+@date 	Jan. 3, 2014
 
-Copyright (c) 2014, I-SYST, all rights reserved
+@license
+
+Copyright (c) 2014, I-SYST inc., all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -27,9 +32,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 #include <stdint.h>
