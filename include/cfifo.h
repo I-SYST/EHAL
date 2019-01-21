@@ -182,13 +182,22 @@ void CFifoFlush(HCFIFO const hFifo);
 int CFifoAvail(HCFIFO const hFifo);
 
 /**
- * @brief	Get number of block used blocks
+ * @brief	Get number of used blocks
  *
  * @param	hFifo : CFIFO handle
  *
  * @return	Number of FIFO block used
  */
 int CFifoUsed(HCFIFO const hFifo);
+
+/**
+ * @brief	Get block size
+ *
+ * @param	hFifo : CFIFO handle
+ *
+ * @return	Block size in bytes
+ */
+static inline uint32_t CFifoBlockSize(HCFIFO const hFifo) { return hFifo->BlkSize; }
 
 #ifdef __cplusplus
 }
