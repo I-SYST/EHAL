@@ -1205,9 +1205,14 @@
 
 // <q> NRF_BLE_GATT_ENABLED  - nrf_ble_gatt - GATT module
 
-
 #ifndef NRF_BLE_GATT_ENABLED
 #define NRF_BLE_GATT_ENABLED 1
+#endif
+
+// <q> NRF_BLE_LESC_ENABLED  - nrf_ble_lesc - Le Secure Connection
+
+#ifndef NRF_BLE_LESC_ENABLED
+#define NRF_BLE_LESC_ENABLED 1
 #endif
 
 // <e> NRF_BLE_QWR_ENABLED - nrf_ble_qwr - Queued writes support module (prepare/execute write)
@@ -1336,7 +1341,7 @@
 // <i> Decrease this value to lower RAM usage.
 
 #ifndef PM_FLASH_BUFFERS
-#define PM_FLASH_BUFFERS 2
+#define PM_FLASH_BUFFERS 4
 #endif
 
 // <q> PM_CENTRAL_ENABLED  - Enable/disable central-specific Peer Manager functionality.
@@ -1365,6 +1370,48 @@
 
 #ifndef PM_PEER_RANKS_ENABLED
 #define PM_PEER_RANKS_ENABLED 1
+#endif
+
+// <i> If set to true, you need to call nrf_ble_lesc_request_handler() in the main loop to respond to LESC-related BLE events. If LESC support is not required, set this to false to save code space.
+
+#ifndef PM_LESC_ENABLED
+#define PM_LESC_ENABLED 1
+#endif
+
+// <e> PM_RA_PROTECTION_ENABLED - Enable/disable protection against repeated pairing attempts in Peer Manager.
+//==========================================================
+#ifndef PM_RA_PROTECTION_ENABLED
+#define PM_RA_PROTECTION_ENABLED 0
+#endif
+// <o> PM_RA_PROTECTION_TRACKED_PEERS_NUM - Maximum number of peers whose authorization status can be tracked.
+#ifndef PM_RA_PROTECTION_TRACKED_PEERS_NUM
+#define PM_RA_PROTECTION_TRACKED_PEERS_NUM 8
+#endif
+
+// <o> PM_RA_PROTECTION_MIN_WAIT_INTERVAL - Minimum waiting interval (in ms) before a new pairing attempt can be initiated.
+#ifndef PM_RA_PROTECTION_MIN_WAIT_INTERVAL
+#define PM_RA_PROTECTION_MIN_WAIT_INTERVAL 4000
+#endif
+
+// <o> PM_RA_PROTECTION_MAX_WAIT_INTERVAL - Maximum waiting interval (in ms) before a new pairing attempt can be initiated.
+#ifndef PM_RA_PROTECTION_MAX_WAIT_INTERVAL
+#define PM_RA_PROTECTION_MAX_WAIT_INTERVAL 64000
+#endif
+
+// <o> PM_RA_PROTECTION_REWARD_PERIOD - Reward period (in ms).
+// <i> The waiting interval is gradually decreased when no new failed pairing attempts are made during reward period.
+
+#ifndef PM_RA_PROTECTION_REWARD_PERIOD
+#define PM_RA_PROTECTION_REWARD_PERIOD 10000
+#endif
+
+// </e>
+
+// <o> PM_HANDLER_SEC_DELAY_MS - Delay before starting security.
+// <i>  This might be necessary for interoperability reasons, especially as peripheral.
+
+#ifndef PM_HANDLER_SEC_DELAY_MS
+#define PM_HANDLER_SEC_DELAY_MS 0
 #endif
 
 // </e>
