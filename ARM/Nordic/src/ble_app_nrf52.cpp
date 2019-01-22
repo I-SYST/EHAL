@@ -1491,7 +1491,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     BleAppStackInit(pBleAppCfg->CentLinkCount, pBleAppCfg->PeriLinkCount,
     				pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT);
 
-   // err_code = ble_lesc_init();
+    //err_code = ble_lesc_init();
     //APP_ERROR_CHECK(err_code);
 
     sd_ble_gap_tx_power_set(BLE_GAP_TX_POWER_ROLE_ADV, g_AdvInstance.adv_handle, GetValidTxPower(pBleAppCfg->TxPower));
@@ -1704,6 +1704,14 @@ extern "C" void SD_EVT_IRQHandler(void)
 //    .p_context = NULL,
 //};
 
+#if NRF_MODULE_ENABLED(NRF_CRYPTO) && NRF_MODULE_ENABLED(NRF_CRYPTO_BACKEND_CC310)
+extern nrf_crypto_backend_info_t const cc310_backend;
+// Just to make the linker to keep the nrf_hw_backend
+__attribute__ ((used)) static uint32_t s_pcc310_backend_info = (uint32_t)&cc310_backend;
+#endif
+
+#if NRF_MODULE_ENABLED(NRF_CRYPTO) && NRF_MODULE_ENABLED(NRF_CRYPTO_BACKEND_NRF_HW_RNG)
 extern nrf_crypto_backend_info_t const nrf_hw_backend;
 // Just to make the linker to keep the nrf_hw_backend
 __attribute__ ((used)) static uint32_t s_pnrf_hw_backend_info = (uint32_t)&nrf_hw_backend;
+#endif
