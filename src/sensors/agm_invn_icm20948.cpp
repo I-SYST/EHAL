@@ -408,8 +408,15 @@ void AgmInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t t
 		}
 		break;
 	case INV_ICM20948_SENSOR_GRAVITY:
-		memcpy(event.data.acc.vect, data, sizeof(event.data.acc.vect));
-		event.data.acc.accuracy_flag = inv_icm20948_get_accel_accuracy();
+		{
+			memcpy(event.data.acc.vect, data, sizeof(event.data.acc.vect));
+			event.data.acc.accuracy_flag = inv_icm20948_get_accel_accuracy();
+			float *p = (float*)data;
+			AccelSensor::vData.X = p[0] * 256.0;
+			AccelSensor::vData.Y = p[1] * 256.0;
+			AccelSensor::vData.Z = p[2] * 256.0;
+			AccelSensor::vData.Timestamp = timestamp;
+		}
 		break;
 	case INV_ICM20948_SENSOR_LINEAR_ACCELERATION:
 	case INV_ICM20948_SENSOR_ACCELEROMETER:

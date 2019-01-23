@@ -353,19 +353,19 @@ void ImuConfCharWrhandler(BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len)
 void ImuTapCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
 	g_ImuChars[IMUCHAR_IDX_TAP].bNotify = true;
-	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_TAP);
+	//MPU9250EnableFeature(MPU9250_MOTION_FEATURE_TAP);
 }
 
 void ImuOrientCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
 	g_ImuChars[IMUCHAR_IDX_ORIENT].bNotify = true;
-	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_ORIENTATION);
+	//MPU9250EnableFeature(MPU9250_MOTION_FEATURE_ORIENTATION);
 }
 
 void ImuQuaternionCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
 	g_ImuChars[IMUCHAR_IDX_QUAT].bNotify = true;
-	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_QUAT);
+	//MPU9250EnableFeature(MPU9250_MOTION_FEATURE_QUAT);
 }
 
 void ImuQuatDataSend(long Quat[4])
@@ -389,61 +389,65 @@ void ImuQuatDataSend(long Quat[4])
 	uint32_t err = BleSrvcCharNotify(&g_ImuSrvc, IMUCHAR_IDX_QUAT, (uint8_t*)q, sizeof(long) * 4);
 	if (err != 0)
 	{
-		printf("Error %x\r\n", err);
+		//printf("quat Error %x\r\n", err);
 	}
 }
 
 void ImuPedometerCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
 	g_ImuChars[IMUCHAR_IDX_PEDO].bNotify = true;
-	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_PEDOMETER);
+	//MPU9250EnableFeature(MPU9250_MOTION_FEATURE_PEDOMETER);
 }
 
 void ImuRawCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
 	g_ImuChars[IMUCHAR_IDX_RAW].bNotify = true;
-	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_RAW);
+	//MPU9250EnableFeature(MPU9250_MOTION_FEATURE_RAW);
 }
 
 void ImuRawDataSend(ACCELSENSOR_DATA &AccData, GYROSENSOR_DATA GyroData, MAGSENSOR_DATA &MagData)
 {
 	ble_tms_raw_t raw;
 
-	raw.accel.x = AccData.X;
-	raw.accel.y = AccData.Y;
-	raw.accel.z = AccData.Z;
+	raw.accel.x = AccData.X / 256;
+	raw.accel.y = AccData.Y / 256;
+	raw.accel.z = AccData.Z / 256;
 
-	raw.gyro.x = GyroData.X;
-	raw.gyro.y = GyroData.Y;
-	raw.gyro.z = GyroData.Z;
+	raw.gyro.x = GyroData.X / 256;
+	raw.gyro.y = GyroData.Y / 256;
+	raw.gyro.z = GyroData.Z / 256;
 
-	raw.compass.x = MagData.X;
-	raw.compass.y = MagData.Y;
-	raw.compass.z = MagData.Z;
+	raw.compass.x = MagData.X / 256;
+	raw.compass.y = MagData.Y / 256;
+	raw.compass.z = MagData.Z / 256;
 
-	BleSrvcCharNotify(GetImuSrvcInstance(), 5, (uint8_t*)&raw, sizeof(ble_tms_raw_t));
+	uint32_t err = BleSrvcCharNotify(GetImuSrvcInstance(), 5, (uint8_t*)&raw, sizeof(ble_tms_raw_t));
+	if (err != 0)
+	{
+		///printf("raw Error %x\r\n", err);
+	}
 }
 
 void ImuEulerCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
 	g_ImuChars[IMUCHAR_IDX_EULER].bNotify = true;
-	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_EULER);
+	//MPU9250EnableFeature(MPU9250_MOTION_FEATURE_EULER);
 }
 
 void ImuRotMatCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
 	g_ImuChars[IMUCHAR_IDX_ROTMAT].bNotify = true;
-	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_ROT_MAT);
+	//MPU9250EnableFeature(MPU9250_MOTION_FEATURE_ROT_MAT);
 }
 void ImuHeadingCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
 	g_ImuChars[IMUCHAR_IDX_HEADING].bNotify = true;
-	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_HEADING);
+	//MPU9250EnableFeature(MPU9250_MOTION_FEATURE_HEADING);
 }
 
 void ImuGravityCharSetNotify(BLESRVC *pBleSvc, bool bEnable)
 {
 	g_ImuChars[IMUCHAR_IDX_GRAVITY].bNotify = true;
-	MPU9250EnableFeature(MPU9250_MOTION_FEATURE_GRAVITY_VECTOR);
+	//MPU9250EnableFeature(MPU9250_MOTION_FEATURE_GRAVITY_VECTOR);
 }
 

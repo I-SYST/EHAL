@@ -57,7 +57,6 @@ Modified by          Date              Description
 #include "app_timer.h"
 #include "app_util_platform.h"
 #include "app_scheduler.h"
-#include "app_scheduler.h"
 #include "fds.h"
 #include "nrf_fstorage.h"
 #include "nrf_sdh.h"
@@ -95,7 +94,7 @@ extern "C" ret_code_t nrf_sdh_enable(nrf_clock_lf_cfg_t *clock_lf_cfg);
 #ifdef SVCALL_AS_NORMAL_FUNCTION
 #define SCHED_QUEUE_SIZE                20                                         /**< Maximum number of events in the scheduler queue. More is needed in case of Serialization. */
 #else
-#define SCHED_QUEUE_SIZE          		10                        /**< Maximum number of events in the scheduler queue. */
+#define SCHED_QUEUE_SIZE          		20                        /**< Maximum number of events in the scheduler queue. */
 #endif
 
 #define SLAVE_LATENCY                   0                                           /**< Slave latency. */
@@ -482,6 +481,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
         	//g_Uart.printf("Passkey: %s\r\n", passkey);
         } break; // BLE_GAP_EVT_PASSKEY_DISPLAY
 
+#if 0
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
         {
 //            printf("PHY update request.\r\n");
@@ -515,7 +515,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             //ble_its_ble_params_info_send(&m_its, &m_ble_params_info);
 //            printf("Con params updated: CI %i, %i\r\n", (int)min_con_int, (int)max_con_int);
         } break;
-
+#endif
         case BLE_GATTS_EVT_SYS_ATTR_MISSING:
             // No system attributes have been stored.
             err_code = sd_ble_gatts_sys_attr_set(g_BleAppData.ConnHdl, NULL, 0, 0);
@@ -1286,7 +1286,7 @@ void BleGattEvtHandler(nrf_ble_gatt_t * p_gatt, const nrf_ble_gatt_evt_t * p_evt
 {
     if ((g_BleAppData.ConnHdl == p_evt->conn_handle) && (p_evt->evt_id == NRF_BLE_GATT_EVT_ATT_MTU_UPDATED))
     {
-    	g_BleAppData.MaxMtu = p_evt->params.att_mtu_effective - 3;//OPCODE_LENGTH - HANDLE_LENGTH;
+    	//g_BleAppData.MaxMtu = p_evt->params.att_mtu_effective - 3;//OPCODE_LENGTH - HANDLE_LENGTH;
        // m_ble_nus_max_data_len = p_evt->params.att_mtu_effective - OPCODE_LENGTH - HANDLE_LENGTH;
         //NRF_LOG_INFO("Data len is set to 0x%X(%d)\r\n", m_ble_nus_max_data_len, m_ble_nus_max_data_len);
     }
@@ -1652,9 +1652,28 @@ bool BleAppEnableNotify(uint16_t ConnHandle, uint16_t CharHandle)//ble_uuid_t * 
     write_params.p_value  = buf;
 
     err_code = sd_ble_gattc_write(ConnHandle, &write_params);
-    APP_ERROR_CHECK(err_code);
 
     return err_code == NRF_SUCCESS;
+}
+
+bool BleAppWrite(uint16_t ConnHandle, uint16_t CharHandle, uint8_t *pData, uint16_t DataLen)
+{
+	if (ConnHandle == BLE_CONN_HANDLE_INVALID || CharHandle == BLE_CONN_HANDLE_INVALID)
+	{
+		return false;
+	}
+
+    ble_gattc_write_params_t const write_params =
+    {
+        .write_op = BLE_GATT_OP_WRITE_CMD,
+        .flags    = BLE_GATT_EXEC_WRITE_FLAG_PREPARED_WRITE,
+        .handle   = CharHandle,
+        .offset   = 0,
+        .len      = DataLen,
+        .p_value  = pData
+    };
+
+    return sd_ble_gattc_write(ConnHandle, &write_params) == NRF_SUCCESS;
 }
 
 /**@brief   Function for polling SoftDevice events.

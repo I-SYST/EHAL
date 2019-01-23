@@ -50,6 +50,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __BLUEIOTHINGY_H__
 #define __BLUEIOTHINGY_H__
 
+#include "coredev/spi.h"
+#include "timer_nrf5x.h"
+
 /// Thingy custom service UUID
 #define THINGY_BASE_UUID    {{0x42, 0x00, 0x74, 0xA9, 0xFF, 0x52, 0x10, 0x9B, 0x33, 0x49, 0x35, 0x9B, 0x00, 0x00, 0x68, 0xEF}} //!< Used vendor specific UUID
 
@@ -70,6 +73,7 @@ void EnvSrvcNotifHumi(uint8_t Humi);
 BLESRVC *GetImuSrvcInstance();
 uint32_t ImuSrvcInit();
 
+bool ICM20948Init(DeviceIntrf * const pIntrf, Timer * const pTimer);
 
 #endif // __BLUEIOTHINGY_H__
 

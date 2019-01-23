@@ -12,7 +12,7 @@
 #include "coredev/timer.h"
 #include "BlueIOMPU9250.h"
 #include "sensors/agm_mpu9250.h"
-#include "imu/imu_invensense.h"
+#include "imu/imu_mpl_mpu9250.h"
 #include "idelay.h"
 #include "board.h"
 
@@ -51,7 +51,12 @@ static const MAGSENSOR_CFG s_MagCfg = {
 };
 
 AgmMpu9250 g_Mpu9250;
-ImuInvenSense g_Imu;
+
+static const IMU_CFG s_ImuCfg = {
+
+};
+
+static ImuMplMpu9250 g_Imu;
 
 static Timer * s_pTimer;
 static uint32_t s_MotionFeature = 0;
@@ -619,7 +624,7 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
 
 	//inv_init_mpl();
 
-    g_Imu.Init(&g_Mpu9250, &g_Mpu9250, &g_Mpu9250);
+    g_Imu.Init(s_ImuCfg, &g_Mpu9250, &g_Mpu9250, &g_Mpu9250);
 
     /* This algorithm updates the accel biases when in motion. A more accurate
      * bias measurement can be made when running the self-test. */
@@ -796,6 +801,7 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
 						 BLUEIO_TAG_EVIM_IMU_INT_PIN, IOPINSENSE_LOW_TRANSITION,
 						 MPU9250IntHandler);
 */
+    return true;
 }
 
 int Mpu9250AuxRead(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
@@ -917,6 +923,8 @@ int drv_mpu9250_read(unsigned char slave_addr, unsigned char reg_addr, unsigned 
 int drv_mpu9250_ms_get(unsigned long * p_count)
 {
 	*p_count = s_pTimer->uSecond() / 1000;
+
+	return 0;
 }
 
 /**@brief Function for enabling and registering the MPU-9250 interrupt callback.
@@ -933,6 +941,8 @@ int drv_mpu9250_int_register(struct int_param_s * p_int_param)
 	IOPinEnableInterrupt(BLUEIO_TAG_EVIM_IMU_INT_NO, 6, BLUEIO_TAG_EVIM_IMU_INT_PORT,
 						 BLUEIO_TAG_EVIM_IMU_INT_PIN, IOPINSENSE_LOW_TRANSITION,
 						 MPU9250IntHandler);
+
+	return 0;
 }
 
 

@@ -18,7 +18,7 @@ MEMORY
 		Reserve flash for DFU 0x78000-0x80000
 	*/
 	FLASH (rx) : ORIGIN = 0x26000, LENGTH = 0x5a000
-	RAM (rwx) :  ORIGIN = 0x20003400, LENGTH = 0xCC00
+	RAM (rwx) :  ORIGIN = 0x20004000, LENGTH = 0xC000
 	/** Location of non initialized RAM. Non initialized RAM is used for exchanging bond information
 	*  from application to bootloader when using buttonluss DFU OTA.
 	*/

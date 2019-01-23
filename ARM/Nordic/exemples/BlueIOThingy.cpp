@@ -98,7 +98,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Use advertisement timeout to update data
 #define APP_ADV_TIMEOUT_IN_SECONDS      0                                         /**< The advertising timeout (in units of seconds). */
 
-#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(20, UNIT_1_25_MS)     /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
+#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(8, UNIT_1_25_MS)     /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
 #define MAX_CONN_INTERVAL               MSEC_TO_UNITS(75, UNIT_1_25_MS)     /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
 
 #ifdef NEBLINA_MODULE
@@ -158,7 +158,7 @@ static const ble_uuid_t  s_AdvUuids[] = {
     {BLE_UUID_TCS_SERVICE, BLE_UUID_TYPE_VENDOR_BEGIN}
 };
 
-
+#if 0
 static const BLEAPP_CFG s_BleAppCfg = {
 	{ // Clock config nrf_clock_lf_cfg_t
 #ifdef IMM_NRF51822
@@ -197,7 +197,44 @@ static const BLEAPP_CFG s_BleAppCfg = {
 	BLUEIO_LED1_PIN,     	// Led pin number
 	0, 						// Tx power
 	NULL,					// RTOS Softdevice handler
-	276,
+	53,
+};
+#endif
+
+const BLEAPP_CFG s_BleAppCfg = {
+#ifdef IMM_NRF51822
+		.ClkCfg = { NRF_CLOCK_LF_SRC_RC, 1, 1, 0},
+#else
+		.ClkCfg = { NRF_CLOCK_LF_SRC_XTAL, 0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM},
+#endif
+	.CentLinkCount = 0, 				// Number of central link
+	.PeriLinkCount = 1, 				// Number of peripheral link
+	.AppMode = BLEAPP_MODE_APPSCHED,	// Use scheduler
+	.pDevName = DEVICE_NAME,			// Device name
+	.VendorID = ISYST_BLUETOOTH_ID,		// PnP Bluetooth/USB vendor id
+	.ProductId = 1,						// PnP Product ID
+	.ProductVer = 0,					// Pnp prod version
+	.bEnDevInfoService = false,			// Enable device information service (DIS)
+	.pDevDesc = NULL,
+	.pAdvManData = g_AdvDataBuff,			// Manufacture specific data to advertise
+	.AdvManDataLen = sizeof(g_AdvDataBuff),	// Length of manufacture specific data
+	.pSrManData = NULL,
+	.SrManDataLen = 0,
+	.SecType = BLEAPP_SECTYPE_NONE,//BLEAPP_SECTYPE_STATICKEY_MITM,//BLEAPP_SECTYPE_NONE,    // Secure connection type
+	.SecExchg = BLEAPP_SECEXCHG_NONE,	// Security key exchange
+	.pAdvUuids = s_AdvUuids,      			// Service uuids to advertise
+	.NbAdvUuid = sizeof(s_AdvUuids) / sizeof(ble_uuid_t), 					// Total number of uuids
+	.AdvInterval = APP_ADV_INTERVAL,	// Advertising interval in msec
+	.AdvTimeout = 0,		// Advertising timeout in sec
+	.AdvSlowInterval = 0,				// Slow advertising interval, if > 0, fallback to
+										// slow interval on adv timeout and advertise until connected
+	.ConnIntervalMin = MIN_CONN_INTERVAL,
+	.ConnIntervalMax = MAX_CONN_INTERVAL,
+	.ConnLedPort = BLUEIO_CONNECT_LED_PORT,// Led port nuber
+	.ConnLedPin = BLUEIO_CONNECT_LED_PIN,// Led pin number
+	.TxPower = 0,						// Tx power
+	.SDEvtHandler = NULL,				// RTOS Softdevice handler
+	.MaxMtu = 53,
 };
 
 static const IOPINCFG s_GpioPins[] = {
@@ -233,7 +270,7 @@ static const SPICFG s_SpiCfg = {
     SPIMODE_MASTER,
     s_SpiPins,
     sizeof(s_SpiPins) / sizeof(IOPINCFG),
-    1000000,   // Speed in Hz
+    4000000,   // Speed in Hz
     8,      // Data Size
     5,      // Max retries
     SPIDATABIT_MSB,
@@ -344,6 +381,8 @@ static const SEEP_CFG s_SeepCfg = {
 
 Seep g_Seep;
 
+
+
 void ReadPTHData()
 {
 	static uint32_t gascnt = 0;
@@ -394,7 +433,7 @@ void ReadPTHData()
 
 void SchedAdvData(void * p_event_data, uint16_t event_size)
 {
-	ReadPTHData();
+	//ReadPTHData();
 }
 
 void AppTimerHandler(Timer *pTimer, int TrigNo, void *pContext)
@@ -476,10 +515,20 @@ void HardwareInit()
 
     g_Spi.Read(0, reg, 2, val, 2);
 
-    MPU9250Init(&g_Spi, &g_Timer);
+   // if (MPU9250Init(&g_Spi, &g_Timer) == true)
+    {
+
+    }
+   // else
+    {
+    	if (ICM20948Init(&g_Spi, &g_Timer) == true)
+    	{
+
+    	}
+    }
 
 //    g_AgmSensor.Init(s_AccelCfg, &g_Spi);
-    g_AccelSensor.Init(s_AccelCfg, &g_Spi);
+    //g_AccelSensor.Init(s_AccelCfg, &g_Spi);
 
     bsec_library_return_t bsec_status;
 
@@ -533,6 +582,18 @@ void HardwareInit()
 
 }
 
+//
+// Print a greeting message on standard output and exit.
+//
+// On embedded platforms this might require semi-hosting or similar.
+//
+// For example, for toolchains derived from GNU Tools for Embedded,
+// to enable semi-hosting, the following was added to the linker:
+//
+// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lm -lrdimon -Wl,--end-group
+//
+// Adjust it for other toolchains.
+//
 int main()
 {
     HardwareInit();
@@ -548,5 +609,5 @@ int main()
 
 extern "C" int _MLPrintLog (int priority, const char* tag, const char* fmt, ...)
 {
-
+	return 0;
 }

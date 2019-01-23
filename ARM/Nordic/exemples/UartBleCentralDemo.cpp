@@ -202,7 +202,7 @@ void BleDevDiscovered(BLEPERIPH_DEV *pDev)
     	dcharidx = BleDevFindCharacteristic(pDev, idx, BLUEIO_UUID_UART_TX_CHAR);
     	if (dcharidx >= 0)
     	{
-    		g_BleTxCharHdl = pDev->Services[idx].charateristics[dcharidx].cccd_handle;
+    		g_BleTxCharHdl = pDev->Services[idx].charateristics[dcharidx].characteristic.handle_value;
     	}
     }
 
@@ -293,17 +293,7 @@ void UartRxChedHandler(void * p_event_data, uint16_t event_size)
 	{
 		if (g_ConnectedDev.ConnHdl != BLE_CONN_HANDLE_INVALID && g_BleTxCharHdl != BLE_CONN_HANDLE_INVALID)
 		{
-		    ble_gattc_write_params_t const write_params =
-		    {
-		        .write_op = BLE_GATT_OP_WRITE_CMD,
-		        .flags    = BLE_GATT_EXEC_WRITE_FLAG_PREPARED_WRITE,
-		        .handle   = BLE_CONN_HANDLE_INVALID,
-		        .offset   = 0,
-		        .len      = (uint16_t)l,
-		        .p_value  = buff
-		    };
-
-		    sd_ble_gattc_write(g_ConnectedDev.ConnHdl, &write_params);
+			BleAppWrite(g_ConnectedDev.ConnHdl, g_BleTxCharHdl, buff, l);
 		}
 	}
 }
