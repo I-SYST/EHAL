@@ -45,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static inv_icm20948_t icm_device;
 
 static const uint8_t dmp3_image[] = {
-#include "imu/icm20948_img.dmp3a.h"
+#include "imu/icm20948_img_dmp3a.h"
 };
 
 bool AgmIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)

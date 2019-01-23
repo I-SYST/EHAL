@@ -65,7 +65,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define AK0991x_SECONDARY_I2C_ADDR  0x0E	/* The secondary I2C address for AK0991x Magnetometers */
 
 static const uint8_t s_Dmp3Image[] = {
-#include "imu/icm20948_img.dmp3a.h"
+#include "imu/icm20948_img_dmp3a.h"
 };
 
 static const float s_CfgMountingMatrix[9]= {
