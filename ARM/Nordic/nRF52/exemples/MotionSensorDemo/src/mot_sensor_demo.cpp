@@ -140,10 +140,12 @@ static const ACCELSENSOR_CFG s_AccelCfg = {
 
 static const GYROSENSOR_CFG s_GyroCfg = {
 	.DevAddr = 0,
+	.Sensitivity = 10,
 };
 
 static const MAGSENSOR_CFG s_MagCfg = {
 	.DevAddr = 0,
+	.Precision = 10,
 };
 
 void ImuEvtHandler(Device * const pDev, DEV_EVT Evt);

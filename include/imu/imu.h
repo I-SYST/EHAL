@@ -54,6 +54,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 typedef uint32_t	IMU_SENSE;
 
+/// Quaternion data
+/// The quaternion is a normalized number.  For more compact structure
+/// convert it to 16 bits fixed point by multiplying with (1<<15) = 32768
 typedef struct __Imu_Quat {
 	uint32_t Timestamp;	//!< Time stamp count in msec
 	union {

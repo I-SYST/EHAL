@@ -284,11 +284,11 @@ void ImuInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t t
 	case INV_ICM20948_SENSOR_ROTATION_VECTOR:
 		memcpy(&(event.data.quaternion.accuracy), arg, sizeof(event.data.quaternion.accuracy));
 		memcpy(event.data.quaternion.quat, data, sizeof(event.data.quaternion.quat));
-		vQuat.Q1 = event.data.quaternion.quat[0] * 256.0;
-		vQuat.Q2 = event.data.quaternion.quat[1] * 256.0;
-		vQuat.Q3 = event.data.quaternion.quat[2] * 256.0;
-		vQuat.Q4 = event.data.quaternion.quat[3] * 256.0;
-		vQuat.Timestamp = timestamp;
+//		vQuat.Q1 = event.data.quaternion.quat[0] * 16384.0;
+//		vQuat.Q2 = event.data.quaternion.quat[1] * 16384.0;
+//		vQuat.Q3 = event.data.quaternion.quat[2] * 16384.0;
+//		vQuat.Q4 = event.data.quaternion.quat[3] * 16384.0;
+//		vQuat.Timestamp = timestamp;
 		break;
 	case INV_ICM20948_SENSOR_GAME_ROTATION_VECTOR:
 	{
@@ -301,11 +301,11 @@ void ImuInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t t
 		gyro_accuracy = (uint8_t)inv_icm20948_get_gyro_accuracy();
 
 		event.data.quaternion.accuracy_flag = min(accel_accuracy, gyro_accuracy);
-//		vQuat.Q1 = event.data.quaternion.quat[0] * 256.0;
-//		vQuat.Q2 = event.data.quaternion.quat[1] * 256.0;
-//		vQuat.Q3 = event.data.quaternion.quat[2] * 256.0;
-//		vQuat.Q4 = event.data.quaternion.quat[3] * 256.0;
-//		vQuat.Timestamp = timestamp;
+		vQuat.Q1 = event.data.quaternion.quat[0] * 32768.0;
+		vQuat.Q2 = event.data.quaternion.quat[1] * 32768.0;
+		vQuat.Q3 = event.data.quaternion.quat[2] * 32768.0;
+		vQuat.Q4 = event.data.quaternion.quat[3] * 32768.0;
+		vQuat.Timestamp = timestamp;
 	}
 		break;
 	case INV_ICM20948_SENSOR_ACTIVITY_CLASSIFICATON:

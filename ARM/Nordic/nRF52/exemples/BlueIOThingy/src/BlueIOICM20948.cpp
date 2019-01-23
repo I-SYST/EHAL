@@ -70,10 +70,14 @@ void ImuDataChedHandler(void * p_event_data, uint16_t event_size)
 	s_Imu.Read(magdata);
 	ImuRawDataSend(accdata, gyrodata, magdata);
 	s_Imu.Read(quat);
-	q[0] = quat.Q[0];
-	q[1] = quat.Q[1];
-	q[2] = quat.Q[2];
-	q[3] = quat.Q[3];
+	//q[0] = ((float)quat.Q[0] / 32768.0) * (float)(1<<30);
+	//q[1] = ((float)quat.Q[1] / 32768.0) * (float)(1<<30);
+	//q[2] = ((float)quat.Q[2] / 32768.0) * (float)(1<<30);
+	//q[3] = ((float)quat.Q[3] / 32768.0) * (float)(1<<30);
+	q[0] = quat.Q[0] << 15;
+	q[1] = quat.Q[1] << 15;
+	q[2] = quat.Q[2] << 15;
+	q[3] = quat.Q[3] << 15;
 	//printf("Quat %d: %d %d %d %d\r\n", quat.Timestamp, q[0], q[1], q[2], q[3]);
 	ImuQuatDataSend(q);
 }
