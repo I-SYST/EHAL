@@ -1,14 +1,16 @@
 /**-------------------------------------------------------------------------
-@file	agm_mpu9250.cpp
+@file	imu_mpu9250.cpp
 
-@brief	Implementation of TDK MPU-9250 accel, gyro, mag sensor
+@brief	Implementation of an Inertial Measurement Unit of InvenSense MPU-9250
+
+Implements the DMP (Digital Motion Processor) driver portion of the MPU-9250
 
 @author	Hoang Nguyen Hoan
-@date	Nov. 18, 2017
+@date	Aug. 1, 2018
 
 @license
 
-Copyright (c) 2017, I-SYST inc., all rights reserved
+Copyright (c) 2018, I-SYST inc., all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -32,10 +34,204 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
 
-#include "idelay.h"
-#include "coredev/i2c.h"
-#include "coredev/spi.h"
+#include "accel_auto_cal.h"
+#include "quaternion_supervisor.h"
+#include "fusion_9axis.h"
+#include "fast_no_motion.h"
+#include "compass_vec_cal.h"
+#include "gyro_tc.h"
+#include "heading_from_gyro.h"
+#include "inv_math.h"
+#include "invensense_adv.h"
+#include "mag_disturb.h"
+#include "motion_no_motion.h"
+#include "no_gyro_fusion.h"
+#include "storage_manager.h"
+#include "start_manager.h"
+#include "data_builder.h"
+#include "results_holder.h"
+#include "mlinclude.h"
+#include "mpl.h"
+#include "log.h"
+
 #include "sensors/agm_mpu9250.h"
+#include "imu/imu_mpu9250.h"
+
+/* These defines are copied from dmpDefaultMPU6050.c in the general MPL
+ * releases. These defines may change for each DMP image, so be sure to modify
+ * these values when switching to a new image.
+ */
+#define CFG_LP_QUAT             (2712)
+#define END_ORIENT_TEMP         (1866)
+#define CFG_27                  (2742)
+#define CFG_20                  (2224)
+#define CFG_23                  (2745)
+#define CFG_FIFO_ON_EVENT       (2690)
+#define END_PREDICTION_UPDATE   (1761)
+#define CGNOTICE_INTR           (2620)
+#define X_GRT_Y_TMP             (1358)
+#define CFG_DR_INT              (1029)
+#define CFG_AUTH                (1035)
+#define UPDATE_PROP_ROT         (1835)
+#define END_COMPARE_Y_X_TMP2    (1455)
+#define SKIP_X_GRT_Y_TMP        (1359)
+#define SKIP_END_COMPARE        (1435)
+#define FCFG_3                  (1088)
+#define FCFG_2                  (1066)
+#define FCFG_1                  (1062)
+#define END_COMPARE_Y_X_TMP3    (1434)
+#define FCFG_7                  (1073)
+#define FCFG_6                  (1106)
+#define FLAT_STATE_END          (1713)
+#define SWING_END_4             (1616)
+#define SWING_END_2             (1565)
+#define SWING_END_3             (1587)
+#define SWING_END_1             (1550)
+#define CFG_8                   (2718)
+#define CFG_15                  (2727)
+#define CFG_16                  (2746)
+#define CFG_EXT_GYRO_BIAS       (1189)
+#define END_COMPARE_Y_X_TMP     (1407)
+#define DO_NOT_UPDATE_PROP_ROT  (1839)
+#define CFG_7                   (1205)
+#define FLAT_STATE_END_TEMP     (1683)
+#define END_COMPARE_Y_X         (1484)
+#define SKIP_SWING_END_1        (1551)
+#define SKIP_SWING_END_3        (1588)
+#define SKIP_SWING_END_2        (1566)
+#define TILTG75_START           (1672)
+#define CFG_6                   (2753)
+#define TILTL75_END             (1669)
+#define END_ORIENT              (1884)
+#define CFG_FLICK_IN            (2573)
+#define TILTL75_START           (1643)
+#define CFG_MOTION_BIAS         (1208)
+#define X_GRT_Y                 (1408)
+#define TEMPLABEL               (2324)
+#define CFG_ANDROID_ORIENT_INT  (1853)
+#define CFG_GYRO_RAW_DATA       (2722)
+#define X_GRT_Y_TMP2            (1379)
+
+#define D_0_22                  (22+512)
+#define D_0_24                  (24+512)
+
+#define D_0_36                  (36)
+#define D_0_52                  (52)
+#define D_0_96                  (96)
+#define D_0_104                 (104)
+#define D_0_108                 (108)
+#define D_0_163                 (163)
+#define D_0_188                 (188)
+#define D_0_192                 (192)
+#define D_0_224                 (224)
+#define D_0_228                 (228)
+#define D_0_232                 (232)
+#define D_0_236                 (236)
+
+#define D_1_2                   (256 + 2)
+#define D_1_4                   (256 + 4)
+#define D_1_8                   (256 + 8)
+#define D_1_10                  (256 + 10)
+#define D_1_24                  (256 + 24)
+#define D_1_28                  (256 + 28)
+#define D_1_36                  (256 + 36)
+#define D_1_40                  (256 + 40)
+#define D_1_44                  (256 + 44)
+#define D_1_72                  (256 + 72)
+#define D_1_74                  (256 + 74)
+#define D_1_79                  (256 + 79)
+#define D_1_88                  (256 + 88)
+#define D_1_90                  (256 + 90)
+#define D_1_92                  (256 + 92)
+#define D_1_96                  (256 + 96)
+#define D_1_98                  (256 + 98)
+#define D_1_106                 (256 + 106)
+#define D_1_108                 (256 + 108)
+#define D_1_112                 (256 + 112)
+#define D_1_128                 (256 + 144)
+#define D_1_152                 (256 + 12)
+#define D_1_160                 (256 + 160)
+#define D_1_176                 (256 + 176)
+#define D_1_178                 (256 + 178)
+#define D_1_218                 (256 + 218)
+#define D_1_232                 (256 + 232)
+#define D_1_236                 (256 + 236)
+#define D_1_240                 (256 + 240)
+#define D_1_244                 (256 + 244)
+#define D_1_250                 (256 + 250)
+#define D_1_252                 (256 + 252)
+#define D_2_12                  (512 + 12)
+#define D_2_96                  (512 + 96)
+#define D_2_108                 (512 + 108)
+#define D_2_208                 (512 + 208)
+#define D_2_224                 (512 + 224)
+#define D_2_236                 (512 + 236)
+#define D_2_244                 (512 + 244)
+#define D_2_248                 (512 + 248)
+#define D_2_252                 (512 + 252)
+
+#define CPASS_BIAS_X            (35 * 16 + 4)
+#define CPASS_BIAS_Y            (35 * 16 + 8)
+#define CPASS_BIAS_Z            (35 * 16 + 12)
+#define CPASS_MTX_00            (36 * 16)
+#define CPASS_MTX_01            (36 * 16 + 4)
+#define CPASS_MTX_02            (36 * 16 + 8)
+#define CPASS_MTX_10            (36 * 16 + 12)
+#define CPASS_MTX_11            (37 * 16)
+#define CPASS_MTX_12            (37 * 16 + 4)
+#define CPASS_MTX_20            (37 * 16 + 8)
+#define CPASS_MTX_21            (37 * 16 + 12)
+#define CPASS_MTX_22            (43 * 16 + 12)
+#define D_EXT_GYRO_BIAS_X       (61 * 16)
+#define D_EXT_GYRO_BIAS_Y       (61 * 16) + 4
+#define D_EXT_GYRO_BIAS_Z       (61 * 16) + 8
+#define D_ACT0                  (40 * 16)
+#define D_ACSX                  (40 * 16 + 4)
+#define D_ACSY                  (40 * 16 + 8)
+#define D_ACSZ                  (40 * 16 + 12)
+
+#define FLICK_MSG               (45 * 16 + 4)
+#define FLICK_COUNTER           (45 * 16 + 8)
+#define FLICK_LOWER             (45 * 16 + 12)
+#define FLICK_UPPER             (46 * 16 + 12)
+
+#define D_AUTH_OUT              (992)
+#define D_AUTH_IN               (996)
+#define D_AUTH_A                (1000)
+#define D_AUTH_B                (1004)
+
+#define D_PEDSTD_BP_B           (768 + 0x1C)
+#define D_PEDSTD_HP_A           (768 + 0x78)
+#define D_PEDSTD_HP_B           (768 + 0x7C)
+#define D_PEDSTD_BP_A4          (768 + 0x40)
+#define D_PEDSTD_BP_A3          (768 + 0x44)
+#define D_PEDSTD_BP_A2          (768 + 0x48)
+#define D_PEDSTD_BP_A1          (768 + 0x4C)
+#define D_PEDSTD_INT_THRSH      (768 + 0x68)
+#define D_PEDSTD_CLIP           (768 + 0x6C)
+#define D_PEDSTD_SB             (768 + 0x28)
+#define D_PEDSTD_SB_TIME        (768 + 0x2C)
+#define D_PEDSTD_PEAKTHRSH      (768 + 0x98)
+#define D_PEDSTD_TIML           (768 + 0x2A)
+#define D_PEDSTD_TIMH           (768 + 0x2E)
+#define D_PEDSTD_PEAK           (768 + 0X94)
+#define D_PEDSTD_STEPCTR        (768 + 0x60)
+#define D_PEDSTD_TIMECTR        (964)
+#define D_PEDSTD_DECI           (768 + 0xA0)
+
+#define D_HOST_NO_MOT           (976)
+#define D_ACCEL_BIAS            (660)
+
+#define D_ORIENT_GAP            (76)
+
+#define D_TILT0_H               (48)
+#define D_TILT0_L               (50)
+#define D_TILT1_H               (52)
+#define D_TILT1_L               (54)
+#define D_TILT2_H               (56)
+#define D_TILT2_L               (58)
+#define D_TILT3_H               (60)
+#define D_TILT3_L               (62)
 
 #define DMP_CODE_SIZE           (3062)
 #define DMP_START_ADDR			(0x400)
@@ -248,781 +444,240 @@ static const uint8_t s_DMPImage[DMP_CODE_SIZE] = {
     0xa6, 0xd9, 0x00, 0xd8, 0xf1, 0xff
 };
 
-bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
+/* END OF SECTION COPIED FROM dmpDefaultMPU6050.c */
+
+#define DMP_SAMPLE_RATE     (200)
+
+int drv_mpu9250_write(unsigned char slave_addr, unsigned char reg_addr, unsigned char length, unsigned char const * p_data)
 {
-	if (vbInitialized)
+	return 0;
+}
+
+#if 0
+bool ImuMplMpu9250::Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer)
+{
+	if (Valid())
 		return true;;
 
 	if (pIntrf == NULL)
 		return false;
 
-	uint8_t regaddr;
-	uint8_t d;
-	uint8_t userctrl = /*MPU9250_AG_USER_CTRL_FIFO_EN | MPU9250_AG_USER_CTRL_DMP_EN |*/ MPU9250_AG_USER_CTRL_I2C_MST_EN;
-	uint8_t mst = 0;
+	Imu::Init(Cfg, DevAddr, pIntrf, pTimer);
 
-	Interface(pIntrf);
-	DeviceAddess(DevAddr);
+	inv_error_t err;
 
-	if (pTimer != NULL)
-	{
-		vpTimer = pTimer;
-	}
+	inv_init_storage_manager();
 
-/*	if (DevAddr == MPU9250_I2C_DEV_ADDR0 || DevAddr == MPU9250_I2C_DEV_ADDR1)
-	{
-		// I2C mode
-		vbSpi = false;
-	}
-	else*/
-	if (pIntrf->Type() == DEVINTRF_TYPE_SPI)
-	{
-//		vbSpi = true;
+    /* initialize the start callback manager */
+    err = inv_init_start_manager();
 
-		// in SPI mode, use i2c master mode to access Mag device (AK8963C)
-		userctrl |= MPU9250_AG_USER_CTRL_I2C_MST_EN | MPU9250_AG_USER_CTRL_I2C_IF_DIS;
-		mst = MPU9250_AG_I2C_MST_CTRL_WAIT_FOR_ES | 13;
-	}
+    /* initialize the data builder */
+    err = inv_init_data_builder();
 
-	// Read chip id
-	regaddr = MPU9250_AG_WHO_AM_I;
-	d = Read8((uint8_t*)&regaddr, 1);
+    err = inv_enable_results_holder();
 
-	if (d != MPU9250_AG_WHO_AM_I_ID)
-	{
-		return false;
-	}
+    /* This algorithm updates the accel biases when in motion. A more accurate
+     * bias measurement can be made when running the self-test. */
+    err = inv_enable_in_use_auto_calibration();
 
-	Reset();
+    /* Compute 6-axis and 9-axis quaternions. */
+    err = inv_enable_quaternion();
 
-	DeviceID(d);
-	Valid(true);
+    err = inv_enable_9x_sensor_fusion();
 
-	// NOTE : require delay for reset to stabilize
-	// the chip would not respond properly to motion detection
-	usDelay(500000);
+    /* Update gyro biases when not in motion. */
+    err = inv_enable_fast_nomot();
 
-	//UploadDMPImage();
+    /* Update gyro biases when temperature changes. */
+    err = inv_enable_gyro_tc();
 
-	// Disable all interrupt
-	regaddr = MPU9250_AG_INT_ENABLE;
-	Write8(&regaddr, 1, 0);
+    /* Compass calibration algorithms. */
+    err = inv_enable_vector_compass_cal();
 
-	//regaddr = MPU9250_AG_CONFIG;
-	//Write8(&regaddr, 1, MPU9250_AG_CONFIG_FIFO_MODE_BLOCKING);
+    err = inv_enable_magnetic_disturbance();
 
-	vbInitialized = true;
+    //err = inv_enable_eMPL_outputs();
 
-	//regaddr = MPU9250_AG_PWR_MGMT_1;
-	//Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_SLEEP);
-	//return true;
-
-	// Init master I2C interface
-	regaddr = MPU9250_AG_USER_CTRL;
-	Write8(&regaddr, 1, userctrl);
-
-	regaddr = MPU9250_AG_I2C_MST_CTRL;
-	Write8(&regaddr, 1, mst);
-
-	// Enable FIFO
-
-    // Undocumented register
-	// shares 4kB of memory between the DMP and the FIFO. Since the
-    // first 3kB are needed by the DMP, we'll use the last 1kB for the FIFO.
-	regaddr = MPU9250_AG_ACCEL_CONFIG2;
-	Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B | MPU9250_AG_ACCEL_CONFIG2_FIFO_SIZE_1024);
-
-
-	//regaddr = MPU9250_AG_FIFO_EN;
-	//Write8(&regaddr, 1, MPU9250_AG_FIFO_EN_ACCEL |
-	//		MPU9250_AG_FIFO_EN_GYRO_ZOUT | MPU9250_AG_FIFO_EN_GYRO_YOUT |
-	//		MPU9250_AG_FIFO_EN_GYRO_XOUT | MPU9250_AG_FIFO_EN_TEMP_OUT);
-
+    //err = inv_enable_heading_from_gyro();
 
 	return true;
 }
+#endif
 
-bool AgmMpu9250::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag)
 {
-	uint8_t regaddr;
-	uint8_t d;
+	inv_error_t err;
 
-	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
+	if (pAccel == NULL)
+	{
 		return false;
-
-	regaddr = MPU9250_AG_LP_ACCEL_ODR;
-
-	if (CfgData.Freq < 400)
-	{
-		Write8(&regaddr, 1, 0);
-		vSampFreq = 240;	// 0.24 Hz
-	}
-	else if (CfgData.Freq < 900)
-	{
-		Write8(&regaddr, 1, 1);
-		vSampFreq = 490;	// 0.49 Hz
-	}
-	else if (CfgData.Freq < 1500)
-	{
-		Write8(&regaddr, 1, 2);
-		vSampFreq = 980;	// 0.98 Hz
-	}
-	else if (CfgData.Freq < 2500)
-	{
-		Write8(&regaddr, 1, 3);
-		vSampFreq = 1950;	// 1.95 Hz
-	}
-	else if (CfgData.Freq < 3500)
-	{
-		Write8(&regaddr, 1, 4);
-		vSampFreq = 3910;	// 3.91 Hz
-	}
-	else if (CfgData.Freq < 10000)
-	{
-		Write8(&regaddr, 1, 5);
-		vSampFreq = 7810;	// 7.81 Hz
-	}
-	else if (CfgData.Freq < 20000)
-	{
-		Write8(&regaddr, 1, 6);
-		vSampFreq = 15630;	// 15.63 Hz
-	}
-	else if (CfgData.Freq < 50000)
-	{
-		Write8(&regaddr, 1, 7);
-		vSampFreq = 31250;	// 31.25 Hz
-	}
-	else if (CfgData.Freq < 100000)
-	{
-		Write8(&regaddr, 1, 8);
-		vSampFreq = 62500;	// 62.5 Hz
-	}
-	else if (CfgData.Freq < 200000)
-	{
-		Write8(&regaddr, 1, 9);
-		vSampFreq = 125000;	// 125 Hz
-	}
-	else if (CfgData.Freq < 500)
-	{
-		Write8(&regaddr, 1, 10);
-		vSampFreq = 250000;	// 250 Hz
-	}
-	else
-	{
-		Write8(&regaddr, 1, 11);
-		vSampFreq = 500000;	// 500 Hz
 	}
 
-	Scale(CfgData.Scale);
-	LowPassFreq(vSampFreq / 2000);
-
-	//regaddr = MPU9250_AG_INT_ENABLE;
-	//Write8(&regaddr, 1, MPU9250_AG_INT_ENABLE_DMP_EN);
-
-//	Reset();
-
-	msDelay(100);
-
-		//regaddr = MPU9250_AG_PWR_MGMT_1;
-	//Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_CYCLE);
+	vpMpu = (AgmMpu9250 *)pAccel;
 
 
-	return true;
+#if 0
+    inv_init_storage_manager();
+
+    /* initialize the start callback manager */
+    err = inv_init_start_manager();
+
+    /* initialize the data builder */
+    err = inv_init_data_builder();
+
+    err = inv_enable_results_holder();
+
+    /* This algorithm updates the accel biases when in motion. A more accurate
+     * bias measurement can be made when running the self-test. */
+    err = inv_enable_in_use_auto_calibration();
+
+    /* Compute 6-axis and 9-axis quaternions. */
+    err = inv_enable_quaternion();
+
+    err = inv_enable_9x_sensor_fusion();
+
+    /* Update gyro biases when not in motion. */
+    err = inv_enable_fast_nomot();
+
+    /* Update gyro biases when temperature changes. */
+    err = inv_enable_gyro_tc();
+
+    /* Compass calibration algorithms. */
+    err = inv_enable_vector_compass_cal();
+
+    err = inv_enable_magnetic_disturbance();
+
+    //err = inv_enable_eMPL_outputs();
+
+  //  err = inv_enable_heading_from_gyro();
+    //RETURN_IF_ERROR(err_code);
+
+#endif
+    bool res = 	UploadDMPImage();
+
+    if (res == true)
+    {
+    	res = Imu::Init(Cfg, pAccel, pGyro, pMag);
+    }
+
+    return res;
 }
 
-bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+
+bool ImuMpu9250::UpdateData()
 {
-	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
-		return false;
-
-	uint8_t regaddr;
-	uint8_t d = 0;
-	uint8_t fchoice = 0;
-	uint32_t f = CfgData.Freq >> 1;
-
-	if (f == 0)
-	{
-		fchoice = 1;
-	}
-	if (f < 10000)
-	{
-		d = MPU9250_AG_CONFIG_DLPF_CFG_5HZ;
-	}
-	else if (f < 20000)
-	{
-		d = MPU9250_AG_CONFIG_DLPF_CFG_10HZ;
-	}
-	else if (f < 30000)
-	{
-		d = MPU9250_AG_CONFIG_DLPF_CFG_20HZ;
-	}
-	else if (f < 60000)
-	{
-		d = MPU9250_AG_CONFIG_DLPF_CFG_41HZ;
-	}
-	else if (f < 150000)
-	{
-		d = MPU9250_AG_CONFIG_DLPF_CFG_92HZ;
-	}
-	else if (f < 220000)
-	{
-		d = MPU9250_AG_CONFIG_DLPF_CFG_184HZ;
-	}
-	else if (f < 40000)
-	{
-		d = MPU9250_AG_CONFIG_DLPF_CFG_250HZ;
-	}
-	else if (f < 400000)
-	{
-		d = MPU9250_AG_CONFIG_DLPF_CFG_3600HZ;
-	}
-	else
-	{
-		// 8800Hz
-		fchoice = 1;
-	}
-
-	regaddr = MPU9250_AG_CONFIG;
-	Write8(&regaddr, 1, d);
-
-	regaddr = MPU9250_AG_GYRO_CONFIG;
-	Write8(&regaddr, 1, fchoice);
-
-	Sensitivity(CfgData.Sensitivity);
-
-	//UploadDMPImage();
 
 	return true;
 }
 
-bool AgmMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+bool ImuMpu9250::Enable()
+{
+	return true;
+}
+
+void ImuMpu9250::Disable()
+{
+
+}
+
+void ImuMpu9250::Reset()
+{
+
+}
+
+uint32_t ImuMpu9250::Rate(uint32_t DataRate)
+{
+    const uint8_t cfg[12] = { DINAFE, DINAF2, DINAAB, 0xc4, DINAAA, DINAF1, DINADF, DINADF, 0xBB, 0xAF, DINADF, DINADF };
+	uint8_t d[2];
+
+	if (DataRate > DMP_SAMPLE_RATE)
+	{
+		DataRate = DMP_SAMPLE_RATE;
+	}
+	if (DataRate <= 0)
+	{
+		DataRate = 1;
+	}
+
+	uint16_t div = DMP_SAMPLE_RATE / DataRate - 1;
+
+	d[0] = div >> 8;
+	d[1] = div & 0xFF;
+
+	Write(D_0_22, d, 2);
+	Write(CFG_6, (uint8_t*)cfg, sizeof(cfg));
+
+	return Imu::Rate(DataRate * 1000);
+}
+
+void ImuMpu9250::IntHandler()
+{
+
+}
+
+int ImuMpu9250::Read(uint16_t Addr, uint8_t *pBuff, int Len)
 {
 	uint8_t regaddr;
-	uint8_t d[4];
+	uint8_t d[2];
+	int cnt = 0;
 
-	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
-		return false;
-
-	msDelay(200);
-
-	regaddr = MPU9250_MAG_WIA;
-	Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, d, 1);
-
-	if (d[0] != MPU9250_MAG_WIA_DEVICE_ID)
+	while (Len > 0)
 	{
-		return false;
-	}
+		int l = min(Len, MPU9250_DMP_MEM_PAGE_SIZE);
 
-	msDelay(1);
+		regaddr = MPU9250_DMP_MEM_BANKSEL;
+		d[0] = Addr >> 8;
+		d[1] = Addr & 0xFF;
 
-	// Read ROM sensitivity adjustment values
-	regaddr = MPU9250_MAG_CTRL1;
-	d[0] = MPU9250_MAG_CTRL1_MODE_PWRDOWN;
-	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, d, 1);
-
-	msDelay(1);
-
-	d[0] = MPU9250_MAG_CTRL1_MODE_FUSEROM_ACCESS;
-	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, d, 1);
-
-	msDelay(100);
-
-	regaddr = MPU9250_MAG_ASAX;
-	Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, d, 3);
-
-	vMagSenAdj[0] = (int16_t)d[0] - 128;
-	vMagSenAdj[1] = (int16_t)d[1] - 128;
-	vMagSenAdj[2] = (int16_t)d[2] - 128;
-
-	// Transition out of reading ROM
-	regaddr = MPU9250_MAG_CTRL1;
-	d[0] = MPU9250_MAG_CTRL1_MODE_PWRDOWN;
-	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, d, 1);
-
-	MagSensor::vPrecision = 14;
-	vMagCtrl1Val = 0;
-	MagSensor::vScale = 8190;
-
-	if (CfgData.Precision >= 16)
-	{
-		MagSensor::vPrecision = 16;
-		MagSensor::vScale = 32760;
-		vMagCtrl1Val = MPU9250_MAG_CTRL1_BIT_16;
-	}
-
-	if (CfgData.OpMode == SENSOR_OPMODE_CONTINUOUS)
-	{
-		if (CfgData.Freq < 50000)
+		if (Write(&regaddr, 1, d, 2) < 2)
 		{
-			// Select 8Hz
-			vMagCtrl1Val |= MPU9250_MAG_CTRL1_MODE_8HZ;
-			MagSensor::Mode(CfgData.OpMode, 8000000);
+			break;
 		}
-		else
+
+		regaddr = MPU9250_DMP_MEM_RW;
+		l = Read(&regaddr, 1, pBuff, l);
+
+		pBuff += l;
+		Addr += l;
+		Len -= l;
+		cnt += l;
+	}
+
+	return cnt;
+}
+
+int ImuMpu9250::Write(uint16_t Addr, uint8_t *pData, int Len)
+{
+	uint8_t regaddr;
+	uint8_t d[2];
+	int cnt = 0;
+
+	while (Len > 0)
+	{
+		int l = min(Len, MPU9250_DMP_MEM_PAGE_SIZE);
+
+		regaddr = MPU9250_DMP_MEM_BANKSEL;
+		d[0] = Addr >> 8;
+		d[1] = Addr & 0xFF;
+
+		if (Write(&regaddr, 1, d, 2) < 2)
 		{
-			// Select 100Hz
-			vMagCtrl1Val |= MPU9250_MAG_CTRL1_MODE_100HZ;
-			MagSensor::Mode(CfgData.OpMode, 100000000);
+			break;
 		}
+
+		regaddr = MPU9250_DMP_MEM_RW;
+		l = Write(&regaddr, 1, pData, l);
+
+		pData += l;
+		Addr += l;
+		Len -= l;
+		cnt += l;
 	}
-	else
-	{
-		vMagCtrl1Val |= MPU9250_MAG_CTRL1_MODE_SINGLE;
-		MagSensor::Mode(CfgData.OpMode, 0);
-	}
 
-	msDelay(10);
-
-	regaddr = MPU9250_MAG_CTRL1;
-	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &vMagCtrl1Val, 1);
-
-	return true;
+	return cnt;
 }
 
-bool AgmMpu9250::Enable()
-{
-	uint8_t regaddr = MPU9250_AG_PWR_MGMT_1;
-
-	Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_CYCLE | MPU9250_AG_PWR_MGMT_1_GYRO_STANDBY |
-			MPU9250_AG_PWR_MGMT_1_CLKSEL_INTERNAL);
-
-	regaddr = MPU9250_AG_PWR_MGMT_2;
-
-	// Enable Accel & Gyro
-	Write8(&regaddr, 1,
-			MPU9250_AG_PWR_MGMT_2_DIS_ZG |
-			MPU9250_AG_PWR_MGMT_2_DIS_YG |
-			MPU9250_AG_PWR_MGMT_2_DIS_XG);
-
-	// Enable Mag
-	//regaddr = MPU9250_MAG_CTRL1;
-	//Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &vMagCtrl1Val, 1);
-
-	return true;
-}
-
-void AgmMpu9250::Disable()
-{
-	uint8_t regaddr = MPU9250_AG_PWR_MGMT_2;
-	uint8_t d;
-//Reset();
-//msDelay(2000);
-
-	regaddr = MPU9250_AG_PWR_MGMT_1;
-	d = Read8(&regaddr, 1);
-	d |= MPU9250_AG_PWR_MGMT_1_SLEEP;
-	Write8(&regaddr, 1, d);//MPU9250_AG_PWR_MGMT_1_SLEEP | MPU9250_AG_PWR_MGMT_1_PD_PTAT |
-						//MPU9250_AG_PWR_MGMT_1_CYCLE | 3);//MPU9250_AG_PWR_MGMT_1_GYRO_STANDBY);
-
-	return;
-
-	regaddr = MPU9250_AG_USER_CTRL;
-	Write8(&regaddr, 1, MPU9250_AG_USER_CTRL_I2C_MST_EN);
-
-	// Disable Mag
-	regaddr = MPU9250_MAG_CTRL1;
-	//uint8_t d = 0;
-	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
-
-	// Disable Accel Gyro
-	Write8(&regaddr, 1,
-		 MPU9250_AG_PWR_MGMT_2_DIS_ZG | MPU9250_AG_PWR_MGMT_2_DIS_YG | MPU9250_AG_PWR_MGMT_2_DIS_XG |
-		 MPU9250_AG_PWR_MGMT_2_DIS_ZA | MPU9250_AG_PWR_MGMT_2_DIS_YA | MPU9250_AG_PWR_MGMT_2_DIS_XA);
-
-	regaddr = MPU9250_AG_PWR_MGMT_1;
-	d = Read8(&regaddr, 1);
-	d |= MPU9250_AG_PWR_MGMT_1_SLEEP;
-	Write8(&regaddr, 1, d);//MPU9250_AG_PWR_MGMT_1_SLEEP | MPU9250_AG_PWR_MGMT_1_PD_PTAT |
-//	Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_SLEEP | MPU9250_AG_PWR_MGMT_1_PD_PTAT |
-//						MPU9250_AG_PWR_MGMT_1_GYRO_STANDBY);
-
-}
-
-void AgmMpu9250::Reset()
-{
-	uint8_t regaddr = MPU9250_AG_PWR_MGMT_1;
-
-	Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_H_RESET);
-}
-
-bool AgmMpu9250::StartSampling()
-{
-	return true;
-}
-
-// Implement wake on motion
-bool AgmMpu9250::WakeOnEvent(bool bEnable, int Threshold)
-{
-    uint8_t regaddr;
-
-	if (bEnable == true)
-	{
-		Reset();
-
-		msDelay(2000);
-
-	    regaddr = MPU9250_AG_PWR_MGMT_1;
-	    Write8(&regaddr, 1, 0);
-
-	    regaddr = MPU9250_AG_PWR_MGMT_2;
-		Write8(&regaddr, 1, /**MPU9250_AG_PWR_MGMT_2_DIS_XA | MPU9250_AG_PWR_MGMT_2_DIS_YA |*/
-				MPU9250_AG_PWR_MGMT_2_DIS_XG | MPU9250_AG_PWR_MGMT_2_DIS_YG | MPU9250_AG_PWR_MGMT_2_DIS_ZG);
-
-		regaddr = MPU9250_AG_ACCEL_CONFIG2;
-	    Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B | MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_5HZ);
-
-	    regaddr = MPU9250_AG_INT_ENABLE;
-	    Write8(&regaddr, 1, MPU9250_AG_INT_ENABLE_WOM_EN);
-
-	    regaddr = MPU9250_AG_MOT_DETECT_CTRL;
-	    Write8(&regaddr, 1, MPU9250_AG_MOT_DETECT_CTRL_ACCEL_INTEL_MODE | MPU9250_AG_MOT_DETECT_CTRL_ACCEL_INTEL_EN);
-
-	    regaddr = MPU9250_AG_WOM_THR;
-	    Write8(&regaddr, 1, Threshold);
-
-	    regaddr = MPU9250_AG_LP_ACCEL_ODR;
-	    Write8(&regaddr, 1, 0);
-
-		regaddr = MPU9250_AG_PWR_MGMT_1;
-		Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_CYCLE);
-
-	}
-	else
-	{
-	    regaddr = MPU9250_AG_INT_ENABLE;
-	    Write8(&regaddr, 1, 0);
-
-	    regaddr = MPU9250_AG_PWR_MGMT_1;
-		Write8(&regaddr, 1, 0);
-	}
-
-	return true;
-}
-
-// Accel low pass frequency
-uint32_t AgmMpu9250::LowPassFreq(uint32_t Freq)
-{
-	uint8_t regaddr = MPU9250_AG_ACCEL_CONFIG2;
-	uint d = 0;
-
-	if (Freq == 0)
-	{
-		d = MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B;
-		AccelSensor::LowPassFreq(1130);
-	}
-	else if (Freq < 10)
-	{
-		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_5HZ;
-		AccelSensor::LowPassFreq(5);
-	}
-	else if (Freq < 20)
-	{
-		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_10HZ;
-		AccelSensor::LowPassFreq(10);
-	}
-	else if (Freq < 40)
-	{
-		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_20HZ;
-		AccelSensor::LowPassFreq(20);
-	}
-	else if (Freq < 50)
-	{
-		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_41HZ;
-		AccelSensor::LowPassFreq(41);
-	}
-	else if (Freq < 100)
-	{
-		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_92HZ;
-		AccelSensor::LowPassFreq(92);
-	}
-	else if (Freq < 200)
-	{
-		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_184HZ;
-		AccelSensor::LowPassFreq(184);
-	}
-	else if (Freq < 500)
-	{
-		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_460HZ;
-		AccelSensor::LowPassFreq(460);
-	}
-	else
-	{
-		d = MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B;
-		AccelSensor::LowPassFreq(1130);
-	}
-
-	Write8(&regaddr, 1, d | MPU9250_AG_ACCEL_CONFIG2_FIFO_SIZE_1024);
-
-	return AccelSensor::LowPassFreq();
-}
-
-// Accel scale
-uint16_t AgmMpu9250::Scale(uint16_t Value)
-{
-	uint8_t regaddr = MPU9250_AG_ACCEL_CONFIG;
-
-	if (Value < 3)
-	{
-		Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG_ACCEL_FS_SEL_2G);
-		AccelSensor::Scale(2);
-	}
-	else if (Value < 6)
-	{
-		Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG_ACCEL_FS_SEL_4G);
-		AccelSensor::Scale(4);
-	}
-	else if (Value < 12)
-	{
-		Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG_ACCEL_FS_SEL_8G);
-		AccelSensor::Scale(8);
-	}
-	else
-	{
-		Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG_ACCEL_FS_SEL_16G);
-		AccelSensor::Scale(16);
-	}
-
-	return AccelSensor::Scale();
-}
-
-// Gyro scale
-uint32_t AgmMpu9250::Sensitivity(uint32_t Value)
-{
-	uint8_t regaddr = MPU9250_AG_GYRO_CONFIG;
-	uint8_t d = Read8(&regaddr, 1) & MPU9250_AG_GYRO_CONFIG_FCHOICE_MASK;
-
-	if (Value < 500)
-	{
-		d |= MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_250DPS;
-		GyroSensor::Sensitivity(250);
-	}
-	else if (Value < 1000)
-	{
-		d |= MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_500DPS;
-		GyroSensor::Sensitivity(500);
-	}
-	else if (Value < 2000)
-	{
-		d |= MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_1000DPS;
-		GyroSensor::Sensitivity(1000);
-	}
-	else
-	{
-		d |= MPU9250_AG_GYRO_CONFIG_GYRO_FS_SEL_2000DPS;
-		GyroSensor::Sensitivity(2000);
-	}
-
-	Write8(&regaddr, 1, d);
-
-	return GyroSensor::Sensitivity();
-}
-
-bool AgmMpu9250::UpdateData()
-{
-	uint8_t regaddr = MPU9250_AG_FIFO_COUNT_H;//MPU9250_AG_ACCEL_XOUT_H;
-	int8_t d[20];
-	int32_t val;
-
-	Read(&regaddr, 1, (uint8_t*)d, 2);
-	val = ((d[0] & 0xF) << 8) | d[1];
-
-	//printf("%d\r\n", val);
-
-	if (val > 0)
-	{
-		int cnt = min(val, 18);
-		regaddr = MPU9250_AG_FIFO_R_W;
-	//	Read(&regaddr, 1, d, cnt);
-	}
-
-	vSampleCnt++;
-
-	if (vpTimer)
-	{
-		vSampleTime = vpTimer->uSecond();
-	}
-
-	regaddr = MPU9250_AG_ACCEL_XOUT_H;
-	Read(&regaddr, 1, (uint8_t*)d, 6);
-
-	int32_t scale =  AccelSensor::Scale();
-	val = (((((int32_t)d[0] << 8) | d[1]) * scale) << 8L) / 0x7FFF;
-	AccelSensor::vData.X = val;
-	val = (((((int32_t)d[2] << 8) | d[3]) * scale) << 8L) / 0x7FFF;
-	AccelSensor::vData.Y = val;
-	val = (((((int32_t)d[4] << 8) | d[5]) * scale) << 8L) / 0x7FFF;
-	AccelSensor::vData.Z = val;
-	AccelSensor::vData.Timestamp = vSampleTime;
-
-	regaddr = MPU9250_AG_GYRO_XOUT_H;
-
-	Read(&regaddr, 1, (uint8_t*)d, 6);
-
-	val = ((((int16_t)d[0] << 8) | d[1]) << 8) / GyroSensor::vSensitivity;
-	GyroSensor::vData.X = val;
-	val = ((((int16_t)d[2] << 8) | d[3]) << 8) / GyroSensor::vSensitivity;
-	GyroSensor::vData.Y = val;
-	val = ((((int32_t)d[4] << 8) | d[5]) << 8L) / GyroSensor::vSensitivity;
-	GyroSensor::vData.Z = val;
-	GyroSensor::vData.Timestamp = vSampleTime;
-
-	regaddr = MPU9250_MAG_ST1;
-	Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, (uint8_t*)d, 8);
-
-	if (d[14] & MPU9250_MAG_ST1_DRDY)
-	{
-		val = (((int16_t)d[0]) << 8L) | d[1];
-		val += (val * vMagSenAdj[0]) >> 8L;
-		MagSensor::vData.X = (int16_t)(val * (MPU9250_MAG_MAX_FLUX_DENSITY << 8) / MagSensor::vScale);
-
-		val = (((int16_t)d[2]) << 8) | d[3];
-		val += (val * vMagSenAdj[1]) >> 8L;
-		MagSensor::vData.Y = (int16_t)(val * (MPU9250_MAG_MAX_FLUX_DENSITY << 8) / MagSensor::vScale);
-
-		val = (((int16_t)d[4]) << 8) | d[5];
-		val += (val * vMagSenAdj[2]) >> 8L;
-		MagSensor::vData.Z = (int16_t)(val * (MPU9250_MAG_MAX_FLUX_DENSITY << 8) / MagSensor::vScale);
-
-		MagSensor::vData.Timestamp = vSampleTime;
-	}
-
-	return true;
-}
-
-bool AgmMpu9250::Read(ACCELSENSOR_DATA &Data)
-{
-	Data = AccelSensor::vData;
-
-	return true;
-}
-
-bool AgmMpu9250::Read(GYROSENSOR_DATA &Data)
-{
-	Data = GyroSensor::vData;
-
-	return true;
-}
-
-bool AgmMpu9250::Read(MAGSENSOR_DATA &Data)
-{
-	Data = MagSensor::vData;
-
-	return true;
-}
-
-int AgmMpu9250::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
-{
-	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
-	{
-		*pCmdAddr |= 0x80;
-	}
-
-	return Device::Read(pCmdAddr, CmdAddrLen, pBuff, BuffLen);
-}
-
-
-int AgmMpu9250::Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen)
-{
-	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
-	{
-		*pCmdAddr &= 0x7F;
-	}
-
-	return Device::Write(pCmdAddr, CmdAddrLen, pData, DataLen);
-}
-
-int AgmMpu9250::Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
-{
-	int retval = 0;
-
-	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
-	{
-		uint8_t regaddr;
-		uint8_t d[8];
-
-		d[0] = MPU9250_AG_I2C_SLV0_ADDR;
-		d[1] = DevAddr | MPU9250_AG_I2C_SLV0_ADDR_I2C_SLVO_RD;
-		d[2] = *pCmdAddr;
-
-		while (BuffLen > 0)
-		{
-			int cnt = min(15, BuffLen);
-
-			d[3] = MPU9250_AG_I2C_SLV0_CTRL_I2C_SLV0_EN |cnt;
-
-			Write(d, 4, NULL, 0);
-
-			// Delay require for transfer to complete
-			//usDelay(500 + (cnt << 4));
-			msDelay(1);
-
-			regaddr = MPU9250_AG_EXT_SENS_DATA_00;
-
-			cnt = Read(&regaddr, 1, pBuff, cnt);
-			if (cnt <=0)
-				break;
-
-			pBuff += cnt;
-			BuffLen -= cnt;
-			retval += cnt;
-		}
-	}
-	else
-	{
-		retval = vpIntrf->Read(DevAddr, pCmdAddr, CmdAddrLen, pBuff, BuffLen);
-	}
-
-	return retval;
-}
-
-int AgmMpu9250::Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen)
-{
-	int retval = 0;
-
-	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
-	{
-		uint8_t regaddr;
-		uint8_t d[8];
-
-		d[0] = MPU9250_AG_I2C_SLV0_ADDR;
-		d[1] = DevAddr;
-		d[2] = *pCmdAddr;
-		d[3] = MPU9250_AG_I2C_SLV0_CTRL_I2C_SLV0_EN | 1;
-
-		while (DataLen > 0)
-		{
-			regaddr = MPU9250_AG_I2C_SLV0_DO;
-			Write8(&regaddr, 1, *pData);
-
-			Write(d, 4, NULL, 0);
-
-			d[2]++;
-			pData++;
-			DataLen--;
-			retval++;
-		}
-	}
-	else
-	{
-		retval = vpIntrf->Write(DevAddr, pCmdAddr, CmdAddrLen, pData, DataLen);
-	}
-
-	return retval;
-}
-
-void AgmMpu9250::IntHandler()
-{
-	uint8_t regaddr = MPU9250_AG_INT_STATUS;
-	uint8_t d;
-
-	d = Read8(&regaddr, 1);
-	if (d & MPU9250_AG_INT_STATUS_RAW_DATA_RDY_INT)
-	{
-		UpdateData();
-	}
-}
-
-bool AgmMpu9250::UploadDMPImage()
+bool ImuMpu9250::UploadDMPImage()
 {
 	int len = DMP_CODE_SIZE;
 	uint8_t *p = (uint8_t*)s_DMPImage;
@@ -1030,22 +685,9 @@ bool AgmMpu9250::UploadDMPImage()
 	uint16_t memaddr = 0;
 	uint8_t d[2];
 
-	while (len > 0)
+	if (Write(memaddr, (uint8_t*)s_DMPImage, DMP_CODE_SIZE) < DMP_CODE_SIZE)
 	{
-		int l = min(len, MPU9250_DMP_MEM_PAGE_SIZE);
-
-		regaddr = MPU9250_DMP_MEM_BANKSEL;
-		d[0] = memaddr >> 8;
-		d[1] = memaddr & 0xFF;
-
-		Write(&regaddr, 1, d, 2);
-
-		regaddr = MPU9250_DMP_MEM_RW;
-		Write(&regaddr, 1, p, l);
-
-		p += l;
-		memaddr += l;
-		len -= l;
+		return false;
 	}
 
 	len = DMP_CODE_SIZE;
@@ -1055,17 +697,10 @@ bool AgmMpu9250::UploadDMPImage()
 	// Verify
 	while (len > 0)
 	{
-		uint8_t m[MPU9250_DMP_MEM_PAGE_SIZE];
-		int l = min(len, MPU9250_DMP_MEM_PAGE_SIZE);
+		uint8_t m[32];
+		int l = min(len, 32);
 
-		regaddr = MPU9250_DMP_MEM_BANKSEL;
-		d[0] = memaddr >> 8;
-		d[1] = memaddr & 0xFF;
-
-		Write(&regaddr, 1, d, 2);
-
-		regaddr = MPU9250_DMP_MEM_RW;
-		Read(&regaddr, 1, m, l);
+		l = Read(memaddr, m, l);
 
 		if (memcmp(p, m, l) != 0)
 		{
@@ -1085,4 +720,5 @@ bool AgmMpu9250::UploadDMPImage()
 
 	return true;
 }
+
 

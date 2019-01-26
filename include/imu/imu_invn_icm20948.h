@@ -51,7 +51,7 @@ public:
 	virtual void Reset();
 	virtual bool UpdateData();
 	virtual void IntHandler() {inv_icm20948_poll_sensor(vpIcmDevice, (void*)this, SensorEventHandler);}
-	virtual IMU_SENSE Sense(IMU_SENSE SenseBit, bool bEnDis);
+	virtual IMU_FEATURE Feature(IMU_FEATURE FeatureBit, bool bEnDis);
 
 	virtual bool Read(IMU_QUAT &Data) { return Imu::Read(Data); }
 	virtual bool Read(IMU_EULER &Data) { return Imu::Read(Data); }

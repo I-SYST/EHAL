@@ -36,7 +36,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------------*/
 
 #include "imu/imu.h"
-
+/*
 bool Imu::Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer)
 {
 	SetEvtHandler(Cfg.EvtHandler);
@@ -46,7 +46,7 @@ bool Imu::Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf,
 
 	return true;
 }
-
+*/
 bool Imu::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag)
 {
 	vpAccel = pAccel;
@@ -57,20 +57,20 @@ bool Imu::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * cons
 	return true;
 }
 
-IMU_SENSE Imu::Sense(IMU_SENSE SenseBit, bool bEnDis)
+IMU_FEATURE Imu::Feature(IMU_FEATURE FeatureBit, bool bEnDis)
 {
 	if (bEnDis == true)
 	{
 		// Enable
-		vActiveSense |= SenseBit;
+		vActiveFeature |= FeatureBit;
 	}
 	else
 	{
 		// disable
-		vActiveSense &= ~SenseBit;
+		vActiveFeature &= ~FeatureBit;
 	}
 
-	return vActiveSense;
+	return vActiveFeature;
 }
 
 

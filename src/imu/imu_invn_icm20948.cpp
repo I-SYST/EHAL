@@ -205,9 +205,9 @@ void ImuInvnIcm20948::Reset()
 	inv_icm20948_soft_reset(vpIcmDevice);
 }
 
-IMU_SENSE ImuInvnIcm20948::Sense(IMU_SENSE SenseBit, bool bEnDis)
+IMU_FEATURE ImuInvnIcm20948::Feature(IMU_FEATURE FeatureBit, bool bEnDis)
 {
-	return Imu::Sense();
+	return Imu::Feature();
 }
 
 bool ImuInvnIcm20948::UpdateData()

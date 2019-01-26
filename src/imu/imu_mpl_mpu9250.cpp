@@ -71,7 +71,7 @@ bool ImuMplMpu9250::Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * con
 	if (pIntrf == NULL)
 		return false;
 
-	Imu::Init(Cfg, DevAddr, pIntrf, pTimer);
+	//Imu::Init(Cfg, DevAddr, pIntrf, pTimer);
 
 	inv_error_t err;
 
