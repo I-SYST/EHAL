@@ -50,6 +50,12 @@ public:
 	virtual void Reset();
 	virtual bool UpdateData();
 	virtual void IntHandler();
+	virtual bool Calibrate();
+	virtual void RotationMatrix(int8_t * const pMatrix);
+	virtual bool Orientation(bool bEn);
+	virtual bool Pedometer(bool bEn);
+	virtual bool Quaternion(bool bEn, int NbAxis);
+	virtual bool Tap(bool bEn);
 
 protected:
 	/**

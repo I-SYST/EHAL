@@ -423,9 +423,10 @@ bool AgmMpu9250::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer
 
 	msDelay(100);
 
-		//regaddr = MPU9250_AG_PWR_MGMT_1;
-	//Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_CYCLE);
+	regaddr = MPU9250_AG_PWR_MGMT_1;
+	Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_CYCLE);
 
+	vbSensorEnabled[0] = true;
 
 	return true;
 }
@@ -489,6 +490,8 @@ bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 	Write8(&regaddr, 1, fchoice);
 
 	Sensitivity(CfgData.Sensitivity);
+
+	vbSensorEnabled[1] = true;
 
 	//UploadDMPImage();
 
@@ -576,19 +579,38 @@ bool AgmMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	regaddr = MPU9250_MAG_CTRL1;
 	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &vMagCtrl1Val, 1);
 
+	vbSensorEnabled[2] = true;
+
 	return true;
 }
 
 bool AgmMpu9250::Enable()
 {
 	uint8_t regaddr = MPU9250_AG_PWR_MGMT_1;
+	uint8_t d;
 
 	Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_CYCLE | MPU9250_AG_PWR_MGMT_1_GYRO_STANDBY |
 			MPU9250_AG_PWR_MGMT_1_CLKSEL_INTERNAL);
 
 	regaddr = MPU9250_AG_PWR_MGMT_2;
 
+
 	// Enable Accel & Gyro
+	if (vbSensorEnabled[0] == true)
+	{
+		d = 0;
+		printf("Accel Enabled\r\n");
+	}
+	if (vbSensorEnabled[1] == true)
+	{
+		printf("Gyro Enabled\r\n");
+
+	}
+	if (vbSensorEnabled[2] == true)
+	{
+		printf("Mag Enabled\r\n");
+
+	}
 	Write8(&regaddr, 1,
 			MPU9250_AG_PWR_MGMT_2_DIS_ZG |
 			MPU9250_AG_PWR_MGMT_2_DIS_YG |
@@ -1020,6 +1042,39 @@ void AgmMpu9250::IntHandler()
 	{
 		UpdateData();
 	}
+}
+
+void AgmMpu9250::ResetFifo()
+{
+	uint8_t regaddr;
+	uint8_t d = 0;
+
+	regaddr = MPU9250_AG_INT_ENABLE;
+	Write8(&regaddr, 1, 0);
+
+	regaddr = MPU9250_AG_FIFO_EN;
+	Write8(&regaddr, 1, 0);
+
+	regaddr = MPU9250_AG_USER_CTRL;
+	Write8(&regaddr, 1, 0);
+
+	Write8(&regaddr, 1, MPU9250_AG_USER_CTRL_FIFO_RST);
+
+	d = MPU9250_AG_USER_CTRL_FIFO_EN;
+
+	if (InterfaceType() == DEVINTRF_TYPE_SPI)
+	{
+		d |= MPU9250_AG_USER_CTRL_I2C_MST_EN;
+	}
+	Write8(&regaddr, 1, d);
+
+	msDelay(50);
+
+	regaddr = MPU9250_AG_INT_ENABLE;
+	Write8(&regaddr, 1, MPU9250_AG_INT_ENABLE_RAW_RDY_EN);
+
+	regaddr = MPU9250_AG_FIFO_EN;
+	Write8(&regaddr, 1, 0xFF);
 }
 
 bool AgmMpu9250::UploadDMPImage()

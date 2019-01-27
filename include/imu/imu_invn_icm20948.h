@@ -52,6 +52,12 @@ public:
 	virtual bool UpdateData();
 	virtual void IntHandler() {inv_icm20948_poll_sensor(vpIcmDevice, (void*)this, SensorEventHandler);}
 	virtual IMU_FEATURE Feature(IMU_FEATURE FeatureBit, bool bEnDis);
+	virtual bool Calibrate();
+	virtual void RotationMatrix(int8_t * const pMatrix) ;
+	virtual bool Orientation(bool bEn);
+	virtual bool Pedometer(bool bEn);
+	virtual bool Quaternion(bool bEn, int NbAxis);
+	virtual bool Tap(bool bEn);
 
 	virtual bool Read(IMU_QUAT &Data) { return Imu::Read(Data); }
 	virtual bool Read(IMU_EULER &Data) { return Imu::Read(Data); }

@@ -51,6 +51,12 @@ public:
 	virtual bool UpdateData();
 	virtual void IntHandler();
 	uint32_t Rate(uint32_t DataRate);
+	bool Calibrate();
+	void RotationMatrix(int8_t * const pMatrix);
+	virtual bool Orientation(bool bEn);
+	virtual bool Pedometer(bool bEn);
+	virtual bool Quaternion(bool bEn, int NbAxis);
+	virtual bool Tap(bool bEn);
 
 protected:
 	/**
@@ -92,8 +98,10 @@ protected:
 private:
 
 	bool UploadDMPImage();
+	void ResetFifo();
 
 	AgmMpu9250 *vpMpu;
+	int vDmpFifoLen;
 };
 
 #endif // __IMU_MPU9250_H__

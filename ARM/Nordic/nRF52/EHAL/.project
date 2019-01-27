@@ -466,9 +466,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/bluetooth/bleadv_mandata.h</locationURI>
 		</link>
 		<link>
-			<name>include/bluetooth/blesrvc_blueio.h</name>
+			<name>include/bluetooth/blueio_blesrvc.h</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/bluetooth/blesrvc_blueio.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/bluetooth/blueio_blesrvc.h</locationURI>
 		</link>
 		<link>
 			<name>include/converters/adc_device.h</name>
@@ -554,6 +554,11 @@
 			<name>include/imu/imu_mpl_mpu9250.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_mpl_mpu9250.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/imu_mpu9250.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_mpu9250.h</locationURI>
 		</link>
 		<link>
 			<name>include/miscdev/buzzer.h</name>
@@ -706,6 +711,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/ble_dev.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/bluetooth/blueio_blesrvc.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/blueio_blesrvc.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/converters/adc_ltc2495.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/converters/adc_ltc2495.cpp</locationURI>
@@ -789,6 +799,11 @@
 			<name>src/imu/imu_mpl_mpu9250.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_mpl_mpu9250.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/imu/imu_mpu9250.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_mpu9250.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/micro-ecc/uECC.c</name>

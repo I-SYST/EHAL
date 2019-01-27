@@ -50,10 +50,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define IMU_FEATURE_GYRO					(1<<4)		//!< Converted gyro data
 #define IMU_FEATURE_MAG						(1<<5)		//!< Converted mag data
 #define IMU_FEATURE_EULER					(1<<6)		//!< Euler angles data
-#define IMU_FEATURE_QUAT					(1<<7)		//!< Quaternion data
-#define IMU_FEATURE_ORIENTATION				(1<<8)		//!< Orientation
-#define IMU_FEATURE_TAP						(1<<9)		//!< Tap sensing
-#define IMU_FEATURE_PEDOMETER				(1<<10)		//!< Pedometer
+#define IMU_FEATURE_ORIENTATION				(1<<7)		//!< Orientation
+#define IMU_FEATURE_PEDOMETER				(1<<8)		//!< Pedometer
+#define IMU_FEATURE_QUATERNION				(1<<9)		//!< Quaternion data
+#define IMU_FEATURE_TAP						(1<<10)		//!< Tap sensing
 
 typedef uint32_t	IMU_FEATURE;
 
@@ -91,6 +91,12 @@ public:
 	virtual bool Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag);
 	virtual bool UpdateData() = 0;
 	virtual void IntHandler() = 0;
+	virtual bool Calibrate() = 0;
+	virtual void RotationMatrix(int8_t * const pMatrix) = 0;
+	virtual bool Orientation(bool bEn) = 0;
+	virtual bool Pedometer(bool bEn) = 0;
+	virtual bool Quaternion(bool bEn, int NbAxis) = 0;
+	virtual bool Tap(bool bEn) = 0;
 	virtual bool Read(IMU_QUAT &Data) { Data = vQuat; return true; }
 	virtual bool Read(IMU_EULER &Data) { Data = vEuler; return true; }
 
@@ -153,6 +159,7 @@ public:
 	 * @return	Data rate in miliHz
 	 */
 	virtual uint32_t Rate() { return vRate; }
+
 
 protected:
 //	Timer *vpTimer;			//!< Pointer to Timer object for timestamping

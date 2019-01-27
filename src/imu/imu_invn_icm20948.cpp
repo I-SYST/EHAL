@@ -210,6 +210,35 @@ IMU_FEATURE ImuInvnIcm20948::Feature(IMU_FEATURE FeatureBit, bool bEnDis)
 	return Imu::Feature();
 }
 
+bool ImuInvnIcm20948::Calibrate()
+{
+	return true;
+}
+
+void ImuInvnIcm20948::RotationMatrix(int8_t * const pMatrix)
+{
+}
+
+bool ImuInvnIcm20948::Orientation(bool bEn)
+{
+	return true;
+}
+
+bool ImuInvnIcm20948::Pedometer(bool bEn)
+{
+	return true;
+}
+
+bool ImuInvnIcm20948::Quaternion(bool bEn, int NbAxis)
+{
+	return true;
+}
+
+bool ImuInvnIcm20948::Tap(bool bEn)
+{
+	return true;
+}
+
 bool ImuInvnIcm20948::UpdateData()
 {
 	return true;

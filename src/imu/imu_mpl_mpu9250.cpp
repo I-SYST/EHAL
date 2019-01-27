@@ -189,5 +189,34 @@ void ImuMplMpu9250::IntHandler()
 
 }
 
+bool ImuMplMpu9250::Calibrate()
+{
+	return true;
+}
+
+void ImuMplMpu9250::RotationMatrix(int8_t * const pMatrix)
+{
+}
+
+bool ImuMplMpu9250::Orientation(bool bEn)
+{
+	return true;
+}
+
+bool ImuMplMpu9250::Pedometer(bool bEn)
+{
+	return true;
+}
+
+bool ImuMplMpu9250::Quaternion(bool bEn, int NbAxis)
+{
+	return true;
+}
+
+bool ImuMplMpu9250::Tap(bool bEn)
+{
+	return true;
+}
+
 
 

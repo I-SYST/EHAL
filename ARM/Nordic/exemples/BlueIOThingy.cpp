@@ -515,11 +515,11 @@ void HardwareInit()
 
     g_Spi.Read(0, reg, 2, val, 2);
 
-   // if (MPU9250Init(&g_Spi, &g_Timer) == true)
+    if (MPU9250Init(&g_Spi, &g_Timer) == true)
     {
 
     }
-   // else
+    else
     {
     	if (ICM20948Init(&g_Spi, &g_Timer) == true)
     	{

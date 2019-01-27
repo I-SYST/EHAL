@@ -488,6 +488,7 @@ public:
 	int Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
 	bool UpdateData();
 	virtual void IntHandler();
+	void ResetFifo();
 
 private:
 	// Default base initialization. Does detection and set default config for all sensor.
@@ -498,6 +499,7 @@ private:
 	bool vbInitialized;
 	uint8_t vMagCtrl1Val;
 	int16_t vMagSenAdj[3];
+	bool vbSensorEnabled[3];
 };
 
 #endif // __AGM_MPU9250_H__

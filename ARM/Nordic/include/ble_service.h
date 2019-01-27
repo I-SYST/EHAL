@@ -177,7 +177,33 @@ uint32_t BleSrvcCharNotify(BLESRVC *pSrvc, int Idx, uint8_t *pData, uint16_t Dat
 uint32_t BleSrvcCharSetValue(BLESRVC *pSrvc, int Idx, uint8_t *pData, uint16_t DataLen);
 
 /**
- * #brief	BlueIO service event handler.  Call this within BLE dispatch event callback
+ * @brief	Check connection state of the service
+ *
+ * NOTE : for performance, there is no check for valid service instance assuming it is valid
+ *
+ * @param	pSrvc : Pointer to the service instance for query
+ *
+ * @return	true - Connected
+ * 			false - Not connected
+ */
+static inline bool IsBleSrvcConnected(BLESRVC *pSrvc) { return pSrvc->ConnHdl != BLE_CONN_HANDLE_INVALID; }
+
+/**
+ * @brief	Check for notification state of a characteristic
+ *
+ * NOTE : for performance, there is no check for valid service instance and indexes
+ * 		  assuming they are valid
+ *
+ * @param	pSrvc 	: Pointer to the service instance for query
+ * @param	CharIdx : Characteristic index to query. index based from 0.
+ *
+ * @return	true - Notification is enabled
+ * 			false - Otherwise
+ */
+static inline bool IsBleSrvcCharNotifyEnabled(BLESRVC *pSrvc, int CharIdx) { return pSrvc->pCharArray[CharIdx].bNotify; }
+
+/**
+ * #brief	Service event handler.  Call this within BLE dispatch event callback
  */
 void BleSrvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt);
 

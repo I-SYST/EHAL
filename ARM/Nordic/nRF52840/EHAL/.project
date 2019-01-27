@@ -246,6 +246,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/Invn</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/analog_comp_nrf5x.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/analog_comp_nrf5x.cpp</locationURI>
@@ -541,6 +546,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/uart_nrf5x.h</locationURI>
 		</link>
 		<link>
+			<name>include/imu/icm20948_img_dmp3a.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/icm20948_img_dmp3a.h</locationURI>
+		</link>
+		<link>
 			<name>include/imu/imu.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu.h</locationURI>
@@ -549,6 +559,31 @@
 			<name>include/imu/imu_invensense.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_invensense.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/imu_invn_icm20948.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_invn_icm20948.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/imu_mpl_mpu9250.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_mpl_mpu9250.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/imu_mpu9250.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_mpu9250.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/mpu9250_dmpkey.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/mpu9250_dmpkey.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/mpu9250_dmpmap.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/mpu9250_dmpmap.h</locationURI>
 		</link>
 		<link>
 			<name>include/miscdev/buzzer.h</name>
@@ -589,6 +624,11 @@
 			<name>include/sensors/agm_icm20948.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_icm20948.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/agm_invn_icm20948.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_invn_icm20948.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/agm_lsm9ds1.h</name>
@@ -691,6 +731,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/FreeRTOS/FreeRTOS/Source/timers.c</locationURI>
 		</link>
 		<link>
+			<name>src/Invn/Devices</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/bluetooth/ble_dev.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ble_dev.cpp</locationURI>
@@ -771,6 +816,21 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/imu/imu_invn_icm20948.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_invn_icm20948.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/imu/imu_mpl_mpu9250.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_mpl_mpu9250.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/imu/imu_mpu9250.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_mpu9250.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/micro-ecc/uECC.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/micro-ecc/uECC.c</locationURI>
@@ -846,6 +906,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/agm_icm20948.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/sensors/agm_invn_icm20948.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/agm_invn_icm20948.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/sensors/agm_mpu9250.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/agm_mpu9250.cpp</locationURI>
@@ -867,6 +932,11 @@
 		</link>
 		<link>
 			<name>src/FreeRTOS/portable/GCC</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -1067,6 +1137,16 @@
 		</link>
 		<link>
 			<name>src/FreeRTOS/portable/GCC/ARM_CM4F</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Ak0991x</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -1644,6 +1724,71 @@
 			<name>src/FreeRTOS/portable/GCC/ARM_CM4F/port.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/FreeRTOS/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Ak0991x/Ak0991x.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Ak0991x/Ak0991x.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948/Icm20948Augmented.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Icm20948/Icm20948Augmented.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948/Icm20948AuxCompassAkm.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Icm20948/Icm20948AuxCompassAkm.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948/Icm20948AuxTransport.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Icm20948/Icm20948AuxTransport.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948/Icm20948DataBaseControl.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Icm20948/Icm20948DataBaseControl.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948/Icm20948DataBaseDriver.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Icm20948/Icm20948DataBaseDriver.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948/Icm20948DataConverter.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Icm20948/Icm20948DataConverter.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948/Icm20948Dmp3Driver.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Icm20948/Icm20948Dmp3Driver.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948/Icm20948LoadFirmware.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Icm20948/Icm20948LoadFirmware.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948/Icm20948MPUFifoControl.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Icm20948/Icm20948MPUFifoControl.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948/Icm20948SelfTest.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Icm20948/Icm20948SelfTest.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948/Icm20948Setup.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Icm20948/Icm20948Setup.c</locationURI>
+		</link>
+		<link>
+			<name>src/Invn/Devices/Drivers/Icm20948/Icm20948Transport.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/Invn/Devices/Drivers/Icm20948/Icm20948Transport.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/ble/ble_services/ble_bas/ble_bas.c</name>

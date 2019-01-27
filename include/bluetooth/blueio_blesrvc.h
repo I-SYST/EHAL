@@ -1,5 +1,5 @@
 /**-------------------------------------------------------------------------
-@file	blesrvc_blueio.h
+@file	blueio_blesrvc.h
 
 @brief	BLUEIO BLE custom service
 
@@ -37,7 +37,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __BLESRVC_BLUEIO__
 
 #include <inttypes.h>
+
 #include "blueio_types.h"
+#include "ble_service.h"
 
 /// Nordic custom UUID
 /// UART UUID :
@@ -45,7 +47,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 						  0x93, 0xF3, 0xA3, 0xB5, 0x00, 0x00, 0x40, 0x6E } /**< Used vendor specific UUID. */
 #define BLE_UUID_NUS_SERVICE			0x0001	/**< The UUID of the Nordic UART Service. */
 #define BLE_UUID_NUS_TX_CHARACTERISTIC	0x0003	/**< The UUID of the TX Characteristic. */
+#define BLE_UUID_NUS_TX_CHAR_PROP		(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN)
 #define BLE_UUID_NUS_RX_CHARACTERISTIC	0x0002	 /**< The UUID of the RX Characteristic. */
+#define BLE_UUID_NUS_RX_CHAR_PROP		(BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_WRITEWORESP | BLESVC_CHAR_PROP_VARLEN)
 
 #define OPCODE_LENGTH 1
 #define HANDLE_LENGTH 2
@@ -69,15 +73,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /// Default BlueIO control/data service UUID
 #define BLUEIO_UUID_SERVICE 		0x1		//!< BlueIO default service
-#define BLUEIO_UUID_RDCHAR 			0x2		//!< Data characteristic
-#define BLUEIO_UUID_RDCHAR_PROP		(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY)
-#define BLUEIO_UUID_WRCHAR 			0x3		//!< Command control characteristic
-#define BLUEIO_UUID_WRCHAR_PROP		(BLESVC_CHAR_PROP_WRITE)
+#define BLUEIO_UUID_DATACHAR		0x2		//!< Data characteristic
+#define BLUEIO_UUID_DATACHAR_PROP	(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN)
+#define BLUEIO_UUID_CMDCHAR			0x3		//!< Command control characteristic
+#define BLUEIO_UUID_CMDCHAR_PROP	(BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_VARLEN)
 
 /// Default BLueIO UART service UUID
 #define BLUEIO_UUID_UART_SERVICE 		0x101		//!< BlueIO Uart service
 #define BLUEIO_UUID_UART_RX_CHAR		0x102		//!< UART Rx characteristic
+#define BLUEIO_UUID_UART_RX_CHAR_PROP	(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN)
 #define BLUEIO_UUID_UART_TX_CHAR		0x103		//!< UART Tx characteristic
+#define BLUEIO_UUID_UART_TX_CHAR_PROP	(BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_WRITEWORESP | BLESVC_CHAR_PROP_VARLEN)
 
 /// BlueIO data type
 #define BLUEIO_PACKET_ID_BLECFG			0							//!< BLE configuration settings
@@ -174,13 +180,27 @@ typedef struct __Adc_Read {
 
 #pragma pack(pop)
 
+#pragma pack(push, 4)
+
+typedef struct __BlueIO_Srvc_Cfg {
+	BLESRVC_WRCB BlueIOCharWrhandler;
+	BLESRVC_SETNOTCB BlueIOCharSetNotifEvt;
+	BLESRVC_WRCB UartCharWrHandler;
+	BLESRVC_SETNOTCB UartCharSetNotifevt;
+} BLUEIOSRVC_CFG;
+
+#pragma pack(pop)
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 BLESRVC *GetBlueIOSrvcInstance();
-bool IsBlueIOSrvcConnected();
-bool IsBlueIOSrvcCharNotifyEnabled();
+BLESRVC *GetUartSrvcInstance();
+BLESRVC *GetNUSSrvcInstance();
+bool BlueIOSrvcInit(BLUEIOSRVC_CFG * const pCfg);
+void BlueIOSrvcEvtHandler(ble_evt_t * p_ble_evt);
 
 #ifdef __cplusplus
 }

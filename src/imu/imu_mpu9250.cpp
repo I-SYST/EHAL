@@ -448,9 +448,36 @@ static const uint8_t s_DMPImage[DMP_CODE_SIZE] = {
 
 #define DMP_SAMPLE_RATE     (200)
 
-int drv_mpu9250_write(unsigned char slave_addr, unsigned char reg_addr, unsigned char length, unsigned char const * p_data)
+// Encode row into 3 bits
+// bits 0-1 : Index of the colunm of non zero
+// bit 2 : sign bit
+uint16_t EncodeRow(int8_t * const pRow)
 {
-	return 0;
+	uint16_t c;
+
+	c = ((pRow[0] & 5) | ((pRow[1] & 5) << 1) | ((pRow[2] & 5) << 2)) >> 1;
+
+	return c;
+}
+
+uint16_t EncodeMatrix(int8_t * const pMatrix)
+{
+	uint16_t c;
+
+    /*
+       XYZ  010_001_000 Identity Matrix
+       XZY  001_010_000
+       YXZ  010_000_001
+       YZX  000_010_001
+       ZXY  001_000_010
+       ZYX  000_001_010
+     */
+
+    c = EncodeRow(pMatrix);
+    c |= EncodeRow(pMatrix + 3) << 3;
+    c |= EncodeRow(pMatrix + 6) << 6;
+
+    return c;
 }
 
 #if 0
@@ -513,6 +540,7 @@ bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor
 		return false;
 	}
 
+	vDmpFifoLen = 0;
 	vpMpu = (AgmMpu9250 *)pAccel;
 
 
@@ -553,11 +581,23 @@ bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor
     //RETURN_IF_ERROR(err_code);
 
 #endif
+
     bool res = 	UploadDMPImage();
 
     if (res == true)
     {
     	res = Imu::Init(Cfg, pAccel, pGyro, pMag);
+
+    	uint8_t regaddr = MPU9250_AG_USER_CTRL;
+
+        uint8_t d = vpMpu->Read8(&regaddr, 1);
+
+        d |= MPU9250_AG_USER_CTRL_DMP_EN;
+        vpMpu->Write8(&regaddr, 1, d);
+
+        regaddr = MPU9250_AG_INT_ENABLE;
+        d = vpMpu->Read8(&regaddr, 1) | MPU9250_AG_INT_ENABLE_DMP_EN;
+        vpMpu->Write8(&regaddr, 1, d);
     }
 
     return res;
@@ -610,9 +650,133 @@ uint32_t ImuMpu9250::Rate(uint32_t DataRate)
 	return Imu::Rate(DataRate * 1000);
 }
 
+bool ImuMpu9250::Calibrate()
+{
+	return true;
+}
+
+bool ImuMpu9250::Orientation(bool bEn)
+{
+	uint8_t d;
+
+	if (bEn)
+	{
+		d = 0xD9;
+	}
+	else
+	{
+		d = 0xD8;
+	}
+
+	Write(CFG_ANDROID_ORIENT_INT, &d, 1);
+
+	Imu::Feature(IMU_FEATURE_ORIENTATION, bEn);
+
+	vDmpFifoLen += 4;
+
+	return true;
+}
+
+bool ImuMpu9250::Pedometer(bool bEn)
+{
+	Imu::Feature(IMU_FEATURE_PEDOMETER, bEn);
+
+	return true;
+}
+
+bool ImuMpu9250::Quaternion(bool bEn, int NbAxis)
+{
+	uint8_t regs[4];
+
+	if (NbAxis <= 3)
+	{
+		if (bEn = true)
+		{
+		        regs[0] = DINBC0;
+		        regs[1] = DINBC2;
+		        regs[2] = DINBC4;
+		        regs[3] = DINBC6;
+		}
+		else
+		{
+			memset(regs, 0x8B, 4);
+		}
+
+		Write(CFG_LP_QUAT, regs, 4);
+	}
+	else
+	{
+		if (bEn = true)
+		{
+			regs[0] = DINA20;
+			regs[1] = DINA28;
+			regs[2] = DINA30;
+			regs[3] = DINA38;
+		}
+		else
+		{
+			memset(regs, 0xA3, 4);
+		}
+
+		Write(CFG_8, regs, 4);
+	}
+
+	vDmpFifoLen += 16;
+
+	Imu::Feature(IMU_FEATURE_QUATERNION, bEn);
+
+	return true;
+}
+
+bool ImuMpu9250::Tap(bool bEn)
+{
+	return true;
+}
+
+void ImuMpu9250::RotationMatrix(int8_t * const pMatrix)
+{
+    const unsigned char gaxes[3] = {DINA4C, DINACD, DINA6C};
+    const unsigned char aaxes[3] = {DINA0C, DINAC9, DINA2C};
+    unsigned char gsign[3] = {DINA36, DINA56, DINA76};
+    unsigned char asign[3] = {DINA26, DINA46, DINA66};
+    uint8_t aregs[3], gregs[3];
+
+    uint16_t c;
+    uint8_t sign;
+
+	c = EncodeRow(pMatrix);
+	sign = (c >> 3) & 1;
+	c &= 3;
+	aregs[0] = aaxes[c];
+	asign[0] |= sign;
+	gregs[0] = gaxes[c];
+	gsign[0] |= sign;
+
+	c = EncodeRow(pMatrix + 3);
+	sign = (c >> 3) & 1;
+	c &= 3;
+	aregs[1] = aaxes[c];
+	asign[1] |= sign;
+	gregs[1] = gaxes[c];
+	gsign[1] |= sign;
+
+	c = EncodeRow(pMatrix + 6);
+	sign = (c >> 3) & 1;
+	c &= 3;
+	aregs[2] = aaxes[c];
+	asign[2] |= sign;
+	gregs[2] = gaxes[c];
+	gsign[2] |= sign;
+
+	Write(FCFG_2, aregs, 3);
+	Write(FCFG_1, gregs, 3);
+	Write(FCFG_7, asign, 3);
+	Write(FCFG_3, gsign, 3);
+}
+
 void ImuMpu9250::IntHandler()
 {
-
+printf("IntHandler\r\n");
 }
 
 int ImuMpu9250::Read(uint16_t Addr, uint8_t *pBuff, int Len)
@@ -721,4 +885,7 @@ bool ImuMpu9250::UploadDMPImage()
 	return true;
 }
 
+void ImuMpu9250::ResetFifo()
+{
+}
 
