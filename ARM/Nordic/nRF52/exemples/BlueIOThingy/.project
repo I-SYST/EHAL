@@ -27,9 +27,54 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>src/BlueIOICM20948.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/BlueIOICM20948.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/BlueIOMPU9250.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/BlueIOMPU9250.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/BlueIOMPU9250.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/BlueIOMPU9250.h</locationURI>
+		</link>
+		<link>
+			<name>src/BlueIOTcs.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/BlueIOTcs.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/BlueIOTes.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/BlueIOTes.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/BlueIOThingy.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy.cpp</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/BlueIOThingy.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/BlueIOThingy.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/BlueIOThingy.h</locationURI>
+		</link>
+		<link>
+			<name>src/BlueIOTms.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/BlueIOTms.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/BlueIOTuis.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/BlueIOTuis.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/eMPL</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>src/eMPL-hal</name>
@@ -37,9 +82,49 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/gcc_nrf52_thingy_xxaa.ld</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/gcc_nrf52_thingy_xxaa.ld</locationURI>
+		</link>
+		<link>
 			<name>src/mllite</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/eMPL/dmpKey.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/eMPL/dmpKey.h</locationURI>
+		</link>
+		<link>
+			<name>src/eMPL/dmpmap.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/eMPL/dmpmap.h</locationURI>
+		</link>
+		<link>
+			<name>src/eMPL/inv_mpu.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/eMPL/inv_mpu.c</locationURI>
+		</link>
+		<link>
+			<name>src/eMPL/inv_mpu.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/eMPL/inv_mpu.h</locationURI>
+		</link>
+		<link>
+			<name>src/eMPL/inv_mpu_dmp_motion_driver.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/eMPL/inv_mpu_dmp_motion_driver.c</locationURI>
+		</link>
+		<link>
+			<name>src/eMPL/inv_mpu_dmp_motion_driver.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/eMPL/inv_mpu_dmp_motion_driver.h</locationURI>
+		</link>
+		<link>
+			<name>src/eMPL/packet.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/exemples/BlueIOThingy/eMPL/packet.h</locationURI>
 		</link>
 		<link>
 			<name>src/eMPL-hal/eMPL_outputs.c</name>

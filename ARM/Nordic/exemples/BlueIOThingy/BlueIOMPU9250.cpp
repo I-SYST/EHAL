@@ -24,7 +24,7 @@
 #include "mltypes.h"
 #include "mpu.h"
 #include "BlueIOThingy.h"
-#include "packet.h"
+#include "eMPL/packet.h"
 
 static const ACCELSENSOR_CFG s_AccelCfg = {
 	.DevAddr = 0,	// SPI CS idx
