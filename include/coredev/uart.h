@@ -170,6 +170,8 @@ struct __Uart_Dev {
 	int hStdIn;					//!< Handle to retarget stdin
 	int hStdOut;				//!< Handle to retarget stdout
 	uint32_t RxOECnt;			//!< Rx overrun error count
+	volatile bool bRxReady;
+	volatile bool bTxReady;
 };
 
 #pragma pack(pop)

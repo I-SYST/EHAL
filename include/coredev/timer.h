@@ -109,6 +109,8 @@ typedef struct __Timer_Config {
 
 #pragma pack(pop)
 
+#ifdef __cplusplus
+
 /// Timer base class
 class Timer {
 public:
@@ -328,5 +330,7 @@ protected:
 	uint32_t vLastCount;	//!< Last counter read value
 private:
 };
+
+#endif  //  __cplusplus
 
 #endif // __TIMER_H__

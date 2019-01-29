@@ -71,8 +71,8 @@ typedef struct _nRF_UART_Dev {
 	uint32_t RxTimeoutCnt;
 	uint32_t TxDropCnt;
 	uint32_t ErrCnt;
-	volatile bool bRxReady;
-	volatile bool bTxReady;
+//	volatile bool bRxReady;
+//	volatile bool bTxReady;
 	uint32_t RxPin;
 	uint32_t TxPin;
 	uint32_t CtsPin;
@@ -136,7 +136,7 @@ static const int s_NbUartDev = sizeof(s_nRFUartDev) / sizeof(NRF5X_UARTDEV);
 bool nRFUARTWaitForRxReady(NRF5X_UARTDEV * const pDev, uint32_t Timeout)
 {
 	do {
-		if (pDev->pReg->EVENTS_RXDRDY || pDev->bRxReady)
+		if (pDev->pReg->EVENTS_RXDRDY || pDev->pUartDev->bRxReady)
 		{
 //			pDev->pReg->EVENTS_RXDRDY = 0;
 //			pDev->pReg->EVENTS_RXTO = 0;
@@ -150,7 +150,7 @@ bool nRFUARTWaitForRxReady(NRF5X_UARTDEV * const pDev, uint32_t Timeout)
 bool nRFUARTWaitForTxReady(NRF5X_UARTDEV * const pDev, uint32_t Timeout)
 {
 	do {
-		if (pDev->pReg->EVENTS_TXDRDY || pDev->bTxReady == true)
+		if (pDev->pReg->EVENTS_TXDRDY || pDev->pUartDev->bTxReady == true)
 		{
 			//pDev->pReg->EVENTS_TXDRDY = 0;
 			//pDev->bTxReady = true;
@@ -187,12 +187,12 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 		pDev->pReg->EVENTS_RXDRDY = 0;
 		cnt = 0;
 		do {
-			pDev->bRxReady = false;
+			pDev->pUartDev->bRxReady = false;
 
 			d = CFifoPut(pDev->pUartDev->hRxFifo);
 			if (d == NULL)
 			{
-				pDev->bRxReady = true;
+				pDev->pUartDev->bRxReady = true;
 				pDev->RxDropCnt++;// g_nRF51RxDropCnt++;
 				break;
 			}
@@ -206,7 +206,7 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 			if (pDev->pReg->EVENTS_RXTO)
 			{
 				pDev->pReg->EVENTS_RXTO = 0;
-				pDev->bRxReady = false;
+				pDev->pUartDev->bRxReady = false;
 				cnt = pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXTIMEOUT, NULL, len);
 			}
 			else
@@ -278,10 +278,10 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 				uint8_t *p = CFifoGet(pDev->pUartDev->hTxFifo);
 				if (p == NULL)
 				{
-					pDev->bTxReady = true;
+					pDev->pUartDev->bTxReady = true;
 					break;
 				}
-				pDev->bTxReady = false;
+				pDev->pUartDev->bTxReady = false;
 				pDev->pReg->TXD = *p;
 				cnt++;
 			} while (pDev->pReg->EVENTS_TXDRDY && cnt < NRF5X_UART_HWFIFO_SIZE);
@@ -312,7 +312,7 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 		uint8_t *p = CFifoGetMultiple(pDev->pUartDev->hTxFifo, &l);
 		if (p)
 		{
-			pDev->bTxReady = false;
+			pDev->pUartDev->bTxReady = false;
 
 			// Transfer to tx cache before sending as CFifo will immediately make the memory
 			// block available for reuse in the Put request. This could cause an overwrite
@@ -325,7 +325,7 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 		}
 		else
 		{
-			pDev->bTxReady = true;
+			pDev->pUartDev->bTxReady = true;
 		}
 		if (pDev->pUartDev->EvtCallback)
 		{
@@ -358,10 +358,10 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 				d = CFifoPut(pDev->pUartDev->hRxFifo);
 				if (d == NULL)
 				{
-					pDev->bRxReady = true;
+					pDev->pUartDev->bRxReady = true;
 					break;
 				}
-				pDev->bRxReady = false;
+				pDev->pUartDev->bRxReady = false;
 				*d = pDev->pReg->RXD;
 				cnt++;
 			} while (pDev->pReg->EVENTS_RXDRDY && cnt < NRF5X_UART_HWFIFO_SIZE);
@@ -470,13 +470,13 @@ static int nRFUARTRxData(DEVINTRF * const pDev, uint8_t *pBuff, int Bufflen)
 	}
 	EnableInterrupt(state);
 
-	if (dev->bRxReady)
+	if (dev->pUartDev->bRxReady)
 	{
 		uint8_t *p = CFifoPut(dev->pUartDev->hRxFifo);
 		if (p)
 		{
 			dev->pReg->EVENTS_RXDRDY = 0;
-			dev->bRxReady = false;
+			dev->pUartDev->bRxReady = false;
 			*p = dev->pReg->RXD;
 		}
 	}
@@ -514,7 +514,7 @@ static int nRFUARTTxData(DEVINTRF * const pDev, uint8_t *pData, int Datalen)
         }
         EnableInterrupt(state);
 
-        if (dev->bTxReady)
+        if (dev->pUartDev->bTxReady)
         {
 #ifdef NRF52_SERIES
         	if (pDev->bDma == true)
@@ -523,7 +523,7 @@ static int nRFUARTTxData(DEVINTRF * const pDev, uint8_t *pData, int Datalen)
         		uint8_t *p = CFifoGetMultiple(dev->pUartDev->hTxFifo, &l);
         		if (p)
         		{
-        			dev->bTxReady = false;
+        			dev->pUartDev->bTxReady = false;
 
         			// Transfer to tx cache before sending as CFifo will immediately make the memory
         			// block available for reuse in the Put request. This could cause an overwrite
@@ -540,11 +540,11 @@ static int nRFUARTTxData(DEVINTRF * const pDev, uint8_t *pData, int Datalen)
             //if (nRFUARTWaitForTxReady(dev, 1000))
             {
                 dev->pReg->EVENTS_TXDRDY = 0;
-                dev->bTxReady = true;
+                dev->pUartDev->bTxReady = true;
                 uint8_t *p = CFifoGet(dev->pUartDev->hTxFifo);
                 if (p)
                 {
-                    dev->bTxReady = false;
+                    dev->pUartDev->bTxReady = false;
                     dev->pReg->TXD = *p;
                 }
             }
@@ -587,7 +587,7 @@ static void nRFUARTEnable(DEVINTRF * const pDev)
 
 	CFifoFlush(dev->pUartDev->hTxFifo);
 
-	dev->bTxReady = true;
+	dev->pUartDev->bTxReady = true;
 #ifdef NRF52_SERIES
 	if (pDev->bDma == true)
 	{
@@ -737,8 +737,8 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	}
 
 
-	s_nRFUartDev[devno].bRxReady = false;
-	s_nRFUartDev[devno].bTxReady = true;
+	s_nRFUartDev[devno].pUartDev->bRxReady = false;
+	s_nRFUartDev[devno].pUartDev->bTxReady = true;
 	s_nRFUartDev[devno].ErrCnt = 0;
 	s_nRFUartDev[devno].RxTimeoutCnt = 0;
 	s_nRFUartDev[devno].RxDropCnt = 0;
