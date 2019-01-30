@@ -401,7 +401,7 @@ bool TphgBme680::Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	bsec_sensor_configuration_t requested_virtual_sensors[1];
 	uint8_t n_requested_virtual_sensors = 1;
 
-	requested_virtual_sensors[0].sensor_id = BSEC_OUTPUT_IAQ_ESTIMATE;
+	requested_virtual_sensors[0].sensor_id = BSEC_OUTPUT_IAQ;
 	// the BSEC library does not seems to work with any other setting than BSEC_SAMPLE_RATE_LP
 	requested_virtual_sensors[0].sample_rate = BSEC_SAMPLE_RATE_LP;
 
@@ -689,7 +689,7 @@ bool TphgBme680::UpdateData()
 		{
 	        for (int i = 0; i < ocnt; i++)
 	        {
-	            if (outputs[i].sensor_id == BSEC_OUTPUT_IAQ_ESTIMATE)
+	            if (outputs[i].sensor_id == BSEC_OUTPUT_IAQ)
 	            {
 					vGasData.AirQualIdx = outputs[i].signal;
                    // iaq_accuracy = bsec_outputs[index].accuracy;
