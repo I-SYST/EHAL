@@ -68,6 +68,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sensors/agm_lsm9ds1.h"
 #include "sensors/ag_bmi160.h"
 #include "imu/imu_invn_icm20948.h"
+#include "imu/imu_mpu9250.h"
 
 #include "board.h"
 
@@ -154,12 +155,13 @@ static const IMU_CFG s_ImuCfg = {
 	.EvtHandler = ImuEvtHandler
 };
 
-#if 1
+#if 0
 ImuInvnIcm20948 g_Imu;
 AgmInvnIcm20948 g_MotSensor;
 #elif 0
 AgmIcm20948 g_MotSensor;
-#elif 0
+#elif 1
+ImuMpu9250 g_Imu;
 AgmMpu9250 g_MotSensor;
 #else
 AgmLsm9ds1 g_MotSensor;
@@ -173,11 +175,11 @@ void ImuEvtHandler(Device * const pDev, DEV_EVT Evt)
 	switch (Evt)
 	{
 		case DEV_EVT_DATA_RDY:
-			//g_MotSensor.Read(accdata);
-			g_Imu.Read(accdata);
-			//printf("Accel %d: %d %d %d\r\n", accdata.Timestamp, accdata.X, accdata.Y, accdata.Z);
-			g_Imu.Read(quat);
-			printf("Quat %d: %d %d %d %d\r\n", quat.Timestamp, quat.Q1, quat.Q2, quat.Q2, quat.Q3);
+			g_MotSensor.Read(accdata);
+			//g_Imu.Read(accdata);
+			printf("Accel %d: %d %d %d\r\n", accdata.Timestamp, accdata.X, accdata.Y, accdata.Z);
+			//g_Imu.Read(quat);
+			//printf("Quat %d: %d %d %d %d\r\n", quat.Timestamp, quat.Q1, quat.Q2, quat.Q2, quat.Q3);
 
 			break;
 	}
@@ -187,7 +189,8 @@ void ImuIntHandler(int IntNo)
 {
 	if (IntNo == 0)
 	{
-		g_Imu.IntHandler();
+		//g_Imu.IntHandler();
+		g_MotSensor.IntHandler();
 	}
 }
 
@@ -230,7 +233,7 @@ bool HardwareInit()
 		}
 		if (res == true)
 		{
-			res |= g_Imu.Init(s_ImuCfg, &g_MotSensor, &g_MotSensor, &g_MotSensor);
+			//res |= g_Imu.Init(s_ImuCfg, &g_MotSensor, &g_MotSensor, &g_MotSensor);
 		}
 #endif
 	}
@@ -239,6 +242,12 @@ bool HardwareInit()
 	{
 		IOPinCfg(s_GpioPins, s_NbGpioPins);
 		IOPinEnableInterrupt(0, 6, BLUEIO_TAG_EVIM_IMU_INT_PORT, BLUEIO_TAG_EVIM_IMU_INT_PIN, IOPINSENSE_HIGH_TRANSITION, ImuIntHandler);
+
+		int8_t m[9] = { 1, 0, 0,
+						0, 1, 0,
+						0, 0, 1 };
+
+		//g_Imu.RotationMatrix(m);
 	}
 
 	return res;
@@ -270,14 +279,26 @@ int main()
 
 	printf("MotionSensorDemo\r\n");
 
-	g_Imu.Enable();
+	//g_MotSensor.Enable();
+	//g_Imu.Enable();
 //	g_MotSensor.Disable();
 //	g_Spi.Disable();
 //	g_Spi.PowerOff();
+	ACCELSENSOR_RAWDATA rawdata;
+	ACCELSENSOR_DATA accdata;
+	GYROSENSOR_RAWDATA grawdata;
+	GYROSENSOR_DATA gyrodata;
+
+	memset(&rawdata, 0, sizeof(ACCELSENSOR_RAWDATA));
+	memset(&accdata, 0, sizeof(ACCELSENSOR_DATA));
+	memset(&gyrodata, 0, sizeof(GYROSENSOR_DATA));
 
 	while (1)
 	{
 		//NRF_POWER->SYSTEMOFF = POWER_SYSTEMOFF_SYSTEMOFF_Enter;
 		__WFE();
+		g_MotSensor.Read(grawdata);
+		//g_Imu.Read(accdata);
+		printf("Accel %d: %d %d %d\r\n", grawdata.Timestamp, grawdata.X, grawdata.Y, grawdata.Z);
 	}
 }
