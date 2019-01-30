@@ -158,8 +158,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define FLASH_CMD_WRENABLE          0x6
 #define FLASH_CMD_EN4B              0xB7    //!< Enable 4 bytes address
 #define FLASH_CMD_EX4B              0xE9    //!< Disable 4 bytes address
-#define FLASH_CMD_BLOCK_ERASE       0xD8
-#define FLASH_CMD_BULK_ERASE        0xC7
+#define FLASH_CMD_SECTOR_ERASE		0x20	//!< Sector erase
+#define FLASH_CMD_BLOCK_ERASE_32    0x52	//!< 32KB Block erase
+#define FLASH_CMD_BLOCK_ERASE       0xD8	//!< Block erase
+#define FLASH_CMD_BULK_ERASE        0xC7	//!< Chip erase
+#define FLASH_CMD_BULK_ERASE_ALT	0x60	//!< Alternate chip erase command
 
 #define FLASH_STATUS_WIP            (1<<0)  // Write In Progress
 
