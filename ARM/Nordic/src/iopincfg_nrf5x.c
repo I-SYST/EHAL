@@ -403,7 +403,7 @@ void __WEAK GPIOTE_IRQHandler(void)
         if (s_GpIOSenseEvt[IOPIN_MAX_INT].SensEvtCB)
             s_GpIOSenseEvt[IOPIN_MAX_INT].SensEvtCB(-1);
 	    NRF_GPIOTE->EVENTS_PORT = 0;
-#ifdef NRF52
+#ifdef NRF52_SERIES
 	    NRF_GPIO->LATCH = 0xFFFFFFFF;	// Clear detect latch
 #endif
 	}

@@ -86,7 +86,7 @@ bool AnalogCompInit(ANALOG_COMP_DEV * const pDev, const ANALOG_COMP_CFG *pCfg)
 
 	if (pCfg->RefSrc != 0)
 	{
-#ifdef NRF52
+#ifdef NRF52_SERIES
 		int d = pCfg->CompVolt * 16 / pCfg->RefSrc;
 
 		if (d & 1)
