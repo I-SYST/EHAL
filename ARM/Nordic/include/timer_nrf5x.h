@@ -45,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// Low frequency timer using Real Time Counter (RTC) 32768 Hz clock source.
 ///
 #define TIMER_NRF5X_RTC_BASE_FREQ   		32768
-#ifdef NRF52
+#ifdef NRF52_SERIES
 #define TIMER_NRF5X_RTC_MAX                 3           //!< 3 RTC available on nRF52
 #else
 #define TIMER_NRF5X_RTC_MAX                 2           //!< 2 RTC available on nRF51
@@ -114,7 +114,7 @@ private:
 /// High frequency timer using Timer 16MHz clock source.
 ///
 #define TIMER_NRF5X_HF_BASE_FREQ   			16000000
-#ifdef NRF52
+#ifdef NRF52_SERIES
 #define TIMER_NRF5X_HF_MAX              	5           //!< 5 high frequency timer available on nRF52
 #define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	6           //!< Max number of supported counter trigger event
 #else
@@ -136,7 +136,7 @@ public:
     virtual uint32_t Frequency(uint32_t Freq);
     virtual uint64_t TickCount();
     int MaxTimerTrigger() {
-#ifdef NRF52
+#ifdef NRF52_SERIES
     	return vMaxNbTrigEvt;
 #else
     	return TIMER_NRF5X_HF_MAX_TRIGGER_EVT;

@@ -95,7 +95,7 @@ __WEAK void RTC1_IRQHandler()
 	if (s_pnRF5xRTC[1])
 		s_pnRF5xRTC[1]->IRQHandler();
 }
-#ifdef NRF52
+#ifdef NRF52_SERIES
 __WEAK void RTC2_IRQHandler()
 {
 	if (s_pnRF5xRTC[2])
@@ -130,7 +130,7 @@ bool TimerLFnRF5x::Init(const TIMER_CFG &Cfg)
 			s_pnRF5xRTC[1] = this;
 			vpReg = NRF_RTC1;
             break;
-#ifdef NRF52
+#ifdef NRF52_SERIES
         case 2:
 			s_pnRF5xRTC[2] = this;
 			vpReg = NRF_RTC2;
@@ -187,7 +187,7 @@ bool TimerLFnRF5x::Init(const TIMER_CFG &Cfg)
 			NVIC_SetPriority(RTC1_IRQn, Cfg.IntPrio);
 			NVIC_EnableIRQ(RTC1_IRQn);
 			break;
-#ifdef NRF52
+#ifdef NRF52_SERIES
 		case 2:
 			NVIC_ClearPendingIRQ(RTC2_IRQn);
 			NVIC_SetPriority(RTC2_IRQn, Cfg.IntPrio);
@@ -219,7 +219,7 @@ bool TimerLFnRF5x::Enable()
             NVIC_ClearPendingIRQ(RTC1_IRQn);
             NVIC_EnableIRQ(RTC1_IRQn);
             break;
-#ifdef NRF52
+#ifdef NRF52_SERIES
         case 2:
             NVIC_ClearPendingIRQ(RTC2_IRQn);
             NVIC_EnableIRQ(RTC2_IRQn);
@@ -246,7 +246,7 @@ void TimerLFnRF5x::Disable()
             NVIC_ClearPendingIRQ(RTC1_IRQn);
             NVIC_DisableIRQ(RTC1_IRQn);
             break;
-#ifdef NRF52
+#ifdef NRF52_SERIES
         case 2:
             NVIC_ClearPendingIRQ(RTC2_IRQn);
             NVIC_DisableIRQ(RTC2_IRQn);
