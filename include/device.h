@@ -64,11 +64,11 @@ typedef enum __Device_Event {
 	DEV_EVT_DATA_RDY
 } DEV_EVT;
 
+#ifdef __cplusplus
+
 class Device;
 
 typedef void (*DEVEVTCB)(Device * const pDev, DEV_EVT Evt);
-
-#ifdef __cplusplus
 
 /// @brief	Device base class.
 ///

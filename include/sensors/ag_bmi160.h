@@ -384,6 +384,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma pack(pop)
 
+#ifdef __cplusplus
+
 class AgBmi160 : public AccelSensor, public GyroSensor {
 public:
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
@@ -404,5 +406,7 @@ private:
 
 	bool vbInitialized;
 };
+
+#endif // __cplusplus
 
 #endif // __AG_BMI160_H__

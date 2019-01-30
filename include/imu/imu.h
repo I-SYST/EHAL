@@ -50,18 +50,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define IMU_FEATURE_GYRO					(1<<4)		//!< Converted gyro data
 #define IMU_FEATURE_MAG						(1<<5)		//!< Converted mag data
 #define IMU_FEATURE_EULER					(1<<6)		//!< Euler angles data
-#define IMU_FEATURE_ORIENTATION				(1<<7)		//!< Orientation
-#define IMU_FEATURE_PEDOMETER				(1<<8)		//!< Pedometer
-#define IMU_FEATURE_QUATERNION				(1<<9)		//!< Quaternion data
+#define IMU_FEATURE_QUATERNION				(1<<7)		//!< Quaternion data
+#define IMU_FEATURE_ORIENTATION				(1<<8)		//!< Orientation
+#define IMU_FEATURE_PEDOMETER				(1<<9)		//!< Pedometer
 #define IMU_FEATURE_TAP						(1<<10)		//!< Tap sensing
+#define IMU_FEATURE_GRAVITY					(1<<11)		//!< Gravity vector
+#define IMU_FEATURE_EXTERNAL_ACCEL			(1<<12)		//!< External acceleration vector
+#define IMU_FEATURE_ROTATION				(1<<13)		//!< Rotation data
 
 typedef uint32_t	IMU_FEATURE;
 
+#if 0
 /// Quaternion data
 /// The quaternion is a normalized number.  For more compact structure
 /// convert it to 16 bits fixed point by multiplying with (1<<15) = 32768
 typedef struct __Imu_Quat {
-	uint32_t Timestamp;	//!< Time stamp count in msec
+	uint32_t Timestamp;	//!< Time stamp count in usec
 	union {
 		int16_t	Q[4];
 		struct {
@@ -74,15 +78,83 @@ typedef struct __Imu_Quat {
 } IMU_QUAT;
 
 typedef struct __Imu_Euler {
-	uint32_t Timestamp;	//!< Time stamp count in msec
+	uint32_t Timestamp;	//!< Time stamp count in usec
 	int16_t Yaw;
 	int16_t Pitch;
 	int16_t Roll;
 } IMU_EULER;
+#endif
+
+typedef struct __Imu_Quat {
+	uint32_t Timestamp;	//!< Time stamp count in usec
+	union {
+		float Q[4];
+		struct {
+			float Q1;
+			float Q2;
+			float Q3;
+			float Q4;
+		};
+	};
+} IMU_QUAT;
+
+typedef struct __Imu_Euler {
+	uint32_t Timestamp;	//!< Time stamp count in usec
+	float Yaw;
+	float Pitch;
+	float Roll;
+} IMU_EULER;
+
+typedef struct __Imu_Gravity {
+	uint32_t Timestamp;	//!< Time stamp count in usec
+	union {
+		float Val[3];
+		struct {
+			float X;
+			float Y;
+			float Z;
+		};
+	};
+} IMU_GRAVITY;
+
+/// External acceleration vector
+typedef struct __Imu_Extrn_Accel {
+	uint32_t Timestamp;	//!< Time stamp count in usec
+	union {
+		float Val[3];
+		struct {
+			float X;
+			float Y;
+			float Z;
+		};
+	};
+} IMU_EXT_ACCEL;
+
+/// Pedometer
+typedef struct __Imu_Pedometer {
+	uint32_t Timestamp;		//!< Time stamp count in usec
+    uint16_t StepCount;		//!< Number of step taken
+    uint8_t Cadence; 		//!< in steps per minute
+    float Direction; 		//!< Direction of the movement (yaw angle in degrees)
+    uint16_t UpCount;		//!< Number of upstairs taken
+    uint16_t DownCount; 	//!< Number of downstairs taken
+    uint8_t StrideLength;	//!< in cm
+    uint16_t TotalDistance;	//in dm
+} IMU_PEDOMETER;
+
+/// Rotation data
+typedef struct __Imu_Rotation_Data {
+	uint32_t Timestamp;		//!< Time stamp count in usec
+    uint32_t Count; 		//!< Number of rotations
+    uint16_t Rpm; 			//!< Revolutions per minute
+} IMU_ROTATION;
+
 
 typedef struct __Imu_Config {
 	DEVEVTCB EvtHandler;
 } IMU_CFG;
+
+#ifdef __cplusplus
 
 class Imu : virtual public Device {
 public:
@@ -112,6 +184,7 @@ public:
 	 *
 	 * @return	True - Success.
 	 */
+	virtual bool Read(ACCELSENSOR_RAWDATA &Data) { return vpAccel->Read(Data); }
 	virtual bool Read(ACCELSENSOR_DATA &Data) { return vpAccel->Read(Data); }
 
 	/**
@@ -126,6 +199,7 @@ public:
 	 *
 	 * @return	True - Success.
 	 */
+	virtual bool Read(GYROSENSOR_RAWDATA &Data) { return vpGyro->Read(Data); }
 	virtual bool Read(GYROSENSOR_DATA &Data) { return vpGyro->Read(Data); }
 
 	/**
@@ -140,6 +214,7 @@ public:
 	 *
 	 * @return	True - Success.
 	 */
+	virtual bool Read(MAGSENSOR_RAWDATA &Data) { return vpMag->Read(Data); }
 	virtual bool Read(MAGSENSOR_DATA &Data) { return vpMag->Read(Data); }
 
 	virtual IMU_FEATURE Feature() { return vActiveFeature; }
@@ -172,6 +247,7 @@ protected:
 	uint32_t vRate;			//!< Data rate in mHz (mili-Hz)
 };
 
+#endif // __cplusplus
 
 
 #endif // __IMU_H__

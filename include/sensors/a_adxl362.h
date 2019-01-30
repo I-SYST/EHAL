@@ -213,7 +213,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class AccelAdxl362 : public AccelSensor {
 public:
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
-	virtual bool Read(ACCELSENSOR_DATA &Data);
+//	virtual bool Read(ACCELSENSOR_RAWDATA &Data);
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();

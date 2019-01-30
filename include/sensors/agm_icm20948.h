@@ -524,6 +524,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma pack(pop)
 
+#ifdef __cplusplus
+
 class AgmIcm20948 : public AccelSensor, public GyroSensor, public MagSensor {
 public:
 	/**
@@ -585,9 +587,12 @@ public:
 	virtual uint32_t Sensitivity(uint32_t Value);	// Gyro
 
 
-	virtual bool Read(ACCELSENSOR_DATA &Data);
-	virtual bool Read(GYROSENSOR_DATA &Data);
-	virtual bool Read(MAGSENSOR_DATA &Data);
+	virtual bool Read(ACCELSENSOR_RAWDATA &Data) { return AccelSensor::Read(Data); }
+	virtual bool Read(ACCELSENSOR_DATA &Data) { return AccelSensor::Read(Data); }
+	virtual bool Read(GYROSENSOR_RAWDATA &Data) { return GyroSensor::Read(Data); }
+	virtual bool Read(GYROSENSOR_DATA &Data) { return GyroSensor::Read(Data); }
+	virtual bool Read(MAGSENSOR_RAWDATA &Data) { return MagSensor::Read(Data); }
+	virtual bool Read(MAGSENSOR_DATA &Data) { return MagSensor::Read(Data); }
 
 	int Read(uint16_t RegAddr, uint8_t *pBuff, int BuffLen) {
 		return Read((uint8_t*)&RegAddr, 2, pBuff, BuffLen);
@@ -616,6 +621,7 @@ private:
 	uint8_t vCurrBank;
 };
 
+#endif // __cplusplus
 
 #endif // __AGM_ICM20948_H__
 

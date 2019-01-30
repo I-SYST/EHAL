@@ -410,12 +410,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MPU9250_MAG_ASAZ				0x12
 
 #define MPU9250_MAG_MAX_FLUX_DENSITY	4912
+#define MPU9250_ACC_MAX_RANGE			32767
 
 #define MPU9250_DMP_MEM_PAGE_SIZE			256		// DMP memory page size
 
 #pragma pack(push, 1)
 
 #pragma pack(pop)
+
+#ifdef __cplusplus
 
 class AgmMpu9250 : public AccelSensor, public GyroSensor, public MagSensor {
 public:
@@ -478,9 +481,12 @@ public:
 	virtual uint32_t Sensitivity(uint32_t Value);	// Gyro
 
 
-	virtual bool Read(ACCELSENSOR_DATA &Data);
-	virtual bool Read(GYROSENSOR_DATA &Data);
-	virtual bool Read(MAGSENSOR_DATA &Data);
+	virtual bool Read(ACCELSENSOR_RAWDATA &Data) { return AccelSensor::Read(Data); }
+	virtual bool Read(ACCELSENSOR_DATA &Data) { return AccelSensor::Read(Data); }
+	virtual bool Read(GYROSENSOR_RAWDATA &Data) { return GyroSensor::Read(Data); }
+	virtual bool Read(GYROSENSOR_DATA &Data) { return GyroSensor::Read(Data); }
+	virtual bool Read(MAGSENSOR_RAWDATA &Data) { return MagSensor::Read(Data); }
+	virtual bool Read(MAGSENSOR_DATA &Data) { return MagSensor::Read(Data); }
 
 	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
@@ -501,5 +507,7 @@ private:
 	int16_t vMagSenAdj[3];
 	bool vbSensorEnabled[3];
 };
+
+#endif // __cplusplus
 
 #endif // __AGM_MPU9250_H__

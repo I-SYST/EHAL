@@ -74,10 +74,14 @@ void ImuDataChedHandler(void * p_event_data, uint16_t event_size)
 	//q[1] = ((float)quat.Q[1] / 32768.0) * (float)(1<<30);
 	//q[2] = ((float)quat.Q[2] / 32768.0) * (float)(1<<30);
 	//q[3] = ((float)quat.Q[3] / 32768.0) * (float)(1<<30);
-	q[0] = quat.Q[0] << 15;
-	q[1] = quat.Q[1] << 15;
-	q[2] = quat.Q[2] << 15;
-	q[3] = quat.Q[3] << 15;
+	//q[0] = quat.Q[0] << 15;
+	//q[1] = quat.Q[1] << 15;
+	//q[2] = quat.Q[2] << 15;
+	//q[3] = quat.Q[3] << 15;
+	q[0] = quat.Q[0] * (1 << 30);
+	q[1] = quat.Q[1] * (1 << 30);
+	q[2] = quat.Q[2] * (1 << 30);
+	q[3] = quat.Q[3] * (1 << 30);
 	//printf("Quat %d: %d %d %d %d\r\n", quat.Timestamp, q[0], q[1], q[2], q[3]);
 	ImuQuatDataSend(q);
 }

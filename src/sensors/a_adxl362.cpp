@@ -182,14 +182,14 @@ uint16_t AccelAdxl362::Scale(uint16_t Value)
 
 	return AccelSensor::Scale(Value);
 }
-
-bool AccelAdxl362::Read(ACCELSENSOR_DATA &Data)
+/*
+bool AccelAdxl362::Read(ACCELSENSOR_RAWDATA &Data)
 {
 	Data = vData;
 
 	return true;
 }
-
+*/
 bool AccelAdxl362::UpdateData()
 {
 	uint8_t cmd[2] = { ADXL362_CMD_READ, ADXL362_STATUS_REG };

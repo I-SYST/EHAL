@@ -42,16 +42,30 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma pack(push, 1)
 
-/// Accelerometer sensor data in G
-/// Data format in 8 bits fixed point. i.e. g value in float = X / 256.0;
-typedef struct __AccelSensor_Data {
+/// Accelerometer raw sensor data
+typedef struct __AccelSensor_Raw_Data {
 	uint32_t Timestamp;	//!< Time stamp count in usec
+	uint16_t Scale;		//!< Scale in G of the sensor
+	uint16_t Range;		//!< Sensor ADC range
 	union {
 		int16_t Val[3];
 		struct {
 			int16_t X;			//!< X axis
 			int16_t Y;			//!< Y axis
 			int16_t Z;			//!< Z axis
+		};
+	};
+} ACCELSENSOR_RAWDATA;
+
+/// Accelerometer sensor data in G
+typedef struct __AccelSensor_Data {
+	uint32_t Timestamp;	//!< Time stamp count in usec
+	union {
+		float Val[3];
+		struct {
+		    float X;			//!< X axis
+		    float Y;			//!< Y axis
+		    float Z;			//!< Z axis
 		};
 	};
 } ACCELSENSOR_DATA;
@@ -72,6 +86,8 @@ typedef struct __AccelSensor_Config {
 
 #pragma pack(pop)
 
+#ifdef __cplusplus
+
 /// Accel. sensor base class
 class AccelSensor : virtual public Sensor {
 public:
@@ -87,20 +103,42 @@ public:
 	 */
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer) = 0;
 
+    /**
+     * @brief   Read last updated sensor raw data
+     *
+     * This function read the currently stored data last updated by UdateData().
+     * Device implementation can add validation if needed and return true or false
+     * in the case of data valid or not.  This default implementation only returns
+     * the stored data with success.
+     *
+     * @param   Data : Reference to data storage for the returned data
+     *
+     * @return  True - Success.
+     */
+	virtual bool Read(ACCELSENSOR_RAWDATA &Data) {
+		Data = vData;
+		return true;
+	}
+
 	/**
-	 * @brief	Read last updated sensor data
+	 * @brief	Read converted sensor data
 	 *
-	 * This function read the currently stored data last updated by UdateData().
-	 * Device implementation can add validation if needed and return true or false
-	 * in the case of data valid or not.  This default implementation only returns
-	 * the stored data with success.
+	 * This function gets the currently stored raw data last updated by UdateData() and
+	 * convert it to real G force unit.  Device implementation can add validation if needed and
+	 * return true or false in the case of data valid or not.  This default implementation
+	 * only returns the stored data with success.
 	 *
 	 * @param 	Data : Reference to data storage for the returned data
 	 *
 	 * @return	True - Success.
 	 */
 	virtual bool Read(ACCELSENSOR_DATA &Data) {
-		Data = vData;
+		if (vData.Range == 0)
+			return false;
+		Data.Timestamp = vData.Timestamp;
+		Data.X = (float)(vData.X * vData.Scale) / (float)vData.Range;
+        Data.Y = (float)(vData.Y * vData.Scale) / (float)vData.Range;
+        Data.Z = (float)(vData.Z * vData.Scale) / (float)vData.Range;
 		return true;
 	}
 
@@ -123,17 +161,23 @@ public:
 	 */
 	virtual uint16_t Scale(uint16_t Value) { vScale = Value; return vScale; }
 
+	virtual uint16_t Range() { return vRange; }
+	virtual uint16_t Range(uint16_t Value) { vRange = Value; return vRange; }
+
 	virtual uint32_t LowPassFreq() { return vLPFreq; }
 	virtual uint32_t LowPassFreq(uint32_t Freq) { vLPFreq = Freq; return vLPFreq; }
 
 protected:
 
-	ACCELSENSOR_DATA vData;		//!< Current sensor data updated with UpdateData()
+	ACCELSENSOR_RAWDATA vData;		//!< Current sensor data updated with UpdateData()
 
 private:
 	ACCELINTCB vIntHandler;
 	uint16_t vScale;			//!< Sensor data scale in g force (2g, 4g, ...)
+	uint16_t vRange;            //!< ADC range of the sensor, contains max value for conversion factor
 	uint32_t vLPFreq;			//!< Low pass filter cutoff frequency in Hz
 };
+
+#endif // __cplusplus
 
 #endif // __ACCEL_SENSOR_H__

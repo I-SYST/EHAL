@@ -320,27 +320,6 @@ bool AgmInvnIcm20948::UpdateData()
 	return true;
 }
 
-bool AgmInvnIcm20948::Read(ACCELSENSOR_DATA &Data)
-{
-	Data = AccelSensor::vData;
-
-	return true;
-}
-
-bool AgmInvnIcm20948::Read(GYROSENSOR_DATA &Data)
-{
-	Data = GyroSensor::vData;
-
-	return true;
-}
-
-bool AgmInvnIcm20948::Read(MAGSENSOR_DATA &Data)
-{
-	Data = MagSensor::vData;
-
-	return true;
-}
-
 int AgmInvnIcm20948::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
 {
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)

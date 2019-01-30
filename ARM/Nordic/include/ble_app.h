@@ -39,7 +39,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ble.h"
 #include "nrf_sdm.h"
-#include "ble_db_discovery.h"
 
 #include "bluetooth/bleadv_mandata.h"
 

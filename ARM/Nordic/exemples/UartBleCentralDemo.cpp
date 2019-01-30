@@ -42,7 +42,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "istddef.h"
 #include "ble_app.h"
 #include "ble_service.h"
-#include "bluetooth/blesrvc_blueio.h"
+#include "bluetooth/blueio_blesrvc.h"
 #include "ble_dev.h"
 #include "blueio_board.h"
 #include "coredev/uart.h"

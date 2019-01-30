@@ -48,6 +48,8 @@ Modified by          Date              Description
 
 #pragma pack(pop)
 
+#ifdef __cplusplus
+
 class AgmLsm9ds1 : public AccelSensor, public GyroSensor, public MagSensor {
 public:
 	/**
@@ -122,5 +124,7 @@ public:
 
 private:
 };
+
+#endif // __cplusplus
 
 #endif // __AGM_LSM9DS1_H__

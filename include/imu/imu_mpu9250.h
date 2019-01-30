@@ -57,6 +57,9 @@ public:
 	virtual bool Pedometer(bool bEn);
 	virtual bool Quaternion(bool bEn, int NbAxis);
 	virtual bool Tap(bool bEn);
+	virtual bool Read(ACCELSENSOR_DATA &Data) { return vpAccel->Read(Data); }
+    virtual bool Read(IMU_QUAT &Data) { Data = vQuat; return true; }
+    virtual bool Read(IMU_EULER &Data) { Data = vEuler; return true; }
 
 protected:
 	/**
