@@ -44,7 +44,7 @@
 							<builder buildPath="${workspace_loc:/PTHSensorTag}/Debug" id="ilg.gnuarmeclipse.managedbuild.cross.builder.1833219100" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="ilg.gnuarmeclipse.managedbuild.cross.builder"/>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.1028941315" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.966721771" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.590886404" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.590886404" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input.504421758" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.2043174302" name="Cross ARM GNU C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
@@ -56,19 +56,12 @@
 									<listOptionValue builtIn="false" value="LESC_DEBUG_MODE"/>
 									<listOptionValue builtIn="false" value="BL_SETTINGS_ACCESS_ONLY"/>
 									<listOptionValue builtIn="false" value="NRF_DFU_SETTINGS_VERSION=1"/>
-									<listOptionValue builtIn="false" value="BOARD_CUSTOM"/>
 									<listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=6"/>
 									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>
 									<listOptionValue builtIn="false" value="S140"/>
 									<listOptionValue builtIn="false" value="NRF52840_XXAA"/>
 									<listOptionValue builtIn="false" value="EHAL_SBUFFER_SIZE=256"/>
-									<listOptionValue builtIn="false" value="uECC_ENABLE_VLI_API"/>
-									<listOptionValue builtIn="false" value="uECC_VLI_NATIVE_LITTLE_ENDIAN=1"/>
-									<listOptionValue builtIn="false" value="uECC_SQUARE_FUNC=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORTS_secp256r1=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORT_COMPRESSED_POINT=0"/>
-									<listOptionValue builtIn="false" value="uECC_OPTIMIZATION_LEVEL=3"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.22840915" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="true" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
@@ -88,6 +81,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/driver/eMPL&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/driver/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/mllite&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/mpl&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/modules/nrfx/hal&quot;"/>
@@ -104,7 +98,6 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/ble/ble_db_discovery&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/softdevice/common&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/softdevice/s140/headers&quot;"/>
-									<listOptionValue builtIn="false" value="../../../../../../../external/MPL/core/mpl"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.1374034726" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -117,19 +110,12 @@
 									<listOptionValue builtIn="false" value="LESC_DEBUG_MODE"/>
 									<listOptionValue builtIn="false" value="BL_SETTINGS_ACCESS_ONLY"/>
 									<listOptionValue builtIn="false" value="NRF_DFU_SETTINGS_VERSION=1"/>
-									<listOptionValue builtIn="false" value="BOARD_CUSTOM"/>
 									<listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=6"/>
 									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>
 									<listOptionValue builtIn="false" value="S140"/>
 									<listOptionValue builtIn="false" value="NRF52840_XXAA"/>
 									<listOptionValue builtIn="false" value="EHAL_SBUFFER_SIZE=256"/>
-									<listOptionValue builtIn="false" value="uECC_ENABLE_VLI_API"/>
-									<listOptionValue builtIn="false" value="uECC_VLI_NATIVE_LITTLE_ENDIAN=1"/>
-									<listOptionValue builtIn="false" value="uECC_SQUARE_FUNC=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORTS_secp256r1=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORT_COMPRESSED_POINT=0"/>
-									<listOptionValue builtIn="false" value="uECC_OPTIMIZATION_LEVEL=3"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.889995342" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="true" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
@@ -149,6 +135,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/driver/eMPL&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/driver/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/mllite&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/mpl&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/modules/nrfx/hal&quot;"/>
@@ -165,7 +152,6 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/ble/ble_db_discovery&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/softdevice/common&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/softdevice/s140/headers&quot;"/>
-									<listOptionValue builtIn="false" value="../../../../../../../external/MPL/core/mpl"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.867920209" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.266743475" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -275,7 +261,7 @@
 							<builder buildPath="${workspace_loc:/PTHSensorTag}/Release" id="ilg.gnuarmeclipse.managedbuild.cross.builder.1638104681" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="ilg.gnuarmeclipse.managedbuild.cross.builder"/>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.1047793673" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.1759459569" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.932609569" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.932609569" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="../../../../../../../external/MPL/core/mpl"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input.2066609286" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.input"/>
@@ -289,19 +275,12 @@
 									<listOptionValue builtIn="false" value="LESC_DEBUG_MODE"/>
 									<listOptionValue builtIn="false" value="BL_SETTINGS_ACCESS_ONLY"/>
 									<listOptionValue builtIn="false" value="NRF_DFU_SETTINGS_VERSION=1"/>
-									<listOptionValue builtIn="false" value="BOARD_CUSTOM"/>
 									<listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=6"/>
 									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>
 									<listOptionValue builtIn="false" value="S140"/>
 									<listOptionValue builtIn="false" value="NRF52840_XXAA"/>
 									<listOptionValue builtIn="false" value="EHAL_SBUFFER_SIZE=256"/>
-									<listOptionValue builtIn="false" value="uECC_ENABLE_VLI_API"/>
-									<listOptionValue builtIn="false" value="uECC_VLI_NATIVE_LITTLE_ENDIAN=1"/>
-									<listOptionValue builtIn="false" value="uECC_SQUARE_FUNC=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORTS_secp256r1=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORT_COMPRESSED_POINT=0"/>
-									<listOptionValue builtIn="false" value="uECC_OPTIMIZATION_LEVEL=3"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.1205120930" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="true" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
@@ -321,6 +300,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/driver/eMPL&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/driver/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/mllite&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/mpl&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/modules/nrfx/hal&quot;"/>
@@ -337,7 +317,6 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/ble/ble_db_discovery&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/softdevice/common&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/softdevice/s140/headers&quot;"/>
-									<listOptionValue builtIn="false" value="../../../../../../../external/MPL/core/mpl"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.376467081" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -350,19 +329,12 @@
 									<listOptionValue builtIn="false" value="LESC_DEBUG_MODE"/>
 									<listOptionValue builtIn="false" value="BL_SETTINGS_ACCESS_ONLY"/>
 									<listOptionValue builtIn="false" value="NRF_DFU_SETTINGS_VERSION=1"/>
-									<listOptionValue builtIn="false" value="BOARD_CUSTOM"/>
 									<listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=6"/>
 									<listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
 									<listOptionValue builtIn="false" value="BLE_STACK_SUPPORT_REQD"/>
 									<listOptionValue builtIn="false" value="S140"/>
 									<listOptionValue builtIn="false" value="NRF52840_XXAA"/>
 									<listOptionValue builtIn="false" value="EHAL_SBUFFER_SIZE=256"/>
-									<listOptionValue builtIn="false" value="uECC_ENABLE_VLI_API"/>
-									<listOptionValue builtIn="false" value="uECC_VLI_NATIVE_LITTLE_ENDIAN=1"/>
-									<listOptionValue builtIn="false" value="uECC_SQUARE_FUNC=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORTS_secp256r1=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORT_COMPRESSED_POINT=0"/>
-									<listOptionValue builtIn="false" value="uECC_OPTIMIZATION_LEVEL=3"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.1110931405" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" useByScannerDiscovery="true" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
@@ -382,6 +354,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/driver/eMPL&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/driver/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/mllite&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/core/mpl&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/MPL/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/modules/nrfx/mdk&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/modules/nrfx/hal&quot;"/>
@@ -398,7 +371,6 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/ble/ble_db_discovery&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/softdevice/common&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/softdevice/s140/headers&quot;"/>
-									<listOptionValue builtIn="false" value="../../../../../../../external/MPL/core/mpl"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.1033000332" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.820637016" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>

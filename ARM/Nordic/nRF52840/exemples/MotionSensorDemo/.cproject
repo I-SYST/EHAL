@@ -133,6 +133,9 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.550085895.165936146" name="mot_sensor_demo.cpp" rcbsApplicability="disable" resourcePath="src/mot_sensor_demo.cpp" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.341516290.2043784694">
+						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.341516290.2043784694" name="GNU ARM Cross C++ Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.341516290"/>
+					</fileInfo>
 					<sourceEntries>
 						<entry excluding="Icm20948Transport.c|Icm20948Setup.c|Icm20948LoadFirmware.c|Icm20948Dmp3Driver.c|Icm20948DataConverter.c|Icm20948DataBaseDriver.c|Icm20948DataBaseControl.c|Icm20948AuxTransport.c|Icm20948AuxCompassAkm.c|Icm20948Augmented.c|sensor.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
