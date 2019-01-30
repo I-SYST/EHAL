@@ -137,6 +137,7 @@ typedef struct _BleAppData {
 	int MaxMtu;
 	bool bSecure;
 	bool bAdvertising;
+	bool bScan;
 } BLEAPP_DATA;
 
 #pragma pack(pop)
@@ -1363,15 +1364,18 @@ bool BleAppStackInit(int CentLinkCount, int PeriLinkCount, bool bConnectable)
 
     // Configure the number of custom UUIDS.
     memset(&ble_cfg, 0, sizeof(ble_cfg));
-    ble_cfg.common_cfg.vs_uuid_cfg.vs_uuid_count = 2;
+    if (CentLinkCount > 0)
+        ble_cfg.common_cfg.vs_uuid_cfg.vs_uuid_count = 4;
+    else
+    	ble_cfg.common_cfg.vs_uuid_cfg.vs_uuid_count = 2;
     err_code = sd_ble_cfg_set(BLE_COMMON_CFG_VS_UUID, &ble_cfg, ram_start);
     APP_ERROR_CHECK(err_code);
 
     // Configure the maximum number of connections.
 	memset(&ble_cfg, 0, sizeof(ble_cfg));
 	ble_cfg.conn_cfg.conn_cfg_tag                     = BLEAPP_CONN_CFG_TAG;
-	ble_cfg.gap_cfg.role_count_cfg.periph_role_count  = PeriLinkCount;//PERIPHERAL_LINK_COUNT;//BLE_GAP_ROLE_COUNT_PERIPH_DEFAULT;
-	ble_cfg.gap_cfg.role_count_cfg.central_role_count = CentLinkCount;//CENTRAL_LINK_COUNT;
+	ble_cfg.gap_cfg.role_count_cfg.periph_role_count  = PeriLinkCount;
+	ble_cfg.gap_cfg.role_count_cfg.central_role_count = CentLinkCount;
 	ble_cfg.gap_cfg.role_count_cfg.central_sec_count  = CentLinkCount ? BLE_GAP_ROLE_COUNT_CENTRAL_SEC_DEFAULT: 0;
 	err_code = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, ram_start);
 	APP_ERROR_CHECK(err_code);
@@ -1379,7 +1383,7 @@ bool BleAppStackInit(int CentLinkCount, int PeriLinkCount, bool bConnectable)
 	// Configure the maximum ATT MTU.
 	memset(&ble_cfg, 0x00, sizeof(ble_cfg));
 	ble_cfg.conn_cfg.conn_cfg_tag                 = BLEAPP_CONN_CFG_TAG;
-	ble_cfg.conn_cfg.params.gatt_conn_cfg.att_mtu = g_BleAppData.MaxMtu;//NRF_BLE_GATT_MAX_MTU_SIZE;
+	ble_cfg.conn_cfg.params.gatt_conn_cfg.att_mtu = g_BleAppData.MaxMtu;
 	err_code = sd_ble_cfg_set(BLE_CONN_CFG_GATT, &ble_cfg, ram_start);
 	APP_ERROR_CHECK(err_code);
 
@@ -1439,6 +1443,9 @@ int8_t GetValidTxPower(int TxPwr)
 bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 {
 	ret_code_t err_code;
+
+	g_BleAppData.bScan = false;
+	g_BleAppData.bAdvertising = false;
 
 	g_BleAppData.ConnLedPort = pBleAppCfg->ConnLedPort;
 	g_BleAppData.ConnLedPin = pBleAppCfg->ConnLedPin;
@@ -1600,7 +1607,18 @@ void BleAppRun()
 
 void BleAppScan()
 {
-	ret_code_t err_code = sd_ble_gap_scan_start(NULL, &g_BleScanReportData);
+	ret_code_t err_code;
+
+	if (g_BleAppData.bScan == true)
+	{
+		err_code = sd_ble_gap_scan_start(NULL, &g_BleScanReportData);
+	}
+	else
+	{
+	    g_BleAppData.bScan = true;
+
+		err_code = sd_ble_gap_scan_start(&s_BleScanParams, &g_BleScanReportData);
+	}
 	APP_ERROR_CHECK(err_code);
 }
 
@@ -1608,6 +1626,7 @@ void BleAppScanStop()
 {
 	ret_code_t err_code = sd_ble_gap_scan_stop();
 	APP_ERROR_CHECK(err_code);
+    g_BleAppData.bScan = false;
 }
 
 bool BleAppScanInit(ble_uuid128_t * const pBaseUid, ble_uuid_t * const pServUid)
@@ -1619,6 +1638,7 @@ bool BleAppScanInit(ble_uuid128_t * const pBaseUid, ble_uuid_t * const pServUid)
     APP_ERROR_CHECK(err_code);
 
     //ble_db_discovery_evt_register(pServUid);
+    g_BleAppData.bScan = true;
 
 	err_code = sd_ble_gap_scan_start(&s_BleScanParams, &g_BleScanReportData);
 	APP_ERROR_CHECK(err_code);
@@ -1632,6 +1652,8 @@ bool BleAppConnect(ble_gap_addr_t * const pDevAddr, ble_gap_conn_params_t * cons
                                   	  	  	 pConnParam,
 											 BLEAPP_CONN_CFG_TAG);
     APP_ERROR_CHECK(err_code);
+
+    g_BleAppData.bScan = false;
 
     return err_code == NRF_SUCCESS;
 }
