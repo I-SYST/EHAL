@@ -82,8 +82,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLE_UART_UUID_BASE			NUS_BASE_UUID
 
 #define BLE_UART_UUID_SERVICE		BLE_UUID_NUS_SERVICE			/**< The UUID of the Nordic UART Service. */
-#define BLE_UART_UUID_TX_CHAR		BLE_UUID_NUS_TX_CHARACTERISTIC	/**< The UUID of the TX Characteristic. */
-#define BLE_UART_UUID_RX_CHAR		BLE_UUID_NUS_RX_CHARACTERISTIC	/**< The UUID of the RX Characteristic. */
+#define BLE_UART_UUID_TX_CHAR		BLE_UUID_NUS_RX_CHARACTERISTIC	/**< The UUID of the TX Characteristic. */
+#define BLE_UART_UUID_RX_CHAR		BLE_UUID_NUS_TX_CHARACTERISTIC	/**< The UUID of the RX Characteristic. */
 #elif defined(HM_10)
 // 0000FFE0-0000-1000-8000-00805F9B34FB
 #define BLE_UART_UUID_BASE			{ 0xFB, 0x34, 0x9B, 0x5F, 0x80, 0x00, 0x00, 0x80, \
@@ -95,8 +95,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLE_UART_UUID_BASE			BLUEIO_UUID_BASE
 
 #define BLE_UART_UUID_SERVICE		BLUEIO_UUID_UART_SERVICE		//!< BlueIO default service
-#define BLE_UART_UUID_TX_CHAR		BLUEIO_UUID_UART_RX_CHAR		//!< Data characteristic
-#define BLE_UART_UUID_RX_CHAR		BLUEIO_UUID_UART_TX_CHAR		//!< Command control characteristic
+#define BLE_UART_UUID_TX_CHAR		BLUEIO_UUID_UART_TX_CHAR		//!< Data characteristic
+#define BLE_UART_UUID_RX_CHAR		BLUEIO_UUID_UART_RX_CHAR		//!< Command control characteristic
 #endif
 
 void UartTxSrvcCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
