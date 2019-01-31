@@ -641,11 +641,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_mpu9250.h</locationURI>
 		</link>
 		<link>
-			<name>include/sensors/agm_sensor.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_sensor.h</locationURI>
-		</link>
-		<link>
 			<name>include/sensors/gas_sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gas_sensor.h</locationURI>
