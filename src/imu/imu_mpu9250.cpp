@@ -655,7 +655,7 @@ bool ImuMpu9250::Calibrate()
 	return true;
 }
 
-bool ImuMpu9250::Orientation(bool bEn)
+bool ImuMpu9250::Attitude(bool bEn)
 {
 	uint8_t d;
 
@@ -670,7 +670,7 @@ bool ImuMpu9250::Orientation(bool bEn)
 
 	Write(CFG_ANDROID_ORIENT_INT, &d, 1);
 
-	Imu::Feature(IMU_FEATURE_ORIENTATION, bEn);
+	Imu::Feature(IMU_FEATURE_ATTITUDE, bEn);
 
 	vDmpFifoLen += 4;
 
@@ -733,7 +733,7 @@ bool ImuMpu9250::Tap(bool bEn)
 	return true;
 }
 
-void ImuMpu9250::RotationMatrix(int8_t * const pMatrix)
+void ImuMpu9250::SetAxisAlignmentMatrix(int8_t * const pMatrix)
 {
     const unsigned char gaxes[3] = {DINA4C, DINACD, DINA6C};
     const unsigned char aaxes[3] = {DINA0C, DINAC9, DINA2C};

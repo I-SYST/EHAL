@@ -556,11 +556,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu.h</locationURI>
 		</link>
 		<link>
-			<name>include/imu/imu_invensense.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_invensense.h</locationURI>
-		</link>
-		<link>
 			<name>include/imu/imu_invn_icm20948.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_invn_icm20948.h</locationURI>

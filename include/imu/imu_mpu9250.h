@@ -52,8 +52,8 @@ public:
 	virtual void IntHandler();
 	uint32_t Rate(uint32_t DataRate);
 	bool Calibrate();
-	void RotationMatrix(int8_t * const pMatrix);
-	virtual bool Orientation(bool bEn);
+	void SetAxisAlignmentMatrix(int8_t * const pMatrix);
+	virtual bool Attitude(bool bEn);
 	virtual bool Pedometer(bool bEn);
 	virtual bool Quaternion(bool bEn, int NbAxis);
 	virtual bool Tap(bool bEn);

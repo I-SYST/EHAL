@@ -503,6 +503,7 @@ private:
 	bool UploadDMPImage();
 
 	bool vbInitialized;
+	bool vbDmpEnabled;
 	uint8_t vMagCtrl1Val;
 	int16_t vMagSenAdj[3];
 	bool vbSensorEnabled[3];

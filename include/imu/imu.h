@@ -51,7 +51,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define IMU_FEATURE_MAG						(1<<5)		//!< Converted mag data
 #define IMU_FEATURE_EULER					(1<<6)		//!< Euler angles data
 #define IMU_FEATURE_QUATERNION				(1<<7)		//!< Quaternion data
-#define IMU_FEATURE_ORIENTATION				(1<<8)		//!< Orientation
+#define IMU_FEATURE_ATTITUDE				(1<<8)		//!< Orientation
 #define IMU_FEATURE_PEDOMETER				(1<<9)		//!< Pedometer
 #define IMU_FEATURE_TAP						(1<<10)		//!< Tap sensing
 #define IMU_FEATURE_GRAVITY					(1<<11)		//!< Gravity vector
@@ -164,8 +164,8 @@ public:
 	virtual bool UpdateData() = 0;
 	virtual void IntHandler() = 0;
 	virtual bool Calibrate() = 0;
-	virtual void RotationMatrix(int8_t * const pMatrix) = 0;
-	virtual bool Orientation(bool bEn) = 0;
+	virtual void SetAxisAlignmentMatrix(int8_t * const pMatrix) = 0;
+	virtual bool Attitude(bool bEn) = 0;
 	virtual bool Pedometer(bool bEn) = 0;
 	virtual bool Quaternion(bool bEn, int NbAxis) = 0;
 	virtual bool Tap(bool bEn) = 0;

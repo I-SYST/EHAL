@@ -194,11 +194,11 @@ bool ImuMplMpu9250::Calibrate()
 	return true;
 }
 
-void ImuMplMpu9250::RotationMatrix(int8_t * const pMatrix)
+void ImuMplMpu9250::SetAxisAlignmentMatrix(int8_t * const pMatrix)
 {
 }
 
-bool ImuMplMpu9250::Orientation(bool bEn)
+bool ImuMplMpu9250::Attitude(bool bEn)
 {
 	return true;
 }

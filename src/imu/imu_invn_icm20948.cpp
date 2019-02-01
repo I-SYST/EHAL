@@ -215,11 +215,11 @@ bool ImuInvnIcm20948::Calibrate()
 	return true;
 }
 
-void ImuInvnIcm20948::RotationMatrix(int8_t * const pMatrix)
+void ImuInvnIcm20948::SetAxisAlignmentMatrix(int8_t * const pMatrix)
 {
 }
 
-bool ImuInvnIcm20948::Orientation(bool bEn)
+bool ImuInvnIcm20948::Attitude(bool bEn)
 {
 	return true;
 }
