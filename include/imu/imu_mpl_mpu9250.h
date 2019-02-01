@@ -52,7 +52,7 @@ public:
 	virtual void IntHandler();
 	virtual bool Calibrate();
 	virtual void SetAxisAlignmentMatrix(int8_t * const pMatrix);
-	virtual bool Attitude(bool bEn);
+	virtual bool Compass(bool bEn);
 	virtual bool Pedometer(bool bEn);
 	virtual bool Quaternion(bool bEn, int NbAxis);
 	virtual bool Tap(bool bEn);

@@ -655,7 +655,7 @@ bool ImuMpu9250::Calibrate()
 	return true;
 }
 
-bool ImuMpu9250::Attitude(bool bEn)
+bool ImuMpu9250::Compass(bool bEn)
 {
 	uint8_t d;
 
@@ -670,7 +670,7 @@ bool ImuMpu9250::Attitude(bool bEn)
 
 	Write(CFG_ANDROID_ORIENT_INT, &d, 1);
 
-	Imu::Feature(IMU_FEATURE_ATTITUDE, bEn);
+	Imu::Feature(IMU_FEATURE_COMPASS, bEn);
 
 	vDmpFifoLen += 4;
 

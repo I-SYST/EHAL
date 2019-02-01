@@ -219,7 +219,7 @@ void ImuInvnIcm20948::SetAxisAlignmentMatrix(int8_t * const pMatrix)
 {
 }
 
-bool ImuInvnIcm20948::Attitude(bool bEn)
+bool ImuInvnIcm20948::Compass(bool bEn)
 {
 	return true;
 }

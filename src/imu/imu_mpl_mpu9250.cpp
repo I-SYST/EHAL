@@ -198,7 +198,7 @@ void ImuMplMpu9250::SetAxisAlignmentMatrix(int8_t * const pMatrix)
 {
 }
 
-bool ImuMplMpu9250::Attitude(bool bEn)
+bool ImuMplMpu9250::Compass(bool bEn)
 {
 	return true;
 }

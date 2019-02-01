@@ -43,20 +43,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sensors/mag_sensor.h"
 
 /// IMU processing features
-#define IMU_FEATURE_RAW_ACCEL				(1<<0)		//!< Raw accel sensor data, relevant for when sensor is known
-#define IMU_FEATURE_RAW_GYRO				(1<<1)		//!< Raw gyr sensor data, relevant for when sensor is known
-#define IMU_FEATURE_RAW_MAG					(1<<2)		//!< Raw mag sensor data, relevant for when sensor is known
-#define IMU_FEATURE_ACCEL					(1<<3)		//!< Converted accel data
-#define IMU_FEATURE_GYRO					(1<<4)		//!< Converted gyro data
-#define IMU_FEATURE_MAG						(1<<5)		//!< Converted mag data
-#define IMU_FEATURE_EULER					(1<<6)		//!< Euler angles data
-#define IMU_FEATURE_QUATERNION				(1<<7)		//!< Quaternion data
-#define IMU_FEATURE_ATTITUDE				(1<<8)		//!< Orientation
-#define IMU_FEATURE_PEDOMETER				(1<<9)		//!< Pedometer
-#define IMU_FEATURE_TAP						(1<<10)		//!< Tap sensing
-#define IMU_FEATURE_GRAVITY					(1<<11)		//!< Gravity vector
-#define IMU_FEATURE_EXTERNAL_ACCEL			(1<<12)		//!< External acceleration vector
-#define IMU_FEATURE_ROTATION				(1<<13)		//!< Rotation data
+//#define IMU_FEATURE_RAW_ACCEL				(1<<0)		//!< Raw accel sensor data, relevant for when sensor is known
+//#define IMU_FEATURE_RAW_GYRO				(1<<1)		//!< Raw gyr sensor data, relevant for when sensor is known
+//#define IMU_FEATURE_RAW_MAG					(1<<2)		//!< Raw mag sensor data, relevant for when sensor is known
+//#define IMU_FEATURE_ACCEL					(1<<3)		//!< Converted accel data
+//#define IMU_FEATURE_GYRO					(1<<4)		//!< Converted gyro data
+//#define IMU_FEATURE_MAG						(1<<5)		//!< Converted mag data
+#define IMU_FEATURE_EULER					(1<<0)		//!< Euler angles data
+#define IMU_FEATURE_QUATERNION				(1<<1)		//!< Quaternion data
+#define IMU_FEATURE_COMPASS					(1<<2)		//!< Compasss
+#define IMU_FEATURE_GRAVITY					(1<<3)		//!< Gravity vector
+#define IMU_FEATURE_EXTERNAL_ACCEL			(1<<4)		//!< External acceleration vector
+#define IMU_FEATURE_TAP						(1<<5)		//!< Tap sensing
+#define IMU_FEATURE_ROTATION				(1<<6)		//!< Rotation data
+#define IMU_FEATURE_VIBRATION				(1<<7)		//!< Rotation data
+#define IMU_FEATURE_PEDOMETER				(1<<8)		//!< Pedometer
+#define IMU_FEATURE_CYCLING					(1<<9)		//!< Pedometer
 
 typedef uint32_t	IMU_FEATURE;
 
@@ -165,7 +167,7 @@ public:
 	virtual void IntHandler() = 0;
 	virtual bool Calibrate() = 0;
 	virtual void SetAxisAlignmentMatrix(int8_t * const pMatrix) = 0;
-	virtual bool Attitude(bool bEn) = 0;
+	virtual bool Compass(bool bEn) = 0;
 	virtual bool Pedometer(bool bEn) = 0;
 	virtual bool Quaternion(bool bEn, int NbAxis) = 0;
 	virtual bool Tap(bool bEn) = 0;
