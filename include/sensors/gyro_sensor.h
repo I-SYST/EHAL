@@ -78,6 +78,7 @@ typedef struct __GyroSensor_Config {
 	SENSOR_OPMODE 	OpMode;			//!< Operating mode
 	uint32_t		Freq;			//!< Sampling frequency in mHz (miliHertz) if continuous mode is used
 	uint32_t		Sensitivity;	//!< Sensitivity level per degree per second
+	uint32_t		LPFreq;			//!< Low pass filter cutoff frequency in Hz
 	bool 			bInter;			//!< true - enable interrupt
 	DEVINTR_POL		IntPol;			//!< Interrupt pin polarity
 } GYROSENSOR_CFG;

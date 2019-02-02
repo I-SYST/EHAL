@@ -76,8 +76,8 @@ typedef void (*ACCELINTCB)(ACCELSENSOR_DATA *pData);
 typedef struct __AccelSensor_Config {
 	uint32_t		DevAddr;	//!< Either I2C dev address or CS index select if SPI is used
 	SENSOR_OPMODE 	OpMode;		//!< Operating mode
-	uint16_t		Scale;		//!< Accelerometer sensor scale in g force (2g, 4g, ...
 	uint32_t		Freq;		//!< Sampling frequency in mHz (miliHertz) if continuous mode is used
+	uint16_t		Scale;		//!< Accelerometer sensor scale in g force (2g, 4g, ...
 	uint32_t		LPFreq;		//!< Low pass filter cutoff frequency in Hz
 	bool 			bInter;		//!< true - enable interrupt
 	DEVINTR_POL		IntPol;		//!< interrupt polarity

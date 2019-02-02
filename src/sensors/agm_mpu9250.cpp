@@ -356,7 +356,7 @@ bool AgmMpu9250::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer
 	regaddr = MPU9250_AG_PWR_MGMT_1;
 	Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_CYCLE);
 
-	msDelay(1);
+	msDelay(1);	// Min delays required for mode change to sync before config can be set
 
 	regaddr = MPU9250_AG_LP_ACCEL_ODR;
 
@@ -421,14 +421,12 @@ bool AgmMpu9250::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer
 		vSampFreq = 500000;	// 500 Hz
 	}
 
-	printf("Freq : %d\r\n", vSampFreq);
-
 	AccelSensor::Range(MPU9250_ACC_MAX_RANGE);
 	Scale(CfgData.Scale);
 	LowPassFreq(CfgData.LPFreq);
 
-	regaddr = MPU9250_AG_ACCEL_CONFIG2;
-	Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B);
+	//regaddr = MPU9250_AG_ACCEL_CONFIG2;
+	//Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B);
 
 	msDelay(100);
 
@@ -455,56 +453,70 @@ bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 	uint8_t regaddr;
 	uint8_t d = 0;
 	uint8_t fchoice = 0;
-	uint32_t f = CfgData.Freq << 1;
-	uint8_t smplrt = 1000000 / CfgData.Freq;
-;
+	uint32_t f = CfgData.LPFreq;////max(CfgData.Freq, vSampFreq);
+	vSampFreq = max(CfgData.Freq, vSampFreq);
+
+	uint16_t smplrt = 1000000 / vSampFreq;
+
+	// Disable interrupt
+	regaddr = MPU9250_AG_INT_ENABLE;
+	Write8(&regaddr, 1, 0);
+
+	// Enable full power
+	regaddr = MPU9250_AG_PWR_MGMT_1;
+	d = Read8(&regaddr, 1);
+	d  &= ~MPU9250_AG_PWR_MGMT_1_CYCLE;
+	Write8(&regaddr, 1, d);
+
+	msDelay(1);	// Min delays required for mode change to sync before config can be set
+
+	d = 0;
 
 	if (f == 0)
 	{
 		fchoice = 1;
-		smplrt = 32000000 / CfgData.Freq;
+		smplrt = 32000000 / vSampFreq;
 	}
-	if (f < 10000)
+	else if (f < 6)
 	{
 		d = MPU9250_AG_CONFIG_DLPF_CFG_5HZ;
 	}
-	else if (f < 20000)
+	else if (f < 16)
 	{
 		d = MPU9250_AG_CONFIG_DLPF_CFG_10HZ;
 	}
-	else if (f < 30000)
+	else if (f < 30)
 	{
 		d = MPU9250_AG_CONFIG_DLPF_CFG_20HZ;
 	}
-	else if (f < 60000)
+	else if (f < 60)
 	{
 		d = MPU9250_AG_CONFIG_DLPF_CFG_41HZ;
 	}
-	else if (f < 150000)
+	else if (f < 150)
 	{
 		d = MPU9250_AG_CONFIG_DLPF_CFG_92HZ;
 	}
-	else if (f < 220000)
+	else if (f < 220)
 	{
 		d = MPU9250_AG_CONFIG_DLPF_CFG_184HZ;
 	}
-	else if (f < 300000)
+	else if (f < 300)
 	{
 		d = MPU9250_AG_CONFIG_DLPF_CFG_250HZ;
-		smplrt = 8000000 / CfgData.Freq;
+		smplrt = 8000000 / vSampFreq;
 	}
-	else if (f < 400000)
+	else if (f < 5000)
 	{
 		// 3600 Hz
-		//d = MPU9250_AG_CONFIG_DLPF_CFG_3600HZ;
-		fchoice = 2;
-		smplrt = 8000000 / CfgData.Freq;
+		d = MPU9250_AG_CONFIG_DLPF_CFG_3600HZ;
+		smplrt = 8000000 / vSampFreq;
 	}
 	else
 	{
 		// 8800Hz
 		fchoice = 1;
-		smplrt = 32000000 / CfgData.Freq;
+		smplrt = 32000000 / vSampFreq;
 	}
 
 	regaddr = MPU9250_AG_CONFIG;
@@ -513,8 +525,8 @@ bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 	regaddr = MPU9250_AG_GYRO_CONFIG;
 	Write8(&regaddr, 1, fchoice);
 
-	//regaddr = MPU9250_AG_SMPLRT_DIV;
-	//Write8(&regaddr, 1, smplrt - 1);
+	regaddr = MPU9250_AG_SMPLRT_DIV;
+	Write8(&regaddr, 1, smplrt - 1);
 
 	Sensitivity(CfgData.Sensitivity);
 
@@ -525,6 +537,8 @@ bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 	//d = Read8(&regaddr, 1);
 
 	//printf("FIFO EN = %x\r\n", d);
+	regaddr = MPU9250_AG_INT_ENABLE;
+	Write8(&regaddr, 1, MPU9250_AG_INT_ENABLE_RAW_RDY_EN);
 
 	return true;
 }
@@ -757,10 +771,8 @@ bool AgmMpu9250::WakeOnEvent(bool bEnable, int Threshold)
 uint32_t AgmMpu9250::LowPassFreq(uint32_t Freq)
 {
 	uint8_t regaddr = MPU9250_AG_ACCEL_CONFIG2;
-	uint d = 0;
 	uint32_t rate = 1000;
-
-	//Freq <<= 1;
+	uint d = 0;
 
 	if (Freq == 0)
 	{
@@ -810,15 +822,12 @@ uint32_t AgmMpu9250::LowPassFreq(uint32_t Freq)
 		AccelSensor::LowPassFreq(1130);
 	}
 
-	printf("DLPFCFG = %u\r\n", d);
-	Write8(&regaddr, 1, d);// | MPU9250_AG_ACCEL_CONFIG2_FIFO_SIZE_1024);
+	Write8(&regaddr, 1, d | MPU9250_AG_ACCEL_CONFIG2_FIFO_SIZE_1024);
 
 	regaddr = MPU9250_AG_SMPLRT_DIV;
 	d = Read8(&regaddr, 0);
-	printf("SMPLRT %d\r\n", d);
-	d = (rate << 1) / Freq - 1;
+	d = rate / Freq - 1;
 	Write8(&regaddr, 1, d);
-	printf("SMPLRT new %d\r\n", d);
 
 
 	return AccelSensor::LowPassFreq();
@@ -918,7 +927,7 @@ bool AgmMpu9250::UpdateData()
 	AccelSensor::vData.Y = ((int32_t)d[2] << 8) | d[3];
 	AccelSensor::vData.Z = ((int32_t)d[4] << 8) | d[5];
 	AccelSensor::vData.Timestamp = vSampleTime;
-/*
+
 	regaddr = MPU9250_AG_GYRO_XOUT_H;
 	Read(&regaddr, 1, (uint8_t*)d, 6);
 
@@ -926,7 +935,7 @@ bool AgmMpu9250::UpdateData()
 	GyroSensor::vData.Y = ((int32_t)d[2] << 8) | d[3];
 	GyroSensor::vData.Z = ((int32_t)d[4] << 8) | d[5];
 	GyroSensor::vData.Timestamp = vSampleTime;
-
+/*
 	regaddr = MPU9250_MAG_ST1;
 	Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, (uint8_t*)d, 8);
 
