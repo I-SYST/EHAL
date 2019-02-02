@@ -366,7 +366,7 @@ uint64_t TimerHFnRF5x::TickCount()
 		if (count < vLastCount)
 	    {
 	        // Counter wrap arround
-	        vRollover += vFreq;
+	        vRollover += 0x100000000ULL;//vFreq;
 	    }
 
 		vLastCount = count;
@@ -402,7 +402,7 @@ uint64_t TimerHFnRF5x::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_T
     if (count < vLastCount)
     {
         // Counter wrap around
-        vRollover += vFreq;
+        vRollover += 0x100000000ULL;//vFreq;
     }
 
     vLastCount = count;

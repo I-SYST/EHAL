@@ -52,7 +52,7 @@ void TimerLFnRF5x::IRQHandler()
 
     if (vpReg->EVENTS_OVRFLW)
     {
-        vRollover += vFreq;
+        vRollover += 0x1000000ULL;
         evt |= TIMER_EVT_COUNTER_OVR;
         vpReg->EVENTS_OVRFLW = 0;
     }
@@ -283,7 +283,7 @@ uint32_t TimerLFnRF5x::Frequency(uint32_t Freq)
     vFreq = TIMER_NRF5X_RTC_BASE_FREQ / prescaler;
 
     // Pre-calculate periods for faster timer counter to time conversion use later
-    vnsPeriod = 1000000000 / vFreq;     // Period in nsec
+    vnsPeriod = 1000000000ULL / (uint64_t)vFreq;     // Period in nsec
 
     vpReg->TASKS_START = 1;
 
