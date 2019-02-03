@@ -329,7 +329,7 @@ void ReadPTHData()
 		// NOTE : M0 does not access unaligned data
 		// use local 4 bytes align stack variable then mem copy
 		// skip timestamp as advertising pack is limited in size
-		memcpy(&g_TPHData, ((uint8_t*)&data) + 8, sizeof(BLEADV_MANDATA_TPHSENSOR));
+		memcpy(&g_TPHData, ((uint8_t*)&data) + sizeof(data.Timestamp), sizeof(BLEADV_MANDATA_TPHSENSOR));
 	}
 
 	g_TphSensor.StartSampling();
@@ -453,7 +453,7 @@ void HardwareInit()
 	g_AdvData.Type = BLEADV_MANDATA_TYPE_TPH;
 	// Do memcpy to adv data. Due to byte alignment, cannot read directly into
 	// adv data
-	memcpy(g_AdvData.Data, ((uint8_t*)&tphdata) + 4, sizeof(BLEADV_MANDATA_TPHSENSOR));
+	memcpy(g_AdvData.Data, ((uint8_t*)&tphdata) + sizeof(tphdata.Timestamp), sizeof(BLEADV_MANDATA_TPHSENSOR));
 
 
 	g_I2c.Disable();
