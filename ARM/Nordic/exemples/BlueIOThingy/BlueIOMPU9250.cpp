@@ -29,10 +29,11 @@
 static const ACCELSENSOR_CFG s_AccelCfg = {
 	.DevAddr = 0,	// SPI CS idx
 	.OpMode = SENSOR_OPMODE_SINGLE,
-	.Scale = 2,			// 2G
 	.Freq = 50000,		// 50 Hz
+	.Scale = 2,			// 2G
 	.LPFreq = 100,
-//	.IntHandler = NULL,
+	.bInter = true,
+	.IntPol = DEVINTR_POL_LOW,
 };
 
 static const GYROSENSOR_CFG s_GyroCfg = {
@@ -45,7 +46,7 @@ static const GYROSENSOR_CFG s_GyroCfg = {
 
 static const MAGSENSOR_CFG s_MagCfg = {
 	.DevAddr = 0,	// SPI CS idx
-	.OpMode = SENSOR_OPMODE_CONTINUOUS,
+	.OpMode = SENSOR_OPMODE_SINGLE,
 	.Freq = 10000,
 	.Precision = 16,
 };
@@ -883,11 +884,11 @@ int drv_mpu9250_write(unsigned char slave_addr, unsigned char reg_addr, unsigned
 	{
 		return Mpu9250AuxWrite(slave_addr, &reg_addr, 1, (uint8_t*)p_data, length) <= 0;
 	}
-	else
+/*	else
 	{
 		reg_addr &= 0x7F;
 		return g_pSpi->Write(0, &reg_addr, 1, (uint8_t*)p_data, length) <= 0;
-	}
+	}*/
 	return g_Mpu9250.Write(&reg_addr, 1, (uint8_t*)p_data, length) <= 0;
 }
 
@@ -906,11 +907,11 @@ int drv_mpu9250_read(unsigned char slave_addr, unsigned char reg_addr, unsigned 
 	{
 		return Mpu9250AuxRead(slave_addr, &reg_addr, 1, (uint8_t*)p_data, length) <= 0;
 	}
-	else
+/*	else
 	{
 		reg_addr |= 0x80;
 		return g_pSpi->Read(0, &reg_addr, 1, p_data, length) <= 0;
-	}
+	}*/
 	return g_Mpu9250.Read(&reg_addr, 1, p_data, length) <= 0;
 }
 

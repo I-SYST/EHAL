@@ -32,19 +32,24 @@ static void ImuEvtHandler(Device * const pDev, DEV_EVT Evt);
 
 static const ACCELSENSOR_CFG s_AccelCfg = {
 	.DevAddr = 0,
-	.OpMode = SENSOR_OPMODE_SINGLE,
+	.OpMode = SENSOR_OPMODE_CONTINUOUS,
+	.Freq = 50000,	// 50Hz (in mHz)
 	.Scale = 2,
-	.Freq = 50,
+	.bInter = true,
+	.IntPol = DEVINTR_POL_LOW,
 };
 
 static const GYROSENSOR_CFG s_GyroCfg = {
 	.DevAddr = 0,
-	.Sensitivity = 10,
+	.OpMode = SENSOR_OPMODE_CONTINUOUS,
+	.Freq = 50000,
 };
 
 static const MAGSENSOR_CFG s_MagCfg = {
 	.DevAddr = 0,
-	.Precision = 10,
+	.OpMode = SENSOR_OPMODE_SINGLE,
+	.Freq = 50000,
+	.Precision = 14,
 };
 
 static AgmInvnIcm20948 s_MotSensor;

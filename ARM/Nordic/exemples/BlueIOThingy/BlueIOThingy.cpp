@@ -360,10 +360,11 @@ GasSensor &g_GasSensor = g_Bme680Sensor;
 
 static const ACCELSENSOR_CFG s_AccelCfg = {
 	.DevAddr = 0,	// SPI CS idx
-	.OpMode = SENSOR_OPMODE_SINGLE,
-	.Scale = 4,
-	.Freq = 6,
-//	.IntHandler = NULL,
+	.OpMode = SENSOR_OPMODE_CONTINUOUS,
+	.Freq = 50000,	// 50Hz (in mHz)
+	.Scale = 2,
+	.bInter = true,
+	.IntPol = DEVINTR_POL_LOW,
 };
 
 
