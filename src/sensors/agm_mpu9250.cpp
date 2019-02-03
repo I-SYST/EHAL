@@ -274,17 +274,51 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	{
 		// in SPI mode, use i2c master mode to access Mag device (AK8963C)
 		userctrl |= MPU9250_AG_USER_CTRL_I2C_MST_EN | MPU9250_AG_USER_CTRL_I2C_IF_DIS;
-		mst = MPU9250_AG_I2C_MST_CTRL_WAIT_FOR_ES | 13;
+		mst = 13;//MPU9250_AG_I2C_MST_CTRL_WAIT_FOR_ES | 13;
 	}
 
-	// Read chip id
-	regaddr = MPU9250_AG_WHO_AM_I;
-	d = Read8((uint8_t*)&regaddr, 1);
+	int rty = 5;
+
+	// The MPU-9250 has an issue that often unresponsive when rebooting while MAg is streaming
+	// A few reset/retry would require.  Have not found workaround yet.
+	do {
+		regaddr = MPU9250_AG_PWR_MGMT_1;
+		Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_H_RESET);
+
+		msDelay(100);
+
+		// Init master I2C interface
+		regaddr = MPU9250_AG_I2C_MST_CTRL;
+		Write8(&regaddr, 1, mst);
+
+		regaddr = MPU9250_AG_USER_CTRL;
+		Write8(&regaddr, 1, userctrl | MPU9250_AG_USER_CTRL_I2C_MST_RST);
+
+
+		msDelay(10);
+
+		regaddr = MPU9250_MAG_CTRL2;
+		d = MPU9250_MAG_CTRL2_SRST;
+		Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
+
+		msDelay(100);
+
+		regaddr = MPU9250_MAG_WIA;
+		Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
+		//printf("Mag %x\r\n", d);
+
+		// Read chip id
+		regaddr = MPU9250_AG_WHO_AM_I;
+		d = Read8((uint8_t*)&regaddr, 1);
+	} while (rty-- > 0 && d != MPU9250_AG_WHO_AM_I_ID);
 
 	if (d != MPU9250_AG_WHO_AM_I_ID)
 	{
+		// At this point, it is better to power cycle
 		return false;
 	}
+
+	//printf("rty = %d\r\n", rty);
 
 	Reset();
 
@@ -304,10 +338,6 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	//Write8(&regaddr, 1, MPU9250_AG_CONFIG_FIFO_MODE_BLOCKING);
 
 	vbInitialized = true;
-
-	//regaddr = MPU9250_AG_PWR_MGMT_1;
-	//Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_SLEEP);
-	//return true;
 
 	// Init master I2C interface
 	regaddr = MPU9250_AG_USER_CTRL;
@@ -332,6 +362,10 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	//		MPU9250_AG_FIFO_EN_GYRO_ZOUT | MPU9250_AG_FIFO_EN_GYRO_YOUT |
 	//		MPU9250_AG_FIFO_EN_GYRO_XOUT | MPU9250_AG_FIFO_EN_TEMP_OUT);
 
+	//regaddr = MPU9250_MAG_WIA;
+	//Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
+
+	//printf("WIA %x\r\n", d);
 
 	return true;
 }
@@ -457,10 +491,16 @@ bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 	vSampFreq = max(CfgData.Freq, vSampFreq);
 
 	uint16_t smplrt = 1000000 / vSampFreq;
+	uint8_t intval;
 
 	// Disable interrupt
 	regaddr = MPU9250_AG_INT_ENABLE;
+	intval = Read8(&regaddr, 1);
 	Write8(&regaddr, 1, 0);
+
+	// Read interrupt status to clear
+	regaddr = MPU9250_AG_INT_STATUS;
+	d = Read8(&regaddr, 1);
 
 	// Enable full power
 	regaddr = MPU9250_AG_PWR_MGMT_1;
@@ -538,7 +578,8 @@ bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 
 	//printf("FIFO EN = %x\r\n", d);
 	regaddr = MPU9250_AG_INT_ENABLE;
-	Write8(&regaddr, 1, MPU9250_AG_INT_ENABLE_RAW_RDY_EN);
+	intval |= MPU9250_AG_INT_ENABLE_RAW_RDY_EN;
+	Write8(&regaddr, 1, intval);
 
 	return true;
 }
@@ -547,17 +588,54 @@ bool AgmMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 {
 	uint8_t regaddr;
 	uint8_t d[4];
+	uint8_t intval;
 
 	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
 		return false;
 
-	msDelay(200);
+	// Disable interrupt
+	regaddr = MPU9250_AG_INT_ENABLE;
+	intval = Read8(&regaddr, 1);
+	Write8(&regaddr, 1, 0);
 
-	regaddr = MPU9250_MAG_WIA;
-	Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, d, 1);
+	msDelay(5);
+
+	// Read interrupt status to clear
+	regaddr = MPU9250_AG_INT_STATUS;
+	d[0] = Read8(&regaddr, 1);
+
+	// Enable full power
+	regaddr = MPU9250_AG_PWR_MGMT_1;
+	d[0] = Read8(&regaddr, 1);
+	d[0]  &= ~MPU9250_AG_PWR_MGMT_1_CYCLE;
+	Write8(&regaddr, 1, d[0]);
+
+	msDelay(10);	// Min delays required for mode change to sync before config can be set
+
+	int rty = 10;
+
+	do {
+		regaddr = MPU9250_MAG_CTRL2;
+		d[0] = MPU9250_MAG_CTRL2_SRST;
+		Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, d, 1);
+
+		msDelay(100);
+
+		regaddr = MPU9250_MAG_WIA;
+		Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, d, 2);
+		//printf("Mag %x\r\n", d[0]);
+
+	} while (rty-- > 0 && d[0] != MPU9250_MAG_WIA_DEVICE_ID);
+
+	//printf("r = %d\r\n", rty);
+
+	//printf("WIA %x %x\r\n", d[0], d[1]);
 
 	if (d[0] != MPU9250_MAG_WIA_DEVICE_ID)
 	{
+		regaddr = MPU9250_AG_INT_ENABLE;
+		Write8(&regaddr, 1, intval);
+
 		return false;
 	}
 
@@ -573,7 +651,7 @@ bool AgmMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	d[0] = MPU9250_MAG_CTRL1_MODE_FUSEROM_ACCESS;
 	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, d, 1);
 
-	msDelay(100);
+	msDelay(10);
 
 	regaddr = MPU9250_MAG_ASAX;
 	Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, d, 3);
@@ -582,10 +660,16 @@ bool AgmMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	vMagSenAdj[1] = (int16_t)d[1] - 128;
 	vMagSenAdj[2] = (int16_t)d[2] - 128;
 
+	printf("Adj %x %x %x\r\n", d[0], d[1], d[2]);
+
+	//msDelay(10);
+
 	// Transition out of reading ROM
 	regaddr = MPU9250_MAG_CTRL1;
 	d[0] = MPU9250_MAG_CTRL1_MODE_PWRDOWN;
 	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, d, 1);
+
+	//msDelay(10);
 
 	MagSensor::vPrecision = 14;
 	vMagCtrl1Val = 0;
@@ -619,12 +703,18 @@ bool AgmMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 		MagSensor::Mode(CfgData.OpMode, 0);
 	}
 
-	msDelay(10);
+//	msDelay(10);
 
 	regaddr = MPU9250_MAG_CTRL1;
 	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &vMagCtrl1Val, 1);
 
+	msDelay(1);
+
 	vbSensorEnabled[2] = true;
+
+	regaddr = MPU9250_AG_INT_ENABLE;
+	intval |= MPU9250_AG_INT_ENABLE_RAW_RDY_EN;
+	Write8(&regaddr, 1, intval);
 
 	return true;
 }
@@ -935,11 +1025,11 @@ bool AgmMpu9250::UpdateData()
 	GyroSensor::vData.Y = ((int32_t)d[2] << 8) | d[3];
 	GyroSensor::vData.Z = ((int32_t)d[4] << 8) | d[5];
 	GyroSensor::vData.Timestamp = vSampleTime;
-/*
+
 	regaddr = MPU9250_MAG_ST1;
 	Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, (uint8_t*)d, 8);
 
-	if (d[14] & MPU9250_MAG_ST1_DRDY)
+	if (d[0] & MPU9250_MAG_ST1_DRDY)
 	{
 		val = (((int16_t)d[0]) << 8L) | d[1];
 		val += (val * vMagSenAdj[0]) >> 8L;
@@ -955,7 +1045,7 @@ bool AgmMpu9250::UpdateData()
 
 		MagSensor::vData.Timestamp = vSampleTime;
 	}
-*/
+
 	return true;
 }
 /*
@@ -1024,7 +1114,7 @@ int AgmMpu9250::Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t
 
 			// Delay require for transfer to complete
 			//usDelay(500 + (cnt << 4));
-			msDelay(2);
+			msDelay(10 + cnt);
 
 			regaddr = MPU9250_AG_EXT_SENS_DATA_00;
 
