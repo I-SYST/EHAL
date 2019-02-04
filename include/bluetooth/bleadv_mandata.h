@@ -42,18 +42,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
 
 /// Manufacture specific advertisement data type
-#define BLEADV_MANDATA_TYPE_SN			0xFF	//!< Device Serial Number or UID (8 bytes)
+#define BLEADV_MANDATA_TYPE_SN			0xFF						//!< Device Serial Number or UID (8 bytes)
 #define BLEADV_MANDATA_TYPE_TPH			BLUEIO_DATA_TYPE_TPH		//!< Environmental sensor data (Temperature, Pressure, Humidity)
 #define BLEADV_MANDATA_TYPE_GAS			BLUEIO_DATA_TYPE_GAS		//!< Gas sensor data
-#define BLEADV_MANDATA_TYPE_ACCEL		BLUEIO_DATA_TYPE_ACCEL	//!< Accelerometer sensor data
-#define BLEADV_MANDATA_TYPE_GYRO			BLUEIO_DATA_TYPE_GYRO	//!< Gyroscope sensor data
+#define BLEADV_MANDATA_TYPE_ACCEL		BLUEIO_DATA_TYPE_ACCEL		//!< Accelerometer sensor data
+#define BLEADV_MANDATA_TYPE_GYRO		BLUEIO_DATA_TYPE_GYRO		//!< Gyroscope sensor data
 #define BLEADV_MANDATA_TYPE_MAG			BLUEIO_DATA_TYPE_MAG		//!< Magnetometer sensor data
-#define BLEADV_MANDATA_TYPE_PROXY		BLUEIO_DATA_TYPE_PROXY	//!< Proximity sensor data
+#define BLEADV_MANDATA_TYPE_PROXY		BLUEIO_DATA_TYPE_PROXY		//!< Proximity sensor data
 #define BLEADV_MANDATA_TYPE_ADC			BLUEIO_DATA_TYPE_ADC		//!< Analog converter data
-#define BLEADV_MANDATA_TYPE_GPIO			BLUEIO_DATA_TYPE_GPIO	//!< GPIO pins state
+#define BLEADV_MANDATA_TYPE_GPIO		BLUEIO_DATA_TYPE_GPIO		//!< GPIO pins state
 #define BLEADV_MANDATA_TYPE_BUT			BLUEIO_DATA_TYPE_BUT		//!< Button/Switch state
 #define BLEADV_MANDATA_TYPE_MOT			BLUEIO_DATA_TYPE_MOT		//!< Motion detection
-#define BLEADV_MANDATA_TYPE_AUDIO		BLUEIO_DATA_TYPE_AUDIO	//!< Audio data
+#define BLEADV_MANDATA_TYPE_AUDIO		BLUEIO_DATA_TYPE_AUDIO		//!< Audio data
+#define BLEADV_MANDATA_TYPE_BAT			BLUEIO_DATA_TYPE_BAT		//!< Battery level data
 
 #define BLEADV_MANDATA_LEN_MAX			8		//!< Max number of bytes of data
 

@@ -59,6 +59,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLUEIO_DATA_TYPE_UART			13		//!< UART interface data
 #define BLUEIO_DATA_TYPE_PPI			14		//!< PPI interface data
 #define BLUEIO_DATA_TYPE_AUDIO			15		//!< Audio data
+#define BLUEIO_DATA_TYPE_BAT			16		//!< Battery level
 
 #pragma pack(push, 1)
 
@@ -120,7 +121,7 @@ typedef struct __BlueIO_Data_Gpio {
 /// Button or switch state
 typedef enum __BlueIO_But_State {
 	BLUEIO_BUT_STATE_OFF,		//!< State OFF
-	BLUEIO_BUT_STATE_ON,			//!< State ON
+	BLUEIO_BUT_STATE_ON,		//!< State ON
 	BLUEIO_BUT_STATE_PRESSED,	//!< State transition from OFF to ON
 	BLUEIO_BUT_STATE_RELEASED	//!< State transition from ON to OFF
 } BLUEIO_BUT_STATE;
@@ -132,7 +133,7 @@ typedef struct __BlueIO_Data_Button {
 
 /// Motion sensor data
 typedef struct __BlueIO_Data_Motiont {
-	uint32_t Id;					//!< Sensor ID
+	uint32_t Id;				//!< Sensor ID
 	uint32_t Val;				//!< Detection state (0 - no motion, 1 - motion
 } BLUEIO_DATA_MOTION;
 
@@ -140,7 +141,7 @@ typedef struct __BlueIO_Data_Motiont {
 /// I2C data
 typedef struct __BlueIO_Data_I2C {
 	uint8_t	Id;					//!< interace ID
-	uint8_t Len;					//!< data length
+	uint8_t Len;				//!< data length
 	uint8_t Data[BLUEIO_I2C_DATA_LEN_MAX];	//!< data array
 } BLUEIO_DATA_I2C;
 
@@ -148,7 +149,7 @@ typedef struct __BlueIO_Data_I2C {
 /// SPI data
 typedef struct __BlueIO_Data_SPI {
 	uint8_t	Id;					//!< interace ID
-	uint8_t Len;					//!< data length
+	uint8_t Len;				//!< data length
 	uint8_t Data[BLUEIO_I2C_DATA_LEN_MAX];	//!< data array
 } BLUEIO_DATA_SPI;
 
@@ -157,15 +158,15 @@ typedef struct __BlueIO_Data_SPI {
 /// UART data
 typedef struct __BlueIO_Data_UART {
 	uint8_t	Id;					//!< interace ID
-	uint8_t Len;					//!< data length
+	uint8_t Len;				//!< data length
 	uint8_t Data[BLUEIO_I2C_DATA_LEN_MAX];	//!< data array
 } BLUEIO_DATA_UART;
 
 /// PPI data
 typedef struct __BlueIO_Data_PPI {
 	uint8_t	Id;					//!< interace ID
-	uint8_t Len;					//!< data length
-	uint8_t Data[1];				//!< data array, variable length
+	uint8_t Len;				//!< data length
+	uint8_t Data[1];			//!< data array, variable length
 } BLUEIO_DATA_PPI;
 
 
@@ -174,8 +175,14 @@ typedef struct __BlueIO_Data_Audio {
 	uint8_t Chan;				//!< Chan number
 	uint8_t CodeType;			//!< Encoding type
 	uint16_t Len;				//!< Data length
-	uint8_t Data[1];				// !< Audio data variable length
-} BLUEIO__DATAAUDIO;
+	uint8_t Data[1];			//!< Audio data variable length
+} BLUEIO_DATAAUDIO;
+
+/// Battery level
+typedef struct __BlueIO_Data_Bat {
+	uint8_t Level;				//!< Battery level in %
+	int32_t	Voltage;			//!< Battery voltage in mV (miliVolt)
+} BLUEIO_DATA_BAT;
 
 #pragma pack(pop)
 
