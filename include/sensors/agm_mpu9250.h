@@ -3,6 +3,9 @@
 
 @brief	Implementation of TDK MPU-9250 accel, gyro, mag sensor
 
+This only implement the sensor portion of the MPU-9250.  The DMP part is
+implemented in a higher level in IMU class device.
+
 @author	Hoang Nguyen Hoan
 @date	Nov. 18, 2017
 
@@ -495,6 +498,7 @@ public:
 	bool UpdateData();
 	virtual void IntHandler();
 	void ResetFifo();
+	bool UploadDMPImage(uint32_t DmpStartAddr, uint8_t *pImage, int Len);
 
 private:
 	// Default base initialization. Does detection and set default config for all sensor.

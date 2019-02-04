@@ -273,8 +273,8 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	if (pIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
 		// in SPI mode, use i2c master mode to access Mag device (AK8963C)
-		userctrl |= MPU9250_AG_USER_CTRL_I2C_MST_EN | MPU9250_AG_USER_CTRL_I2C_IF_DIS;
-		mst = 13;//MPU9250_AG_I2C_MST_CTRL_WAIT_FOR_ES | 13;
+		userctrl |= MPU9250_AG_USER_CTRL_I2C_MST_EN | MPU9250_AG_USER_CTRL_I2C_IF_DIS | MPU9250_AG_USER_CTRL_FIFO_EN;
+		mst = MPU9250_AG_I2C_MST_CTRL_WAIT_FOR_ES | 13;
 	}
 
 	int rty = 5;
@@ -344,7 +344,7 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	Write8(&regaddr, 1, userctrl);
 
 	regaddr = MPU9250_AG_I2C_MST_CTRL;
-	Write8(&regaddr, 1, mst);
+	Write8(&regaddr, 1, mst | MPU9250_AG_I2C_MST_CTRL_SLV3_FIFO_EN);
 
 	vbSensorEnabled[0] = true;
 
@@ -353,14 +353,14 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
     // Undocumented register
 	// shares 4kB of memory between the DMP and the FIFO. Since the
     // first 3kB are needed by the DMP, we'll use the last 1kB for the FIFO.
-	//regaddr = MPU9250_AG_ACCEL_CONFIG2;
-	//Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B | MPU9250_AG_ACCEL_CONFIG2_FIFO_SIZE_1024);
+	regaddr = MPU9250_AG_ACCEL_CONFIG2;
+	Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B | MPU9250_AG_ACCEL_CONFIG2_FIFO_SIZE_1024);
 
 
-	//regaddr = MPU9250_AG_FIFO_EN;
-	//Write8(&regaddr, 1, MPU9250_AG_FIFO_EN_ACCEL |
-	//		MPU9250_AG_FIFO_EN_GYRO_ZOUT | MPU9250_AG_FIFO_EN_GYRO_YOUT |
-	//		MPU9250_AG_FIFO_EN_GYRO_XOUT | MPU9250_AG_FIFO_EN_TEMP_OUT);
+	regaddr = MPU9250_AG_FIFO_EN;
+	Write8(&regaddr, 1, MPU9250_AG_FIFO_EN_ACCEL |
+			MPU9250_AG_FIFO_EN_GYRO_ZOUT | MPU9250_AG_FIFO_EN_GYRO_YOUT |
+			MPU9250_AG_FIFO_EN_GYRO_XOUT | MPU9250_AG_FIFO_EN_TEMP_OUT);
 
 	//regaddr = MPU9250_MAG_WIA;
 	//Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
@@ -827,7 +827,9 @@ bool AgmMpu9250::WakeOnEvent(bool bEnable, int Threshold)
 				MPU9250_AG_PWR_MGMT_2_DIS_XG | MPU9250_AG_PWR_MGMT_2_DIS_YG | MPU9250_AG_PWR_MGMT_2_DIS_ZG);
 
 		regaddr = MPU9250_AG_ACCEL_CONFIG2;
-	    Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B | MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_5HZ);
+	    Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B
+	    	   | MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_5HZ
+	    	   | MPU9250_AG_ACCEL_CONFIG2_FIFO_SIZE_1024);
 
 	    regaddr = MPU9250_AG_INT_ENABLE;
 	    Write8(&regaddr, 1, MPU9250_AG_INT_ENABLE_WOM_EN);
@@ -1220,8 +1222,13 @@ void AgmMpu9250::ResetFifo()
 
 bool AgmMpu9250::UploadDMPImage()
 {
-	int len = DMP_CODE_SIZE;
-	uint8_t *p = (uint8_t*)s_DMPImage;
+	return UploadDMPImage(DMP_START_ADDR, (uint8_t*)s_DMPImage, DMP_CODE_SIZE);
+}
+
+bool AgmMpu9250::UploadDMPImage(uint32_t DmpStartAddr, uint8_t *pImage, int Len)
+{
+	int len = Len;
+	uint8_t *p = pImage;
 	uint8_t regaddr;
 	uint16_t memaddr = 0;
 	uint8_t d[2];
@@ -1244,8 +1251,8 @@ bool AgmMpu9250::UploadDMPImage()
 		len -= l;
 	}
 
-	len = DMP_CODE_SIZE;
-	p = (uint8_t*)s_DMPImage;
+	len = Len;
+	p = pImage;
 	memaddr = 0;
 
 	// Verify
@@ -1276,8 +1283,8 @@ bool AgmMpu9250::UploadDMPImage()
 	vbDmpEnabled = true;
 
 	// Write DMP program start address
-	d[0] = DMP_START_ADDR >> 8;
-	d[1] = DMP_START_ADDR & 0xFF;
+	d[0] = DmpStartAddr >> 8;//DMP_START_ADDR >> 8;
+	d[1] = DmpStartAddr & 0xFF;//DMP_START_ADDR & 0xFF;
 	regaddr = MPU9250_DMP_PROG_START;
 	Write(&regaddr, 1, d, 2);
 
