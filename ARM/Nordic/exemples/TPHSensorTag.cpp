@@ -74,6 +74,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #include "board.h"
 #include "idelay.h"
+#include "adc_nrf52_saadc.h"
 
 #define DEVICE_NAME                     "EnvSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
@@ -103,7 +104,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void TimerHandler(Timer *pTimer, uint32_t Evt);
 
-uint8_t g_AdvDataBuff[9] = {
+uint8_t g_AdvDataBuff[10] = {
 	BLEADV_MANDATA_TYPE_TPH,
 };
 
@@ -112,6 +113,7 @@ BLEADV_MANDATA &g_AdvData = *(BLEADV_MANDATA*)g_AdvDataBuff;
 // Evironmental Sensor Data to advertise
 BLEADV_MANDATA_TPHSENSOR &g_TPHData = *(BLEADV_MANDATA_TPHSENSOR *)g_AdvData.Data;
 BLEADV_MANDATA_GASSENSOR &g_GasData = *(BLEADV_MANDATA_GASSENSOR *)g_AdvData.Data;
+BLUEIO_DATA_BAT &g_AdvBat = *(BLUEIO_DATA_BAT *)g_AdvData.Data;
 
 const static TIMER_CFG s_TimerCfg = {
     .DevNo = 2,
@@ -295,6 +297,75 @@ TphSensor &g_TphSensor = g_MS8607Sensor;
 
 GasSensor &g_GasSensor = g_Bme680Sensor;
 
+// Define available voltage sources
+static const ADC_REFVOLT s_RefVolt[] = {
+	{.Type = ADC_REFVOLT_TYPE_INTERNAL, .Voltage = 0.6 },
+};
+
+static const int s_NbRefVolt = sizeof(s_RefVolt) / sizeof(ADC_REFVOLT);
+
+#define ADC_CFIFO_SIZE		CFIFO_TOTAL_MEMSIZE(200, sizeof(ADC_DATA))
+
+void ADCEventHandler(AdcDevice *pAdcDev, ADC_EVT Evt);
+
+static uint8_t s_AdcFifoMem[ADC_CFIFO_SIZE];
+
+// Define ADC device
+static const ADC_CFG s_AdcCfg = {
+	.Mode = ADC_CONV_MODE_SINGLE,
+	.pRefVolt = s_RefVolt,
+	.NbRefVolt = s_NbRefVolt,
+	.DevAddr = 0,
+	.Resolution = 10,
+	.Rate = 8000,
+	.OvrSample = 0,
+	.bInterrupt = true,
+	.IntPrio = 6,
+	.EvtHandler = ADCEventHandler
+};
+
+AdcnRF52 g_Adc;
+
+// Define ADC channel
+static const ADC_CHAN_CFG s_ChanCfg[] = {
+	{
+		.Chan = 0,
+		.RefVoltIdx = 0,
+		.Type = ADC_CHAN_TYPE_SINGLE_ENDED,
+		.Gain = 5,//1 << 8,
+		.AcqTime = 10,
+		.BurstMode = true,
+		.PinP = { .PinNo = 8, .Conn = ADC_PIN_CONN_NONE },
+	},
+};
+
+static const int s_NbChan = sizeof(s_ChanCfg) / sizeof(ADC_CHAN_CFG);
+volatile bool g_bDataReady = false;
+BLUEIO_DATA_BAT g_BatData;
+
+void ADCEventHandler(AdcDevice *pAdcDev, ADC_EVT Evt)
+{
+	if (Evt == ADC_EVT_DATA_READY)
+	{
+		g_bDataReady = true;
+		int cnt = 0;
+
+		ADC_DATA df[s_NbChan];
+		cnt = g_Adc.Read(df, s_NbChan);
+		if (cnt > 0)
+		{
+//			g_Uart.printf("%d ADC[0] = %.2fV, ADC[1] = %.2fV, ADC[2] = %.2fV, ADC[3] = %.2fV\r\n",
+//					df[0].Timestamp, df[0].Data, df[1].Data, df[2].Data, df[3].Data);
+
+			uint8_t level = 100 * (df->Data - 1.75)/ 1.25;
+			g_BatData.Level = level;
+			g_BatData.Voltage = (int32_t)(df->Data * 1000.0);
+		}
+
+		g_Adc.Disable();
+	}
+}
+
 void ReadPTHData()
 {
 	static uint32_t gascnt = 0;
@@ -312,7 +383,18 @@ void ReadPTHData()
 	{
 		g_GasSensor.Read(gdata);
 	}
-	if ((gascnt & 0x3) == 0)
+
+	if ((gascnt & 0x7) == 0)
+	{
+		g_Adc.Enable();
+		g_Adc.OpenChannel(s_ChanCfg, s_NbChan);
+		g_Adc.StartConversion();
+
+		g_AdvData.Type = BLEADV_MANDATA_TYPE_BAT;
+
+		memcpy(&g_AdvBat, &g_BatData, sizeof(BLUEIO_DATA_BAT));
+	}
+	else if ((gascnt & 0x3) == 0)
 	{
 		BLEADV_MANDATA_GASSENSOR gas;
 
@@ -335,6 +417,11 @@ void ReadPTHData()
 	g_TphSensor.StartSampling();
 
 	g_I2c.Disable();
+
+	g_Adc.Enable();
+	g_Adc.OpenChannel(s_ChanCfg, s_NbChan);
+	g_Adc.StartConversion();
+
 
 #endif
 	// Update advertisement data
@@ -457,6 +544,10 @@ void HardwareInit()
 
 
 	g_I2c.Disable();
+
+	g_Adc.Init(s_AdcCfg);
+	g_Adc.OpenChannel(s_ChanCfg, s_NbChan);
+	g_Adc.StartConversion();
 
 #ifdef USE_TIMER_UPDATE
 	// Only with SDK14
