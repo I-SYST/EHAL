@@ -448,6 +448,11 @@ static const uint8_t s_DMPImage[DMP_CODE_SIZE] = {
 
 #define DMP_SAMPLE_RATE     (200)
 
+#define QUAT_ERROR_THRESH       (1L<<24)
+#define QUAT_MAG_SQ_NORMALIZED  (1L<<28)
+#define QUAT_MAG_SQ_MIN         (QUAT_MAG_SQ_NORMALIZED - QUAT_ERROR_THRESH)
+#define QUAT_MAG_SQ_MAX         (QUAT_MAG_SQ_NORMALIZED + QUAT_ERROR_THRESH)
+
 // Encode row into 3 bits
 // bits 0-1 : Index of the colunm of non zero
 // bit 2 : sign bit
@@ -478,6 +483,18 @@ uint16_t EncodeMatrix(int8_t * const pMatrix)
     c |= EncodeRow(pMatrix + 6) << 6;
 
     return c;
+}
+
+bool ValidateQuat(int32_t Q[4])
+{
+	int32_t sq = Q[0] * Q[0] + Q[1] * Q[1] + Q[2] * Q[2] + Q[3] * Q[3];
+
+	if (sq < QUAT_MAG_SQ_MIN || sq > QUAT_MAG_SQ_MAX)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 #if 0
@@ -582,7 +599,7 @@ bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor
 
 #endif
 
-    bool res = 	UploadDMPImage();
+    bool res = 	vpMpu->UploadDMPImage(DMP_START_ADDR, (uint8_t*)s_DMPImage, DMP_CODE_SIZE);
 
     if (res == true)
     {
@@ -598,7 +615,29 @@ bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor
         regaddr = MPU9250_AG_INT_ENABLE;
         d = vpMpu->Read8(&regaddr, 1) | MPU9250_AG_INT_ENABLE_DMP_EN;
         vpMpu->Write8(&regaddr, 1, d);
+
+        if (pAccel)
+        {
+        	vDmpFifoLen += 6;
+        }
+        if (pGyro)
+        {
+        	vDmpFifoLen += 6;
+        }
     }
+
+    uint32_t f = 0;
+
+    if (vpAccel)
+    {
+    	f = max(vpAccel->SamplingFrequency(), f);
+    }
+    if (vpGyro)
+    {
+    	f = max(vpGyro->SamplingFrequency(), f);
+    }
+
+    Rate(f);
 
     return res;
 }
@@ -776,7 +815,68 @@ void ImuMpu9250::SetAxisAlignmentMatrix(int8_t * const pMatrix)
 
 void ImuMpu9250::IntHandler()
 {
-printf("IntHandler\r\n");
+	uint8_t buf[32];
+	int fidx = 0;
+
+	printf("IntHandler\r\n");
+
+	uint32_t t = ((Timer*)*vpMpu)->uSecond();
+
+	int len = vpMpu->ReadFifo(buf, vDmpFifoLen);
+	if (len > 0)
+	{
+		IMU_FEATURE feat;
+		if (feat & IMU_FEATURE_QUATERNION)
+		{
+			int32_t q[4];
+
+			q[0] = (((int32_t)buf[0] << 24) | ((int32_t)buf[1] << 16) |
+		            ((int32_t)buf[2] << 8) | buf[3]);
+			q[1] = (((int32_t)buf[4] << 24) | ((int32_t)buf[5] << 16) |
+		            ((int32_t)buf[6] << 8) | buf[7]);
+			q[2] = (((int32_t)buf[8] << 24) | ((int32_t)buf[9] << 16) |
+		            ((int32_t)buf[10] << 8) | buf[11]);
+			q[3] = (((int32_t)buf[12] << 24) | ((int32_t)buf[13] << 16) |
+		            ((int32_t)buf[14] << 8) | buf[15]);
+
+			if (ValidateQuat(q) == false)
+			{
+				vpMpu->ResetFifo();
+
+				return;
+			}
+
+			vQuat.Q1 = q[0] / (1<<16);
+			vQuat.Q2 = q[1] / (1<<16);
+			vQuat.Q3 = q[2] / (1<<16);
+			vQuat.Q4 = q[3] / (1<<16);
+			vQuat.Timestamp = t;
+
+			fidx += 16;
+		}
+		if (vpAccel)
+		{
+			ACCELSENSOR_RAWDATA accel;
+
+	        accel.X = ((int16_t)buf[fidx] << 8) | buf[fidx + 1];
+	        accel.Y = ((int16_t)buf[fidx + 2] << 8) | buf[fidx + 3];
+	        accel.Z = ((int16_t)buf[fidx + 4] << 8) | buf[fidx + 5];
+	        accel.Timestamp = t;
+
+	        fidx += 6;
+		}
+		if (vpGyro)
+		{
+			GYROSENSOR_RAWDATA gyro;
+
+			gyro.X = ((int16_t)buf[fidx] << 8) | buf[fidx + 1];
+			gyro.Y = ((int16_t)buf[fidx + 2] << 8) | buf[fidx + 3];
+			gyro.Z = ((int16_t)buf[fidx + 4] << 8) | buf[fidx + 5];
+			gyro.Timestamp = t;
+
+	        fidx += 6;
+		}
+	}
 }
 
 int ImuMpu9250::Read(uint16_t Addr, uint8_t *pBuff, int Len)

@@ -230,6 +230,8 @@ public:
 	 */
 	virtual bool WakeOnEvent(bool bEnable, int Threshold) { return false; }
 
+	virtual operator Timer * const () { return vpTimer; }	// Get device interface data (handle)
+
 protected:
 
 	SENSOR_STATE vState;		//!< Current sensor state

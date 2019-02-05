@@ -497,14 +497,17 @@ public:
 	int Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
 	bool UpdateData();
 	virtual void IntHandler();
+	int GetFifoLen();
+	int ReadFifo(uint8_t * const pBuff, int Len);
 	void ResetFifo();
-	bool UploadDMPImage(uint32_t DmpStartAddr, uint8_t *pImage, int Len);
+	bool UploadDMPImage(uint32_t DmpStartAddr, uint8_t * const pImage, int Len);
 
 private:
 	// Default base initialization. Does detection and set default config for all sensor.
 	// All sensor init must call this first prio to initializing itself
 	bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer);
 	bool UploadDMPImage();
+	void EnableFifo();
 
 	bool vbInitialized;
 	bool vbDmpEnabled;
