@@ -599,7 +599,7 @@ bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor
 
 #endif
 
-    bool res = 	vpMpu->UploadDMPImage(DMP_START_ADDR, (uint8_t*)s_DMPImage, DMP_CODE_SIZE);
+    bool res = 	vpMpu->InitDMP(DMP_START_ADDR, (uint8_t*)s_DMPImage, DMP_CODE_SIZE);
 
     if (res == true)
     {
@@ -618,7 +618,7 @@ bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor
 
         if (pAccel)
         {
-        	vDmpFifoLen += 6;
+        	vDmpFifoLen += 8;
         }
         if (pGyro)
         {
@@ -820,9 +820,15 @@ void ImuMpu9250::IntHandler()
 
 	printf("IntHandler\r\n");
 
+	int len = vpMpu->GetFifoLen();
+	if (len < vDmpFifoLen)
+	{
+		return;
+	}
+
 	uint32_t t = ((Timer*)*vpMpu)->uSecond();
 
-	int len = vpMpu->ReadFifo(buf, vDmpFifoLen);
+	len = vpMpu->ReadFifo(buf, vDmpFifoLen);
 	if (len > 0)
 	{
 		IMU_FEATURE feat;
@@ -854,6 +860,7 @@ void ImuMpu9250::IntHandler()
 
 			fidx += 16;
 		}
+		/*
 		if (vpAccel)
 		{
 			ACCELSENSOR_RAWDATA accel;
@@ -875,7 +882,8 @@ void ImuMpu9250::IntHandler()
 			gyro.Timestamp = t;
 
 	        fidx += 6;
-		}
+		}*/
+		vpMpu->IntHandler();
 	}
 }
 

@@ -38,6 +38,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sensors/agm_mpu9250.h"
 #include "iopinctrl.h"
 
+#define MPU9250_ACCEL_IDX		0
+#define MPU9250_GYRO_IDX		1
+#define MPU9250_MAG_IDX			2
+
 #define DMP_CODE_SIZE           (3062)
 #define DMP_START_ADDR			(0x400)
 
@@ -346,7 +350,7 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	regaddr = MPU9250_AG_I2C_MST_CTRL;
 	Write8(&regaddr, 1, mst);
 
-	vbSensorEnabled[0] = true;
+	vbSensorEnabled[MPU9250_ACCEL_IDX] = true;
 
 	// Enable FIFO
 
@@ -571,7 +575,7 @@ bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 	Sensitivity(CfgData.Sensitivity);
 
 
-	vbSensorEnabled[1] = true;
+	vbSensorEnabled[MPU9250_GYRO_IDX] = true;
 
 	//regaddr = MPU9250_AG_FIFO_EN;
 	//d = Read8(&regaddr, 1);
@@ -710,7 +714,7 @@ bool AgmMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 
 	msDelay(1);
 
-	vbSensorEnabled[2] = true;
+	vbSensorEnabled[MPU9250_MAG_IDX] = true;
 
 	regaddr = MPU9250_AG_INT_ENABLE;
 	intval |= MPU9250_AG_INT_ENABLE_RAW_RDY_EN;
@@ -724,21 +728,23 @@ bool AgmMpu9250::Enable()
 	uint8_t regaddr = MPU9250_AG_PWR_MGMT_1;
 	uint8_t d;
 
-	Write8(&regaddr, 1, MPU9250_AG_PWR_MGMT_1_CYCLE | //MPU9250_AG_PWR_MGMT_1_GYRO_STANDBY |
-			MPU9250_AG_PWR_MGMT_1_CLKSEL_INTERNAL);
+	d = Read8(&regaddr, 1);
+	d &= ~(MPU9250_AG_PWR_MGMT_1_SLEEP | MPU9250_AG_PWR_MGMT_1_CLKSEL_MASK);
+
+	Write8(&regaddr, 1, d |	MPU9250_AG_PWR_MGMT_1_CLKSEL_AUTO);
 
 	regaddr = MPU9250_AG_PWR_MGMT_2;
 
 	d = 0;
 
 	// Enable Accel & Gyro
-	if (vbSensorEnabled[0] == false)
+	if (vbSensorEnabled[MPU9250_ACCEL_IDX] == false)
 	{
 		d |= MPU9250_AG_PWR_MGMT_2_DIS_ZA |
 			 MPU9250_AG_PWR_MGMT_2_DIS_YA |
 			 MPU9250_AG_PWR_MGMT_2_DIS_XA;
 	}
-	if (vbSensorEnabled[1] == false)
+	if (vbSensorEnabled[MPU9250_GYRO_IDX] == false)
 	{
 		d |= MPU9250_AG_PWR_MGMT_2_DIS_ZG |
 			 MPU9250_AG_PWR_MGMT_2_DIS_YG |
@@ -746,7 +752,7 @@ bool AgmMpu9250::Enable()
 	}
 	Write8(&regaddr, 1, d);
 
-	if (vbSensorEnabled[2] == true)
+	if (vbSensorEnabled[MPU9250_MAG_IDX] == true)
 	{
 		printf("Mag Enabled\r\n");
 
@@ -768,9 +774,8 @@ void AgmMpu9250::Disable()
 
 	regaddr = MPU9250_AG_PWR_MGMT_1;
 	d = Read8(&regaddr, 1);
-	d |= MPU9250_AG_PWR_MGMT_1_SLEEP;
-	Write8(&regaddr, 1, d);//MPU9250_AG_PWR_MGMT_1_SLEEP | MPU9250_AG_PWR_MGMT_1_PD_PTAT |
-						//MPU9250_AG_PWR_MGMT_1_CYCLE | 3);//MPU9250_AG_PWR_MGMT_1_GYRO_STANDBY);
+	d |= MPU9250_AG_PWR_MGMT_1_SLEEP | MPU9250_AG_PWR_MGMT_1_CLKSEL_STOP;
+	Write8(&regaddr, 1, d);
 
 	return;
 
@@ -989,7 +994,7 @@ uint32_t AgmMpu9250::Sensitivity(uint32_t Value)
 bool AgmMpu9250::UpdateData()
 {
 	uint8_t regaddr = MPU9250_AG_FIFO_COUNT_H;//MPU9250_AG_ACCEL_XOUT_H;
-	uint8_t d[20];
+	uint8_t d[32];
 	uint16_t val;
 	uint16_t cnt;
 	vSampleCnt++;
@@ -998,22 +1003,37 @@ bool AgmMpu9250::UpdateData()
 	{
 		vSampleTime = vpTimer->uSecond();
 	}
-#if 0
+
 	val = 0;
 
-	if (vbSensorEnabled[0] == true)
-		val += 6;
-	if (vbSensorEnabled[1] == true)
+	if (vbSensorEnabled[MPU9250_ACCEL_IDX] == true)
+		val += 8;
+	if (vbSensorEnabled[MPU9250_GYRO_IDX] == true)
 		val += 6;
 
-	Read(&regaddr, 1, (uint8_t*)&cnt, 2);
-	cnt = EndianCvt16(cnt);
-
-	if (cnt >= val)
+	if (vbDmpEnabled == true)
 	{
-		regaddr = MPU9250_AG_FIFO_R_W;
-		val = Read(&regaddr, 1, d , val);
+		Read(&regaddr, 1, (uint8_t*)&cnt, 2);
+		cnt = EndianCvt16(cnt);
 
+		if (cnt >= val)
+		{
+			regaddr = MPU9250_AG_FIFO_R_W;
+			val = Read(&regaddr, 1, d , val);
+		}
+		else
+		{
+			val = 0;
+		}
+	}
+	else
+	{
+		regaddr = MPU9250_AG_ACCEL_XOUT_H;
+		Read(&regaddr, 1, (uint8_t*)d, val);
+	}
+
+	if (val > 0)
+	{
 		AccelSensor::vData.Scale =  AccelSensor::Scale();
 		AccelSensor::vData.Range = 0x7FFF;
 		AccelSensor::vData.X = ((int32_t)d[0] << 8) | d[1];
@@ -1021,58 +1041,18 @@ bool AgmMpu9250::UpdateData()
 		AccelSensor::vData.Z = ((int32_t)d[4] << 8) | d[5];
 		AccelSensor::vData.Timestamp = vSampleTime;
 
-		if (val > 6)
+		vTemperature = ((int32_t)d[6] << 8) | d[7];
+
+		if (val > 8)
 		{
-			GyroSensor::vData.X = ((int32_t)d[0] << 8) | d[1];
-			GyroSensor::vData.Y = ((int32_t)d[2] << 8) | d[3];
-			GyroSensor::vData.Z = ((int32_t)d[4] << 8) | d[5];
+			GyroSensor::vData.X = ((int32_t)d[8] << 8) | d[9];
+			GyroSensor::vData.Y = ((int32_t)d[10] << 8) | d[11];
+			GyroSensor::vData.Z = ((int32_t)d[12] << 8) | d[13];
 			GyroSensor::vData.Timestamp = vSampleTime;
 		}
 	}
-#else
-/*
-	if (vbSensorEnabled[2] == true)
-	{
-		val = ReadFifo(d, 6);
 
-		if (val > 0)
-		{
-			val = (((int16_t)d[0]) << 8L) | d[1];
-			val += (val * vMagSenAdj[0]) >> 8L;
-			MagSensor::vData.X = (int16_t)(val * (MPU9250_MAG_MAX_FLUX_DENSITY << 8) / MagSensor::vScale);
-
-			val = (((int16_t)d[2]) << 8) | d[3];
-			val += (val * vMagSenAdj[1]) >> 8L;
-			MagSensor::vData.Y = (int16_t)(val * (MPU9250_MAG_MAX_FLUX_DENSITY << 8) / MagSensor::vScale);
-
-			val = (((int16_t)d[4]) << 8) | d[5];
-			val += (val * vMagSenAdj[2]) >> 8L;
-			MagSensor::vData.Z = (int16_t)(val * (MPU9250_MAG_MAX_FLUX_DENSITY << 8) / MagSensor::vScale);
-
-			MagSensor::vData.Timestamp = vSampleTime;
-		}
-	}*/
-
-	regaddr = MPU9250_AG_ACCEL_XOUT_H;
-	Read(&regaddr, 1, (uint8_t*)d, 6);
-
-	AccelSensor::vData.Scale =  AccelSensor::Scale();
-	AccelSensor::vData.Range = 0x7FFF;
-	AccelSensor::vData.X = ((int32_t)d[0] << 8) | d[1];
-	AccelSensor::vData.Y = ((int32_t)d[2] << 8) | d[3];
-	AccelSensor::vData.Z = ((int32_t)d[4] << 8) | d[5];
-	AccelSensor::vData.Timestamp = vSampleTime;
-
-	regaddr = MPU9250_AG_GYRO_XOUT_H;
-	Read(&regaddr, 1, (uint8_t*)d, 6);
-
-	GyroSensor::vData.X = ((int32_t)d[0] << 8) | d[1];
-	GyroSensor::vData.Y = ((int32_t)d[2] << 8) | d[3];
-	GyroSensor::vData.Z = ((int32_t)d[4] << 8) | d[5];
-	GyroSensor::vData.Timestamp = vSampleTime;
-
-#endif
-	if (vbSensorEnabled[2] == true)
+	if (vbSensorEnabled[MPU9250_MAG_IDX] == true)
 	{
 		regaddr = MPU9250_MAG_ST1;
 		Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, (uint8_t*)d, 8);
@@ -1096,28 +1076,7 @@ bool AgmMpu9250::UpdateData()
 	}
 	return true;
 }
-/*
-bool AgmMpu9250::Read(ACCELSENSOR_DATA &Data)
-{
-	Data = AccelSensor::vData;
 
-	return true;
-}
-
-bool AgmMpu9250::Read(GYROSENSOR_DATA &Data)
-{
-	Data = GyroSensor::vData;
-
-	return true;
-}
-
-bool AgmMpu9250::Read(MAGSENSOR_DATA &Data)
-{
-	Data = MagSensor::vData;
-
-	return true;
-}
-*/
 int AgmMpu9250::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
 {
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
@@ -1161,7 +1120,6 @@ int AgmMpu9250::Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t
 			Write(d, 4, NULL, 0);
 
 			// Delay require for transfer to complete
-			//usDelay(500 + (cnt << 4));
 			msDelay(10 + cnt);
 
 			regaddr = MPU9250_AG_EXT_SENS_DATA_00;
@@ -1235,7 +1193,37 @@ void AgmMpu9250::IntHandler()
 
 void AgmMpu9250::EnableFifo()
 {
+	uint8_t regaddr = MPU9250_AG_USER_CTRL;
+	uint8_t d;
 
+	d = Read8(&regaddr, 1) | MPU9250_AG_USER_CTRL_FIFO_EN;
+	Write8(&regaddr, 1, d);
+
+	regaddr = MPU9250_AG_ACCEL_CONFIG2;
+	d = Read8(&regaddr, 1) | MPU9250_AG_ACCEL_CONFIG2_FIFO_SIZE_1024;
+	Write8(&regaddr, 1, d);
+
+	regaddr = MPU9250_AG_FIFO_EN;
+	d = Read8(&regaddr, 1);
+
+	if (vbSensorEnabled[MPU9250_ACCEL_IDX])
+	{
+		d |= MPU9250_AG_FIFO_EN_ACCEL | MPU9250_AG_FIFO_EN_TEMP_OUT;
+	}
+	if (vbSensorEnabled[MPU9250_GYRO_IDX])
+	{
+		d |= MPU9250_AG_FIFO_EN_GYRO_ZOUT | MPU9250_AG_FIFO_EN_GYRO_YOUT |
+			 MPU9250_AG_FIFO_EN_GYRO_XOUT;
+	}
+	Write8(&regaddr, 1, d);
+
+	regaddr = MPU9250_AG_INT_ENABLE;
+	d = Read8(&regaddr, 1);
+	if (d != 0)
+	{
+		d |= MPU9250_AG_INT_ENABLE_FIFO_OFLOW_EN;
+		Write8(&regaddr, 1, d);
+	}
 }
 
 int AgmMpu9250::GetFifoLen()
@@ -1270,45 +1258,86 @@ int AgmMpu9250::ReadFifo(uint8_t * const pBuff, int Len)
 void AgmMpu9250::ResetFifo()
 {
 	uint8_t regaddr;
-	uint8_t d = 0;
+	uint8_t intval;
+	uint8_t fifoen;
+	uint8_t usrctrl;
 
+	// Save relevant registers
 	regaddr = MPU9250_AG_INT_ENABLE;
+	intval = Read8(&regaddr, 1);
 	Write8(&regaddr, 1, 0);
 
 	regaddr = MPU9250_AG_FIFO_EN;
+	fifoen = Read8(&regaddr, 1);
 	Write8(&regaddr, 1, 0);
 
 	regaddr = MPU9250_AG_USER_CTRL;
+	usrctrl = Read8(&regaddr, 1);
 	Write8(&regaddr, 1, 0);
 
 	Write8(&regaddr, 1, MPU9250_AG_USER_CTRL_FIFO_RST);
 
-	d = MPU9250_AG_USER_CTRL_FIFO_EN;
+	msDelay(1);
 
-	if (InterfaceType() == DEVINTRF_TYPE_SPI)
-	{
-		d |= MPU9250_AG_USER_CTRL_I2C_MST_EN;
-	}
-	Write8(&regaddr, 1, d);
+	// restore register
+	Write8(&regaddr, 1, usrctrl);
 
-	msDelay(50);
-
-	regaddr = MPU9250_AG_INT_ENABLE;
-	Write8(&regaddr, 1, MPU9250_AG_INT_ENABLE_RAW_RDY_EN);
+	msDelay(1);
 
 	regaddr = MPU9250_AG_FIFO_EN;
-	//Write8(&regaddr, 1, 0xFF);
+	Write8(&regaddr, 1, fifoen);
+
+	regaddr = MPU9250_AG_INT_ENABLE;
+	Write8(&regaddr, 1, intval);
 }
 
-bool AgmMpu9250::UploadDMPImage()
+bool AgmMpu9250::InitDMP(uint32_t DmpStartAddr, uint8_t * const pDmpImage, int Len)
 {
-	return UploadDMPImage(DMP_START_ADDR, (uint8_t*)s_DMPImage, DMP_CODE_SIZE);
+	bool res;
+	uint8_t regaddr;
+	uint8_t d[2];
+
+	if (pDmpImage)
+	{
+		// load external image
+		res = UploadDMPImage(pDmpImage, Len);
+		d[0] = DmpStartAddr >> 8;//DMP_START_ADDR >> 8;
+		d[1] = DmpStartAddr & 0xFF;//DMP_START_ADDR & 0xFF;
+	}
+	else
+	{
+		// load default image
+		res = UploadDMPImage((uint8_t*)s_DMPImage, DMP_CODE_SIZE);
+		d[0] = DMP_START_ADDR >> 8;//DMP_START_ADDR >> 8;
+		d[1] = DMP_START_ADDR & 0xFF;//DMP_START_ADDR & 0xFF;
+	}
+
+	if (res)
+	{
+		vbDmpEnabled = true;
+
+		// Write DMP program start address
+		regaddr = MPU9250_DMP_PROG_START;
+		Write(&regaddr, 1, d, 2);
+
+		// Undocumented : Enable DMP
+		regaddr = MPU9250_AG_USER_CTRL;
+		d[0] = Read8(&regaddr, 1) | MPU9250_AG_USER_CTRL_DMP_EN;
+		Write8(&regaddr, 1, d[0]);
+
+		// DMP require fifo
+		EnableFifo();
+
+		res = true;
+	}
+
+	return res;
 }
 
-bool AgmMpu9250::UploadDMPImage(uint32_t DmpStartAddr, uint8_t *pImage, int Len)
+bool AgmMpu9250::UploadDMPImage(uint8_t *pDmpImage, int Len)
 {
 	int len = Len;
-	uint8_t *p = pImage;
+	uint8_t *p = pDmpImage;
 	uint8_t regaddr;
 	uint16_t memaddr = 0;
 	uint8_t d[2];
@@ -1332,7 +1361,7 @@ bool AgmMpu9250::UploadDMPImage(uint32_t DmpStartAddr, uint8_t *pImage, int Len)
 	}
 
 	len = Len;
-	p = pImage;
+	p = pDmpImage;
 	memaddr = 0;
 
 	// Verify
@@ -1359,15 +1388,6 @@ bool AgmMpu9250::UploadDMPImage(uint32_t DmpStartAddr, uint8_t *pImage, int Len)
 		memaddr += l;
 		len -= l;
 	}
-
-	vbDmpEnabled = true;
-
-	// Write DMP program start address
-	d[0] = DmpStartAddr >> 8;//DMP_START_ADDR >> 8;
-	d[1] = DmpStartAddr & 0xFF;//DMP_START_ADDR & 0xFF;
-	regaddr = MPU9250_DMP_PROG_START;
-	Write(&regaddr, 1, d, 2);
-
 
 	return true;
 }

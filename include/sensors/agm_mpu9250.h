@@ -500,13 +500,13 @@ public:
 	int GetFifoLen();
 	int ReadFifo(uint8_t * const pBuff, int Len);
 	void ResetFifo();
-	bool UploadDMPImage(uint32_t DmpStartAddr, uint8_t * const pImage, int Len);
+	bool InitDMP(uint32_t DmpStartAddr, uint8_t * const pDmpImage, int Len);
 
 private:
 	// Default base initialization. Does detection and set default config for all sensor.
 	// All sensor init must call this first prio to initializing itself
 	bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer);
-	bool UploadDMPImage();
+	bool UploadDMPImage(uint8_t * const pDmpImage, int Len);
 	void EnableFifo();
 
 	bool vbInitialized;
@@ -514,6 +514,7 @@ private:
 	uint8_t vMagCtrl1Val;
 	int16_t vMagSenAdj[3];
 	bool vbSensorEnabled[3];
+	int vTemperature;
 };
 
 #endif // __cplusplus

@@ -1,11 +1,14 @@
-/*--------------------------------------------------------------------------
-File   : agm_lsm9ds1.h
+/**-------------------------------------------------------------------------
+@file	agm_lsm9ds1.h
 
-Author : Hoang Nguyen Hoan          			Nov. 18, 2017
-
-Desc   : Implementation of ST LSM9DS1 sensor
+@brief	Implementation of ST LSM9DS1 sensor
 			Accel, Gyro, Mag
 
+
+@author	Hoang Nguyen Hoan
+@date	Nov. 18, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -29,9 +32,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 
 #ifndef __AGM_LSM9DS1_H__
@@ -43,6 +43,36 @@ Modified by          Date              Description
 #include "sensors/accel_sensor.h"
 #include "sensors/gyro_sensor.h"
 #include "sensors/mag_sensor.h"
+
+// 7 bits I2C device addresses
+#define LSM9DS1_AG_I2C_ADDR			0x6A
+#define LSM9DS1_AG_I2C_ADDR			0x6B
+#define LSM9DS1_MAG_I2C_ADDR		0x1C
+#define LSM9DS1_MAG_I2C_ADDR		0x1E
+
+// Activity threshold register
+#define LSM9DS1_ACT_THS			0x04
+
+#define LSM9DS1_ACT_THS_ACT_THS_MASK					(0x3f)
+#define LSM9DS1_ACT_THS_SLEEP_ON_INECT_EN				(1<<7)
+
+// Inactivity duration register
+#define LSM9DS1_ACT_DUR			0x05
+
+#define LSM9DS1_ACT_DUR_MASK							(0xff)
+
+// Linear acceleration sensor interrupt generator configuration register
+#define LSM9DS1_INT_GEN_CFG_XL	0x06
+
+#define LSM9DS1_INT_GEN_CFG_XL_XLIE_XL					(1<<0)
+#define LSM9DS1_INT_GEN_CFG_XL_XHIE_XL					(1<<1)
+#define LSM9DS1_INT_GEN_CFG_XL_YLIE_XL					(1<<2)
+#define LSM9DS1_INT_GEN_CFG_XL_YHIE_XL					(1<<3)
+#define LSM9DS1_INT_GEN_CFG_XL_ZLIE_XL					(1<<4)
+#define LSM9DS1_INT_GEN_CFG_XL_ZHIE_XL					(1<<5)
+#define LSM9DS1_INT_GEN_CFG_XL_6D						(1<<6)
+#define LSM9DS1_INT_GEN_CFG_XL_AOI_XL					(1<<7)
+
 
 #pragma pack(push, 1)
 
