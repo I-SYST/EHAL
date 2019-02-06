@@ -622,7 +622,7 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
 
 	g_Mpu9250.Init(s_AccelCfg, pIntrF, pTimer);
 	g_Mpu9250.Init(s_GyroCfg, NULL);
-	g_Mpu9250.Init(s_MagCfg, NULL);
+	//g_Mpu9250.Init(s_MagCfg, NULL);
 
 	IOPinConfig(BLUEIO_TAG_EVIM_IMU_INT_PORT, BLUEIO_TAG_EVIM_IMU_INT_PIN, BLUEIO_TAG_EVIM_IMU_INT_PINOP,
 			IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL);
@@ -662,9 +662,10 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
 
 	//inv_init_mpl();
 
-    g_Imu.Init(s_ImuCfg, &g_Mpu9250, &g_Mpu9250, &g_Mpu9250);
+    g_Imu.Init(s_ImuCfg, &g_Mpu9250, &g_Mpu9250, NULL);//&g_Mpu9250);
     g_Imu.SetAxisAlignmentMatrix(g_AlignMatrix);
     g_Imu.Quaternion(true, 6);
+    //g_Imu.Compass(true);
 
     return true;
 
