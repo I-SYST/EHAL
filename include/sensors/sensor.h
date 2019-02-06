@@ -271,7 +271,6 @@ protected:
 	SENSOR_OPMODE vOpMode;		//!< Current operating mode
 	uint32_t vSampFreq;			//!< Sampling frequency in milliHerz, relevant to CONTINUOUS mode
 	uint64_t vSampPeriod;		//!< Sampling period in nanosecond.
-//	Timer *vpTimer;				//!< Timer to use for time stamping data
 	bool vbSampling;			//!< true - measurement in progress
 	uint64_t vSampleCnt;		//!< Keeping sample count
 	uint64_t vSampleTime;		//!< Time stamp when sampling is started

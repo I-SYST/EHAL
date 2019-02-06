@@ -88,7 +88,7 @@ typedef struct __Imu_Euler {
 #endif
 
 typedef struct __Imu_Quat {
-	uint32_t Timestamp;	//!< Time stamp count in usec
+	uint64_t Timestamp;	//!< Time stamp count in usec
 	union {
 		float Q[4];
 		struct {
@@ -101,14 +101,14 @@ typedef struct __Imu_Quat {
 } IMU_QUAT;
 
 typedef struct __Imu_Euler {
-	uint32_t Timestamp;	//!< Time stamp count in usec
+	uint64_t Timestamp;	//!< Time stamp count in usec
 	float Yaw;
 	float Pitch;
 	float Roll;
 } IMU_EULER;
 
 typedef struct __Imu_Gravity {
-	uint32_t Timestamp;	//!< Time stamp count in usec
+	uint64_t Timestamp;	//!< Time stamp count in usec
 	union {
 		float Val[3];
 		struct {
@@ -121,7 +121,7 @@ typedef struct __Imu_Gravity {
 
 /// External acceleration vector
 typedef struct __Imu_Extrn_Accel {
-	uint32_t Timestamp;	//!< Time stamp count in usec
+	uint64_t Timestamp;	//!< Time stamp count in usec
 	union {
 		float Val[3];
 		struct {
@@ -134,19 +134,19 @@ typedef struct __Imu_Extrn_Accel {
 
 /// Pedometer
 typedef struct __Imu_Pedometer {
-	uint32_t Timestamp;		//!< Time stamp count in usec
+	uint32_t Timestamp;		//!< Time stamp count in msec
     uint16_t StepCount;		//!< Number of step taken
     uint8_t Cadence; 		//!< in steps per minute
     float Direction; 		//!< Direction of the movement (yaw angle in degrees)
     uint16_t UpCount;		//!< Number of upstairs taken
     uint16_t DownCount; 	//!< Number of downstairs taken
     uint8_t StrideLength;	//!< in cm
-    uint16_t TotalDistance;	//in dm
+    uint16_t TotalDistance;	//!< in dm
 } IMU_PEDOMETER;
 
 /// Rotation data
 typedef struct __Imu_Rotation_Data {
-	uint32_t Timestamp;		//!< Time stamp count in usec
+	uint64_t Timestamp;		//!< Time stamp count in usec
     uint32_t Count; 		//!< Number of rotations
     uint16_t Rpm; 			//!< Revolutions per minute
 } IMU_ROTATION;

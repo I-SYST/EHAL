@@ -44,7 +44,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /// Magnetometer raw sensor data
 typedef struct __MagSensor_Raw_Data {
-    uint32_t Timestamp; //!< Time stamp count in usec
+    uint64_t Timestamp; //!< Time stamp count in usec
     uint16_t Scale;     //!< Scale in miliGauss of the sensor
     uint16_t Range;     //!< Sensor ADC range
     union {
@@ -59,7 +59,7 @@ typedef struct __MagSensor_Raw_Data {
 
 /// Magnetometer sensor data
 typedef struct __MagSensor_Data {
-	uint32_t Timestamp;	//!< Time stamp count in usec
+	uint64_t Timestamp;	//!< Time stamp count in usec
 	union {
 	    float Val[3];
 		struct {

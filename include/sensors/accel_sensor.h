@@ -44,7 +44,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /// Accelerometer raw sensor data
 typedef struct __AccelSensor_Raw_Data {
-	uint32_t Timestamp;	//!< Time stamp count in usec
+	uint64_t Timestamp;	//!< Time stamp count in usec
 	uint16_t Scale;		//!< Scale in G of the sensor
 	uint16_t Range;		//!< Sensor ADC range
 	union {
@@ -59,7 +59,7 @@ typedef struct __AccelSensor_Raw_Data {
 
 /// Accelerometer sensor data in G
 typedef struct __AccelSensor_Data {
-	uint32_t Timestamp;	//!< Time stamp count in usec
+	uint64_t Timestamp;	//!< Time stamp count in usec
 	union {
 		float Val[3];
 		struct {

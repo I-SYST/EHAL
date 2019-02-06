@@ -30,9 +30,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 
 #ifndef __GYRO_SENSOR_H__
@@ -47,28 +44,28 @@ Modified by          Date              Description
 
 /// Gyroscope raw sensor data
 typedef struct __GyroSensor_Raw_Data {
-    uint32_t Timestamp; //!< Time stamp count in usec
-    uint16_t Scale;     //!< Scale in degree per second of the sensor
-    uint16_t Range;     //!< Sensor ADC range
+    uint64_t Timestamp; 	//!< Time stamp count in usec
+    uint16_t Scale;     	//!< Scale in degree per second of the sensor
+    uint16_t Range;     	//!< Sensor ADC range
     union {
         int16_t Val[3];
         struct {
-            int16_t X;          //!< X axis
-            int16_t Y;          //!< Y axis
-            int16_t Z;          //!< Z axis
+            int16_t X;      //!< X axis
+            int16_t Y;      //!< Y axis
+            int16_t Z;      //!< Z axis
         };
     };
 } GYROSENSOR_RAWDATA;
 
 /// Gyroscope sensor data
 typedef struct __GyroSensor_Data {
-	uint32_t Timestamp;	//!< Time stamp count in usec
+	uint64_t Timestamp;		//!< Time stamp count in usec
 	union {
 	    float Val[3];
 		struct {
-	        float X;			//!< X axis
-	        float Y;			//!< Y axis
-	        float Z;			//!< Z axis
+	        float X;		//!< X axis
+	        float Y;		//!< Y axis
+	        float Z;		//!< Z axis
 		};
 	};
 } GYROSENSOR_DATA;
