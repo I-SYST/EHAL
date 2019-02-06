@@ -727,6 +727,14 @@ bool AgmMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	return true;
 }
 
+bool AgmMpu9250::Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf, Timer * const pTimer)
+{
+	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
+		return false;
+
+	return true;
+}
+
 bool AgmMpu9250::Enable()
 {
 	uint8_t regaddr = MPU9250_AG_PWR_MGMT_1;
@@ -1059,7 +1067,8 @@ bool AgmMpu9250::UpdateData()
 		AccelSensor::vSampleTime = t;
 		AccelSensor::vSampleCnt++;
 
-		vTemperature = ((int32_t)d[6] << 8) | d[7];
+		TempSensor::vData.Temperature = ((int32_t)d[6] << 8) | d[7];
+		TempSensor::vData.Timestamp = t;
 
 		idx += 8;
 
