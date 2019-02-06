@@ -270,7 +270,7 @@ static const SPICFG s_SpiCfg = {
     SPIMODE_MASTER,
     s_SpiPins,
     sizeof(s_SpiPins) / sizeof(IOPINCFG),
-    4000000,   // Speed in Hz
+    1000000,   // Speed in Hz
     8,      // Data Size
     5,      // Max retries
     SPIDATABIT_MSB,

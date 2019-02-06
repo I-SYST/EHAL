@@ -567,7 +567,7 @@ bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 	}
 
 	regaddr = MPU9250_AG_CONFIG;
-	Write8(&regaddr, 1, d);
+	Write8(&regaddr, 1, d);// | MPU9250_AG_CONFIG_FIFO_MODE_BLOCKING);
 
 	regaddr = MPU9250_AG_GYRO_CONFIG;
 	Write8(&regaddr, 1, fchoice);

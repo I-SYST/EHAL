@@ -56,6 +56,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "sensors/agm_mpu9250.h"
 #include "imu/imu_mpu9250.h"
+#include "convutil.h"
 
 /* These defines are copied from dmpDefaultMPU6050.c in the general MPL
  * releases. These defines may change for each DMP image, so be sure to modify
@@ -614,7 +615,7 @@ bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor
     if (res == true)
     {
     	res = Imu::Init(Cfg, pAccel, pGyro, pMag);
-
+/*
     	uint8_t regaddr = MPU9250_AG_USER_CTRL;
 
         uint8_t d = vpMpu->Read8(&regaddr, 1);
@@ -625,6 +626,8 @@ bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor
         regaddr = MPU9250_AG_INT_ENABLE;
         d = vpMpu->Read8(&regaddr, 1) | MPU9250_AG_INT_ENABLE_DMP_EN;
         vpMpu->Write8(&regaddr, 1, d);
+*/
+    	Rate(50);
 
         if (pAccel)
         {
@@ -706,6 +709,7 @@ bool ImuMpu9250::Calibrate()
 
 bool ImuMpu9250::Compass(bool bEn)
 {
+//	return true;
 	uint8_t d;
 
 	if (bEn)
@@ -721,7 +725,7 @@ bool ImuMpu9250::Compass(bool bEn)
 
 	Imu::Feature(IMU_FEATURE_COMPASS, bEn);
 
-	vDmpFifoLen += 4;
+	//vDmpFifoLen += 4;
 
 	return true;
 }
@@ -826,6 +830,7 @@ void ImuMpu9250::SetAxisAlignmentMatrix(int8_t * const pMatrix)
 void ImuMpu9250::IntHandler()
 {
 	uint8_t buf[32];
+	int32_t q[4];
 	int fidx = 0;
 
 	//printf("IntHandler\r\n");
@@ -838,22 +843,27 @@ void ImuMpu9250::IntHandler()
 
 	uint32_t t = ((Timer*)*vpMpu)->uSecond();
 
-	len = vpMpu->ReadFifo(buf, vDmpFifoLen);
+	len = vpMpu->ReadFifo((uint8_t*)q, 16);
 	if (len > 0)
 	{
 		IMU_FEATURE feat = Feature();
 		if (feat & IMU_FEATURE_QUATERNION)
 		{
-			int32_t q[4];
-
-			q[0] = (((int32_t)buf[0] << 24) | ((int32_t)buf[1] << 16) |
-		            ((int32_t)buf[2] << 8) | buf[3]);
-			q[1] = (((int32_t)buf[4] << 24) | ((int32_t)buf[5] << 16) |
-		            ((int32_t)buf[6] << 8) | buf[7]);
-			q[2] = (((int32_t)buf[8] << 24) | ((int32_t)buf[9] << 16) |
-		            ((int32_t)buf[10] << 8) | buf[11]);
-			q[3] = (((int32_t)buf[12] << 24) | ((int32_t)buf[13] << 16) |
-		            ((int32_t)buf[14] << 8) | buf[15]);
+//			int32_t q[4];
+/*
+			q[0] = (((int32_t)buf[0] << 24) | ((uint32_t)buf[1] << 16) |
+		            ((uint32_t)buf[2] << 8) | buf[3]);
+			q[1] = (((int32_t)buf[4] << 24) | ((uint32_t)buf[5] << 16) |
+		            ((uint32_t)buf[6] << 8) | buf[7]);
+			q[2] = (((int32_t)buf[8] << 24) | ((uint32_t)buf[9] << 16) |
+		            ((uint32_t)buf[10] << 8) | buf[11]);
+			q[3] = (((int32_t)buf[12] << 24) | ((uint32_t)buf[13] << 16) |
+		            ((uint32_t)buf[14] << 8) | buf[15]);
+*/
+			q[0] = (int32_t)EndianCvt32((uint32_t)q[0]);
+			q[1] = (int32_t)EndianCvt32((uint32_t)q[1]);
+			q[2] = (int32_t)EndianCvt32((uint32_t)q[2]);
+			q[3] = (int32_t)EndianCvt32((uint32_t)q[3]);
 
 			if (ValidateQuat(q) == false)
 			{
