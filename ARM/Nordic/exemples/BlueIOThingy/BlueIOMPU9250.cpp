@@ -12,7 +12,7 @@
 #include "coredev/timer.h"
 #include "BlueIOMPU9250.h"
 #include "sensors/agm_mpu9250.h"
-#include "imu/imu_mpl_mpu9250.h"
+#include "imu/imu_mpu9250.h"
 #include "idelay.h"
 #include "board.h"
 
@@ -27,37 +27,39 @@
 #include "eMPL/packet.h"
 
 static const ACCELSENSOR_CFG s_AccelCfg = {
-	.DevAddr = 0,	// SPI CS idx
-	.OpMode = SENSOR_OPMODE_SINGLE,
-	.Freq = 50000,		// 50 Hz
-	.Scale = 2,			// 2G
-	.LPFreq = 100,
+	.DevAddr = 0,
+	.OpMode = SENSOR_OPMODE_CONTINUOUS,
+	.Freq = 50000,
+	.Scale = 2,
+	.LPFreq = 0,
 	.bInter = true,
 	.IntPol = DEVINTR_POL_LOW,
 };
 
 static const GYROSENSOR_CFG s_GyroCfg = {
-	.DevAddr = 0,	// SPI CS idx
-	.OpMode = SENSOR_OPMODE_SINGLE,
+	.DevAddr = 0,
+	.OpMode = SENSOR_OPMODE_CONTINUOUS,
 	.Freq = 50000,
-	.Sensitivity = 2000,
-//	.IntHandler = NULL,
+	.Sensitivity = 10,
+	.LPFreq = 200,
 };
 
 static const MAGSENSOR_CFG s_MagCfg = {
-	.DevAddr = 0,	// SPI CS idx
-	.OpMode = SENSOR_OPMODE_SINGLE,
-	.Freq = 10000,
-	.Precision = 16,
+	.DevAddr = 0,
+	.OpMode = SENSOR_OPMODE_CONTINUOUS,//SENSOR_OPMODE_SINGLE,
+	.Freq = 50000,
+	.Precision = 14,
 };
 
 AgmMpu9250 g_Mpu9250;
 
-static const IMU_CFG s_ImuCfg = {
+void ImuEvtHandler(Device * const pDev, DEV_EVT Evt);
 
+static const IMU_CFG s_ImuCfg = {
+	.EvtHandler = ImuEvtHandler
 };
 
-static ImuMplMpu9250 g_Imu;
+static ImuMpu9250 g_Imu;
 
 static Timer * s_pTimer;
 static uint32_t s_MotionFeature = 0;
@@ -123,6 +125,12 @@ unsigned char *mpl_key = (unsigned char*)"eMPL 5.1";
 /* Platform-specific information. Kinda like a boardfile. */
 struct platform_data_s {
     signed char orientation[9];
+};
+
+int8_t g_AlignMatrix[9] = {
+	0,  1,  0,
+    -1,  0,  0,
+    0,  0, -1
 };
 
 /**@brief Acclerometer rotation matrix.
@@ -295,9 +303,38 @@ static void read_from_mpl(void)
     }
 }
 
+void ImuEvtHandler(Device * const pDev, DEV_EVT Evt)
+{
+	IMU_QUAT iquat;
+	int32_t q[4];
+
+	g_Imu.IntHandler();
+	g_Imu.Read(iquat);
+
+	q[0] = iquat.Q1 * (1<<30);
+	q[1] = iquat.Q2 * (1<<30);
+	q[2] = iquat.Q3 * (1<<30);
+	q[3] = iquat.Q4 * (1<<30);
+	ImuQuatDataSend(q);
+}
+
 
 void MPU9250IntHandler(int IntNo)
 {
+	IMU_QUAT iquat;
+	int32_t q[4];
+
+	g_Imu.IntHandler();
+	g_Imu.Read(iquat);
+
+	q[0] = (int32_t)(iquat.Q1 * (float)(1<<30));
+	q[1] = (int32_t)(iquat.Q2 * (float)(1<<30));
+	q[2] = (int32_t)(iquat.Q3 * (float)(1<<30));
+	q[3] = (int32_t)(iquat.Q4 * (float)(1<<30));
+	ImuQuatDataSend(q);
+
+	return;
+
     unsigned char accel_fsr,  new_temp = 0;
     unsigned long sensor_timestamp;
     unsigned char new_compass = 0;
@@ -588,7 +625,7 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
 	g_Mpu9250.Init(s_MagCfg, NULL);
 
 	IOPinConfig(BLUEIO_TAG_EVIM_IMU_INT_PORT, BLUEIO_TAG_EVIM_IMU_INT_PIN, BLUEIO_TAG_EVIM_IMU_INT_PINOP,
-			IOPINDIR_INPUT, IOPINRES_PULLDOWN, IOPINTYPE_NORMAL);
+			IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL);
 	IOPinEnableInterrupt(BLUEIO_TAG_EVIM_IMU_INT_NO, 6, BLUEIO_TAG_EVIM_IMU_INT_PORT,
 						 BLUEIO_TAG_EVIM_IMU_INT_PIN, IOPINSENSE_LOW_TRANSITION,
 						 MPU9250IntHandler);
@@ -616,16 +653,20 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
     inv_error_t err_code;
     struct int_param_s int_param;
 
-    err_code = mpu_init(&int_param);
-    if (err_code)
+//    err_code = mpu_init(&int_param);
+  //  if (err_code)
     {
-    	printf("mpu_init failed\r\n");
-    	return false;
+    //	printf("mpu_init failed\r\n");
+    //	return false;
     }
 
 	//inv_init_mpl();
 
     g_Imu.Init(s_ImuCfg, &g_Mpu9250, &g_Mpu9250, &g_Mpu9250);
+    g_Imu.SetAxisAlignmentMatrix(g_AlignMatrix);
+    g_Imu.Quaternion(true, 6);
+
+    return true;
 
     /* This algorithm updates the accel biases when in motion. A more accurate
      * bias measurement can be made when running the self-test. */

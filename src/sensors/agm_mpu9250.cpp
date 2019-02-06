@@ -268,6 +268,7 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 
 	Interface(pIntrf);
 	DeviceAddess(DevAddr);
+	vbSensorEnabled[0] = vbSensorEnabled[1] = vbSensorEnabled[2] = false;
 
 	if (pTimer != NULL)
 	{
@@ -349,8 +350,6 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 
 	regaddr = MPU9250_AG_I2C_MST_CTRL;
 	Write8(&regaddr, 1, mst);
-
-	vbSensorEnabled[MPU9250_ACCEL_IDX] = true;
 
 	// Enable FIFO
 
@@ -480,6 +479,10 @@ bool AgmMpu9250::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer
 	regaddr = MPU9250_AG_INT_ENABLE;
 	Write8(&regaddr, 1, MPU9250_AG_INT_ENABLE_RAW_RDY_EN);
 
+	vbSensorEnabled[MPU9250_ACCEL_IDX] = true;
+
+	AccelSensor::Type(SENSOR_TYPE_ACCEL);
+
 	return true;
 }
 
@@ -576,6 +579,7 @@ bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 
 
 	vbSensorEnabled[MPU9250_GYRO_IDX] = true;
+	GyroSensor::Type(SENSOR_TYPE_GYRO);
 
 	//regaddr = MPU9250_AG_FIFO_EN;
 	//d = Read8(&regaddr, 1);
@@ -1120,7 +1124,7 @@ int AgmMpu9250::Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t
 			Write(d, 4, NULL, 0);
 
 			// Delay require for transfer to complete
-			msDelay(10 + cnt);
+			msDelay(15 + cnt);
 
 			regaddr = MPU9250_AG_EXT_SENS_DATA_00;
 
@@ -1193,9 +1197,16 @@ void AgmMpu9250::IntHandler()
 
 void AgmMpu9250::EnableFifo()
 {
-	uint8_t regaddr = MPU9250_AG_USER_CTRL;
+	uint8_t regaddr;// = MPU9250_AG_USER_CTRL;
 	uint8_t d;
+	uint8_t intval;
 
+	// Save relevant registers
+	regaddr = MPU9250_AG_INT_ENABLE;
+	intval = Read8(&regaddr, 1);
+	Write8(&regaddr, 1, 0);
+
+	regaddr = MPU9250_AG_USER_CTRL;
 	d = Read8(&regaddr, 1) | MPU9250_AG_USER_CTRL_FIFO_EN;
 	Write8(&regaddr, 1, d);
 
@@ -1218,11 +1229,10 @@ void AgmMpu9250::EnableFifo()
 	Write8(&regaddr, 1, d);
 
 	regaddr = MPU9250_AG_INT_ENABLE;
-	d = Read8(&regaddr, 1);
-	if (d != 0)
+	if (intval != 0)
 	{
-		d |= MPU9250_AG_INT_ENABLE_FIFO_OFLOW_EN;
-		Write8(&regaddr, 1, d);
+		intval |= MPU9250_AG_INT_ENABLE_FIFO_OFLOW_EN;
+		Write8(&regaddr, 1, intval);
 	}
 }
 
@@ -1296,6 +1306,7 @@ bool AgmMpu9250::InitDMP(uint32_t DmpStartAddr, uint8_t * const pDmpImage, int L
 	bool res;
 	uint8_t regaddr;
 	uint8_t d[2];
+	uint8_t intval;
 
 	if (pDmpImage)
 	{

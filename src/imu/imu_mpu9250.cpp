@@ -487,7 +487,17 @@ uint16_t EncodeMatrix(int8_t * const pMatrix)
 
 bool ValidateQuat(int32_t Q[4])
 {
-	int32_t sq = Q[0] * Q[0] + Q[1] * Q[1] + Q[2] * Q[2] + Q[3] * Q[3];
+	int32_t sq = 0;
+	int32_t q;
+
+	q = Q[0] >> 16;
+	sq += q * q;
+	q = Q[1] >> 16;
+	sq += q * q;
+	q = Q[2] >> 16;
+	sq += q * q;
+	q = Q[3] >> 16;
+	sq += q * q;
 
 	if (sq < QUAT_MAG_SQ_MIN || sq > QUAT_MAG_SQ_MAX)
 	{
@@ -818,7 +828,7 @@ void ImuMpu9250::IntHandler()
 	uint8_t buf[32];
 	int fidx = 0;
 
-	printf("IntHandler\r\n");
+	//printf("IntHandler\r\n");
 
 	int len = vpMpu->GetFifoLen();
 	if (len < vDmpFifoLen)
@@ -831,7 +841,7 @@ void ImuMpu9250::IntHandler()
 	len = vpMpu->ReadFifo(buf, vDmpFifoLen);
 	if (len > 0)
 	{
-		IMU_FEATURE feat;
+		IMU_FEATURE feat = Feature();
 		if (feat & IMU_FEATURE_QUATERNION)
 		{
 			int32_t q[4];
@@ -852,10 +862,10 @@ void ImuMpu9250::IntHandler()
 				return;
 			}
 
-			vQuat.Q1 = q[0] / (1<<16);
-			vQuat.Q2 = q[1] / (1<<16);
-			vQuat.Q3 = q[2] / (1<<16);
-			vQuat.Q4 = q[3] / (1<<16);
+			vQuat.Q1 = (float)q[0] / (1<<30);
+			vQuat.Q2 = (float)q[1] / (1<<30);
+			vQuat.Q3 = (float)q[2] / (1<<30);
+			vQuat.Q4 = (float)q[3] / (1<<30);
 			vQuat.Timestamp = t;
 
 			fidx += 16;
