@@ -1014,6 +1014,8 @@ bool AgmMpu9250::UpdateData()
 		val += 8;
 	if (vbSensorEnabled[MPU9250_GYRO_IDX] == true)
 		val += 6;
+	//if (vbSensorEnabled[MPU9250_MAG_IDX] == true)
+	//	val += 6;
 
 	if (vbDmpEnabled == true)
 	{
@@ -1022,6 +1024,7 @@ bool AgmMpu9250::UpdateData()
 
 		if (cnt >= val)
 		{
+			val = min(cnt, 32);
 			regaddr = MPU9250_AG_FIFO_R_W;
 			val = Read(&regaddr, 1, d , val);
 		}
@@ -1055,7 +1058,7 @@ bool AgmMpu9250::UpdateData()
 			GyroSensor::vData.Timestamp = vSampleTime;
 		}
 	}
-
+/*
 	if (vbSensorEnabled[MPU9250_MAG_IDX] == true)
 	{
 		regaddr = MPU9250_MAG_ST1;
@@ -1078,6 +1081,7 @@ bool AgmMpu9250::UpdateData()
 			MagSensor::vData.Timestamp = vSampleTime;
 		}
 	}
+	*/
 	return true;
 }
 
