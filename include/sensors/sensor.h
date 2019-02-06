@@ -253,15 +253,6 @@ public:
 	virtual bool WakeOnEvent(bool bEnable, int Threshold) { return false; }
 
 	/**
-	 * @brief	Get timer pointer used for timestamping
-	 *
-	 * @return	Pointer to Timer object.
-	 * 			Never delete the returned pointer.  This is for embedded system.
-	 * 			Normally objects are static not dynamically allocated
-	 */
-	virtual operator Timer * const () { return vpTimer; }	// Get device interface data (handle)
-
-	/**
 	 * @brief	Get type of this object.
 	 */
 	SENSOR_TYPE Type() { return vType; }
@@ -280,7 +271,7 @@ protected:
 	SENSOR_OPMODE vOpMode;		//!< Current operating mode
 	uint32_t vSampFreq;			//!< Sampling frequency in milliHerz, relevant to CONTINUOUS mode
 	uint64_t vSampPeriod;		//!< Sampling period in nanosecond.
-	Timer *vpTimer;				//!< Timer to use for time stamping data
+//	Timer *vpTimer;				//!< Timer to use for time stamping data
 	bool vbSampling;			//!< true - measurement in progress
 	uint64_t vSampleCnt;		//!< Keeping sample count
 	uint64_t vSampleTime;		//!< Time stamp when sampling is started

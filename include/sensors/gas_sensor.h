@@ -84,7 +84,7 @@ typedef struct __GasSensor_Config {
 #ifdef __cplusplus
 
 /// Gas sensor base class, implementation must derive this class
-class GasSensor : virtual public Sensor {
+class GasSensor : public Sensor {
 public:
 
 	/**

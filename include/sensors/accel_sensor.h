@@ -89,7 +89,7 @@ typedef struct __AccelSensor_Config {
 #ifdef __cplusplus
 
 /// Accel. sensor base class
-class AccelSensor : virtual public Sensor {
+class AccelSensor : public Sensor {
 public:
 
 	/**

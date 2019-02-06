@@ -67,7 +67,7 @@ bool AgmIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 
 	if (pTimer != NULL)
 	{
-		vpTimer = pTimer;
+		AccelSensor::vpTimer = pTimer;
 	}
 
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
@@ -165,7 +165,7 @@ bool AgmIcm20948::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Time
 		{
 			diff = df;
 			div = i;
-			vSampFreq = f;
+			AccelSensor::vSampFreq = f;
 		}
 	}
 

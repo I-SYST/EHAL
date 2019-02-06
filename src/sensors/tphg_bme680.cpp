@@ -505,7 +505,7 @@ SENSOR_STATE TphgBme680::State(SENSOR_STATE State) {
 		Write(&regaddr, 1, &vCtrlReg, 1);
 	}
 
-	return Sensor::State(State);
+	return TphSensor::State(State);
 }
 
 /**
@@ -524,8 +524,8 @@ bool TphgBme680::Mode(SENSOR_OPMODE OpMode, uint32_t Freq)
 //	uint8_t regaddr;
 	//uint8_t d = 0;
 
-	vOpMode = OpMode;
-	Sensor::SamplingFrequency(Freq);
+	TphSensor::vOpMode = OpMode;
+	TphSensor::SamplingFrequency(Freq);
 
 	// read current ctrl_meas register
 	//regaddr = BME680_REG_CTRL_MEAS;
@@ -570,20 +570,20 @@ bool TphgBme680::StartSampling()
 	{
 		regaddr = BME680_REG_CTRL_MEAS;
 		Write(&regaddr, 1, &vCtrlReg, 1);
-		vbSampling = true;
+		TphSensor::vbSampling = true;
 
 		if (vpTimer)
 		{
-			vSampleTime = vpTimer->uSecond();
+			TphSensor::vSampleTime = vpTimer->uSecond();
 		}
 		else
 		{
-			vSampleTime += vSampPeriod;
+			TphSensor::vSampleTime += TphSensor::vSampPeriod;
 		}
 
 	    bsec_bme_settings_t sensor_settings;
 
-		bsec_library_return_t bsec_status = bsec_sensor_control(vSampleTime * 1000LL, &sensor_settings);
+		bsec_library_return_t bsec_status = bsec_sensor_control(TphSensor::vSampleTime * 1000LL, &sensor_settings);
 
 		return true;
 	}
@@ -645,11 +645,11 @@ bool TphgBme680::UpdateData()
 			vTphData.Temperature = CalcTemperature(t);
 			vTphData.Pressure = CalcPressure(p);
 			vTphData.Humidity = CalcHumidity(h);
-			vTphData.Timestamp = vSampleTime;
+			vTphData.Timestamp = TphSensor::vSampleTime;
 
 			inputs[0].sensor_id = BSEC_INPUT_TEMPERATURE;
 			inputs[0].signal = vTphData.Temperature / 100.0;
-			inputs[0].time_stamp = vSampleTime * 1000LL;
+			inputs[0].time_stamp = TphSensor::vSampleTime * 1000LL;
 			inputs[1].sensor_id = BSEC_INPUT_HUMIDITY;
 			inputs[1].signal = vTphData.Humidity / 100.0;
 			inputs[1].time_stamp = inputs[0].time_stamp;
@@ -671,7 +671,7 @@ bool TphgBme680::UpdateData()
 				vGasData.GasRes[gasidx] = CalcGas(gadc, grange);
 				vGasData.MeasIdx = gasidx;
 				vbGasData = true;
-				vGasData.Timestamp = vSampleTime;
+				vGasData.Timestamp = TphSensor::vSampleTime;
 				//vGasResInt = iCalcGas(gadc, grange);
 				inputs[icnt].sensor_id = BSEC_INPUT_GASRESISTOR;
 				inputs[icnt].signal = vGasData.GasRes[gasidx];
@@ -682,7 +682,7 @@ bool TphgBme680::UpdateData()
 
 		}
 
-		vSampleCnt++;
+		TphSensor::vSampleCnt++;
 
 		bsec_library_return_t bsec_status = bsec_do_steps(inputs, icnt, outputs, &ocnt);
 		if (bsec_status == BSEC_OK)
@@ -697,7 +697,7 @@ bool TphgBme680::UpdateData()
 	        }
 		}
 
-		vbSampling = false;
+		TphSensor::vbSampling = false;
 
 		return true;
 	}

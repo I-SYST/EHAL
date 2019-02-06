@@ -87,7 +87,7 @@ typedef struct __GyroSensor_Config {
 
 #ifdef __cplusplus
 
-class GyroSensor : virtual public Sensor {
+class GyroSensor : public Sensor {
 public:
 
 	/**

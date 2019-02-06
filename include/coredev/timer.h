@@ -35,7 +35,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
-#include "device.h"
+#include <stdint.h>
+#include <string.h>
 
 /// Clock source used for the timer
 typedef enum __Timer_Clock_Src {

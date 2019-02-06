@@ -87,7 +87,7 @@ typedef struct __TPHSensor_Config {
 #ifdef __cplusplus
 
 /// TPH sensor base class.  Sensor implementation must derive form this class
-class TphSensor : virtual public Sensor {
+class TphSensor : public Sensor {
 public:
 
 	/**

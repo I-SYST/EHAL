@@ -84,7 +84,7 @@ typedef struct __MagSensor_Config {
 
 #ifdef __cplusplus
 
-class MagSensor : virtual public Sensor {
+class MagSensor : public Sensor {
 public:
 	/**
 	 * @brief	Sensor initialization

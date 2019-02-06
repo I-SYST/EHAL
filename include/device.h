@@ -49,8 +49,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 #endif
 
-#include "device_intrf.h"
 #include "coredev/iopincfg.h"
+#include "coredev/timer.h"
+#include "device_intrf.h"
 
 /// @brief	Defines interrupt pin polarity of the device.
 ///
@@ -257,6 +258,15 @@ public:
 
 	DEVINTRF_TYPE InterfaceType() { return vpIntrf != NULL ? vpIntrf->Type() : DEVINTRF_TYPE_UNKOWN; }
 
+	/**
+	 * @brief	Get timer pointer used for timestamping
+	 *
+	 * @return	Pointer to Timer object.
+	 * 			Never delete the returned pointer.  This is for embedded system.
+	 * 			Normally objects are static not dynamically allocated
+	 */
+	virtual operator Timer * const () { return vpTimer; }	// Get device interface data (handle)
+
 	void SetEvtHandler(DEVEVTCB EvtHandler) { vEvtHandler = EvtHandler; }
 
 protected:
@@ -295,6 +305,7 @@ protected:
 	bool		vbValid;		//!< Device is valid ready to use (passed detection)
 	uint32_t 	vDevAddr;		//!< Device address or chip select index
 	DeviceIntrf *vpIntrf;		//!< Device's interface
+	Timer 		*vpTimer;		//!< Timer to use for time stamping data
 	uint64_t	vDevId;			//!< This is implementation specific data for device identifier
 	 	 	 	 	 	 	 	//!< could be value read from hardware register or serial number
 	DEVEVTCB 	vEvtHandler;	//!< Event handler callback
