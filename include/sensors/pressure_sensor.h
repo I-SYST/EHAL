@@ -63,7 +63,7 @@ typedef struct __PressureSensor_Data {
 
 class PressureSensor;
 
-typedef void (*PressDataRdyCB)(PressureSensor * const pSensor, PRESSURESENSOR_DATA *pData);
+typedef void (*PRESSURESENSOR_EVTCB)(PressureSensor * const pSensor, PRESSURESENSOR_DATA *pData);
 
 #pragma pack(push, 4)
 
@@ -75,7 +75,7 @@ typedef struct __TPHSensor_Config {
 	uint32_t		Freq;			//!< Sampling frequency in mHz (milliHerz) if continuous mode is used
 	int				PresOvrs;		//!< Oversampling measurement for pressure
 	uint32_t		FilterCoeff;	//!< Filter coefficient select value (this value is device dependent)
-	PressDataRdyCB	DataRdyCB;		//!< Callback handler for data ready
+	PRESSURESENSOR_EVTCB EvtHandler;//!< Event handler
 } PRESSURESENSOR_CFG;
 
 #pragma pack(pop)
@@ -128,7 +128,7 @@ public:
 protected:
 
 	PRESSURESENSOR_DATA	vData;			//!< Last measured data
-	PressDataRdyCB	vDataRdyHandler;	//!< Callback data ready handler
+	PRESSURESENSOR_EVTCB vEvtyHandler;	//!< Event handler
 };
 
 extern "C" {

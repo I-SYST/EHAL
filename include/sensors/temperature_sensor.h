@@ -1,7 +1,7 @@
 /**-------------------------------------------------------------------------
-@file	hum_sensor.h
+@file	temp_sensor.h
 
-@brief	Generic humidity sensor abstraction
+@brief	Generic temperature sensor abstraction.
 
 @author	Hoang Nguyen Hoan
 @date	Feb. 12, 2017
@@ -31,8 +31,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
-#ifndef __HUM_SENSOR_H__
-#define __HUM_SENSOR_H__
+#ifndef __TEMP_SENSOR_H__
+#define __TEMP_SENSOR_H__
 
 #include <stdint.h>
 #include <string.h>
@@ -51,43 +51,39 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma pack(push, 1)
 
 
-/// @brief	Humidity sensor data
+/// @brief	Temperature sensor data
 ///
-/// Structure defining humidity sensor data
-typedef struct __HumSensor_Data {
+/// Structure defining temperature sensordata
+typedef struct __TemperatureSensor_Data {
 	uint64_t Timestamp;		//!< Time stamp count in usec
-	uint32_t Pressure;		//!< Barometric pressure in Pa no decimal
-	int16_t  Temperature;	//!< Temperature in degree C, 2 decimals fixed point
-	uint16_t Humidity;		//!< Relative humidity in %, 2 decimals fixed point
-} HUMSENSOR_DATA;
+	int32_t  Temperature;	//!< Temperature in degree C, 2 decimals fixed point
+} TEMPSENSOR_DATA;
 
 #pragma pack(pop)
 
-class HumSensor;
+class TempSensor;
 
-typedef void (*HumDataRdyCB)(HumSensor * const pSensor, HUMSENSOR_DATA *pData);
+typedef void (*TEMPSENSOR_EVTCB)(TempSensor * const pSensor, TEMPSENSOR_DATA *pData);
 
 #pragma pack(push, 4)
 
-/// @brief	Humidity sensor configuration
+/// @brief	Temperature sensor configuration
 ///
-typedef struct __HumSensor_Config {
+typedef struct __TempSensor_Config {
 	uint32_t		DevAddr;		//!< Either I2C dev address or CS index select if SPI is used
 	SENSOR_OPMODE 	OpMode;			//!< Operating mode
 	uint32_t		Freq;			//!< Sampling frequency in mHz (milliHerz) if continuous mode is used
 	int				TempOvrs;		//!< Oversampling measurement for temperature
-	int				PresOvrs;		//!< Oversampling measurement for pressure
-	int 			HumOvrs;		//!< Oversampling measurement for humidity
 	uint32_t		FilterCoeff;	//!< Filter coefficient select value (this value is device dependent)
-	HumiDataRdyCB	DataRdyCB;		//!< Callback handler for data ready
-} HUMSENSOR_CFG;
+	TEMPSENSOR_EVTCB EvtHandler;	//!< Event handler
+} TEMPSENSOR_CFG;
 
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-/// Humidity sensor base class.  Sensor implementation must derive form this class
-class HumSensor : public Sensor {
+/// Temperature sensor base class.  Sensor implementation must derive form this class
+class TemperatureSensor : public Sensor {
 public:
 
 	/**
@@ -107,32 +103,32 @@ public:
 	 * 			- true	: Success
 	 * 			- false	: Failed
 	 */
-	virtual bool Init(const HUMSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
+	virtual bool Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
 
 	/**
-	 * @brief	Read TPH data (require implementation).
+	 * @brief	Read temperature data (require implementation).
 	 *
-	 * Read TPH value from device if available. If not return previous data.
+	 * Read temperature value from device if available. If not return previous data.
 	 *
-	 * @param 	TphData : Reference buffer to be filled with measured data
+	 * @param 	Buff : Reference buffer to be filled with measured data
 	 *
 	 * @return
 	 * 			- true	: If new data is returned
 	 * 			- false	: If old data is returned
 	 */
-	virtual bool Read(HUMSENSOR_DATA &TphData) = 0;
+	virtual bool Read(TEMPSENSOR_DATA &Data) { Data = vData; return true; }
 
 	/**
-	 * @brief	Read relative humidity (require implementation).
+	 * @brief	Read temperature (require implementation).
 	 *
-	 * @return	Relative humidity in %
+	 * @return	Temperature in degree C
 	 */
-	virtual float ReadHumidity() = 0;
+	virtual float ReadTemperature() { return (float)vData.Temperature / 100.0; }
 
 protected:
 
-	HUMSENSOR_DATA 	vTphData;			//!< Last measured data
-	HumDataRdyCB	vDataRdyHandler;	//!< Callback data ready handler
+	TEMPSENSOR_DATA 	vData;			//!< Last measured data
+	TEMPSENSOR_EVTCB	vEvtHandler;	//!< Event handler
 };
 
 extern "C" {
@@ -145,4 +141,4 @@ extern "C" {
 
 /** @} End of group Sensors */
 
-#endif	// __HUM_SENSOR_H__
+#endif	// __TEMP_SENSOR_H__

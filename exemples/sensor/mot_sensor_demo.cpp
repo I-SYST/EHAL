@@ -61,6 +61,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "idelay.h"
 #include "coredev/spi.h"
 #include "coredev/iopincfg.h"
+#include "iopinctrl.h"
 #include "timer_nrf5x.h"
 #include "sensors/agm_icm20948.h"
 #include "sensors/agm_invn_icm20948.h"
@@ -116,37 +117,48 @@ SPI g_Spi;
 
 static const IOPINCFG s_GpioPins[] = {
 	{BLUEIO_BUT1_PORT, BLUEIO_BUT1_PIN, BLUEIO_BUT1_PINOP, IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},	// But 1
-	{BLUEIO_BUT2_PORT, BLUEIO_BUT2_PIN, BLUEIO_BUT2_PINOP, IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},	// But 1
+	{BLUEIO_BUT2_PORT, BLUEIO_BUT2_PIN, BLUEIO_BUT2_PINOP, IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},	// But 2
 	{BLUEIO_TAG_EVIM_IMU_INT_PORT, BLUEIO_TAG_EVIM_IMU_INT_PIN, BLUEIO_TAG_EVIM_IMU_INT_PINOP, IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL}, // IMU int pin
+	{0, 24, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// But 2
 };
 
 static const int s_NbGpioPins = sizeof(s_GpioPins) / sizeof(IOPINCFG);
+
+void TimerHandler(Timer *pTimer, uint32_t Evt);
 
 const static TIMER_CFG s_TimerCfg = {
     .DevNo = 0,
 	.ClkSrc = TIMER_CLKSRC_DEFAULT,
 	.Freq = 0,			// 0 => Default highest frequency
-	.IntPrio = 7,
-	.EvtHandler = NULL
+	.IntPrio = 1,
+	.EvtHandler = TimerHandler,
 };
 
 TimerLFnRF5x g_Timer;
 
 static const ACCELSENSOR_CFG s_AccelCfg = {
 	.DevAddr = 0,
-	.OpMode = SENSOR_OPMODE_SINGLE,
+	.OpMode = SENSOR_OPMODE_CONTINUOUS,
+	.Freq = 150000,
 	.Scale = 2,
-	.Freq = 50,
+	.LPFreq = 0,
+	.bInter = true,
+	.IntPol = DEVINTR_POL_LOW,
 };
 
 static const GYROSENSOR_CFG s_GyroCfg = {
 	.DevAddr = 0,
+	.OpMode = SENSOR_OPMODE_CONTINUOUS,
+	.Freq = 50000,
 	.Sensitivity = 10,
+	.LPFreq = 200,
 };
 
 static const MAGSENSOR_CFG s_MagCfg = {
 	.DevAddr = 0,
-	.Precision = 10,
+	.OpMode = SENSOR_OPMODE_CONTINUOUS,//SENSOR_OPMODE_SINGLE,
+	.Freq = 50000,
+	.Precision = 14,
 };
 
 void ImuEvtHandler(Device * const pDev, DEV_EVT Evt);
@@ -167,6 +179,16 @@ AgmMpu9250 g_MotSensor;
 AgmLsm9ds1 g_MotSensor;
 #endif
 
+uint32_t g_DT = 0;
+static uint32_t g_TPrev = 0;
+
+void TimerHandler(Timer *pTimer, uint32_t Evt)
+{
+    if (Evt & TIMER_EVT_TRIGGER(0))
+    {
+    }
+}
+
 void ImuEvtHandler(Device * const pDev, DEV_EVT Evt)
 {
 	ACCELSENSOR_DATA accdata;
@@ -185,12 +207,19 @@ void ImuEvtHandler(Device * const pDev, DEV_EVT Evt)
 	}
 }
 
+
 void ImuIntHandler(int IntNo)
 {
 	if (IntNo == 0)
 	{
-		//g_Imu.IntHandler();
-		g_MotSensor.IntHandler();
+//		IOPinSet(0, 24);
+		uint32_t t = g_Timer.uSecond();
+		g_DT = t - g_TPrev;
+		g_TPrev = t;
+
+		g_Imu.IntHandler();
+		//g_MotSensor.IntHandler();
+		//IOPinClear(0, 24);
 	}
 }
 
@@ -222,7 +251,7 @@ bool HardwareInit()
 #if 0
 		res = g_Imu.Init(s_ImuCfg, 0, &g_Spi, &g_Timer);
 #else
-		res = g_MotSensor.Init(s_AccelCfg, &g_Spi);
+		res = g_MotSensor.Init(s_AccelCfg, &g_Spi, &g_Timer);
 		if (res == true)
 		{
 			res |= g_MotSensor.Init(s_GyroCfg, &g_Spi);
@@ -233,7 +262,7 @@ bool HardwareInit()
 		}
 		if (res == true)
 		{
-			//res |= g_Imu.Init(s_ImuCfg, &g_MotSensor, &g_MotSensor, &g_MotSensor);
+			res |= g_Imu.Init(s_ImuCfg, &g_MotSensor, &g_MotSensor, &g_MotSensor);
 		}
 #endif
 	}
@@ -241,14 +270,19 @@ bool HardwareInit()
 	if (res == true)
 	{
 		IOPinCfg(s_GpioPins, s_NbGpioPins);
-		IOPinEnableInterrupt(0, 6, BLUEIO_TAG_EVIM_IMU_INT_PORT, BLUEIO_TAG_EVIM_IMU_INT_PIN, IOPINSENSE_HIGH_TRANSITION, ImuIntHandler);
+		IOPinEnableInterrupt(0, 6, BLUEIO_TAG_EVIM_IMU_INT_PORT, BLUEIO_TAG_EVIM_IMU_INT_PIN, IOPINSENSE_LOW_TRANSITION, ImuIntHandler);
 
 		int8_t m[9] = { 1, 0, 0,
 						0, 1, 0,
 						0, 0, 1 };
 
-		//g_Imu.RotationMatrix(m);
+		g_Imu.SetAxisAlignmentMatrix(m);
+		g_Imu.Quaternion(true, 6);
 	}
+
+	//uint64_t period = g_Timer.EnableTimerTrigger(0, 1UL, TIMER_TRIG_TYPE_CONTINUOUS);
+
+	//printf("period %u\r\n", (uint32_t)period);
 
 	return res;
 }
@@ -284,21 +318,41 @@ int main()
 //	g_MotSensor.Disable();
 //	g_Spi.Disable();
 //	g_Spi.PowerOff();
-	ACCELSENSOR_RAWDATA rawdata;
+	ACCELSENSOR_RAWDATA arawdata;
 	ACCELSENSOR_DATA accdata;
 	GYROSENSOR_RAWDATA grawdata;
 	GYROSENSOR_DATA gyrodata;
+	MAGSENSOR_RAWDATA mrawdata;
+	IMU_QUAT quat;
 
-	memset(&rawdata, 0, sizeof(ACCELSENSOR_RAWDATA));
+	memset(&arawdata, 0, sizeof(ACCELSENSOR_RAWDATA));
 	memset(&accdata, 0, sizeof(ACCELSENSOR_DATA));
 	memset(&gyrodata, 0, sizeof(GYROSENSOR_DATA));
 
+
+	uint32_t prevt = 0;
+	int cnt = 100;
 	while (1)
 	{
+//		uint32_t t = g_Timer.uSecond();
+
 		//NRF_POWER->SYSTEMOFF = POWER_SYSTEMOFF_SYSTEMOFF_Enter;
 		__WFE();
-		g_MotSensor.Read(grawdata);
-		//g_Imu.Read(accdata);
-		printf("Accel %d: %d %d %d\r\n", grawdata.Timestamp, grawdata.X, grawdata.Y, grawdata.Z);
+		//g_MotSensor.Read(accdata);
+		//g_MotSensor.Read(grawdata);
+		//g_MotSensor.Read(mrawdata);
+
+		uint32_t dt = arawdata.Timestamp - prevt;
+		prevt = arawdata.Timestamp;
+		g_Imu.Read(accdata);
+		g_Imu.Read(quat);
+
+		if (cnt-- < 0)
+		{
+			cnt = 100;
+			//printf("Accel %d %d: %d %d %d\r\n", (uint32_t)g_DT, (uint32_t)dt, arawdata.X, arawdata.Y, arawdata.Z);
+			//printf("Accel %d %d: %f %f %f\r\n", (uint32_t)g_DT, (uint32_t)dt, accdata.X, accdata.Y, accdata.Z);
+			printf("Quat %d %d: %f %f %f %f\r\n", (uint32_t)g_DT, (uint32_t)dt, quat.Q1, quat.Q2, quat.Q3, quat.Q4);
+		}
 	}
 }
