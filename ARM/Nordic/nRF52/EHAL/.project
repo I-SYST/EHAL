@@ -551,11 +551,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_invn_icm20948.h</locationURI>
 		</link>
 		<link>
-			<name>include/imu/imu_mpl_mpu9250.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_mpl_mpu9250.h</locationURI>
-		</link>
-		<link>
 			<name>include/imu/imu_mpu9250.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_mpu9250.h</locationURI>
@@ -809,11 +804,6 @@
 			<name>src/imu/imu_invn_icm20948.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_invn_icm20948.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/imu/imu_mpl_mpu9250.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_mpl_mpu9250.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/imu/imu_mpu9250.cpp</name>
