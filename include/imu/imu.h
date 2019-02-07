@@ -161,7 +161,6 @@ typedef struct __Imu_Config {
 class Imu : virtual public Device {
 public:
 
-//	virtual bool Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
 	virtual bool Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag);
 	virtual bool UpdateData() = 0;
 	virtual void IntHandler() = 0;

@@ -33,33 +33,14 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
-
-#include "accel_auto_cal.h"
-#include "quaternion_supervisor.h"
-#include "fusion_9axis.h"
-#include "fast_no_motion.h"
-#include "compass_vec_cal.h"
-#include "gyro_tc.h"
-#include "heading_from_gyro.h"
-#include "inv_math.h"
-#include "invensense_adv.h"
-#include "mag_disturb.h"
-#include "motion_no_motion.h"
-#include "no_gyro_fusion.h"
-#include "storage_manager.h"
-#include "start_manager.h"
-#include "data_builder.h"
-#include "results_holder.h"
-#include "mlinclude.h"
-#include "mpl.h"
-#include "log.h"
-
 #include "sensors/agm_mpu9250.h"
 #include "imu/imu_mpu9250.h"
 #include "convutil.h"
+#include "imu/mpu9250_dmpkey.h"
+#include "imu/mpu9250_dmpmap.h"
 
-/* These defines are copied from dmpDefaultMPU6050.c in the general MPL
- * releases. These defines may change for each DMP image, so be sure to modify
+/* These defines are copied from example of MPL ver 6.12.
+ * These defines may change for each DMP image, so be sure to modify
  * these values when switching to a new image.
  */
 #define CFG_LP_QUAT             (2712)
@@ -508,61 +489,8 @@ bool ValidateQuat(int32_t Q[4])
 	return true;
 }
 
-#if 0
-bool ImuMplMpu9250::Init(const IMU_CFG &Cfg, uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer)
-{
-	if (Valid())
-		return true;;
-
-	if (pIntrf == NULL)
-		return false;
-
-	Imu::Init(Cfg, DevAddr, pIntrf, pTimer);
-
-	inv_error_t err;
-
-	inv_init_storage_manager();
-
-    /* initialize the start callback manager */
-    err = inv_init_start_manager();
-
-    /* initialize the data builder */
-    err = inv_init_data_builder();
-
-    err = inv_enable_results_holder();
-
-    /* This algorithm updates the accel biases when in motion. A more accurate
-     * bias measurement can be made when running the self-test. */
-    err = inv_enable_in_use_auto_calibration();
-
-    /* Compute 6-axis and 9-axis quaternions. */
-    err = inv_enable_quaternion();
-
-    err = inv_enable_9x_sensor_fusion();
-
-    /* Update gyro biases when not in motion. */
-    err = inv_enable_fast_nomot();
-
-    /* Update gyro biases when temperature changes. */
-    err = inv_enable_gyro_tc();
-
-    /* Compass calibration algorithms. */
-    err = inv_enable_vector_compass_cal();
-
-    err = inv_enable_magnetic_disturbance();
-
-    //err = inv_enable_eMPL_outputs();
-
-    //err = inv_enable_heading_from_gyro();
-
-	return true;
-}
-#endif
-
 bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag)
 {
-	inv_error_t err;
-
 	if (pAccel == NULL)
 	{
 		return false;
@@ -571,63 +499,11 @@ bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor
 	vDmpFifoLen = 0;
 	vpMpu = (AgmMpu9250 *)pAccel;
 
-
-#if 0
-    inv_init_storage_manager();
-
-    /* initialize the start callback manager */
-    err = inv_init_start_manager();
-
-    /* initialize the data builder */
-    err = inv_init_data_builder();
-
-    err = inv_enable_results_holder();
-
-    /* This algorithm updates the accel biases when in motion. A more accurate
-     * bias measurement can be made when running the self-test. */
-    err = inv_enable_in_use_auto_calibration();
-
-    /* Compute 6-axis and 9-axis quaternions. */
-    err = inv_enable_quaternion();
-
-    err = inv_enable_9x_sensor_fusion();
-
-    /* Update gyro biases when not in motion. */
-    err = inv_enable_fast_nomot();
-
-    /* Update gyro biases when temperature changes. */
-    err = inv_enable_gyro_tc();
-
-    /* Compass calibration algorithms. */
-    err = inv_enable_vector_compass_cal();
-
-    err = inv_enable_magnetic_disturbance();
-
-    //err = inv_enable_eMPL_outputs();
-
-  //  err = inv_enable_heading_from_gyro();
-    //RETURN_IF_ERROR(err_code);
-
-#endif
-
     bool res = 	vpMpu->InitDMP(DMP_START_ADDR, (uint8_t*)s_DMPImage, DMP_CODE_SIZE);
 
     if (res == true)
     {
     	res = Imu::Init(Cfg, pAccel, pGyro, pMag);
-/*
-    	uint8_t regaddr = MPU9250_AG_USER_CTRL;
-
-        uint8_t d = vpMpu->Read8(&regaddr, 1);
-
-        d |= MPU9250_AG_USER_CTRL_DMP_EN;
-        vpMpu->Write8(&regaddr, 1, d);
-
-        regaddr = MPU9250_AG_INT_ENABLE;
-        d = vpMpu->Read8(&regaddr, 1) | MPU9250_AG_INT_ENABLE_DMP_EN;
-        vpMpu->Write8(&regaddr, 1, d);
-*/
-    	Rate(50);
 
         if (pAccel)
         {
@@ -639,7 +515,7 @@ bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor
         }
     }
 
-    uint32_t f = 0;
+    uint32_t f = 1;	// Default to 50 Hz
 
     if (vpAccel)
     {
@@ -658,8 +534,56 @@ bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor
 
 bool ImuMpu9250::UpdateData()
 {
+	uint8_t buf[32];
+	int32_t q[4];
+	int fidx = 0;
 
-	return true;
+	int len = vpMpu->GetFifoLen();
+	if (len >= vDmpFifoLen)
+	{
+		uint32_t t = ((Timer*)*vpMpu)->uSecond();
+
+		len = vpMpu->ReadFifo((uint8_t*)q, 16);
+		if (len > 0)
+		{
+			IMU_FEATURE feat = Feature();
+			if (feat & IMU_FEATURE_QUATERNION)
+			{
+	//			int32_t q[4];
+	/*
+				q[0] = (((int32_t)buf[0] << 24) | ((uint32_t)buf[1] << 16) |
+						((uint32_t)buf[2] << 8) | buf[3]);
+				q[1] = (((int32_t)buf[4] << 24) | ((uint32_t)buf[5] << 16) |
+						((uint32_t)buf[6] << 8) | buf[7]);
+				q[2] = (((int32_t)buf[8] << 24) | ((uint32_t)buf[9] << 16) |
+						((uint32_t)buf[10] << 8) | buf[11]);
+				q[3] = (((int32_t)buf[12] << 24) | ((uint32_t)buf[13] << 16) |
+						((uint32_t)buf[14] << 8) | buf[15]);
+	*/
+				q[0] = (int32_t)EndianCvt32((uint32_t)q[0]);
+				q[1] = (int32_t)EndianCvt32((uint32_t)q[1]);
+				q[2] = (int32_t)EndianCvt32((uint32_t)q[2]);
+				q[3] = (int32_t)EndianCvt32((uint32_t)q[3]);
+
+				if (ValidateQuat(q) == false)
+				{
+					vpMpu->ResetFifo();
+
+					return false;
+				}
+
+				vQuat.Q1 = (float)q[0] / (1<<30);
+				vQuat.Q2 = (float)q[1] / (1<<30);
+				vQuat.Q3 = (float)q[2] / (1<<30);
+				vQuat.Q4 = (float)q[3] / (1<<30);
+				vQuat.Timestamp = t;
+			}
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool ImuMpu9250::Enable()
@@ -829,80 +753,8 @@ void ImuMpu9250::SetAxisAlignmentMatrix(int8_t * const pMatrix)
 
 void ImuMpu9250::IntHandler()
 {
-	uint8_t buf[32];
-	int32_t q[4];
-	int fidx = 0;
-
-	//printf("IntHandler\r\n");
-
-	int len = vpMpu->GetFifoLen();
-	if (len < vDmpFifoLen)
+	if (UpdateData())
 	{
-		return;
-	}
-
-	uint32_t t = ((Timer*)*vpMpu)->uSecond();
-
-	len = vpMpu->ReadFifo((uint8_t*)q, 16);
-	if (len > 0)
-	{
-		IMU_FEATURE feat = Feature();
-		if (feat & IMU_FEATURE_QUATERNION)
-		{
-//			int32_t q[4];
-/*
-			q[0] = (((int32_t)buf[0] << 24) | ((uint32_t)buf[1] << 16) |
-		            ((uint32_t)buf[2] << 8) | buf[3]);
-			q[1] = (((int32_t)buf[4] << 24) | ((uint32_t)buf[5] << 16) |
-		            ((uint32_t)buf[6] << 8) | buf[7]);
-			q[2] = (((int32_t)buf[8] << 24) | ((uint32_t)buf[9] << 16) |
-		            ((uint32_t)buf[10] << 8) | buf[11]);
-			q[3] = (((int32_t)buf[12] << 24) | ((uint32_t)buf[13] << 16) |
-		            ((uint32_t)buf[14] << 8) | buf[15]);
-*/
-			q[0] = (int32_t)EndianCvt32((uint32_t)q[0]);
-			q[1] = (int32_t)EndianCvt32((uint32_t)q[1]);
-			q[2] = (int32_t)EndianCvt32((uint32_t)q[2]);
-			q[3] = (int32_t)EndianCvt32((uint32_t)q[3]);
-
-			if (ValidateQuat(q) == false)
-			{
-				vpMpu->ResetFifo();
-
-				return;
-			}
-
-			vQuat.Q1 = (float)q[0] / (1<<30);
-			vQuat.Q2 = (float)q[1] / (1<<30);
-			vQuat.Q3 = (float)q[2] / (1<<30);
-			vQuat.Q4 = (float)q[3] / (1<<30);
-			vQuat.Timestamp = t;
-
-			fidx += 16;
-		}
-		/*
-		if (vpAccel)
-		{
-			ACCELSENSOR_RAWDATA accel;
-
-	        accel.X = ((int16_t)buf[fidx] << 8) | buf[fidx + 1];
-	        accel.Y = ((int16_t)buf[fidx + 2] << 8) | buf[fidx + 3];
-	        accel.Z = ((int16_t)buf[fidx + 4] << 8) | buf[fidx + 5];
-	        accel.Timestamp = t;
-
-	        fidx += 6;
-		}
-		if (vpGyro)
-		{
-			GYROSENSOR_RAWDATA gyro;
-
-			gyro.X = ((int16_t)buf[fidx] << 8) | buf[fidx + 1];
-			gyro.Y = ((int16_t)buf[fidx + 2] << 8) | buf[fidx + 3];
-			gyro.Z = ((int16_t)buf[fidx + 4] << 8) | buf[fidx + 5];
-			gyro.Timestamp = t;
-
-	        fidx += 6;
-		}*/
 		vpMpu->IntHandler();
 	}
 }
@@ -967,53 +819,5 @@ int ImuMpu9250::Write(uint16_t Addr, uint8_t *pData, int Len)
 	}
 
 	return cnt;
-}
-
-bool ImuMpu9250::UploadDMPImage()
-{
-	int len = DMP_CODE_SIZE;
-	uint8_t *p = (uint8_t*)s_DMPImage;
-	uint8_t regaddr;
-	uint16_t memaddr = 0;
-	uint8_t d[2];
-
-	if (Write(memaddr, (uint8_t*)s_DMPImage, DMP_CODE_SIZE) < DMP_CODE_SIZE)
-	{
-		return false;
-	}
-
-	len = DMP_CODE_SIZE;
-	p = (uint8_t*)s_DMPImage;
-	memaddr = 0;
-
-	// Verify
-	while (len > 0)
-	{
-		uint8_t m[32];
-		int l = min(len, 32);
-
-		l = Read(memaddr, m, l);
-
-		if (memcmp(p, m, l) != 0)
-		{
-			return false;
-		}
-
-		p += l;
-		memaddr += l;
-		len -= l;
-	}
-
-	// Write DMP program start address
-	d[0] = DMP_START_ADDR >> 8;
-	d[1] = DMP_START_ADDR & 0xFF;
-	regaddr = MPU9250_DMP_PROG_START;
-	Write(&regaddr, 1, d, 2);
-
-	return true;
-}
-
-void ImuMpu9250::ResetFifo()
-{
 }
 

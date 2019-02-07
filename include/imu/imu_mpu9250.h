@@ -38,8 +38,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __IMU_MPU9250_H__
 
 #include "imu/imu.h"
-#include "imu/mpu9250_dmpkey.h"
-#include "imu/mpu9250_dmpmap.h"
 #include "sensors/agm_mpu9250.h"
 
 class ImuMpu9250 : public Imu {
@@ -99,9 +97,6 @@ protected:
 
 
 private:
-
-	bool UploadDMPImage();
-	void ResetFifo();
 
 	AgmMpu9250 *vpMpu;
 	int vDmpFifoLen;
