@@ -305,7 +305,7 @@ protected:
 	bool		vbValid;		//!< Device is valid ready to use (passed detection)
 	uint32_t 	vDevAddr;		//!< Device address or chip select index
 	DeviceIntrf *vpIntrf;		//!< Device's interface
-	Timer 		*vpTimer;		//!< Timer to use for time stamping data
+	Timer 		*vpTimer;		//!< Timer to use for time stamping data or create a timer event
 	uint64_t	vDevId;			//!< This is implementation specific data for device identifier
 	 	 	 	 	 	 	 	//!< could be value read from hardware register or serial number
 	DEVEVTCB 	vEvtHandler;	//!< Event handler callback

@@ -1,7 +1,7 @@
 /**-------------------------------------------------------------------------
-@file	hum_sensor.h
+@file	press_sensor.h
 
-@brief	Generic humidity sensor abstraction
+@brief	Generic pressure sensor abstraction
 
 @author	Hoang Nguyen Hoan
 @date	Feb. 12, 2017
@@ -31,8 +31,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
-#ifndef __HUM_SENSOR_H__
-#define __HUM_SENSOR_H__
+#ifndef __PRESS_SENSOR_H__
+#define __PRESS_SENSOR_H__
 
 #include <stdint.h>
 #include <string.h>
@@ -51,43 +51,39 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma pack(push, 1)
 
 
-/// @brief	Humidity sensor data
+/// @brief	Pressure sensor data
 ///
-/// Structure defining humidity sensor data
-typedef struct __HumiditySensor_Data {
+/// Structure defining pressure sensor data
+typedef struct __PressureSensor_Data {
 	uint64_t Timestamp;		//!< Time stamp count in usec
 	uint32_t Pressure;		//!< Barometric pressure in Pa no decimal
-	int16_t  Temperature;	//!< Temperature in degree C, 2 decimals fixed point
-	uint16_t Humidity;		//!< Relative humidity in %, 2 decimals fixed point
-} HUMISENSOR_DATA;
+} PRESSSENSOR_DATA;
 
 #pragma pack(pop)
 
-class HumiditySensor;
+class PressSensor;
 
-typedef void (*HUMISENSOR_EVTCB)(HumiditySensor * const pSensor, HUMISENSOR_DATA *pData);
+typedef void (*PRESSSENSOR_EVTCB)(PressSensor * const pSensor, PRESSSENSOR_DATA *pData);
 
 #pragma pack(push, 4)
 
-/// @brief	Humidity sensor configuration
+/// @brief	Pressure sensor configuration
 ///
-typedef struct __HumiditySensor_Config {
+typedef struct __TPHSensor_Config {
 	uint32_t		DevAddr;		//!< Either I2C dev address or CS index select if SPI is used
 	SENSOR_OPMODE 	OpMode;			//!< Operating mode
 	uint32_t		Freq;			//!< Sampling frequency in mHz (milliHerz) if continuous mode is used
-	int				TempOvrs;		//!< Oversampling measurement for temperature
 	int				PresOvrs;		//!< Oversampling measurement for pressure
-	int 			HumOvrs;		//!< Oversampling measurement for humidity
 	uint32_t		FilterCoeff;	//!< Filter coefficient select value (this value is device dependent)
-	HUMISENSOR_EVTCB EvtHandler;	//!< Event handler callback
-} HUMISENSOR_CFG;
+	PRESSSENSOR_EVTCB EvtHandler;//!< Event handler
+} PRESSSENSOR_CFG;
 
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-/// Humidity sensor base class.  Sensor implementation must derive form this class
-class HumiditySensor : public Sensor {
+/// Pressure sensor base class.  Sensor implementation must derive form this class
+class PressSensor : public Sensor {
 public:
 
 	/**
@@ -107,32 +103,32 @@ public:
 	 * 			- true	: Success
 	 * 			- false	: Failed
 	 */
-	virtual bool Init(const HUMISENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
+	virtual bool Init(const PRESSSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
 
 	/**
-	 * @brief	Read TPH data (require implementation).
+	 * @brief	Read pressure data (require implementation).
 	 *
-	 * Read TPH value from device if available. If not return previous data.
+	 * Read pressure value from device if available. If not return previous data.
 	 *
-	 * @param 	TphData : Reference buffer to be filled with measured data
+	 * @param	Buff : Reference buffer to be filled with measured data
 	 *
 	 * @return
 	 * 			- true	: If new data is returned
 	 * 			- false	: If old data is returned
 	 */
-	virtual bool Read(HUMISENSOR_DATA &TphData) = 0;
+	virtual bool Read(PRESSSENSOR_DATA &Buff) = 0;
 
 	/**
-	 * @brief	Read relative humidity (require implementation).
+	 * @brief	Read pressure (require implementation).
 	 *
-	 * @return	Relative humidity in %
+	 * @return	Barometric pressure in Pascal
 	 */
-	virtual float ReadHumidity() = 0;
+	virtual float ReadPressure() = 0;
 
 protected:
 
-	HUMISENSOR_DATA 	vTphData;		//!< Last measured data
-	HUMISENSOR_EVTCB	vEvtHandler;	//!< Event handler
+	PRESSSENSOR_DATA	vData;			//!< Last measured data
+	PRESSSENSOR_EVTCB 	vEvtyHandler;	//!< Event handler
 };
 
 extern "C" {
@@ -145,4 +141,4 @@ extern "C" {
 
 /** @} End of group Sensors */
 
-#endif	// __HUM_SENSOR_H__
+#endif	// __PRESS_SENSOR_H__

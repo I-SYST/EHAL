@@ -63,7 +63,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "coredev/iopincfg.h"
-#include "sensors/tph_sensor.h"
+//#include "sensors/tph_sensor.h"
+#include "sensors/temp_sensor.h"
+#include "sensors/press_sensor.h"
+#include "sensors/humi_sensor.h"
+
 
 /** @addtogroup Sensors
   * @{
@@ -161,7 +165,7 @@ typedef struct {
 ///
 /// - RMS Noise 0.2 Pa, equiv. to 1.7 cm
 /// - Offset temperature coefficient ±1.5 Pa/K, equiv. to ±12.6 cm at 1 °C temperature change
-class TphBme280 : public TphSensor {
+class TphBme280 : public HumiSensor, public PressSensor, public TempSensor { //TphSensor {
 public:
 	TphBme280() : vCalibTFine(0), vbSpi(false) {}
 	virtual ~TphBme280() {}
@@ -183,7 +187,10 @@ public:
 	 * 			- true	: Success
 	 * 			- false	: Failed
 	 */
-	bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+//	bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+	bool Init(const HUMISENSOR_CFG &CfgData, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+	bool Init(const PRESSSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+	bool Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
 
 	/**
 	 * @brief	Set current sensor state
@@ -247,8 +254,10 @@ public:
 	 * @return	true - new data
 	 * 			false - old data
 	 */
-	bool Read(TPHSENSOR_DATA &TphData);
-
+	bool Read(HUMISENSOR_DATA &TphData);
+	bool Read(PRESSSENSOR_DATA &TphData);
+	bool Read(TEMPSENSOR_DATA &TphData);
+/*
 	float ReadTemperature() {
 		TPHSENSOR_DATA tphdata;
 		Read(tphdata);
@@ -266,9 +275,11 @@ public:
 		Read(tphdata);
 		return (float)tphdata.Humidity / 100.0;
 	}
-
+*/
 
 private:
+
+	bool Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer);
 
 	uint32_t CompenPress(int32_t RawPress);
 	int32_t CompenTemp(int32_t RawTemp);
@@ -281,6 +292,7 @@ private:
 	BME280_CALIB_DATA vCalibData;
 	uint8_t vCtrlReg;
 	bool vbSpi;
+	bool vbInitialized;
 };
 
 extern "C" {

@@ -1,7 +1,7 @@
 /**-------------------------------------------------------------------------
-@file	temp_sensor.h
+@file	humi_sensor.h
 
-@brief	Generic temperature sensor abstraction.
+@brief	Generic humidity sensor abstraction
 
 @author	Hoang Nguyen Hoan
 @date	Feb. 12, 2017
@@ -31,8 +31,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
-#ifndef __TEMP_SENSOR_H__
-#define __TEMP_SENSOR_H__
+#ifndef __HUMI_SENSOR_H__
+#define __HUMI_SENSOR_H__
 
 #include <stdint.h>
 #include <string.h>
@@ -51,39 +51,43 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma pack(push, 1)
 
 
-/// @brief	Temperature sensor data
+/// @brief	Humidity sensor data
 ///
-/// Structure defining temperature sensordata
-typedef struct __TemperatureSensor_Data {
+/// Structure defining humidity sensor data
+typedef struct __HumiditySensor_Data {
 	uint64_t Timestamp;		//!< Time stamp count in usec
-	int32_t  Temperature;	//!< Temperature in degree C, 2 decimals fixed point
-} TEMPSENSOR_DATA;
+	uint32_t Pressure;		//!< Barometric pressure in Pa no decimal
+	int16_t  Temperature;	//!< Temperature in degree C, 2 decimals fixed point
+	uint16_t Humidity;		//!< Relative humidity in %, 2 decimals fixed point
+} HUMISENSOR_DATA;
 
 #pragma pack(pop)
 
-class TempSensor;
+class HumiSensor;
 
-typedef void (*TEMPSENSOR_EVTCB)(TempSensor * const pSensor, TEMPSENSOR_DATA *pData);
+typedef void (*HUMISENSOR_EVTCB)(HumiSensor * const pSensor, HUMISENSOR_DATA *pData);
 
 #pragma pack(push, 4)
 
-/// @brief	Temperature sensor configuration
+/// @brief	Humidity sensor configuration
 ///
-typedef struct __TempSensor_Config {
+typedef struct __HumiditySensor_Config {
 	uint32_t		DevAddr;		//!< Either I2C dev address or CS index select if SPI is used
 	SENSOR_OPMODE 	OpMode;			//!< Operating mode
 	uint32_t		Freq;			//!< Sampling frequency in mHz (milliHerz) if continuous mode is used
 	int				TempOvrs;		//!< Oversampling measurement for temperature
+	int				PresOvrs;		//!< Oversampling measurement for pressure
+	int 			HumOvrs;		//!< Oversampling measurement for humidity
 	uint32_t		FilterCoeff;	//!< Filter coefficient select value (this value is device dependent)
-	TEMPSENSOR_EVTCB EvtHandler;	//!< Event handler
-} TEMPSENSOR_CFG;
+	HUMISENSOR_EVTCB EvtHandler;	//!< Event handler callback
+} HUMISENSOR_CFG;
 
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-/// Temperature sensor base class.  Sensor implementation must derive form this class
-class TemperatureSensor : public Sensor {
+/// Humidity sensor base class.  Sensor implementation must derive form this class
+class HumiSensor : public Sensor {
 public:
 
 	/**
@@ -103,32 +107,32 @@ public:
 	 * 			- true	: Success
 	 * 			- false	: Failed
 	 */
-	virtual bool Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
+	virtual bool Init(const HUMISENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
 
 	/**
-	 * @brief	Read temperature data (require implementation).
+	 * @brief	Read TPH data (require implementation).
 	 *
-	 * Read temperature value from device if available. If not return previous data.
+	 * Read TPH value from device if available. If not return previous data.
 	 *
-	 * @param 	Buff : Reference buffer to be filled with measured data
+	 * @param 	TphData : Reference buffer to be filled with measured data
 	 *
 	 * @return
 	 * 			- true	: If new data is returned
 	 * 			- false	: If old data is returned
 	 */
-	virtual bool Read(TEMPSENSOR_DATA &Data) { Data = vData; return true; }
+	virtual bool Read(HUMISENSOR_DATA &TphData) = 0;
 
 	/**
-	 * @brief	Read temperature (require implementation).
+	 * @brief	Read relative humidity (require implementation).
 	 *
-	 * @return	Temperature in degree C
+	 * @return	Relative humidity in %
 	 */
-	virtual float ReadTemperature() { return (float)vData.Temperature / 100.0; }
+	virtual float ReadHumidity() = 0;
 
 protected:
 
-	TEMPSENSOR_DATA 	vData;			//!< Last measured data
-	TEMPSENSOR_EVTCB	vEvtHandler;	//!< Event handler
+	HUMISENSOR_DATA 	vData;			//!< Last measured data
+	HUMISENSOR_EVTCB	vEvtHandler;	//!< Event handler
 };
 
 extern "C" {
@@ -141,4 +145,4 @@ extern "C" {
 
 /** @} End of group Sensors */
 
-#endif	// __TEMP_SENSOR_H__
+#endif	// __HUMI_SENSOR_H__

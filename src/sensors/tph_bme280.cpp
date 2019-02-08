@@ -109,72 +109,81 @@ uint32_t TphBme280::CompenHum(int32_t adc_H)
 
 }
 
-bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+bool TphBme280::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 {
-	uint8_t regaddr = BME280_REG_ID;
-	uint8_t d;
-	bool found = false;
+	if (vbInitialized)
+		return true;;
 
-	vCalibTFine = 0;
+	if (pIntrf == NULL)
+		return false;
 
-	if (pIntrf != NULL)
-	{
-		Interface(pIntrf);
-		DeviceAddess(CfgData.DevAddr);
-	}
+	Interface(pIntrf);
+	DeviceAddess(DevAddr);
 
 	if (pTimer != NULL)
 	{
 		vpTimer = pTimer;
 	}
 
-	if (CfgData.DevAddr == BME280_I2C_DEV_ADDR0 || CfgData.DevAddr == BME280_I2C_DEV_ADDR1)
+	uint8_t regaddr = BME280_REG_ID;
+
+	uint8_t d = Read8((uint8_t*)&regaddr, 1);
+
+	if (d != BME280_ID)
 	{
-		// I2C mode
-		//vRegWrMask = 0xFF;
-		vbSpi = false;
-	}
-	else
-	{
-		//vRegWrMask = 0x7F;
-		vbSpi = true;
+		return false;
 	}
 
-	Read((uint8_t*)&regaddr, 1, &d, 1);
+	DeviceID(d);
+	Valid(true);
 
-	if (d == BME280_ID)
+	Reset();
+
+	usDelay(30000);
+
+
+	// Load calibration data
+
+	regaddr = BME280_REG_CALIB_00_25_START;
+	Read(&regaddr, 1, (uint8_t*)&vCalibData, 26);
+
+	uint8_t *p =  (uint8_t*)&vCalibData;
+
+	vCalibTFine = 0;
+
+	p[24] = p[25];
+
+	uint8_t cd[8];
+
+	regaddr = BME280_REG_CALIB_26_41_START;
+	Read(&regaddr, 1, cd, 8);
+
+	p[25] = cd[0];
+	p[26] = cd[1];
+	p[27] = cd[2];
+
+	vCalibData.dig_H4 = ((int16_t)cd[3] << 4) | (cd[4] & 0xF);
+	vCalibData.dig_H5 = ((int16_t)cd[5] << 4) | (cd[4] >> 4);
+	vCalibData.dig_H6 = cd[6];
+
+	return true;
+}
+
+//bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+bool TphBme280::Init(const HUMISENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+{
+	uint8_t regaddr = BME280_REG_ID;
+	uint8_t d;
+	bool found = false;
+
+	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
+	{
+		return false;
+	}
+
+
 	{
 		found  = true;
-
-		DeviceID(d);
-		Valid(true);
-
-		Reset();
-
-		usDelay(30000);
-
-
-		// Load calibration data
-
-		regaddr = BME280_REG_CALIB_00_25_START;
-		Read(&regaddr, 1, (uint8_t*)&vCalibData, 26);
-
-		uint8_t *p =  (uint8_t*)&vCalibData;
-
-		p[24] = p[25];
-
-		uint8_t cd[8];
-
-		regaddr = BME280_REG_CALIB_26_41_START;
-		Read(&regaddr, 1, cd, 8);
-
-		p[25] = cd[0];
-		p[26] = cd[1];
-		p[27] = cd[2];
-
-		vCalibData.dig_H4 = ((int16_t)cd[3] << 4) | (cd[4] & 0xF);
-		vCalibData.dig_H5 = ((int16_t)cd[5] << 4) | (cd[4] >> 4);
-		vCalibData.dig_H6 = cd[6];
 
 		// Setup oversampling & filters.
 		d = 0;
@@ -209,6 +218,17 @@ bool TphBme280::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 	return found;
 }
 
+bool TphBme280::Init(const PRESSSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+{
+
+	return true;
+}
+
+bool TphBme280::Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+{
+	return true;
+}
+
 /**
  * @brief	Set current sensor state
  *
@@ -229,7 +249,7 @@ SENSOR_STATE TphBme280::State(SENSOR_STATE State) {
 		Write(&regaddr, 1, &vCtrlReg, 1);
 	}
 
-	return Sensor::State(State);
+	return TempSensor::State(State);
 }
 
 /**
@@ -247,9 +267,9 @@ bool TphBme280::Mode(SENSOR_OPMODE OpMode, uint32_t Freq)
 	uint8_t regaddr;
 	uint8_t d = 0;
 
-	vOpMode = OpMode;
+	TempSensor::vOpMode = OpMode;
 
-	Sensor::SamplingFrequency(Freq);
+	TempSensor::SamplingFrequency(Freq);
 
 	// read current ctrl_meas register
 	regaddr = BME280_REG_CTRL_MEAS;
@@ -257,7 +277,7 @@ bool TphBme280::Mode(SENSOR_OPMODE OpMode, uint32_t Freq)
 
 	vCtrlReg &= ~BME280_REG_CTRL_MEAS_MODE_MASK;
 
-	if (vOpMode == SENSOR_OPMODE_CONTINUOUS)
+	if (TempSensor::vOpMode == SENSOR_OPMODE_CONTINUOUS)
 	{
 		uint32_t period = 1000 / Freq;
 		if (period >= 1000)
@@ -329,15 +349,15 @@ bool TphBme280::StartSampling()
 
 	Write(&regaddr, 1, &d, 1);
 
-	vbSampling = true;
+	TempSensor::vbSampling = true;
 
 	if (vpTimer)
 	{
-		vSampleTime = vpTimer->uSecond();
+		TempSensor::vSampleTime = vpTimer->uSecond();
 	}
 	else
 	{
-		vSampleTime += vSampPeriod;
+		TempSensor::vSampleTime += vSampPeriod;
 	}
 
 	return true;
@@ -382,14 +402,14 @@ bool TphBme280::UpdateData()
 			int32_t t = (((uint32_t)d[3] << 12) | ((uint32_t)d[4] << 4) | ((uint32_t)d[5] >> 4));
 			int32_t h = (((uint32_t)d[6] << 8) | d[7]);
 
-			vTphData.Temperature = CompenTemp(t);
-			vTphData.Pressure = CompenPress(p);
-			vTphData.Humidity = CompenHum(h);
-			vTphData.Timestamp = vSampleTime;
+			TempSensor::vData.Temperature = CompenTemp(t);
+			PressSensor::vhData.Pressure = CompenPress(p);
+			HumiSensor::Data.Humidity = CompenHum(h);
+			TempSensor::vData.Timestamp = vSampleTime;
 
-			vSampleCnt++;
+			TempSensor::vSampleCnt++;
 
-			vbSampling = false;
+			TempSensor::vbSampling = false;
 
 			retval = true;
 		}
@@ -398,11 +418,29 @@ bool TphBme280::UpdateData()
 	return retval;
 }
 
-bool TphBme280::Read(TPHSENSOR_DATA &TphData)
+bool TphBme280::Read(HUMISENSOR_DATA &Data)
 {
 	bool retval = UpdateData();
 
-	memcpy(&TphData, &vTphData, sizeof(TPHSENSOR_DATA));
+	memcpy(&Data, &HumiSensor::vData, sizeof(HUMISENSOR_DATA));
+
+	return retval;
+}
+
+bool TphBme280::Read(PRESSSENSOR_DATA &Data)
+{
+	bool retval = UpdateData();
+
+	memcpy(&Data, &PressSensor::vData, sizeof(PRESSSENSOR_DATA));
+
+	return retval;
+}
+
+bool TphBme280::Read(TEMPSENSOR_DATA &Data)
+{
+	bool retval = UpdateData();
+
+	memcpy(&Data, &TempSensor::vData, sizeof(TEMPSENSOR_DATA));
 
 	return retval;
 }

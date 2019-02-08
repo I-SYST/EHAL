@@ -856,8 +856,8 @@ bool AgmMpu9250::UpdateData()
 		AccelSensor::vSampleTime = t;
 		AccelSensor::vSampleCnt++;
 
-		TemperatureSensor::vData.Temperature = (((int32_t)d[6] << 8) | d[7]) * 100;
-		TemperatureSensor::vData.Timestamp = t;
+		TempSensor::vData.Temperature = (((int32_t)d[6] << 8) | d[7]) * 100;
+		TempSensor::vData.Timestamp = t;
 
 		idx += 8;
 

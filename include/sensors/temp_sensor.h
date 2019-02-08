@@ -1,7 +1,7 @@
 /**-------------------------------------------------------------------------
-@file	pressure_sensor.h
+@file	temp_sensor.h
 
-@brief	Generic pressure sensor abstraction
+@brief	Generic temperature sensor abstraction.
 
 @author	Hoang Nguyen Hoan
 @date	Feb. 12, 2017
@@ -31,8 +31,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
-#ifndef __PRESSURE_SENSOR_H__
-#define __PRESSURE_SENSOR_H__
+#ifndef __TEMP_SENSOR_H__
+#define __TEMP_SENSOR_H__
 
 #include <stdint.h>
 #include <string.h>
@@ -51,39 +51,39 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma pack(push, 1)
 
 
-/// @brief	Pressure sensor data
+/// @brief	Temperature sensor data
 ///
-/// Structure defining pressure sensor data
-typedef struct __PressureSensor_Data {
+/// Structure defining temperature sensordata
+typedef struct __TemperatureSensor_Data {
 	uint64_t Timestamp;		//!< Time stamp count in usec
-	uint32_t Pressure;		//!< Barometric pressure in Pa no decimal
-} PRESSURESENSOR_DATA;
+	int32_t  Temperature;	//!< Temperature in degree C, 2 decimals fixed point
+} TEMPSENSOR_DATA;
 
 #pragma pack(pop)
 
-class PressureSensor;
+class TempSensor;
 
-typedef void (*PRESSURESENSOR_EVTCB)(PressureSensor * const pSensor, PRESSURESENSOR_DATA *pData);
+typedef void (*TEMPSENSOR_EVTCB)(TempSensor * const pSensor, TEMPSENSOR_DATA *pData);
 
 #pragma pack(push, 4)
 
-/// @brief	Pressure sensor configuration
+/// @brief	Temperature sensor configuration
 ///
-typedef struct __TPHSensor_Config {
+typedef struct __TempSensor_Config {
 	uint32_t		DevAddr;		//!< Either I2C dev address or CS index select if SPI is used
 	SENSOR_OPMODE 	OpMode;			//!< Operating mode
 	uint32_t		Freq;			//!< Sampling frequency in mHz (milliHerz) if continuous mode is used
-	int				PresOvrs;		//!< Oversampling measurement for pressure
+	int				TempOvrs;		//!< Oversampling measurement for temperature
 	uint32_t		FilterCoeff;	//!< Filter coefficient select value (this value is device dependent)
-	PRESSURESENSOR_EVTCB EvtHandler;//!< Event handler
-} PRESSURESENSOR_CFG;
+	TEMPSENSOR_EVTCB EvtHandler;	//!< Event handler
+} TEMPSENSOR_CFG;
 
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-/// Pressure sensor base class.  Sensor implementation must derive form this class
-class PressureSensor : public Sensor {
+/// Temperature sensor base class.  Sensor implementation must derive form this class
+class TempSensor : public Sensor {
 public:
 
 	/**
@@ -103,32 +103,32 @@ public:
 	 * 			- true	: Success
 	 * 			- false	: Failed
 	 */
-	virtual bool Init(const PRESSURESENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
+	virtual bool Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
 
 	/**
-	 * @brief	Read pressure data (require implementation).
+	 * @brief	Read temperature data (require implementation).
 	 *
-	 * Read pressure value from device if available. If not return previous data.
+	 * Read temperature value from device if available. If not return previous data.
 	 *
-	 * @param	Buff : Reference buffer to be filled with measured data
+	 * @param 	Buff : Reference buffer to be filled with measured data
 	 *
 	 * @return
 	 * 			- true	: If new data is returned
 	 * 			- false	: If old data is returned
 	 */
-	virtual bool Read(PRESSURESENSOR_DATA &Buff) = 0;
+	virtual bool Read(TEMPSENSOR_DATA &Data) { Data = vData; return true; }
 
 	/**
-	 * @brief	Read pressure (require implementation).
+	 * @brief	Read temperature (require implementation).
 	 *
-	 * @return	Barometric pressure in Pascal
+	 * @return	Temperature in degree C
 	 */
-	virtual float ReadPressure() = 0;
+	virtual float ReadTemperature() { return (float)vData.Temperature / 100.0; }
 
 protected:
 
-	PRESSURESENSOR_DATA	vData;			//!< Last measured data
-	PRESSURESENSOR_EVTCB vEvtyHandler;	//!< Event handler
+	TEMPSENSOR_DATA 	vData;			//!< Last measured data
+	TEMPSENSOR_EVTCB	vEvtHandler;	//!< Event handler
 };
 
 extern "C" {
@@ -141,4 +141,4 @@ extern "C" {
 
 /** @} End of group Sensors */
 
-#endif	// __PRESSURE_SENSOR_H__
+#endif	// __TEMP_SENSOR_H__

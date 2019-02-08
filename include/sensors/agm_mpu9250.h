@@ -44,7 +44,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sensors/accel_sensor.h"
 #include "sensors/gyro_sensor.h"
 #include "sensors/mag_sensor.h"
-#include "sensors/temperature_sensor.h"
+#include "sensors/temp_sensor.h"
 
 #define MPU9250_I2C_DEV_ADDR0			0x68		// AD0 low
 #define MPU9250_I2C_DEV_ADDR1			0x69		// AD0 high
@@ -424,7 +424,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef __cplusplus
 
-class AgmMpu9250 : public AccelSensor, public GyroSensor, public MagSensor, public TemperatureSensor {
+class AgmMpu9250 : public AccelSensor, public GyroSensor, public MagSensor, public TempSensor {
 public:
 	/**
 	 * @brief	Initialize accelerometer sensor.
@@ -492,7 +492,7 @@ public:
 	virtual bool Read(GYROSENSOR_DATA &Data) { return GyroSensor::Read(Data); }
 	virtual bool Read(MAGSENSOR_RAWDATA &Data) { return MagSensor::Read(Data); }
 	virtual bool Read(MAGSENSOR_DATA &Data) { return MagSensor::Read(Data); }
-	virtual bool Read(TEMPSENSOR_DATA &Data) { return TemperatureSensor::Read(Data); }
+	virtual bool Read(TEMPSENSOR_DATA &Data) { return TempSensor::Read(Data); }
 
 	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
