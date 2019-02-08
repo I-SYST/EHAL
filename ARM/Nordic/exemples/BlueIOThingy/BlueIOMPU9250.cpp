@@ -4,27 +4,20 @@
  *  Created on: Jul 25, 2018
  *      Author: hoan
  */
+#include "app_util_platform.h"
+#include "app_scheduler.h"
 
 #include "ble_app.h"
 #include "ble_service.h"
 #include "device_intrf.h"
 #include "coredev/spi.h"
 #include "coredev/timer.h"
-#include "BlueIOMPU9250.h"
 #include "sensors/agm_mpu9250.h"
 #include "imu/imu_mpu9250.h"
 #include "idelay.h"
 #include "board.h"
-
-#include "inv_mpu.h"
-#include "inv_mpu_dmp_motion_driver.h"
-#include "invensense.h"
-#include "invensense_adv.h"
-#include "eMPL_outputs.h"
-#include "mltypes.h"
-#include "mpu.h"
 #include "BlueIOThingy.h"
-#include "eMPL/packet.h"
+#include "BlueIOMPU9250.h"
 
 static const ACCELSENSOR_CFG s_AccelCfg = {
 	.DevAddr = 0,
@@ -53,86 +46,23 @@ static const MAGSENSOR_CFG s_MagCfg = {
 
 AgmMpu9250 g_Mpu9250;
 
-void ImuEvtHandler(Device * const pDev, DEV_EVT Evt);
+static void ImuEvtHandler(Device * const pDev, DEV_EVT Evt);
 
 static const IMU_CFG s_ImuCfg = {
 	.EvtHandler = ImuEvtHandler
 };
 
-static ImuMpu9250 g_Imu;
+static ImuMpu9250 s_Imu;
 
 static Timer * s_pTimer;
 static uint32_t s_MotionFeature = 0;
-
-#if 1
-/* Data read from MPL. */
-#define PRINT_ACCEL     (0x01)
-#define PRINT_GYRO      (0x02)
-#define PRINT_QUAT      (0x04)
-#define PRINT_COMPASS   (0x08)
-#define PRINT_EULER     (0x10)
-#define PRINT_ROT_MAT   (0x20)
-#define PRINT_HEADING   (0x40)
-#define PRINT_PEDO      (0x80)
-#define PRINT_LINEAR_ACCEL (0x100)
-#define PRINT_GRAVITY_VECTOR (0x200)
-
-volatile uint32_t hal_timestamp = 0;
-#define ACCEL_ON        (0x01)
-#define GYRO_ON         (0x02)
-#define COMPASS_ON      (0x04)
-
-#define MOTION          (0)
-#define NO_MOTION       (1)
-
-/* Starting sampling rate. */
-#define DEFAULT_MPU_HZ  (20)
-
-#define FLASH_SIZE      (512)
-#define FLASH_MEM_START ((void*)0x1800)
-
-#define PEDO_READ_MS    (1000)
-#define TEMP_READ_MS    (500)
-#define COMPASS_READ_MS (100)
-struct rx_s {
-    unsigned char header[3];
-    unsigned char cmd;
-};
-struct hal_s {
-    unsigned char lp_accel_mode;
-    unsigned char sensors;
-    unsigned char dmp_on;
-    unsigned char wait_for_tap;
-    volatile unsigned char new_gyro;
-    unsigned char motion_int_mode;
-    unsigned long no_dmp_hz;
-    unsigned long next_pedo_ms;
-    unsigned long next_temp_ms;
-    unsigned long next_compass_ms;
-    unsigned int report;
-    unsigned short dmp_features;
-    struct rx_s rx;
-};
-static struct hal_s hal = {0};
-
-/* USB RX binary semaphore. Actually, it's just a flag. Not included in struct
- * because it's declared extern elsewhere.
- */
-volatile unsigned char rx_new;
-
-unsigned char *mpl_key = (unsigned char*)"eMPL 5.1";
-
-/* Platform-specific information. Kinda like a boardfile. */
-struct platform_data_s {
-    signed char orientation[9];
-};
 
 int8_t g_AlignMatrix[9] = {
 	0,  1,  0,
     -1,  0,  0,
     0,  0, -1
 };
-
+#if 0
 /**@brief Acclerometer rotation matrix.
  *
  * @note Accellerometer inverted to get positive readings when axis is aligned with g (down).
@@ -195,332 +125,58 @@ static struct platform_data_s compass_pdata = {
 };
 #define COMPASS_ENABLED 1
 #endif
-
 #endif
 
-extern "C" void mpulib_init();
 void ImuRawDataSend(ACCELSENSOR_DATA &AccData, GYROSENSOR_DATA GyroData, MAGSENSOR_DATA &MagData);
 void ImuQuatDataSend(long Quat[4]);
 
-#define eMPL_send_quat	ImuQuatDataSend
-void eMPL_send_data(unsigned char type, long *data)
+static void ImuDataChedHandler(void * p_event_data, uint16_t event_size)
 {
-
-}
-
-/* Get data from MPL.
- * TODO: Add return values to the inv_get_sensor_type_xxx APIs to differentiate
- * between new and stale data.
- */
-static void read_from_mpl(void)
-{
-    long msg, data[9];
-    int8_t accuracy;
-    unsigned long timestamp;
-    float float_data[3] = {0};
-
-    if (inv_get_sensor_type_quat(data, &accuracy, (inv_time_t*)&timestamp)) {
-       /* Sends a quaternion packet to the PC. Since this is used by the Python
-        * test app to visually represent a 3D quaternion, it's sent each time
-        * the MPL has new data.
-        */
-        eMPL_send_quat(data);
-
-        /* Specific data packets can be sent or suppressed using USB commands. */
-        if (hal.report & PRINT_QUAT)
-            eMPL_send_data(PACKET_DATA_QUAT, data);
-    }
-
-    if (hal.report & PRINT_ACCEL) {
-        if (inv_get_sensor_type_accel(data, &accuracy,
-            (inv_time_t*)&timestamp))
-            eMPL_send_data(PACKET_DATA_ACCEL, data);
-    }
-    if (hal.report & PRINT_GYRO) {
-        if (inv_get_sensor_type_gyro(data, &accuracy,
-            (inv_time_t*)&timestamp))
-            eMPL_send_data(PACKET_DATA_GYRO, data);
-    }
-#ifdef COMPASS_ENABLED
-    if (hal.report & PRINT_COMPASS) {
-        if (inv_get_sensor_type_compass(data, &accuracy,
-            (inv_time_t*)&timestamp))
-            eMPL_send_data(PACKET_DATA_COMPASS, data);
-    }
-#endif
-    if (hal.report & PRINT_EULER) {
-        if (inv_get_sensor_type_euler(data, &accuracy,
-            (inv_time_t*)&timestamp))
-            eMPL_send_data(PACKET_DATA_EULER, data);
-    }
-    if (hal.report & PRINT_ROT_MAT) {
-        if (inv_get_sensor_type_rot_mat(data, &accuracy,
-            (inv_time_t*)&timestamp))
-            eMPL_send_data(PACKET_DATA_ROT, data);
-    }
-    if (hal.report & PRINT_HEADING) {
-        if (inv_get_sensor_type_heading(data, &accuracy,
-            (inv_time_t*)&timestamp))
-            eMPL_send_data(PACKET_DATA_HEADING, data);
-    }
-    if (hal.report & PRINT_LINEAR_ACCEL) {
-        if (inv_get_sensor_type_linear_acceleration(float_data, &accuracy, (inv_time_t*)&timestamp)) {
-        	MPL_LOGI("Linear Accel: %7.5f %7.5f %7.5f\r\n",
-        			float_data[0], float_data[1], float_data[2]);
-         }
-    }
-    if (hal.report & PRINT_GRAVITY_VECTOR) {
-            if (inv_get_sensor_type_gravity(float_data, &accuracy,
-                (inv_time_t*)&timestamp))
-            	MPL_LOGI("Gravity Vector: %7.5f %7.5f %7.5f\r\n",
-            			float_data[0], float_data[1], float_data[2]);
-    }
-    if (hal.report & PRINT_PEDO) {
-        unsigned long timestamp;
-        drv_mpu9250_ms_get(&timestamp);
-        if (timestamp > hal.next_pedo_ms) {
-            hal.next_pedo_ms = timestamp + PEDO_READ_MS;
-            unsigned long step_count, walk_time;
-            dmp_get_pedometer_step_count(&step_count);
-            dmp_get_pedometer_walk_time(&walk_time);
-            MPL_LOGI("Walked %ld steps over %ld milliseconds..\n", step_count,
-            walk_time);
-        }
-    }
-
-    /* Whenever the MPL detects a change in motion state, the application can
-     * be notified. For this example, we use an LED to represent the current
-     * motion state.
-     */
-    msg = inv_get_message_level_0(INV_MSG_MOTION_EVENT |
-            INV_MSG_NO_MOTION_EVENT);
-    if (msg) {
-        if (msg & INV_MSG_MOTION_EVENT) {
-            MPL_LOGI("Motion!\n");
-        } else if (msg & INV_MSG_NO_MOTION_EVENT) {
-            MPL_LOGI("No motion!\n");
-        }
-    }
-}
-
-void ImuEvtHandler(Device * const pDev, DEV_EVT Evt)
-{
-	IMU_QUAT iquat;
-	int32_t q[4];
-
-	g_Imu.IntHandler();
-	g_Imu.Read(iquat);
-
-	q[0] = iquat.Q1 * (1<<30);
-	q[1] = iquat.Q2 * (1<<30);
-	q[2] = iquat.Q3 * (1<<30);
-	q[3] = iquat.Q4 * (1<<30);
-	ImuQuatDataSend(q);
-}
-
-
-void MPU9250IntHandler(int IntNo)
-{
-	IMU_QUAT iquat;
-	int32_t q[4];
-
-	g_Imu.IntHandler();
-	g_Imu.Read(iquat);
-
-	q[0] = (int32_t)(iquat.Q1 * (float)(1<<30));
-	q[1] = (int32_t)(iquat.Q2 * (float)(1<<30));
-	q[2] = (int32_t)(iquat.Q3 * (float)(1<<30));
-	q[3] = (int32_t)(iquat.Q4 * (float)(1<<30));
-	ImuQuatDataSend(q);
-
-	return;
-
-    unsigned char accel_fsr,  new_temp = 0;
-    unsigned long sensor_timestamp;
-    unsigned char new_compass = 0;
-    int new_data = 0;
-    hal.new_gyro = 1;
-    if (hal.new_gyro && hal.lp_accel_mode) {
-         short accel_short[3];
-         long accel[3];
-         mpu_get_accel_reg(accel_short, &sensor_timestamp);
-         accel[0] = (long)accel_short[0];
-         accel[1] = (long)accel_short[1];
-         accel[2] = (long)accel_short[2];
-         inv_build_accel(accel, 0, sensor_timestamp);
-         new_data = 1;
-         hal.new_gyro = 0;
-     } else if (hal.new_gyro && hal.dmp_on) {
-         short gyro[3], accel_short[3], sensors;
-         unsigned char more;
-         long accel[3], quat[4], temperature;
-         /* This function gets new data from the FIFO when the DMP is in
-          * use. The FIFO can contain any combination of gyro, accel,
-          * quaternion, and gesture data. The sensors parameter tells the
-          * caller which data fields were actually populated with new data.
-          * For example, if sensors == (INV_XYZ_GYRO | INV_WXYZ_QUAT), then
-          * the FIFO isn't being filled with accel data.
-          * The driver parses the gesture data to determine if a gesture
-          * event has occurred; on an event, the application will be notified
-          * via a callback (assuming that a callback function was properly
-          * registered). The more parameter is non-zero if there are
-          * leftover packets in the FIFO.
-          */
-         dmp_read_fifo(gyro, accel_short, quat, &sensor_timestamp, &sensors, &more);
-         if (!more)
-             hal.new_gyro = 0;
-         if (sensors & INV_XYZ_GYRO) {
-             /* Push the new data to the MPL. */
-             inv_build_gyro(gyro, sensor_timestamp);
-             new_data = 1;
-             if (new_temp) {
-                 new_temp = 0;
-                 /* Temperature only used for gyro temp comp. */
-                 mpu_get_temperature(&temperature, &sensor_timestamp);
-                 inv_build_temp(temperature, sensor_timestamp);
-             }
-         }
-         if (sensors & INV_XYZ_ACCEL) {
-             accel[0] = (long)accel_short[0];
-             accel[1] = (long)accel_short[1];
-             accel[2] = (long)accel_short[2];
-             inv_build_accel(accel, 0, sensor_timestamp);
-             new_data = 1;
-         }
-         if (sensors & INV_WXYZ_QUAT) {
-             inv_build_quat(quat, 0, sensor_timestamp);
-             new_data = 1;
-         }
-     } else if (hal.new_gyro) {
-         short gyro[3], accel_short[3];
-         unsigned char sensors, more;
-         long accel[3], temperature;
-         /* This function gets new data from the FIFO. The FIFO can contain
-          * gyro, accel, both, or neither. The sensors parameter tells the
-          * caller which data fields were actually populated with new data.
-          * For example, if sensors == INV_XYZ_GYRO, then the FIFO isn't
-          * being filled with accel data. The more parameter is non-zero if
-          * there are leftover packets in the FIFO. The HAL can use this
-          * information to increase the frequency at which this function is
-          * called.
-          */
-         hal.new_gyro = 0;
-         mpu_read_fifo(gyro, accel_short, &sensor_timestamp,
-             &sensors, &more);
-         if (more)
-             hal.new_gyro = 1;
-         if (sensors & INV_XYZ_GYRO) {
-             /* Push the new data to the MPL. */
-             inv_build_gyro(gyro, sensor_timestamp);
-             new_data = 1;
-             if (new_temp) {
-                 new_temp = 0;
-                 /* Temperature only used for gyro temp comp. */
-                 mpu_get_temperature(&temperature, &sensor_timestamp);
-                 inv_build_temp(temperature, sensor_timestamp);
-             }
-         }
-         if (sensors & INV_XYZ_ACCEL) {
-             accel[0] = (long)accel_short[0];
-             accel[1] = (long)accel_short[1];
-             accel[2] = (long)accel_short[2];
-             inv_build_accel(accel, 0, sensor_timestamp);
-             new_data = 1;
-         }
-     }
-#ifdef COMPASS_ENABLED
-     if (new_compass) {
-         short compass_short[3];
-         long compass[3];
-         new_compass = 0;
-         /* For any MPU device with an AKM on the auxiliary I2C bus, the raw
-          * magnetometer registers are copied to special gyro registers.
-          */
-         if (!mpu_get_compass_reg(compass_short, &sensor_timestamp)) {
-             compass[0] = (long)compass_short[0];
-             compass[1] = (long)compass_short[1];
-             compass[2] = (long)compass_short[2];
-             /* NOTE: If using a third-party compass calibration library,
-              * pass in the compass data in uT * 2^16 and set the second
-              * parameter to INV_CALIBRATED | acc, where acc is the
-              * accuracy from 0 to 3.
-              */
-             inv_build_compass(compass, 0, sensor_timestamp);
-         }
-         new_data = 1;
-     }
-#endif
-     if (new_data) {
-         inv_execute_on_data();
-         /* This function reads bias-compensated sensor data and sensor
-          * fusion outputs from the MPL. The outputs are formatted as seen
-          * in eMPL_outputs.c. This function only needs to be called at the
-          * rate requested by the host.
-          */
-         read_from_mpl();
-     }
-
-	return;
-
 	ACCELSENSOR_DATA accdata;
 	GYROSENSOR_DATA gyrodata;
 	MAGSENSOR_DATA magdata;
-	long l[3];
-	short s[3];
-	long quat[4];
+	IMU_QUAT quat;
+	long q[4];
 
-    short gyro[3], accel_short[3], sensors;
-    unsigned char more;
-
-    //unsigned long sensor_timestamp;
-	//dmp_read_fifo(gyro, accel_short, quat, &sensor_timestamp, &sensors, &more);
-   // inv_build_gyro(gyro, sensor_timestamp);
-
-    l[0] = accel_short[0];
-	l[1] = accel_short[1];
-	l[2] = accel_short[2];
-
-
-	g_Mpu9250.IntHandler();
-
-	g_Mpu9250.Read(accdata);
-
-	l[0] = accdata.X / 256;
-	l[1] = accdata.Y / 256;
-	l[2] = accdata.Z / 256;
-	inv_build_accel(l, 0, accdata.Timestamp);
-
-	g_Mpu9250.Read(gyrodata);
-
-	s[0] = gyrodata.X / 256;
-	s[1] = gyrodata.Y / 256;
-	s[2] = gyrodata.Z / 256;
-	inv_build_gyro(s, accdata.Timestamp);
-
-	g_Mpu9250.Read(magdata);
-
-	l[0] = accdata.X;
-	l[1] = accdata.Y;
-	l[2] = accdata.Z;
-
-	inv_build_compass(l, 0, accdata.Timestamp);
-
+	s_Imu.Read(accdata);
+	s_Imu.Read(gyrodata);
+	s_Imu.Read(magdata);
 	ImuRawDataSend(accdata, gyrodata, magdata);
+	s_Imu.Read(quat);
+	//q[0] = ((float)quat.Q[0] / 32768.0) * (float)(1<<30);
+	//q[1] = ((float)quat.Q[1] / 32768.0) * (float)(1<<30);
+	//q[2] = ((float)quat.Q[2] / 32768.0) * (float)(1<<30);
+	//q[3] = ((float)quat.Q[3] / 32768.0) * (float)(1<<30);
+	//q[0] = quat.Q[0] << 15;
+	//q[1] = quat.Q[1] << 15;
+	//q[2] = quat.Q[2] << 15;
+	//q[3] = quat.Q[3] << 15;
+	q[0] = quat.Q[0] * (1 << 30);
+	q[1] = quat.Q[1] * (1 << 30);
+	q[2] = quat.Q[2] * (1 << 30);
+	q[3] = quat.Q[3] * (1 << 30);
+	//printf("Quat %d: %d %d %d %d\r\n", quat.Timestamp, q[0], q[1], q[2], q[3]);
+	ImuQuatDataSend(q);
+}
 
-	inv_build_quat(quat, 0, accdata.Timestamp);
+static void ImuEvtHandler(Device * const pDev, DEV_EVT Evt)
+{
 
-	inv_execute_on_data();
-    inv_time_t       timestamp;
-    int8_t           accuracy;
+	switch (Evt)
+	{
+		case DEV_EVT_DATA_RDY:
+			app_sched_event_put(NULL, 0, ImuDataChedHandler);
+			//ImuDataChedHandler(NULL, 0);
+			//g_MotSensor.Read(accdata);
+			break;
+	}
+}
 
-	inv_get_sensor_type_quat((long *)quat, &accuracy, &timestamp);
-//	read_from_mpl();
-//	long data[9];
-//	int8_t accuracy;
-//	inv_get_sensor_type_quat(data, &accuracy, (inv_time_t*)&sensor_timestamp);
+void MPU9250IntHandler(int IntNo)
+{
+	s_Imu.IntHandler();
 
-	ImuQuatDataSend(quat);
-
+	return;
 }
 
 void mpulib_data_handler_cb()
@@ -648,10 +304,10 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
 	}
 #endif
 
-    g_Imu.Init(s_ImuCfg, &g_Mpu9250, &g_Mpu9250, &g_Mpu9250);
-    g_Imu.SetAxisAlignmentMatrix(g_AlignMatrix);
-    g_Imu.Quaternion(true, 6);
-    //g_Imu.Compass(true);
+    s_Imu.Init(s_ImuCfg, &g_Mpu9250, &g_Mpu9250, &g_Mpu9250);
+    s_Imu.SetAxisAlignmentMatrix(g_AlignMatrix);
+    s_Imu.Quaternion(true, 6);
+    //s_Imu.Compass(true);
 
     return true;
 }

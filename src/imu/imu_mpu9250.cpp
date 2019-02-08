@@ -33,9 +33,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
+#include "convutil.h"
 #include "sensors/agm_mpu9250.h"
 #include "imu/imu_mpu9250.h"
-#include "convutil.h"
 #include "imu/mpu9250_dmpkey.h"
 #include "imu/mpu9250_dmpmap.h"
 
@@ -505,6 +505,8 @@ bool ImuMpu9250::Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor
     {
     	res = Imu::Init(Cfg, pAccel, pGyro, pMag);
 
+    	vEvtHandler = Cfg.EvtHandler;
+
         if (pAccel)
         {
         	vDmpFifoLen += 8;
@@ -756,6 +758,11 @@ void ImuMpu9250::IntHandler()
 	if (UpdateData())
 	{
 		vpMpu->IntHandler();
+
+		if (vEvtHandler)
+		{
+			vEvtHandler(this, DEV_EVT_DATA_RDY);
+		}
 	}
 }
 

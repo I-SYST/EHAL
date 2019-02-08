@@ -54,15 +54,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "bsec_interface.h"
 
-#include "mpl.h"
-
 #include "istddef.h"
 #include "ble_app.h"
 #include "ble_service.h"
-
-
-//#include "fusion_9axis.h"
-
 #include "blueio_board.h"
 #include "coredev/uart.h"
 #include "coredev/i2c.h"
