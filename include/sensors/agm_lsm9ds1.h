@@ -45,10 +45,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sensors/mag_sensor.h"
 
 // 7 bits I2C device addresses
-#define LSM9DS1_AG_I2C_ADDR			0x6A
-#define LSM9DS1_AG_I2C_ADDR2		0x6B
-#define LSM9DS1_MAG_I2C_ADDR		0x1C
-#define LSM9DS1_MAG_I2C_ADDR2		0x1E
+#define LSM9DS1_AG_I2C_ADDR0			0x6A
+#define LSM9DS1_AG_I2C_ADDR1		0x6B
+#define LSM9DS1_MAG_I2C_ADDR0		0x1C
+#define LSM9DS1_MAG_I2C_ADDR1		0x1E
 
 #define LSM9DS1_DEVID				0x68
 
@@ -264,15 +264,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define LSM9DS1_INT_GEN_SRC_XL_IA_XL					(1<<6)
 
 // Status register
-#define LSM9DS1_STATUS_REG			0x27
+#define LSM9DS1_STATUS_REG2			0x27
 
-#define LSM9DS1_STATUS_REG_XLDA							(1<<0)
-#define LSM9DS1_STATUS_REG_GDA							(1<<1)
-#define LSM9DS1_STATUS_REG_TDA							(1<<2)
-#define LSM9DS1_STATUS_REG_BOOT_STATUS					(1<<3)
-#define LSM9DS1_STATUS_REG_INACT						(1<<4)
-#define LSM9DS1_STATUS_REG_IG_G							(1<<5)
-#define LSM9DS1_STATUS_REG_IG_XL						(1<<6)
+#define LSM9DS1_STATUS_REG2_XLDA						(1<<0)
+#define LSM9DS1_STATUS_REG2_GDA							(1<<1)
+#define LSM9DS1_STATUS_REG2_TDA							(1<<2)
+#define LSM9DS1_STATUS_REG2_BOOT_STATUS					(1<<3)
+#define LSM9DS1_STATUS_REG2_INACT						(1<<4)
+#define LSM9DS1_STATUS_REG2_IG_G						(1<<5)
+#define LSM9DS1_STATUS_REG2_IG_XL						(1<<6)
 
 // Accel output data
 #define LSM9DS1_OUT_X_XL_L			0x28

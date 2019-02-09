@@ -670,7 +670,7 @@ uint32_t AgmMpu9250::LowPassFreq(uint32_t Freq)
 {
 	uint8_t regaddr = MPU9250_AG_ACCEL_CONFIG2;
 	uint32_t rate = 1000;
-	uint d = 0;
+	uint8_t d = 0;
 
 	if (Freq == 0)
 	{

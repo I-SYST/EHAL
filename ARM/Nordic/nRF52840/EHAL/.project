@@ -561,11 +561,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_invn_icm20948.h</locationURI>
 		</link>
 		<link>
-			<name>include/imu/imu_mpl_mpu9250.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_mpl_mpu9250.h</locationURI>
-		</link>
-		<link>
 			<name>include/imu/imu_mpu9250.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_mpu9250.h</locationURI>
@@ -646,14 +641,29 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gyro_sensor.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/humi_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/humi_sensor.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/mag_sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/mag_sensor.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/press_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/press_sensor.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/temp_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/temp_sensor.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/tph_bme280.h</name>
@@ -809,11 +819,6 @@
 			<name>src/imu/imu_invn_icm20948.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_invn_icm20948.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/imu/imu_mpl_mpu9250.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_mpl_mpu9250.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/imu/imu_mpu9250.cpp</name>

@@ -69,7 +69,7 @@ typedef void (*PRESSSENSOR_EVTCB)(PressSensor * const pSensor, PRESSSENSOR_DATA 
 
 /// @brief	Pressure sensor configuration
 ///
-typedef struct __TPHSensor_Config {
+typedef struct __PressureSensor_Config {
 	uint32_t		DevAddr;		//!< Either I2C dev address or CS index select if SPI is used
 	SENSOR_OPMODE 	OpMode;			//!< Operating mode
 	uint32_t		Freq;			//!< Sampling frequency in mHz (milliHerz) if continuous mode is used

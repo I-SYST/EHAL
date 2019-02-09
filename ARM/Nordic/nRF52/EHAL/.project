@@ -621,9 +621,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gyro_sensor.h</locationURI>
 		</link>
 		<link>
-			<name>include/sensors/humidity_sensor.h</name>
+			<name>include/sensors/humi_sensor.h</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/humidity_sensor.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/humi_sensor.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/mag_sensor.h</name>
@@ -631,9 +631,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/mag_sensor.h</locationURI>
 		</link>
 		<link>
-			<name>include/sensors/pressure_sensor.h</name>
+			<name>include/sensors/press_sensor.h</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/pressure_sensor.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/press_sensor.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/sensor.h</name>
@@ -641,9 +641,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/sensor.h</locationURI>
 		</link>
 		<link>
-			<name>include/sensors/temperature_sensor.h</name>
+			<name>include/sensors/temp_sensor.h</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/temperature_sensor.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/temp_sensor.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/tph_bme280.h</name>

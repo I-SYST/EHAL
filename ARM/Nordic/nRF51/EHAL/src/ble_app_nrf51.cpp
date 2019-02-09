@@ -103,6 +103,12 @@ extern "C" {
 
 #pragma pack(push, 4)
 
+typedef struct __BleApp_PeripheralData {
+	uint16_t ConnHdl;	// Connection handle
+    uint8_t SrvcCnt;		// Number of services
+    ble_gatt_db_srv_t Srvc[BLE_DB_DISCOVERY_MAX_SRV];  // service data
+} BLEAPP_PERIPH;
+
 typedef struct _BleAppData {
 	BLEAPP_MODE AppMode;
 	int AppRole;
