@@ -56,8 +56,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// Structure defining humidity sensor data
 typedef struct __HumiditySensor_Data {
 	uint64_t Timestamp;		//!< Time stamp count in usec
-	uint32_t Pressure;		//!< Barometric pressure in Pa no decimal
-	int16_t  Temperature;	//!< Temperature in degree C, 2 decimals fixed point
 	uint16_t Humidity;		//!< Relative humidity in %, 2 decimals fixed point
 } HUMISENSOR_DATA;
 
@@ -110,24 +108,22 @@ public:
 	virtual bool Init(const HUMISENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
 
 	/**
-	 * @brief	Read TPH data (require implementation).
+	 * @brief	Read current data.
 	 *
-	 * Read TPH value from device if available. If not return previous data.
+	 * Read current value that was updated by UpdateData().
 	 *
-	 * @param 	TphData : Reference buffer to be filled with measured data
+	 * @param 	Data : Reference buffer to be filled with measured data
 	 *
-	 * @return
-	 * 			- true	: If new data is returned
-	 * 			- false	: If old data is returned
+	 * @return	None
 	 */
-	virtual bool Read(HUMISENSOR_DATA &TphData) = 0;
+	virtual void Read(HUMISENSOR_DATA &Data) { Data = vData; }
 
 	/**
-	 * @brief	Read relative humidity (require implementation).
+	 * @brief	Read relative humidity
 	 *
 	 * @return	Relative humidity in %
 	 */
-	virtual float ReadHumidity() = 0;
+	virtual float ReadHumidity() { return (float)vData.Humidity / 100.0; }
 
 protected:
 

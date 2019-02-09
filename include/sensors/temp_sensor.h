@@ -106,17 +106,15 @@ public:
 	virtual bool Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
 
 	/**
-	 * @brief	Read temperature data (require implementation).
+	 * @brief	Read temperature data.
 	 *
-	 * Read temperature value from device if available. If not return previous data.
+	 * Read temperature value from the last UpdateData
 	 *
 	 * @param 	Buff : Reference buffer to be filled with measured data
 	 *
-	 * @return
-	 * 			- true	: If new data is returned
-	 * 			- false	: If old data is returned
+	 * @return	None
 	 */
-	virtual bool Read(TEMPSENSOR_DATA &Data) { Data = vData; return true; }
+	virtual void Read(TEMPSENSOR_DATA &Data) { Data = vData; }
 
 	/**
 	 * @brief	Read temperature (require implementation).

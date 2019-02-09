@@ -166,6 +166,9 @@ bool TphBme280::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	vCalibData.dig_H5 = ((int16_t)cd[5] << 4) | (cd[4] >> 4);
 	vCalibData.dig_H6 = cd[6];
 
+	regaddr = BME280_REG_CTRL_MEAS;
+	Read(&regaddr, 1, &vCtrlReg, 1);
+
 	return true;
 }
 
@@ -201,12 +204,6 @@ bool TphBme280::Init(const HUMISENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 		d |= (CfgData.FilterCoeff << BME280_REG_CONFIG_FILTER_BITPOS) & BME280_REG_CONFIG_FILTER_MASK;
 		Write((uint8_t*)&regaddr, 1, &d, 1);
 
-		regaddr = BME280_REG_CTRL_MEAS;
-		Read(&regaddr, 1, &vCtrlReg, 1);
-
-		vCtrlReg |= (CfgData.PresOvrs << BME280_REG_CTRL_MEAS_OSRS_P_BITPOS) & BME280_REG_CTRL_MEAS_OSRS_P_MASK;
-		vCtrlReg |= (CfgData.TempOvrs << BME280_REG_CTRL_MEAS_OSRS_T_BITPOS) & BME280_REG_CTRL_MEAS_OSRS_T_MASK;
-		Write((uint8_t*)&regaddr, 1, &vCtrlReg, 1);
 
 		Mode(CfgData.OpMode, CfgData.Freq);
 
@@ -220,12 +217,21 @@ bool TphBme280::Init(const HUMISENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 
 bool TphBme280::Init(const PRESSSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
+	vCtrlReg |= (CfgData.PresOvrs << BME280_REG_CTRL_MEAS_OSRS_P_BITPOS) & BME280_REG_CTRL_MEAS_OSRS_P_MASK;
+
+	uint8_t regaddr = BME280_REG_CTRL_MEAS;
+	Write((uint8_t*)&regaddr, 1, &vCtrlReg, 1);
 
 	return true;
 }
 
 bool TphBme280::Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
+	vCtrlReg |= (CfgData.TempOvrs << BME280_REG_CTRL_MEAS_OSRS_T_BITPOS) & BME280_REG_CTRL_MEAS_OSRS_T_MASK;
+
+	uint8_t regaddr = BME280_REG_CTRL_MEAS;
+	Write((uint8_t*)&regaddr, 1, &vCtrlReg, 1);
+
 	return true;
 }
 
@@ -357,7 +363,7 @@ bool TphBme280::StartSampling()
 	}
 	else
 	{
-		TempSensor::vSampleTime += vSampPeriod;
+		TempSensor::vSampleTime += TempSensor::vSampPeriod;
 	}
 
 	return true;
@@ -403,9 +409,9 @@ bool TphBme280::UpdateData()
 			int32_t h = (((uint32_t)d[6] << 8) | d[7]);
 
 			TempSensor::vData.Temperature = CompenTemp(t);
-			PressSensor::vhData.Pressure = CompenPress(p);
-			HumiSensor::Data.Humidity = CompenHum(h);
-			TempSensor::vData.Timestamp = vSampleTime;
+			PressSensor::vData.Pressure = CompenPress(p);
+			HumiSensor::vData.Humidity = CompenHum(h);
+			TempSensor::vData.Timestamp = TempSensor::vSampleTime;
 
 			TempSensor::vSampleCnt++;
 
@@ -414,33 +420,6 @@ bool TphBme280::UpdateData()
 			retval = true;
 		}
 	}
-
-	return retval;
-}
-
-bool TphBme280::Read(HUMISENSOR_DATA &Data)
-{
-	bool retval = UpdateData();
-
-	memcpy(&Data, &HumiSensor::vData, sizeof(HUMISENSOR_DATA));
-
-	return retval;
-}
-
-bool TphBme280::Read(PRESSSENSOR_DATA &Data)
-{
-	bool retval = UpdateData();
-
-	memcpy(&Data, &PressSensor::vData, sizeof(PRESSSENSOR_DATA));
-
-	return retval;
-}
-
-bool TphBme280::Read(TEMPSENSOR_DATA &Data)
-{
-	bool retval = UpdateData();
-
-	memcpy(&Data, &TempSensor::vData, sizeof(TEMPSENSOR_DATA));
 
 	return retval;
 }

@@ -106,24 +106,22 @@ public:
 	virtual bool Init(const PRESSSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL) = 0;
 
 	/**
-	 * @brief	Read pressure data (require implementation).
+	 * @brief	Read pressure data.
 	 *
 	 * Read pressure value from device if available. If not return previous data.
 	 *
 	 * @param	Buff : Reference buffer to be filled with measured data
 	 *
-	 * @return
-	 * 			- true	: If new data is returned
-	 * 			- false	: If old data is returned
+	 * @return	None
 	 */
-	virtual bool Read(PRESSSENSOR_DATA &Buff) = 0;
+	virtual void Read(PRESSSENSOR_DATA &Data) { Data = vData; }
 
 	/**
-	 * @brief	Read pressure (require implementation).
+	 * @brief	Read pressure).
 	 *
-	 * @return	Barometric pressure in Pascal
+	 * @return	Barometric pressure in KPascal
 	 */
-	virtual float ReadPressure() = 0;
+	virtual float ReadPressure() { return (float)vData.Pressure / 1000.0; }
 
 protected:
 

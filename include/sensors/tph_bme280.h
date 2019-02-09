@@ -63,7 +63,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "coredev/iopincfg.h"
-//#include "sensors/tph_sensor.h"
 #include "sensors/temp_sensor.h"
 #include "sensors/press_sensor.h"
 #include "sensors/humi_sensor.h"
@@ -187,7 +186,6 @@ public:
 	 * 			- true	: Success
 	 * 			- false	: Failed
 	 */
-//	bool Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
 	bool Init(const HUMISENSOR_CFG &CfgData, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
 	bool Init(const PRESSSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
 	bool Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
@@ -254,9 +252,9 @@ public:
 	 * @return	true - new data
 	 * 			false - old data
 	 */
-	bool Read(HUMISENSOR_DATA &TphData);
-	bool Read(PRESSSENSOR_DATA &TphData);
-	bool Read(TEMPSENSOR_DATA &TphData);
+	void Read(HUMISENSOR_DATA &Data) { HumiSensor::Read(Data); }
+	void Read(PRESSSENSOR_DATA &Data) { PressSensor::Read(Data); }
+	void Read(TEMPSENSOR_DATA &Data) { TempSensor::Read(Data); }
 /*
 	float ReadTemperature() {
 		TPHSENSOR_DATA tphdata;

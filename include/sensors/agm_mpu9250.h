@@ -492,7 +492,7 @@ public:
 	virtual bool Read(GYROSENSOR_DATA &Data) { return GyroSensor::Read(Data); }
 	virtual bool Read(MAGSENSOR_RAWDATA &Data) { return MagSensor::Read(Data); }
 	virtual bool Read(MAGSENSOR_DATA &Data) { return MagSensor::Read(Data); }
-	virtual bool Read(TEMPSENSOR_DATA &Data) { return TempSensor::Read(Data); }
+	virtual void Read(TEMPSENSOR_DATA &Data) { return TempSensor::Read(Data); }
 
 	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
