@@ -198,18 +198,8 @@ bool TphBme280::Init(const HUMISENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 		regaddr = BME280_REG_CTRL_HUM;
 		Write((uint8_t*)&regaddr, 1, &d, 1);
 
-		regaddr = BME280_REG_CONFIG;
-		Read((uint8_t*)&regaddr, 1, &d, 1);
-
-		d |= (CfgData.FilterCoeff << BME280_REG_CONFIG_FILTER_BITPOS) & BME280_REG_CONFIG_FILTER_MASK;
-		Write((uint8_t*)&regaddr, 1, &d, 1);
-
-
-		Mode(CfgData.OpMode, CfgData.Freq);
-
 		//State(SENSOR_STATE_SLEEP);
 
-		usDelay(10000);
 	}
 
 	return found;
@@ -217,6 +207,7 @@ bool TphBme280::Init(const HUMISENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 
 bool TphBme280::Init(const PRESSSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
+	vCtrlReg &= ~BME280_REG_CTRL_MEAS_OSRS_P_MASK;
 	vCtrlReg |= (CfgData.PresOvrs << BME280_REG_CTRL_MEAS_OSRS_P_BITPOS) & BME280_REG_CTRL_MEAS_OSRS_P_MASK;
 
 	uint8_t regaddr = BME280_REG_CTRL_MEAS;
@@ -227,10 +218,22 @@ bool TphBme280::Init(const PRESSSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 
 bool TphBme280::Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
+	uint8_t d;
+	uint8_t regaddr = BME280_REG_CONFIG;
+
+	Read((uint8_t*)&regaddr, 1, &d, 1);
+
+	d &= ~BME280_REG_CONFIG_FILTER_MASK;
+	d |= (CfgData.FilterCoeff << BME280_REG_CONFIG_FILTER_BITPOS) & BME280_REG_CONFIG_FILTER_MASK;
+	Write((uint8_t*)&regaddr, 1, &d, 1);
+
+	vCtrlReg &= ~BME280_REG_CTRL_MEAS_OSRS_T_MASK;
 	vCtrlReg |= (CfgData.TempOvrs << BME280_REG_CTRL_MEAS_OSRS_T_BITPOS) & BME280_REG_CTRL_MEAS_OSRS_T_MASK;
 
-	uint8_t regaddr = BME280_REG_CTRL_MEAS;
+	regaddr = BME280_REG_CTRL_MEAS;
 	Write((uint8_t*)&regaddr, 1, &vCtrlReg, 1);
+
+	Mode(CfgData.OpMode, CfgData.Freq);
 
 	return true;
 }
@@ -410,8 +413,9 @@ bool TphBme280::UpdateData()
 
 			TempSensor::vData.Temperature = CompenTemp(t);
 			PressSensor::vData.Pressure = CompenPress(p);
+			PressSensor::vData.Timestamp = TempSensor::vSampleTime;
 			HumiSensor::vData.Humidity = CompenHum(h);
-			TempSensor::vData.Timestamp = TempSensor::vSampleTime;
+			HumiSensor::vData.Timestamp = TempSensor::vSampleTime;
 
 			TempSensor::vSampleCnt++;
 
@@ -426,7 +430,7 @@ bool TphBme280::UpdateData()
 
 int TphBme280::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
 {
-	if (vbSpi == true)
+	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
 		*pCmdAddr |= 0x80;
 	}
@@ -436,7 +440,7 @@ int TphBme280::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffL
 
 int TphBme280::Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen)
 {
-	if (vbSpi == true)
+	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
 		*pCmdAddr &= 0x7F;
 	}

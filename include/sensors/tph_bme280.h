@@ -89,6 +89,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define BME280_REG_CONFIG_FILTER_BITPOS		2
 #define BME280_REG_CONFIG_FILTER_MASK		(7 << BME280_REG_CONFIG_FILTER_BITPOS)
+#define BME280_REG_CONFIG_STANDBY_TIME_MASK	(7<<5)
 
 #define BME280_REG_CTRL_MEAS			0xF4
 
@@ -166,7 +167,7 @@ typedef struct {
 /// - Offset temperature coefficient ±1.5 Pa/K, equiv. to ±12.6 cm at 1 °C temperature change
 class TphBme280 : public HumiSensor, public PressSensor, public TempSensor { //TphSensor {
 public:
-	TphBme280() : vCalibTFine(0), vbSpi(false) {}
+	TphBme280() : vCalibTFine(0) {}
 	virtual ~TphBme280() {}
 
 	/**
@@ -289,7 +290,7 @@ private:
 	int32_t vCalibTFine;	// For internal calibration use only
 	BME280_CALIB_DATA vCalibData;
 	uint8_t vCtrlReg;
-	bool vbSpi;
+//	bool vbSpi;
 	bool vbInitialized;
 };
 
