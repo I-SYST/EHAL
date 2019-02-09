@@ -96,6 +96,11 @@
 			<locationURI>PARENT-3-PROJECT_LOC/include/idelay.h</locationURI>
 		</link>
 		<link>
+			<name>include/imu</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>include/intelhex.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/intelhex.h</locationURI>
@@ -321,6 +326,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_lpcxx.c</locationURI>
 		</link>
 		<link>
+			<name>src/imu</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/intelhex.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/intelhex.c</locationURI>
@@ -451,6 +461,31 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/uart.h</locationURI>
 		</link>
 		<link>
+			<name>include/imu/icm20948_img_dmp3a.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/icm20948_img_dmp3a.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/imu.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/imu_mpu9250.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/imu_mpu9250.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/mpu9250_dmpkey.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/mpu9250_dmpkey.h</locationURI>
+		</link>
+		<link>
+			<name>include/imu/mpu9250_dmpmap.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/imu/mpu9250_dmpmap.h</locationURI>
+		</link>
+		<link>
 			<name>include/miscdev/ledmx.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmx.h</locationURI>
@@ -461,6 +496,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/ledmxfont.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/a_adxl362.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/a_adxl362.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/accel_sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/accel_sensor.h</locationURI>
@@ -469,6 +509,11 @@
 			<name>include/sensors/ag_bmi160.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/ag_bmi160.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/agm_icm20948.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_icm20948.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/agm_lsm9ds1.h</name>
@@ -496,9 +541,19 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gyro_sensor.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/humi_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/humi_sensor.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/mag_sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/mag_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/press_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/press_sensor.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/pth_bme280.h</name>
@@ -519,6 +574,11 @@
 			<name>include/sensors/sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/temp_sensor.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/temp_sensor.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/tphg_bme680.h</name>
@@ -586,6 +646,16 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/uart.c</locationURI>
 		</link>
 		<link>
+			<name>src/imu/imu.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/imu/imu_mpu9250.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_mpu9250.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/miscdev/ledmx.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmx.c</locationURI>
@@ -594,6 +664,21 @@
 			<name>src/miscdev/ledmxfont.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/ledmxfont.c</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/a_adxl362.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/a_adxl362.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/ag_bmi160.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/ag_bmi160.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/agm_icm20948.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/agm_icm20948.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sensors/agm_mpu9250.cpp</name>
