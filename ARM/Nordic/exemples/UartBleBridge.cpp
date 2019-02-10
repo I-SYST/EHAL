@@ -1,11 +1,15 @@
-/*--------------------------------------------------------------------------
-File   : UartBleDemo.cpp
+/**-------------------------------------------------------------------------
+@file	UartBleBridge.cpp
 
-Author : Hoang Nguyen Hoan          Feb. 4, 2017
+@brief	Uart BLE streaming demo
 
-Desc   : Uart BLE demo
-		 This application demo shows UART Rx/Tx over BLE custom service
-		 using EHAL library.
+This application demo shows UART Rx/Tx streaming over BLE custom service
+using EHAL library.
+
+@author	Hoang Nguyen Hoan
+@date	Feb. 4, 2017
+
+@license
 
 Copyright (c) 2016, I-SYST inc., all rights reserved
 
@@ -29,9 +33,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 
 #include "app_util_platform.h"
@@ -41,11 +42,13 @@ Modified by          Date              Description
 #include "ble_app.h"
 #include "ble_service.h"
 #include "ble_intrf.h"
-#include "bluetooth/blesrvc_blueio.h"
+#include "bluetooth/blueio_blesrvc.h"
 #include "blueio_board.h"
 #include "coredev/uart.h"
 #include "custom_board.h"
 #include "coredev/iopincfg.h"
+
+#include "board.h"
 
 #define DEVICE_NAME                     "UARTBridge"                            /**< Name of device. Will be included in the advertising data. */
 
@@ -69,14 +72,14 @@ Modified by          Date              Description
 #define BLE_UART_UUID_BASE			NUS_BASE_UUID
 
 #define BLE_UART_UUID_SERVICE		BLE_UUID_NUS_SERVICE			/**< The UUID of the Nordic UART Service. */
-#define BLE_UART_UUID_TX_CHAR		BLE_UUID_NUS_TX_CHARACTERISTIC	/**< The UUID of the TX Characteristic. */
-#define BLE_UART_UUID_RX_CHAR		BLE_UUID_NUS_RX_CHARACTERISTIC	/**< The UUID of the RX Characteristic. */
+#define BLE_UART_UUID_TX_CHAR		BLE_UUID_NUS_RX_CHARACTERISTIC	/**< The UUID of the TX Characteristic. */
+#define BLE_UART_UUID_RX_CHAR		BLE_UUID_NUS_TX_CHARACTERISTIC	/**< The UUID of the RX Characteristic. */
 #else
 #define BLE_UART_UUID_BASE			BLUEIO_UUID_BASE
 
-#define BLE_UART_UUID_SERVICE		BLUEIO_UUID_SERVICE		//!< BlueIO default service
-#define BLE_UART_UUID_TX_CHAR		BLUEIO_UUID_RDCHAR		//!< Data characteristic
-#define BLE_UART_UUID_RX_CHAR		BLUEIO_UUID_WRCHAR		//!< Command control characteristic
+#define BLE_UART_UUID_SERVICE		BLUEIO_UUID_UART_SERVICE		//!< BlueIO default service
+#define BLE_UART_UUID_TX_CHAR		BLUEIO_UUID_UART_RX_CHAR		//!< Data characteristic
+#define BLE_UART_UUID_RX_CHAR		BLUEIO_UUID_UART_TX_CHAR		//!< Command control characteristic
 #endif
 
 int BleIntrfEvtCallback(DEVINTRF *pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer, int BufferLen);
@@ -150,43 +153,38 @@ const BLEAPP_DEVDESC s_UartBleDevDesc {
 };
 
 const BLEAPP_CFG s_BleAppCfg = {
-	{ // Clock config nrf_clock_lf_cfg_t
 #ifdef IMM_NRF51822
-		NRF_CLOCK_LF_SRC_RC,	// Source RC
-		1, 1, 0
+		.ClkCfg = { NRF_CLOCK_LF_SRC_RC, 1, 1, 0},
 #else
-		NRF_CLOCK_LF_SRC_XTAL,	// Source 32KHz XTAL
-		0, 0, NRF_CLOCK_LF_XTAL_ACCURACY_20_PPM
+		.ClkCfg = { NRF_CLOCK_LF_SRC_XTAL, 0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM},
 #endif
-
-	},
-	0, 						// Number of central link
-	1, 						// Number of peripheral link
-	BLEAPP_MODE_APPSCHED,   // Use scheduler
-	DEVICE_NAME,                 // Device name
-	ISYST_BLUETOOTH_ID,     // PnP Bluetooth/USB vendor id
-	1,                      // PnP Product ID
-	0,						// Pnp prod version
-	true,					// Enable device information service (DIS)
-	&s_UartBleDevDesc,
-	g_ManData,              // Manufacture specific data to advertise
-	sizeof(g_ManData),      // Length of manufacture specific data
-	NULL,
-	0,
-	BLEAPP_SECTYPE_NONE,    // Secure connection type
-	BLEAPP_SECEXCHG_NONE,   // Security key exchange
-	NULL,      				// Service uuids to advertise
-	0, 						// Total number of uuids
-	APP_ADV_INTERVAL,       // Advertising interval in msec
-	APP_ADV_TIMEOUT,		// Advertising timeout
-	0,                      // Slow advertising interval, if > 0, fallback to
-							// slow interval on adv timeout and advertise until connected
-	MIN_CONN_INTERVAL,
-	MAX_CONN_INTERVAL,
-	BLUEIO_CONNECT_LED_PORT,// Led port nuber
-	BLUEIO_CONNECT_LED_PIN, // Led pin number
-	0,						// Tx power
-	NULL					// RTOS Softdevice handler
+	.CentLinkCount = 0, 				// Number of central link
+	.PeriLinkCount = 1, 				// Number of peripheral link
+	.AppMode = BLEAPP_MODE_APPSCHED,	// Use scheduler
+	.pDevName = DEVICE_NAME,			// Device name
+	.VendorID = ISYST_BLUETOOTH_ID,		// PnP Bluetooth/USB vendor id
+	.ProductId = 1,						// PnP Product ID
+	.ProductVer = 0,					// Pnp prod version
+	.bEnDevInfoService = true,			// Enable device information service (DIS)
+	.pDevDesc = &s_UartBleDevDesc,
+	.pAdvManData = g_ManData,			// Manufacture specific data to advertise
+	.AdvManDataLen = sizeof(g_ManData),	// Length of manufacture specific data
+	.pSrManData = NULL,
+	.SrManDataLen = 0,
+	.SecType = BLEAPP_SECTYPE_NONE,    // Secure connection type
+	.SecExchg = BLEAPP_SECEXCHG_NONE,	// Security key exchange
+	.pAdvUuids = NULL,      			// Service uuids to advertise
+	.NbAdvUuid = 0, 					// Total number of uuids
+	.AdvInterval = APP_ADV_INTERVAL,	// Advertising interval in msec
+	.AdvTimeout = APP_ADV_TIMEOUT,		// Advertising timeout in sec
+	.AdvSlowInterval = 0,				// Slow advertising interval, if > 0, fallback to
+										// slow interval on adv timeout and advertise until connected
+	.ConnIntervalMin = MIN_CONN_INTERVAL,
+	.ConnIntervalMax = MAX_CONN_INTERVAL,
+	.ConnLedPort = BLUEIO_CONNECT_LED_PORT,// Led port nuber
+	.ConnLedPin = BLUEIO_CONNECT_LED_PIN,// Led pin number
+	.TxPower = 0,						// Tx power
+	.SDEvtHandler = NULL				// RTOS Softdevice handler
 };
 
 static const BLEINTRF_CFG s_BleInrfCfg = {
@@ -207,29 +205,40 @@ int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buffe
 
 // UART configuration data
 
-static IOPINCFG s_UartPins[] = {
-	{BLUEIO_UART_RX_PORT, BLUEIO_UART_RX_PIN, BLUEIO_UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RX
-	{BLUEIO_UART_TX_PORT, BLUEIO_UART_TX_PIN, BLUEIO_UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// TX
-	{BLUEIO_UART_CTS_PORT, BLUEIO_UART_CTS_PIN, BLUEIO_UART_CTS_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// CTS
-	{BLUEIO_UART_RTS_PORT, BLUEIO_UART_RTS_PIN, BLUEIO_UART_RTS_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},// RTS
+#define UARTFIFOSIZE			CFIFO_MEMSIZE(256)
+
+static uint8_t s_UartRxFifo[UARTFIFOSIZE];
+static uint8_t s_UartTxFifo[UARTFIFOSIZE];
+
+
+static const IOPINCFG s_UartPins[] = {
+	{UART_RX_PORT, UART_RX_PIN, UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},		// RX
+	{UART_TX_PORT, UART_TX_PIN, UART_TX_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},		// TX
+	{UART_CTS_PORT, UART_CTS_PIN, UART_CTS_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// CTS
+	{UART_RTS_PORT, UART_RTS_PIN, UART_RTS_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// RTS
 };
 
+/// UART configuration
 const UARTCFG g_UartCfg = {
-	0,
-	s_UartPins,
-	sizeof(s_UartPins) / sizeof(IOPINCFG),
-	1000000,
-	8,
-	UART_PARITY_NONE,
-	1,	// Stop bit
-	UART_FLWCTRL_NONE,
-	true,
-	APP_IRQ_PRIORITY_LOW,
-	nRFUartEvthandler,
-	false,
+	.DevNo = 0,							// Device number zero based
+	.pIoMap = s_UartPins,				// UART assigned pins
+	.IoMapLen = sizeof(s_UartPins) / sizeof(IOPINCFG),	// Total number of UART pins used
+	.Rate = 1000000,						// Baudrate
+	.DataBits = 8,						// Data bits
+	.Parity = UART_PARITY_NONE,			// Parity
+	.StopBits = 1,						// Stop bit
+	.FlowControl = UART_FLWCTRL_NONE,	// Flow control
+	.bIntMode = true,					// Interrupt mode
+	.IntPrio = APP_IRQ_PRIORITY_LOW,	// Interrupt priority
+	.EvtCallback = nRFUartEvthandler,	// UART event handler
+	.bFifoBlocking = true,				// Blocking FIFO
+	.RxMemSize = UARTFIFOSIZE,
+	.pRxMem = s_UartRxFifo,
+	.TxMemSize = UARTFIFOSIZE,
+	.pTxMem = s_UartTxFifo,
 };
 
-// UART object instance
+/// UART object instance
 UART g_Uart;
 
 int g_DelayCnt = 0;

@@ -54,6 +54,10 @@ Modified by          Date              Description
 #define BLUEIO_LED3_PIN						28
 #define BLUEIO_LED3_PINOP					0
 
+#define BLUEIO_LED4_PORT					0
+#define BLUEIO_LED4_PIN						27
+#define BLUEIO_LED4_PINOP					0
+
 // Buttons
 #define BLUEIO_BUT1_PORT					0
 #define BLUEIO_BUT1_PIN						2
