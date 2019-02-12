@@ -184,9 +184,9 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 		//s_nRF51RxTimeOutCnt = 0;
 		uint8_t *d;
 
-		pDev->pReg->EVENTS_RXDRDY = 0;
 		cnt = 0;
 		do {
+			pDev->pReg->EVENTS_RXDRDY = 0;
 			pDev->pUartDev->bRxReady = false;
 
 			d = CFifoPut(pDev->pUartDev->hRxFifo);
