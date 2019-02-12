@@ -600,6 +600,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             break;
 
         case BLE_GAP_EVT_LESC_DHKEY_REQUEST:
+        //	 printf("BLE_GAP_EVT_LESC_DHKEY_REQUEST %x\r\n", role);
         //    NRF_LOG_INFO("%s: BLE_GAP_EVT_LESC_DHKEY_REQUEST\r\n", nrf_log_push(roles_str[role]));
 #if NRF_SD_BLE_API_VERSION <= 3
             static nrf_crypto_key_t peer_pk;
@@ -632,13 +633,13 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             break;
 
          case BLE_GAP_EVT_AUTH_STATUS:
-        //     NRF_LOG_INFO("%s: BLE_GAP_EVT_AUTH_STATUS: status=0x%x bond=0x%x lv4: %d kdist_own:0x%x kdist_peer:0x%x\r\n",
-          //                nrf_log_push(roles_str[role]),
-            //              p_ble_evt->evt.gap_evt.params.auth_status.auth_status,
-              //            p_ble_evt->evt.gap_evt.params.auth_status.bonded,
-                //          p_ble_evt->evt.gap_evt.params.auth_status.sm1_levels.lv4,
-                  //        *((uint8_t *)&p_ble_evt->evt.gap_evt.params.auth_status.kdist_own),
-                    //      *((uint8_t *)&p_ble_evt->evt.gap_evt.params.auth_status.kdist_peer));
+/*             printf("%x : BLE_GAP_EVT_AUTH_STATUS: status=0x%x bond=0x%x lv4: %d kdist_own:0x%x kdist_peer:0x%x\r\n",
+                          role,
+                          p_ble_evt->evt.gap_evt.params.auth_status.auth_status,
+                          p_ble_evt->evt.gap_evt.params.auth_status.bonded,
+                          p_ble_evt->evt.gap_evt.params.auth_status.sm1_levels.lv4,
+                          *((uint8_t *)&p_ble_evt->evt.gap_evt.params.auth_status.kdist_own),
+                          *((uint8_t *)&p_ble_evt->evt.gap_evt.params.auth_status.kdist_peer));*/
             break;
 
 #if (NRF_SD_BLE_API_VERSION >= 3)
@@ -1015,7 +1016,10 @@ void BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int Sr
 
 		memcpy(g_BleAppData.ManufData.data.p_data, pAdvData, l);
 
-		err = ble_advdata_encode(&g_BleAppData.AdvData, g_AdvInstance.adv_data.adv_data.p_data, &g_AdvInstance.adv_data.adv_data.len);
+		g_BleAppData.ManufData.data.size = l;
+        g_AdvInstance.adv_data.adv_data.len = BLE_GAP_ADV_SET_DATA_SIZE_MAX;
+
+        err = ble_advdata_encode(&g_BleAppData.AdvData, g_AdvInstance.adv_data.adv_data.p_data, &g_AdvInstance.adv_data.adv_data.len);
 		APP_ERROR_CHECK(err);
 
 	}
@@ -1025,6 +1029,9 @@ void BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int Sr
 		int l = min(SrLen, BLE_GAP_ADV_SET_DATA_SIZE_MAX);
 
 		memcpy(g_BleAppData.SRManufData.data.p_data, pSrData, l);
+
+		g_BleAppData.SRManufData.data.size = l;
+		g_AdvInstance.adv_data.scan_rsp_data.len = BLE_GAP_ADV_SET_DATA_SIZE_MAX;
 
 		uint32_t err = ble_advdata_encode(&g_BleAppData.SrData, g_AdvInstance.adv_data.scan_rsp_data.p_data,
 										 &g_AdvInstance.adv_data.scan_rsp_data.len);
@@ -1506,6 +1513,14 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 	if (pBleAppCfg->PeriLinkCount > 0 && pBleAppCfg->AdvInterval > 0)
 	{
 		g_BleAppData.AppRole |= BLEAPP_ROLE_PERIPHERAL;
+
+		if (pBleAppCfg->pDevName != NULL)
+	    {
+	        err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
+	                                          (const uint8_t *) pBleAppCfg->pDevName,
+	                                          strlen(pBleAppCfg->pDevName));
+	        APP_ERROR_CHECK(err_code);
+	    }
 	}
 
     if (pBleAppCfg->AppMode != BLEAPP_MODE_NOCONNECT)
@@ -1523,14 +1538,6 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     BleAppGattInit();
 
     BleAppInitUserData();
-
-    if (pBleAppCfg->pDevName != NULL)
-    {
-        err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
-                                          (const uint8_t *) pBleAppCfg->pDevName,
-                                          strlen(pBleAppCfg->pDevName));
-        APP_ERROR_CHECK(err_code);
-    }
 
 	BleAppPeerMngrInit(pBleAppCfg->SecType, pBleAppCfg->SecExchg, bEraseBond);
 
@@ -1600,6 +1607,7 @@ void BleAppRun()
 			{
 				app_sched_execute();
 			}
+			nrf_ble_lesc_request_handler();
 			sd_app_evt_wait();
 		}
     }
