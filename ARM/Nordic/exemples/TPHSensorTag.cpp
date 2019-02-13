@@ -378,13 +378,13 @@ void ReadPTHData()
 	g_TphSensor.Read(data);
 
 
-
-	if (g_TphSensor.DeviceID() == BME680_ID)// && (gascnt & 0x3) == 0)
+/*
+	if (g_TphSensor.DeviceID() == BME680_ID && (gascnt & 0x3) == 0)
 	{
 		g_GasSensor.Read(gdata);
 	}
-
-	if ((gascnt & 0x7) == 0)
+*/
+	if ((gascnt & 0xf) == 0)
 	{
 		g_Adc.Enable();
 		g_Adc.OpenChannel(s_ChanCfg, s_NbChan);
@@ -398,11 +398,15 @@ void ReadPTHData()
 	{
 		BLEADV_MANDATA_GASSENSOR gas;
 
+		g_GasSensor.Read(gdata);
+
 		g_AdvData.Type = BLEADV_MANDATA_TYPE_GAS;
 		gas.GasRes = gdata.GasRes[gdata.MeasIdx];
 		gas.AirQIdx = gdata.AirQualIdx;
 
 		memcpy(&g_GasData, &gas, sizeof(BLEADV_MANDATA_GASSENSOR));
+
+		g_TphSensor.StartSampling();
 	}
 	else
 	{
@@ -414,7 +418,7 @@ void ReadPTHData()
 		memcpy(&g_TPHData, ((uint8_t*)&data) + sizeof(data.Timestamp), sizeof(BLEADV_MANDATA_TPHSENSOR));
 	}
 
-	g_TphSensor.StartSampling();
+//	g_TphSensor.StartSampling();
 
 	g_I2c.Disable();
 
