@@ -20,6 +20,9 @@ Library online documentation located here https://www.i-syst.com/docs/EHAL/
  
 Library source code on GitHub at https://github.com/I-SYST/EHAL 
 
+* Need to port a specific driver or MCU ? Put your request in issues. It will get done eventually. If you want to have it faster, a fee based port is available.   
+
+
 external vendors' SDK and library required :
 --- 
  

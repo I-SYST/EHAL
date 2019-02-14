@@ -395,11 +395,13 @@ public:
 	virtual void Reset();
 	virtual bool StartSampling();
 	virtual uint8_t Scale(uint8_t Value);
-	virtual bool Read(ACCELSENSOR_DATA *pData);
-	virtual bool Read(GYROSENSOR_DATA *pData);
+	virtual bool Read(ACCELSENSOR_RAWDATA &Data) { return AccelSensor::Read(Data); }
+	virtual bool Read(ACCELSENSOR_DATA &Data) { return AccelSensor::Read(Data); }
+	virtual bool Read(GYROSENSOR_RAWDATA &Data) { return GyroSensor::Read(Data); }
+	virtual bool Read(GYROSENSOR_DATA &Data) { return GyroSensor::Read(Data); }
 
 private:
-	bool InitDefault(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer);
+	bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
 	bool UpdateData();
 	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);

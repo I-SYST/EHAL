@@ -91,8 +91,13 @@ static const IOPINCFG s_SpiPins[] = {
     {SPI2_SCK_PORT, SPI2_SCK_PIN, SPI2_SCK_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
     {SPI2_MISO_PORT, SPI2_MISO_PIN, SPI2_MISO_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
     {SPI2_MOSI_PORT, SPI2_MOSI_PIN, SPI2_MOSI_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-    {BLUEIO_TAG_EVIM_IMU_CS_PORT, BLUEIO_TAG_EVIM_IMU_CS_PIN, BLUEIO_TAG_EVIM_IMU_CS_PINOP,
+#ifdef NEBLINA
+	{NEBLINA_SPI_BMI160_CS_PORT, NEBLINA_SPI_BMI160_CS_PIN, NEBLINA_SPI_BMI160_CS_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+#else
+	{BLUEIO_TAG_EVIM_IMU_CS_PORT, BLUEIO_TAG_EVIM_IMU_CS_PIN, BLUEIO_TAG_EVIM_IMU_CS_PINOP,
+     IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+#endif
 };
 
 static const SPICFG s_SpiCfg = {
@@ -172,9 +177,11 @@ ImuInvnIcm20948 g_Imu;
 AgmInvnIcm20948 g_MotSensor;
 #elif 0
 AgmIcm20948 g_MotSensor;
-#elif 1
+#elif 0
 ImuMpu9250 g_Imu;
 AgmMpu9250 g_MotSensor;
+#elif 1
+AgBmi160 g_MotSensor;
 #else
 AgmLsm9ds1 g_MotSensor;
 #endif
@@ -217,7 +224,7 @@ void ImuIntHandler(int IntNo)
 		g_DT = t - g_TPrev;
 		g_TPrev = t;
 
-		g_Imu.IntHandler();
+		//g_Imu.IntHandler();
 		//g_MotSensor.IntHandler();
 		//IOPinClear(0, 24);
 	}
@@ -257,12 +264,12 @@ bool HardwareInit()
 			res |= g_MotSensor.Init(s_GyroCfg, &g_Spi);
 			if (res == true)
 			{
-				res |= g_MotSensor.Init(s_MagCfg, &g_Spi);
+			//	res |= g_MotSensor.Init(s_MagCfg, &g_Spi);
 			}
 		}
 		if (res == true)
 		{
-			res |= g_Imu.Init(s_ImuCfg, &g_MotSensor, &g_MotSensor, &g_MotSensor);
+//			res |= g_Imu.Init(s_ImuCfg, &g_MotSensor, &g_MotSensor, &g_MotSensor);
 		}
 #endif
 	}
@@ -276,8 +283,8 @@ bool HardwareInit()
 						0, 1, 0,
 						0, 0, 1 };
 
-		g_Imu.SetAxisAlignmentMatrix(m);
-		g_Imu.Quaternion(true, 6);
+		//g_Imu.SetAxisAlignmentMatrix(m);
+		//g_Imu.Quaternion(true, 6);
 	}
 
 	//uint64_t period = g_Timer.EnableTimerTrigger(0, 1UL, TIMER_TRIG_TYPE_CONTINUOUS);
@@ -344,8 +351,8 @@ int main()
 
 		uint32_t dt = arawdata.Timestamp - prevt;
 		prevt = arawdata.Timestamp;
-		g_Imu.Read(accdata);
-		g_Imu.Read(quat);
+		//g_Imu.Read(accdata);
+		//g_Imu.Read(quat);
 
 		if (cnt-- < 0)
 		{
