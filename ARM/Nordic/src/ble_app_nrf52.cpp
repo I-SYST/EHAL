@@ -1748,10 +1748,11 @@ extern "C" void SD_EVT_IRQHandler(void)
 // We need this here in order for the Linker to keep the nrf_sdh_soc.c
 // which is require for Softdevice to function properly
 // Create section set "sdh_soc_observers".
-//NRF_SDH_STACK_OBSERVER(m_nrf_sdh_soc_evts_poll, NRF_SDH_SOC_STACK_OBSERVER_PRIO) = {
-//    .handler   = nrf_sdh_soc_evts_poll,
-//    .p_context = NULL,
-//};
+// This is needed for FSTORAGE event to work.
+NRF_SDH_STACK_OBSERVER(m_nrf_sdh_soc_evts_poll, NRF_SDH_SOC_STACK_OBSERVER_PRIO) = {
+    .handler   = nrf_sdh_soc_evts_poll,
+    .p_context = NULL,
+};
 
 #if NRF_MODULE_ENABLED(NRF_CRYPTO) && NRF_MODULE_ENABLED(NRF_CRYPTO_BACKEND_CC310)
 extern nrf_crypto_backend_info_t const cc310_backend;
