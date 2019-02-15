@@ -127,6 +127,7 @@ typedef struct _BleAppData {
 	uint16_t ConnHdl;	// BLE connection handle
 	int ConnLedPort;
 	int ConnLedPin;
+	uint8_t ConnLedActLevel;
 	int PeriphDevCnt;
 //	BLEAPP_PERIPH *pPeriphDev;
 	uint32_t (*SDEvtHandler)(void) ;
@@ -215,18 +216,32 @@ __ALIGN(4) static ble_gap_lesc_p256_pk_t    s_lesc_public_key;      /**< LESC EC
 __ALIGN(4) static ble_gap_lesc_dhkey_t      s_lesc_dh_key;          /**< LESC ECC DH Key*/
 static ble_gap_conn_sec_mode_t s_gap_conn_mode;
 
-static inline void BleConnLedOff() {
+static void BleConnLedOff() {
 	if (g_BleAppData.ConnLedPort < 0 || g_BleAppData.ConnLedPin < 0)
 		return;
 
-	IOPinSet(g_BleAppData.ConnLedPort, g_BleAppData.ConnLedPin);
+	if (g_BleAppData.ConnLedActLevel)
+	{
+	    IOPinClear(g_BleAppData.ConnLedPort, g_BleAppData.ConnLedPin);
+	}
+	else
+	{
+	    IOPinSet(g_BleAppData.ConnLedPort, g_BleAppData.ConnLedPin);
+	}
 }
 
-static inline void BleConnLedOn() {
+static void BleConnLedOn() {
 	if (g_BleAppData.ConnLedPort < 0 || g_BleAppData.ConnLedPin < 0)
 		return;
 
-	IOPinClear(g_BleAppData.ConnLedPort, g_BleAppData.ConnLedPin);
+    if (g_BleAppData.ConnLedActLevel)
+    {
+        IOPinSet(g_BleAppData.ConnLedPort, g_BleAppData.ConnLedPin);
+    }
+    else
+    {
+        IOPinClear(g_BleAppData.ConnLedPort, g_BleAppData.ConnLedPin);
+    }
 }
 
 void BleAppEnterDfu()
@@ -1456,12 +1471,14 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
 	g_BleAppData.ConnLedPort = pBleAppCfg->ConnLedPort;
 	g_BleAppData.ConnLedPin = pBleAppCfg->ConnLedPin;
+	g_BleAppData.ConnLedActLevel = pBleAppCfg->ConnLedActLevel;
 
 	if (pBleAppCfg->ConnLedPort != -1 && pBleAppCfg->ConnLedPin != -1)
     {
 		IOPinConfig(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin, 0,
 					IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
-		IOPinSet(pBleAppCfg->ConnLedPort, pBleAppCfg->ConnLedPin);
+
+		BleConnLedOff();
     }
 
 

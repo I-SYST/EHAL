@@ -275,6 +275,7 @@ public:
 		return (float)tphdata.Humidity / 100.0;
 	}
 */
+    bool UpdateData();
 
 private:
 
@@ -289,7 +290,6 @@ private:
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen) {
 		return Device::Write(pCmdAddr, CmdAddrLen, pData, DataLen);
 	}
-	bool UpdateData();
 
 	int32_t vCalibTFine;	// For internal calibration use only
 	BME280_CALIB_DATA vCalibData;
