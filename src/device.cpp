@@ -46,3 +46,54 @@ Device::Device()
 	vDevId = -1;
 }
 
+/**
+ * @brief	Read device's register/memory block.
+ *
+ * This default implementation sets bit 7 of the Cmd/Addr byte for SPI read access as most
+ * devices work this way on SPI interface. Overwrite this implementation if SPI access is different
+ *
+ * @param 	pCmdAddr 	: Buffer containing command or address to be written
+ * 						  prior reading data back
+ * @param	CmdAddrLen 	: Command buffer size
+ * @param	pBuff		: Data buffer container
+ * @param	BuffLen		: Data buffer size
+ *
+ * @return	Actual number of bytes read
+ */
+int Device::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
+{
+	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
+	{
+		// Most sensor that supports SPI have this for reading registers
+		// overload this function if different
+		*pCmdAddr |= 0x80;
+	}
+
+	return vpIntrf->Read(vDevAddr, pCmdAddr, CmdAddrLen, pBuff, BuffLen);
+}
+
+/**
+ * @brief	Write to device's register/memory block
+ *
+ * This default implementation clears bit 7 of the Cmd/Addr byte for SPI write access as most
+ * devices work this way on SPI interface.  Overwrite this implementation if SPI access is different
+ *
+ * @param 	pCmdAddr 	: Buffer containing command or address to be written
+ * 						  prior writing data back
+ * @param	CmdAddrLen 	: Command buffer size
+ * @param	pData		: Data buffer to be written to the device
+ * @param	DataLen		: Size of data
+ *
+ * @return	Actual number of bytes written
+ */
+int Device::Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen)
+{
+	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
+	{
+		// Most sensor that supports SPI have this for writing registers
+		// overload this function if different
+		*pCmdAddr &= 0x7F;
+	}
+
+	return vpIntrf->Write(vDevAddr, pCmdAddr, CmdAddrLen, pData, DataLen);
+}

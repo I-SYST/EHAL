@@ -283,8 +283,12 @@ private:
 	uint32_t CompenPress(int32_t RawPress);
 	int32_t CompenTemp(int32_t RawTemp);
 	uint32_t CompenHum(int32_t RawHum);
-	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
-	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
+	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen) {
+		return Device::Read(pCmdAddr, CmdAddrLen, pBuff, BuffLen);
+	}
+	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen) {
+		return Device::Write(pCmdAddr, CmdAddrLen, pData, DataLen);
+	}
 	bool UpdateData();
 
 	int32_t vCalibTFine;	// For internal calibration use only

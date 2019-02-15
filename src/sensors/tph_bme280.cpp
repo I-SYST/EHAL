@@ -427,23 +427,3 @@ bool TphBme280::UpdateData()
 
 	return retval;
 }
-
-int TphBme280::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
-{
-	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
-	{
-		*pCmdAddr |= 0x80;
-	}
-
-	return Device::Read(pCmdAddr, CmdAddrLen, pBuff, BuffLen);
-}
-
-int TphBme280::Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen)
-{
-	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
-	{
-		*pCmdAddr &= 0x7F;
-	}
-
-	return Device::Write(pCmdAddr, CmdAddrLen, pData, DataLen);
-}

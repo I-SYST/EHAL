@@ -137,7 +137,10 @@ public:
 	virtual uint64_t DeviceID() { return vDevId; }
 
 	/**
-	 * @brief	Read device's register/memory block
+	 * @brief	Read device's register/memory block.
+	 *
+	 * This default implementation sets bit 7 of the Cmd/Addr byte for SPI read access as most
+	 * devices work this way on SPI interface. Overwrite this implementation if SPI access is different
 	 *
 	 * @param 	pCmdAddr 	: Buffer containing command or address to be written
 	 * 						  prior reading data back
@@ -147,12 +150,13 @@ public:
 	 *
 	 * @return	Actual number of bytes read
 	 */
-	virtual int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen) {
-		return vpIntrf->Read(vDevAddr, pCmdAddr, CmdAddrLen, pBuff, BuffLen);
-	}
+	virtual int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 
 	/**
 	 * @brief	Write to device's register/memory block
+	 *
+	 * This default implementation clears bit 7 of the Cmd/Addr byte for SPI write access as most
+	 * devices work this way on SPI interface.  Overwrite this implementation if SPI access is different
 	 *
 	 * @param 	pCmdAddr 	: Buffer containing command or address to be written
 	 * 						  prior writing data back
@@ -162,9 +166,7 @@ public:
 	 *
 	 * @return	Actual number of bytes written
 	 */
-	virtual int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen) {
-		return vpIntrf->Write(vDevAddr, pCmdAddr, CmdAddrLen, pData, DataLen);
-	}
+	virtual int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
 
 	/**
 	 * @brief	Read device's 8 bits register/memory
