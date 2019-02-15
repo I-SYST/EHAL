@@ -133,8 +133,8 @@ typedef struct __BleApp_Config {
 									//!< slow interval on adv timeout and advertise until connected
 	uint32_t ConnIntervalMin;   	//!< Min. connection interval
 	uint32_t ConnIntervalMax;   	//!< Max connection interval
-	uint8_t ConnLedPort;			//!< Connection LED port number
-	uint8_t ConnLedPin;				//!< Connection LED pin number
+	int8_t ConnLedPort;			//!< Connection LED port number
+	int8_t ConnLedPin;				//!< Connection LED pin number
 	uint8_t ConnLedActLevel;        //!< Connection LED ON logic level (0: Logic low, 1: Logic high)
 	int TxPower;					//!< Tx power in dBm
 	uint32_t (*SDEvtHandler)(void); //!< Require for BLEAPP_MODE_RTOS
