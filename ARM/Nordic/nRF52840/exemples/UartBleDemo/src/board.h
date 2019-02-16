@@ -11,8 +11,30 @@
 #include "blueio_board.h"
 
 //#define NORDIC_DK
+#define UBLOX_DK
 
-#ifdef NORDIC_DK
+#ifdef UBLOX_DK
+// Ublox NINA B-301
+
+#define UART_RX_PORT		0
+#define UART_RX_PIN			23
+#define UART_RX_PINOP		1	//
+#define UART_TX_PORT		0
+#define UART_TX_PIN			22//7
+#define UART_TX_PINOP		0
+#define UART_CTS_PORT		0
+#define UART_CTS_PIN		21//12
+#define UART_CTS_PINOP		0
+#define UART_RTS_PORT		0
+#define UART_RTS_PIN		20//11
+#define UART_RTS_PINOP		0
+
+#define BUTTON1_PORT		0
+#define BUTTON1_PIN			13
+#define BUTTON2_PORT		0
+#define BUTTON2_PIN			14
+
+#elif defined(NORDIC_DK)
 // Nordic DK PCA10040 board
 
 #define UART_RX_PORT		0

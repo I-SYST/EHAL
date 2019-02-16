@@ -71,10 +71,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "timer_nrf5x.h"
 #ifdef NRF51
 #include "timer_nrf_app_timer.h"
+#else
+#include "adc_nrf52_saadc.h"
 #endif
 #include "board.h"
 #include "idelay.h"
-#include "adc_nrf52_saadc.h"
 
 #define DEVICE_NAME                     "EnvSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
@@ -165,6 +166,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	0,
 	-1,		// Led port nuber
 	-1,     // Led pin number
+	0,
 	0, 		// Tx power
 	NULL						// RTOS Softdevice handler
 };

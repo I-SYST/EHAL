@@ -11,13 +11,21 @@
 #include "blueio_board.h"
 
 //#define NORDIC_DK
-#define NEBLINA
+//#define NEBLINA
 
 #ifdef NORDIC_DK
-#define UART_TX_PIN			9//7
-#define UART_RX_PIN			11//8
-#define UART_RTS_PIN		8//11
-#define UART_CTS_PIN		10//12
+#define UART_RX_PORT		0
+#define UART_RX_PIN			8
+#define UART_RX_PINOP		1
+#define UART_TX_PORT		0
+#define UART_TX_PIN			6
+#define UART_TX_PINOP		1
+#define UART_CTS_PORT		0
+#define UART_CTS_PIN		7
+#define UART_CTS_PINOP		1
+#define UART_RTS_PORT		0
+#define UART_RTS_PIN		5
+#define UART_RTS_PINOP		1
 #elif defined(NEBLINA)
 #define UART_RX_PORT		0
 #define UART_RX_PIN			6

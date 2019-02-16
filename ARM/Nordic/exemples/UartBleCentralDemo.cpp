@@ -101,6 +101,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	MAX_CONN_INTERVAL,
 	BLUEIO_CONNECT_LED_PORT,    // Led port nuber
 	BLUEIO_CONNECT_LED_PIN,     // Led pin number
+	0,
 	0,						// Tx power
 	NULL						// RTOS Softdevice handler
 };

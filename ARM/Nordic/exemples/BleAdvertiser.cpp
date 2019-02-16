@@ -37,10 +37,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "istddef.h"
 #include "ble_app.h"
+#include "iopinctrl.h"
 
 #define DEVICE_NAME                     "Advertiser"
 
-#define APP_ADV_INTERVAL                MSEC_TO_UNITS(100, UNIT_0_625_MS)
+#define APP_ADV_INTERVAL                MSEC_TO_UNITS(500, UNIT_0_625_MS)
 #define APP_ADV_TIMEOUT_IN_SECONDS      MSEC_TO_UNITS(1000, UNIT_10_MS)
 
 uint32_t g_AdvCnt = 0;
@@ -84,6 +85,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	0,		// Max. connection interval
 	-1,		// Led port nuber
 	-1,		// Led pin number
+	0,
 	0,		// Tx power
 	NULL	// RTOS Softdevice handler
 };
