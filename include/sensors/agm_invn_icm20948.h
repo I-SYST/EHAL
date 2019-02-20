@@ -3,6 +3,8 @@
 
 @brief	Implementation of TDK ICM-20948 accel, gyro, mag sensor
 
+This implementation wrap the InvenSense SmartMotion Driver.
+
 @author	Hoang Nguyen Hoan
 @date	Dec. 24, 2018
 

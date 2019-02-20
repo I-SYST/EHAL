@@ -42,6 +42,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "device.h"
 
+/** @addtogroup Bluetooth
+  * @{
+  */
+
 #define BLEDEV_NAME_MAXLEN			20
 
 typedef struct __Ble_Dev_Cfg {
@@ -99,6 +103,7 @@ int BleDevFindCharacteristic(BLEPERIPH_DEV * const pDev, int SrvcIdx, uint16_t U
 }
 #endif
 
+/** @} end group Bluetooth */
 
 #endif // __BLE_DEV_H__
 

@@ -1,6 +1,7 @@
 /**-------------------------------------------------------------------------
 @example	uart_retarget_demo.cpp
 
+
 @brief	UART retarget demo
 
 Demo code using EHAL library to show how to remap stdio in/out over UART.

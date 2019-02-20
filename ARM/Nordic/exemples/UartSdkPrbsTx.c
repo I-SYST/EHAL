@@ -1,6 +1,7 @@
 /**-------------------------------------------------------------------------
 @example	UartSdkPrbsTx.c
 
+
 @brief	UART PRBS transmit test
 
 Demo code using Nordic nrfx_uarte to do PRBS transmit test using UART

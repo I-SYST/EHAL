@@ -1,5 +1,6 @@
 /**-------------------------------------------------------------------------
-@file	UartBleCentralDemo.cpp
+@example	UartBleCentralDemo.cpp
+
 
 @brief	Uart BLE Central demo
 

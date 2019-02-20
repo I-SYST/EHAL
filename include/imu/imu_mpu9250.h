@@ -40,6 +40,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "imu/imu.h"
 #include "sensors/agm_mpu9250.h"
 
+/** @addtogroup IMU
+  * @{
+  */
+
 class ImuMpu9250 : public Imu {
 public:
 	bool Init(const IMU_CFG &Cfg, AccelSensor * const pAccel, GyroSensor * const pGyro, MagSensor * const pMag);
@@ -144,5 +148,7 @@ private:
 	AgmMpu9250 *vpMpu;
 	int vDmpFifoLen;
 };
+
+/** @} end group IMU */
 
 #endif // __IMU_MPU9250_H__

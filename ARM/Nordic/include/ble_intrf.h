@@ -41,6 +41,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "device_intrf.h"
 #include "cfifo.h"
 
+/** @addtogroup Bluetooth
+  * @{
+  */
+
 #define BLEINTRF_TRANSBUFF_MAXLEN       256
 
 /**
@@ -145,5 +149,7 @@ bool BleIntrfInit(BLEINTRF * const pBleIntrf, const BLEINTRF_CFG *pCfg);
 #ifdef __cplusplus
 }
 #endif
+
+/** @} end group Bluetooth */
 
 #endif // __BLE_INTRF_H__

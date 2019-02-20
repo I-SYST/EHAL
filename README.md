@@ -1,7 +1,9 @@
 ![I-SYST inc.](https://www.i-syst.com/images/I-SYST_Logo180.png) 
- 
+  
+
 ![nRF5x product line](https://www.i-syst.com/images/nRF5_Products_1024.png) 
  
+  
 <p align="center"> 
  
 [Nordic nRF51 & nRF52 product line](https://www.tindie.com/stores/hnhoan/)
@@ -21,7 +23,7 @@ Library online documentation located here https://www.i-syst.com/docs/EHAL/
 Library source code on GitHub at https://github.com/I-SYST/EHAL 
 
 * Need to port a specific driver or MCU ? Put your request in issues. It will get done eventually. If you want to have it faster, a fee based port is available.   
-
+---
 
 external vendors' SDK and library required :
 --- 

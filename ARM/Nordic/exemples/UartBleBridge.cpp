@@ -1,5 +1,5 @@
 /**-------------------------------------------------------------------------
-@file	UartBleBridge.cpp
+@example	UartBleBridge.cpp
 
 @brief	Uart BLE streaming demo
 

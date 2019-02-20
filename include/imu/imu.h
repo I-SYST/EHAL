@@ -42,6 +42,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sensors/gyro_sensor.h"
 #include "sensors/mag_sensor.h"
 
+/** @addtogroup IMU
+  * @{
+  */
+
 /// IMU processing features
 //#define IMU_FEATURE_RAW_ACCEL				(1<<0)		//!< Raw accel sensor data, relevant for when sensor is known
 //#define IMU_FEATURE_RAW_GYRO				(1<<1)		//!< Raw gyr sensor data, relevant for when sensor is known
@@ -250,5 +254,6 @@ protected:
 
 #endif // __cplusplus
 
+/** @} end group IMU */
 
 #endif // __IMU_H__

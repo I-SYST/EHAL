@@ -1,6 +1,7 @@
 /**-------------------------------------------------------------------------
 @example	spi_master_slave.cpp
 
+
 @brief	This example demonstrate the use of SPI in both master and slave mode
 
 Two SPI devices are created, one in master mode and the other in slave mode.

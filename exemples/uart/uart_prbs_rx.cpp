@@ -1,10 +1,15 @@
-/*--------------------------------------------------------------------------
-File   : main.cpp
+/**-------------------------------------------------------------------------
+@example	uart_prbs_rx.cpp
 
-Author : Hoang Nguyen Hoan          Aug. 31, 2016
 
-Desc   : UART PRBS test
-		 Demo code using EHAL library to do PRBS transmit test using UART
+@brief	UART PRBS test
+
+Demo code using EHAL library to do PRBS transmit test using UART
+
+@author	Hoang Nguyen Hoan
+@date	Aug. 31, 2016
+
+@license
 
 Copyright (c) 2016, I-SYST inc., all rights reserved
 
@@ -27,9 +32,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-----------------------------------------------------------------------------
-Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 

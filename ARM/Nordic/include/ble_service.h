@@ -39,6 +39,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ble_srv_common.h"
 
+/** @addtogroup Bluetooth
+  * @{
+  */
+
 #define BLESVC_CHAR_PROP_READ			(1<<0)
 #define BLESVC_CHAR_PROP_NOTIFY			(1<<1)
 #define BLESVC_CHAR_PROP_WRITEWORESP	(1<<2)
@@ -233,6 +237,8 @@ public:
 };
 
 #endif
+
+/** @} end group Bluetooth */
 
 #endif // __BLE_SERVICE_H__
 

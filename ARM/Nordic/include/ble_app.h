@@ -42,6 +42,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "bluetooth/bleadv_mandata.h"
 
+/** @addtogroup Bluetooth
+  * @{
+  */
+
 /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
 #if (NRF_SD_BLE_API_VERSION <= 3)
    #define NRF_BLE_MAX_MTU_SIZE        GATT_MTU_SIZE_DEFAULT
@@ -229,6 +233,8 @@ bool BleAppWrite(uint16_t ConnHandle, uint16_t CharHandle, uint8_t *pData, uint1
 #ifdef __cplusplus
 }
 #endif
+
+/** @} end group Bluetooth */
 
 #endif // __BLE_APP_H__
 

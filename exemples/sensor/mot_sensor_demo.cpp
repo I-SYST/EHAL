@@ -1,5 +1,6 @@
 /**-------------------------------------------------------------------------
-@file	mot_sensor_demo.cpp
+@example	mot_sensor_demo.cpp
+
 
 @brief	Motion sensor demo
 
