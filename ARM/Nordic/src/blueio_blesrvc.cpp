@@ -85,11 +85,11 @@ static const int s_NbNUSChar = sizeof(g_NUSChars) / sizeof(BLESRVC_CHAR);
 /// Service definition
 const BLESRVC_CFG s_NUSSrvcCfg = {
 	.SecType = BLESRVC_SECTYPE_NONE,		// Secure or Open service/char
-	.UuidBase = NUS_BASE_UUID,			// Base UUID
+	.UuidBase = NUS_BASE_UUID,				// Base UUID
 	.UuidSvc = BLE_UUID_NUS_SERVICE,		// Service UUID
-	.NbChar = s_NbNUSChar,				// Total number of characteristics for the service
+	.NbChar = s_NbNUSChar,					// Total number of characteristics for the service
 	.pCharArray = g_NUSChars,				// Pointer a an array of characteristic
-	.pLongWrBuff = NULL,//g_LWrBuffer,				// pointer to user long write buffer
+	.pLongWrBuff = NULL,//g_LWrBuffer,		// pointer to user long write buffer
 	.LongWrBuffSize = 0,//sizeof(g_LWrBuffer),	// long write buffer size
 };
 
@@ -139,31 +139,32 @@ static const int s_NbUartChar = sizeof(g_UartChars) / sizeof(BLESRVC_CHAR);
 const BLESRVC_CFG s_UartSrvcCfg = {
 	.SecType = BLESRVC_SECTYPE_NONE,		// Secure or Open service/char
 	.UuidBase = BLUEIO_UUID_BASE,			// Base UUID
-	.UuidSvc = BLUEIO_UUID_UART_SERVICE,		// Service UUID
-	.NbChar = s_NbUartChar,				// Total number of characteristics for the service
+	.UuidSvc = BLUEIO_UUID_UART_SERVICE,	// Service UUID
+	.NbChar = s_NbUartChar,					// Total number of characteristics for the service
 	.pCharArray = g_UartChars,				// Pointer a an array of characteristic
-	.pLongWrBuff = NULL,//g_LWrBuffer,				// pointer to user long write buffer
+	.pLongWrBuff = NULL,//g_LWrBuffer,		// pointer to user long write buffer
 	.LongWrBuffSize = 0,//sizeof(g_LWrBuffer),	// long write buffer size
 };
 
 BLESRVC g_UartBleSrvc;
 
-static const char s_BlueIOCmdCharDescString[] = {
+/// BlueIO Control Service
+static const char s_BlueIOCtrlCmdCharDescString[] = {
 	"Command characteristic",
 };
 
-static const char s_BlueIODataCharDescString[] = {
+static const char s_BlueIOCtrlDataCharDescString[] = {
 	"Data characteristic",
 };
 
 /// Characteristic definitions
-BLESRVC_CHAR g_BlueIOChars[] = {
+BLESRVC_CHAR g_BlueIOCtrlChars[] = {
 	{
 		// Read characteristic
-		.Uuid = BLUEIO_UUID_DATACHAR,
+		.Uuid = BLUEIO_UUID_CTRL_DATACHAR,
 		.MaxDataLen = 20,
-		.Property = BLUEIO_UUID_DATACHAR_PROP,
-		.pDesc = s_BlueIODataCharDescString,		// char UTF-8 description string
+		.Property = BLUEIO_UUID_CTRL_DATACHAR_PROP,
+		.pDesc = s_BlueIOCtrlDataCharDescString,// char UTF-8 description string
 		.WrCB = NULL,						// Callback for write char, set to NULL for read char
 		.SetNotifCB = NULL,					// Callback on set notification
 		.TxCompleteCB = NULL,				// Tx completed callback
@@ -172,10 +173,10 @@ BLESRVC_CHAR g_BlueIOChars[] = {
 	},
 	{
 		// Write characteristic
-		.Uuid = BLUEIO_UUID_CMDCHAR,		// char UUID
+		.Uuid = BLUEIO_UUID_CTRL_CMDCHAR,		// char UUID
 		.MaxDataLen = 20,					// char max data length
-		.Property = BLUEIO_UUID_CMDCHAR_PROP,// char properties define by BLUEIOSVC_CHAR_PROP_...
-		.pDesc = s_BlueIOCmdCharDescString,		// char UTF-8 description string
+		.Property = BLUEIO_UUID_CTRL_CMDCHAR_PROP,// char properties define by BLUEIOSVC_CHAR_PROP_...
+		.pDesc = s_BlueIOCtrlCmdCharDescString,	// char UTF-8 description string
 		.WrCB = UartTxSrvcCallback,			// Callback for write char, set to NULL for read char
 		.SetNotifCB = NULL,					// Callback on set notification
 		.TxCompleteCB = NULL,				// Tx completed callback
@@ -184,22 +185,88 @@ BLESRVC_CHAR g_BlueIOChars[] = {
 	},
 };
 
-static const int s_NbBlueIOChar = sizeof(g_BlueIOChars) / sizeof(BLESRVC_CHAR);
+static const int s_NbBlueIOCtrlChar = sizeof(g_BlueIOCtrlChars) / sizeof(BLESRVC_CHAR);
 
 uint8_t g_LWrBuffer[512];
 
 /// Service definition
-const BLESRVC_CFG s_BlueIOSrvcCfg = {
+const BLESRVC_CFG s_BlueIOCtrlSrvcCfg = {
 	.SecType = BLESRVC_SECTYPE_NONE,		// Secure or Open service/char
 	.UuidBase = BLUEIO_UUID_BASE,			// Base UUID
-	.UuidSvc = BLUEIO_UUID_SERVICE,		// Service UUID
-	.NbChar = s_NbBlueIOChar,				// Total number of characteristics for the service
-	.pCharArray = g_BlueIOChars,				// Pointer a an array of characteristic
+	.UuidSvc = BLUEIO_UUID_CTRL_SERVICE,			// Service UUID
+	.NbChar = s_NbBlueIOCtrlChar,				// Total number of characteristics for the service
+	.pCharArray = g_BlueIOCtrlChars,			// Pointer a an array of characteristic
 	.pLongWrBuff = g_LWrBuffer,				// pointer to user long write buffer
 	.LongWrBuffSize = sizeof(g_LWrBuffer),	// long write buffer size
 };
 
-BLESRVC g_BlueIOBleSrvc;
+BLESRVC g_BlueIOCtrlSrvc;
+
+/// BlueIO I/O Service
+static const char s_BlueIOIoGpioCharDescString[] = {
+	"GPIO characteristic",
+};
+
+static const char s_BlueIOIoButCharDescString[] = {
+	"Button characteristic",
+};
+
+/// Characteristic definitions
+BLESRVC_CHAR g_BlueIOIoChars[] = {
+	{
+		// Read characteristic
+		.Uuid = BLUEIO_UUID_IO_GPIO_CHAR,
+		.MaxDataLen = 20,
+		.Property = BLUEIO_UUID_IO_GPIO_CHAR_PROP,
+		.pDesc = s_BlueIOIoGpioCharDescString,// char UTF-8 description string
+		.WrCB = NULL,						// Callback for write char, set to NULL for read char
+		.SetNotifCB = NULL,					// Callback on set notification
+		.TxCompleteCB = NULL,				// Tx completed callback
+		.pDefValue = NULL,					// pointer to char default values
+		.ValueLen = 0,						// Default value length in bytes
+	},
+	{
+		// Write characteristic
+		.Uuid = BLUEIO_UUID_IO_BUT_CHAR,		// char UUID
+		.MaxDataLen = 20,					// char max data length
+		.Property = BLUEIO_UUID_IO_BUT_CHAR_PROP,// char properties define by BLUEIOSVC_CHAR_PROP_...
+		.pDesc = s_BlueIOIoButCharDescString,	// char UTF-8 description string
+		.WrCB = UartTxSrvcCallback,			// Callback for write char, set to NULL for read char
+		.SetNotifCB = NULL,					// Callback on set notification
+		.TxCompleteCB = NULL,				// Tx completed callback
+		.pDefValue = NULL,					// pointer to char default values
+		.ValueLen = 0						// Default value length in bytes
+	},
+	{
+		// Write characteristic
+		.Uuid = BLUEIO_UUID_IO_I2C_CHAR,		// char UUID
+		.MaxDataLen = 20,					// char max data length
+		.Property = BLUEIO_UUID_IO_I2C_CHAR_PROP,// char properties define by BLUEIOSVC_CHAR_PROP_...
+		.pDesc = s_BlueIOIoButCharDescString,	// char UTF-8 description string
+		.WrCB = UartTxSrvcCallback,			// Callback for write char, set to NULL for read char
+		.SetNotifCB = NULL,					// Callback on set notification
+		.TxCompleteCB = NULL,				// Tx completed callback
+		.pDefValue = NULL,					// pointer to char default values
+		.ValueLen = 0						// Default value length in bytes
+	},
+};
+
+static const int s_NbBlueIOIoChar = sizeof(g_BlueIOIoChars) / sizeof(BLESRVC_CHAR);
+
+/// Service definition
+const BLESRVC_CFG s_BlueIOIoSrvcCfg = {
+	.SecType = BLESRVC_SECTYPE_NONE,		// Secure or Open service/char
+	.UuidBase = BLUEIO_UUID_BASE,			// Base UUID
+	.UuidSvc = BLUEIO_UUID_IO_SERVICE,			// Service UUID
+	.NbChar = s_NbBlueIOCtrlChar,				// Total number of characteristics for the service
+	.pCharArray = g_BlueIOCtrlChars,			// Pointer a an array of characteristic
+	.pLongWrBuff = NULL,				// pointer to user long write buffer
+	.LongWrBuffSize = 0,	// long write buffer size
+};
+
+BLESRVC g_BlueIOIoSrvc;
+
+
 
 #define BLUEIO_INTRF_CFIFO_MEMSIZE			CFIFO_TOTAL_MEMSIZE(6, sizeof(BLUEIO_PACKET))
 
@@ -207,7 +274,7 @@ static uint8_t g_BlueIOIntrfRxBuff[BLUEIO_INTRF_CFIFO_MEMSIZE];
 static uint8_t g_BlueIOIntrfTxBuff[BLUEIO_INTRF_CFIFO_MEMSIZE];
 
 static const BLEINTRF_CFG s_BlueIOBleIntrfCfg = {
-	.pBleSrv = &g_BlueIOBleSrvc,
+	.pBleSrv = &g_BlueIOCtrlSrvc,
 	.RxCharIdx = 1,
 	.TxCharIdx = 0,
 	.PacketSize = sizeof(BLUEIO_PACKET),
@@ -226,14 +293,71 @@ BLESRVC *GetUartSrvcInstance()
 	return &g_UartBleSrvc;
 }
 
-BLESRVC *GetBlueIOSrvcInstance()
+BLESRVC *GetBlueIOCtrlSrvcInstance()
 {
-	return &g_BlueIOBleSrvc;
+	return &g_BlueIOCtrlSrvc;
+}
+
+BLESRVC *GetBlueIOIoSrvcInstance()
+{
+	return &g_BlueIOIoSrvc;
 }
 
 BLESRVC *GetNUSSrvcInstance()
 {
 	return &g_NUSBleSrvc;
+}
+
+bool BleNUSInit(BLESRVC_WRCB WrCB, BLESRVC_SETNOTCB SetNotCB)
+{
+    uint32_t err_code;
+
+    g_NUSChars[1].SetNotifCB = SetNotCB;
+    g_NUSChars[0].WrCB = WrCB;
+
+    err_code = BleSrvcInit(&g_NUSBleSrvc, &s_NUSSrvcCfg);
+    APP_ERROR_CHECK(err_code);
+
+    return err_code;
+}
+
+bool BlueIOUartSrvcInit(BLESRVC_WRCB WrCB, BLESRVC_SETNOTCB SetNotCB)
+{
+    uint32_t err_code;
+
+    g_UartChars[0].SetNotifCB = SetNotCB;
+    g_UartChars[1].WrCB = WrCB;
+
+    err_code = BleSrvcInit(&g_UartBleSrvc, &s_UartSrvcCfg);
+    APP_ERROR_CHECK(err_code);
+
+    return err_code;
+}
+
+bool BlueIOCtrlSrvcInit(BLESRVC_WRCB WrCB, BLESRVC_SETNOTCB SetNotCB)
+{
+    uint32_t err_code;
+
+    g_BlueIOCtrlChars[0].SetNotifCB = SetNotCB;
+    g_BlueIOCtrlChars[1].WrCB = WrCB;
+
+    err_code = BleSrvcInit(&g_BlueIOCtrlSrvc, &s_BlueIOCtrlSrvcCfg);
+    APP_ERROR_CHECK(err_code);
+
+    return err_code;
+}
+
+bool BlueIOIoSrvcInit(BLESRVC_WRCB WrCB, BLESRVC_SETNOTCB SetNotCB)
+{
+    uint32_t err_code;
+
+    g_BlueIOIoChars[0].SetNotifCB = SetNotCB;
+    g_BlueIOIoChars[1].WrCB = WrCB;
+
+    err_code = BleSrvcInit(&g_BlueIOCtrlSrvc, &s_BlueIOCtrlSrvcCfg);
+    APP_ERROR_CHECK(err_code);
+
+    return err_code;
 }
 
 bool BlueIOSrvcInit(BLUEIOSRVC_CFG * const pCfg)
@@ -246,7 +370,10 @@ bool BlueIOSrvcInit(BLUEIOSRVC_CFG * const pCfg)
     err_code = BleSrvcInit(&g_UartBleSrvc, &s_UartSrvcCfg);
     APP_ERROR_CHECK(err_code);
 
-    err_code = BleSrvcInit(&g_BlueIOBleSrvc, &s_BlueIOSrvcCfg);
+    err_code = BleSrvcInit(&g_BlueIOCtrlSrvc, &s_BlueIOCtrlSrvcCfg);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = BleSrvcInit(&g_BlueIOIoSrvc, &s_BlueIOIoSrvcCfg);
     APP_ERROR_CHECK(err_code);
 
     g_BlueIOSrvcInitialized = true;
@@ -260,6 +387,7 @@ void BlueIOSrvcEvtHandler(ble_evt_t * p_ble_evt)
 	{
 		BleSrvcEvtHandler(&g_NUSBleSrvc, p_ble_evt);
 		BleSrvcEvtHandler(&g_UartBleSrvc, p_ble_evt);
-		BleSrvcEvtHandler(&g_BlueIOBleSrvc, p_ble_evt);
+		BleSrvcEvtHandler(&g_BlueIOCtrlSrvc, p_ble_evt);
+		BleSrvcEvtHandler(&g_BlueIOIoSrvc, p_ble_evt);
 	}
 }

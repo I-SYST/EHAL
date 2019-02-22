@@ -441,6 +441,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/sysstatus.c</locationURI>
 		</link>
 		<link>
+			<name>src/uart_bleintrf.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/uart_bleintrf.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/uart_retarget.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/uart_retarget.c</locationURI>
@@ -579,6 +584,11 @@
 			<name>include/miscdev/buzzer.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/buzzer.h</locationURI>
+		</link>
+		<link>
+			<name>include/miscdev/led.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/led.h</locationURI>
 		</link>
 		<link>
 			<name>include/miscdev/ledmx.h</name>
@@ -834,6 +844,11 @@
 			<name>src/miscdev/buzzer.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/buzzer.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/led.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/led.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/miscdev/ledmx.c</name>

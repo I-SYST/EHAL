@@ -40,12 +40,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "blueio_types.h"
 #include "ble_service.h"
+#include "coredev/i2c.h"
+#include "coredev/spi.h"
+
+/** @addtogroup Bluetooth
+  * @{
+  */
 
 /// Nordic custom UUID
 /// UART UUID :
 #define NUS_BASE_UUID	{ 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, \
 						  0x93, 0xF3, 0xA3, 0xB5, 0x00, 0x00, 0x40, 0x6E } /**< Used vendor specific UUID. */
+
 #define BLE_UUID_NUS_SERVICE			0x0001	/**< The UUID of the Nordic UART Service. */
+
 #define BLE_UUID_NUS_TX_CHARACTERISTIC	0x0003	/**< The UUID of the TX Characteristic. */
 #define BLE_UUID_NUS_TX_CHAR_PROP		(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN)
 #define BLE_UUID_NUS_RX_CHARACTERISTIC	0x0002	 /**< The UUID of the RX Characteristic. */
@@ -55,15 +63,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define HANDLE_LENGTH 2
 
 /**@brief   Maximum length of data (in bytes) that can be transmitted to the peer by the Nordic UART service module. */
-#if defined(NRF_SDH_BLE_GATT_MAX_MTU_SIZE) && (NRF_SDH_BLE_GATT_MAX_MTU_SIZE != 0)
-    #define BLE_NUS_MAX_DATA_LEN (NRF_SDH_BLE_GATT_MAX_MTU_SIZE - OPCODE_LENGTH - HANDLE_LENGTH)
-#else
-    #define BLE_NUS_MAX_DATA_LEN (BLE_GATT_MTU_SIZE_DEFAULT - OPCODE_LENGTH - HANDLE_LENGTH)
-    #warning NRF_SDH_BLE_GATT_MAX_MTU_SIZE is not defined.
-#endif
+//#if defined(NRF_SDH_BLE_GATT_MAX_MTU_SIZE) && (NRF_SDH_BLE_GATT_MAX_MTU_SIZE != 0)
+//    #define BLE_NUS_MAX_DATA_LEN (NRF_SDH_BLE_GATT_MAX_MTU_SIZE - OPCODE_LENGTH - HANDLE_LENGTH)
+//#else
+//    #define BLE_NUS_MAX_DATA_LEN (BLE_GATT_MTU_SIZE_DEFAULT - OPCODE_LENGTH - HANDLE_LENGTH)
+//    #warning NRF_SDH_BLE_GATT_MAX_MTU_SIZE is not defined.
+//#endif
+#define BLE_NUSUART_MAX_DATA_LEN			20
 
-#define BLE_NUS_MAX_RX_CHAR_LEN        BLE_NUS_MAX_DATA_LEN	/**< Maximum length of the RX Characteristic (in bytes). */
-#define BLE_NUS_MAX_TX_CHAR_LEN        BLE_NUS_MAX_DATA_LEN	/**< Maximum length of the TX Characteristic (in bytes). */
+#define BLE_NUS_MAX_RX_CHAR_LEN        	BLE_NUS_MAX_DATA_LEN	/**< Maximum length of the RX Characteristic (in bytes). */
+#define BLE_NUS_MAX_TX_CHAR_LEN        	BLE_NUS_MAX_DATA_LEN	/**< Maximum length of the TX Characteristic (in bytes). */
 
 
 /// Default BlueIO custom UUID.  User should use privately generated UUID
@@ -71,19 +80,37 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLUEIO_UUID_BASE { 	0x1b, 0xc5, 0xd5, 0xa5, 0x02, 0x00, 0x74, 0xab, \
 							0xe4, 0x11, 0x7c, 0x28, 0x00, 0x00, 0x00, 0x00 }
 
-/// Default BlueIO control/data service UUID
-#define BLUEIO_UUID_SERVICE 		0x1		//!< BlueIO default service
-#define BLUEIO_UUID_DATACHAR		0x2		//!< Data characteristic
-#define BLUEIO_UUID_DATACHAR_PROP	(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN)
-#define BLUEIO_UUID_CMDCHAR			0x3		//!< Command control characteristic
-#define BLUEIO_UUID_CMDCHAR_PROP	(BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_VARLEN)
-
 /// Default BLueIO UART service UUID
-#define BLUEIO_UUID_UART_SERVICE 		0x101		//!< BlueIO Uart service
-#define BLUEIO_UUID_UART_RX_CHAR		0x102		//!< UART Rx characteristic
+#define BLUEIO_UUID_UART_SERVICE 		0x101			//!< BlueIO Uart service
+
+#define BLUEIO_UUID_UART_RX_CHAR		0x102			//!< UART Rx characteristic
 #define BLUEIO_UUID_UART_RX_CHAR_PROP	(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN)
-#define BLUEIO_UUID_UART_TX_CHAR		0x103		//!< UART Tx characteristic
+#define BLUEIO_UUID_UART_TX_CHAR		0x103			//!< UART Tx characteristic
 #define BLUEIO_UUID_UART_TX_CHAR_PROP	(BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_WRITEWORESP | BLESVC_CHAR_PROP_VARLEN)
+
+
+/// Default BlueIO control/data service UUID
+#define BLUEIO_UUID_CTRL_SERVICE		0x1				//!< BlueIO default service
+
+#define BLUEIO_UUID_CTRL_DATACHAR		0x2				//!< Data characteristic
+#define BLUEIO_UUID_CTRL_DATACHAR_PROP	(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN)
+#define BLUEIO_UUID_CTRL_CMDCHAR		0x3				//!< Command control characteristic
+#define BLUEIO_UUID_CTRL_CMDCHAR_PROP	(BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_VARLEN)
+
+#define BLUEIO_UUID_IO_SERVICE			0x201
+
+#define BLUEIO_UUID_IO_GPIO_CHAR		0x202
+#define BLUEIO_UUID_IO_GPIO_CHAR_PROP	(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN | \
+										 BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_WRITEWORESP)
+#define BLUEIO_UUID_IO_BUT_CHAR			0x203
+#define BLUEIO_UUID_IO_BUT_CHAR_PROP	(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN | \
+										 BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_WRITEWORESP)
+#define BLUEIO_UUID_IO_I2C_CHAR			0x204
+#define BLUEIO_UUID_IO_I2C_CHAR_PROP	(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN | \
+										 BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_WRITEWORESP)
+#define BLUEIO_UUID_IO_SPI_CHAR			0x204
+#define BLUEIO_UUID_IO_SPI_CHAR_PROP	(BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN | \
+										 BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_WRITEWORESP)
 
 /// BlueIO data type
 #define BLUEIO_PACKET_ID_BLECFG			0							//!< BLE configuration settings
@@ -145,28 +172,34 @@ typedef struct __Config_Cmd_Param_DevName {
 	char Name[BLE_CFG_DEVNAME_LEN_MAX];
 } CFGMD_PARAM_DEVNAME;
 
-// GPIO
-// Write data format
+/// GPIO command code
+typedef enum __Gpio_Cmd {
+	GPIOCMD_RD,			//!< Read pin
+	GPIOCMD_WR,			//!< Write pin
+	GPIOCMD_CONFIG		//!< Configure pin
+} GPIOCMD;
 
-typedef enum __Gpio_Write_Cmd {
-	GPIOWR_CMD_RD,		// Read pin
-	GPIOWR_CMD_WR,		// Write pin
-	GPIOWR_CMD_CONFIG	// Configure pin
-} GPIOWR_CMD;
+/// GPIO command parameters
+typedef struct __Gpio_Cmd_Param {
+	GPIOCMD Cmd;		//!< Command code
+	uint8_t PortNo;		//!< Port number
+	uint8_t PinNo;		//!< Pin number
+	union {				//!< Command parameter data
+		struct {	// Config data
+			IOPINDIR Dir;
+			IOPINRES Res;
+			IOPINSENSE Sense;
+		};
+		uint8_t Value;	//!< Pin value
+	};
+} GPIOCMD_PARAM;
 
-typedef struct __Gpio_Write {
-	GPIOWR_CMD 	Cmd;
-	uint8_t		PortNo;
-	uint8_t 	PinNo;
-	uint8_t 	Value;
-} GPIO_WR;
-
-// Read data format
-typedef struct __Gpio_Read {
+// GPIO return data format
+typedef struct __Gpio_Cmd_Data {
 	uint8_t	PortNo;
 	uint8_t PinNo;
 	uint8_t Value;
-} GPIO_RD;
+} GPIOCMD_DATA;
 
 // Button data format
 
@@ -179,6 +212,41 @@ typedef struct __Adc_Read {
 	uint8_t Chan;		//!< ADC channel number
 	float Value;		//!< ADC value in volts
 } ADC_RD;
+
+typedef enum __I2C_Cmd {
+	I2CCMD_RD,		// Read pin
+	I2CCMD_WR,		// Write pin
+	I2CCMD_CONFIG	// Configure pin
+} I2CCMD;
+
+typedef struct __I2C_Cmd_Param {
+	I2CCMD Cmd;
+	int DevNo;
+	union {
+		struct {
+			I2CMODE Mode;
+			int Reate;
+			uint8_t SclPortNo;
+			uint8_t SclPinNo;
+			uint8_t SdaPortNo;
+			uint8_t SdaPinNo;
+		} Cfg;
+		struct {
+			uint8_t DevAddr;
+			uint8_t RdLen;
+			uint8_t WrLen;
+			uint8_t Data[1];
+		} Wr;
+	};
+} I2CCMD_PARAM;
+
+typedef struct __I2C_Cmd_Data {
+	uint8_t DevAddr;		//!< 7 bits I2C Device address
+	uint8_t Len;			//!< Data Len
+	uint8_t Data[1];		//!< Variable array
+} I2CCMD_DATA;
+
+
 
 #pragma pack(pop)
 
@@ -198,7 +266,8 @@ typedef struct __BlueIO_Srvc_Cfg {
 extern "C" {
 #endif
 
-BLESRVC *GetBlueIOSrvcInstance();
+BLESRVC *GetBlueIOCtrlSrvcInstance();
+BLESRVC *GetBlueIOIoSrvcInstance();
 BLESRVC *GetUartSrvcInstance();
 BLESRVC *GetNUSSrvcInstance();
 bool BlueIOSrvcInit(BLUEIOSRVC_CFG * const pCfg);
@@ -207,6 +276,8 @@ void BlueIOSrvcEvtHandler(ble_evt_t * p_ble_evt);
 #ifdef __cplusplus
 }
 #endif
+
+/** @} end group Bluetooth */
 
 #endif // __BLESRVC_BLUEIO__
 

@@ -391,6 +391,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/timer_nrf_app_timer.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/uart_bleintrf.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/uart_bleintrf.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/uart_retarget.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/uart_retarget.c</locationURI>
@@ -454,6 +459,11 @@
 			<name>include/coredev/uart.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/uart.h</locationURI>
+		</link>
+		<link>
+			<name>include/miscdev/led.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/led.h</locationURI>
 		</link>
 		<link>
 			<name>include/miscdev/modem.h</name>
@@ -599,6 +609,11 @@
 			<name>src/imu/imu_mpu9250.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_mpu9250.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/led.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/led.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/miscdev/ledmx.c</name>
