@@ -101,6 +101,7 @@ public:
 	bool Init(const BLEINTRF_CFG &Cfg);
 
 	operator DEVINTRF * const () { return &vBleIntrf.DevIntrf; }	// Get device interface data
+	operator BLESRVC * const () { return vBleIntrf.pBleSrv; }
 	// Set data rate in bits/sec (Hz)
 	virtual int Rate(int DataRate) { return DeviceIntrfSetRate(&vBleIntrf.DevIntrf, DataRate); }
 	// Get current data rate in bits/sec (Hz)
