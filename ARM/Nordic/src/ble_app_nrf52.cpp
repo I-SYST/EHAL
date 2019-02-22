@@ -903,7 +903,7 @@ static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
     {
         BleCentralEvtUserHandler((ble_evt_t *)p_ble_evt);
     }
-    else
+    if (g_BleAppData.AppRole & BLEAPP_ROLE_PERIPHERAL)
     {
         BlePeriphEvtUserHandler((ble_evt_t *)p_ble_evt);
     }
