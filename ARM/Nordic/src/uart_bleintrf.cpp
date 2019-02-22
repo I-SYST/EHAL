@@ -55,13 +55,13 @@ static const char s_NUSTxCharDescString[] = {
 };
 
 /// Characteristic definitions
-BLESRVC_CHAR g_NUSChars[] = {
+static BLESRVC_CHAR s_NUSChars[] = {
 	{
 		// Read characteristic
-		.Uuid = BLE_UUID_NUS_RX_CHARACTERISTIC,
+		.Uuid = BLE_UUID_NUS_TX_CHARACTERISTIC,
 		.MaxDataLen = BLE_NUSUART_MAX_DATA_LEN,
-		.Property = BLE_UUID_NUS_RX_CHAR_PROP,
-		.pDesc = s_NUSRxCharDescString,		// char UTF-8 description string
+		.Property = BLE_UUID_NUS_TX_CHAR_PROP,
+		.pDesc = s_NUSTxCharDescString,		// char UTF-8 description string
 		.WrCB = NULL,						// Callback for write char, set to NULL for read char
 		.SetNotifCB = NULL,					// Callback on set notification
 		.TxCompleteCB = NULL,				// Tx completed callback
@@ -70,11 +70,11 @@ BLESRVC_CHAR g_NUSChars[] = {
 	},
 	{
 		// Write characteristic
-		.Uuid = BLE_UUID_NUS_TX_CHARACTERISTIC,	// char UUID
+		.Uuid = BLE_UUID_NUS_RX_CHARACTERISTIC,	// char UUID
 		.MaxDataLen = BLE_NUSUART_MAX_DATA_LEN,					// char max data length
-		.Property = BLE_UUID_NUS_TX_CHAR_PROP,// char properties define by BLUEIOSVC_CHAR_PROP_...
-		.pDesc = s_NUSTxCharDescString,		// char UTF-8 description string
-		.WrCB = UartTxSrvcCallback,			// Callback for write char, set to NULL for read char
+		.Property = BLE_UUID_NUS_RX_CHAR_PROP,// char properties define by BLUEIOSVC_CHAR_PROP_...
+		.pDesc = s_NUSRxCharDescString,		// char UTF-8 description string
+		.WrCB = UartTxSrvcCallback,						// Callback for write char, set to NULL for read char
 		.SetNotifCB = NULL,					// Callback on set notification
 		.TxCompleteCB = NULL,				// Tx completed callback
 		.pDefValue = NULL,					// pointer to char default values
@@ -82,7 +82,7 @@ BLESRVC_CHAR g_NUSChars[] = {
 	},
 };
 
-static const int s_NbNUSChar = sizeof(g_NUSChars) / sizeof(BLESRVC_CHAR);
+static const int s_NbNUSChar = sizeof(s_NUSChars) / sizeof(BLESRVC_CHAR);
 
 //uint8_t g_LWrBuffer[512];
 
@@ -92,23 +92,23 @@ const BLESRVC_CFG s_NUSBleSrvcCfg = {
 	.UuidBase = NUS_BASE_UUID,				// Base UUID
 	.UuidSvc = BLE_UUID_NUS_SERVICE,		// Service UUID
 	.NbChar = s_NbNUSChar,					// Total number of characteristics for the service
-	.pCharArray = g_NUSChars,				// Pointer a an array of characteristic
+	.pCharArray = s_NUSChars,				// Pointer a an array of characteristic
 	.pLongWrBuff = NULL,//g_LWrBuffer,		// pointer to user long write buffer
 	.LongWrBuffSize = 0,//sizeof(g_LWrBuffer),	// long write buffer size
 };
 
-BLESRVC g_NUSBleSrvc;
+static BLESRVC s_NUSBleSrvc;
 
-#define NUS_INTRF_CFIFO_MEMSIZE			CFIFO_MEMSIZE(6 * BLE_NUSUART_MAX_DATA_LEN)
+#define NUS_INTRF_CFIFO_MEMSIZE			CFIFO_MEMSIZE(10 * BLE_NUSUART_MAX_DATA_LEN)
 
-static uint8_t s_NUSIntrfRxBuff[NUS_INTRF_CFIFO_MEMSIZE];
-static uint8_t s_NUSIntrfTxBuff[NUS_INTRF_CFIFO_MEMSIZE];
+alignas(4) static uint8_t s_NUSIntrfRxBuff[NUS_INTRF_CFIFO_MEMSIZE];
+alignas(4) static uint8_t s_NUSIntrfTxBuff[NUS_INTRF_CFIFO_MEMSIZE];
 
 static BLEINTRF_CFG s_NUSBleIntrfCfg = {
-	.pBleSrv = &g_NUSBleSrvc,
+	.pBleSrv = &s_NUSBleSrvc,
 	.RxCharIdx = 1,
 	.TxCharIdx = 0,
-	.PacketSize = sizeof(BLUEIO_PACKET),
+	.PacketSize = 0,
 	.RxFifoMemSize = NUS_INTRF_CFIFO_MEMSIZE,
 	.pRxFifoMem = s_NUSIntrfRxBuff,
 	.TxFifoMemSize = NUS_INTRF_CFIFO_MEMSIZE,
@@ -130,7 +130,7 @@ static const char s_TxCharDescString[] = {
 };
 
 /// Characteristic definitions
-BLESRVC_CHAR g_UartChars[] = {
+static BLESRVC_CHAR s_UartChars[] = {
 	{
 		// Read characteristic
 		.Uuid = BLUEIO_UUID_UART_RX_CHAR,
@@ -157,7 +157,7 @@ BLESRVC_CHAR g_UartChars[] = {
 	},
 };
 
-static const int s_NbUartChar = sizeof(g_UartChars) / sizeof(BLESRVC_CHAR);
+static const int s_NbUartChar = sizeof(s_UartChars) / sizeof(BLESRVC_CHAR);
 
 //uint8_t g_LWrBuffer[512];
 
@@ -167,23 +167,23 @@ const BLESRVC_CFG s_UartSrvcCfg = {
 	.UuidBase = BLUEIO_UUID_BASE,			// Base UUID
 	.UuidSvc = BLUEIO_UUID_UART_SERVICE,	// Service UUID
 	.NbChar = s_NbUartChar,					// Total number of characteristics for the service
-	.pCharArray = g_UartChars,				// Pointer a an array of characteristic
+	.pCharArray = s_UartChars,				// Pointer a an array of characteristic
 	.pLongWrBuff = NULL,//g_LWrBuffer,		// pointer to user long write buffer
 	.LongWrBuffSize = 0,//sizeof(g_LWrBuffer),	// long write buffer size
 };
 
-BLESRVC g_UartBleSrvc;
+static BLESRVC s_UartBleSrvc;
 
 
-#define BLUEIO_INTRF_CFIFO_MEMSIZE			CFIFO_MEMSIZE(6 * BLE_NUSUART_MAX_DATA_LEN)
+#define BLUEIO_INTRF_CFIFO_MEMSIZE			CFIFO_MEMSIZE(10 * BLE_NUSUART_MAX_DATA_LEN)
 
-static uint8_t s_BlueIOIntrfRxBuff[BLUEIO_INTRF_CFIFO_MEMSIZE];
-static uint8_t s_BlueIOIntrfTxBuff[BLUEIO_INTRF_CFIFO_MEMSIZE];
+alignas(4) static uint8_t s_BlueIOIntrfRxBuff[BLUEIO_INTRF_CFIFO_MEMSIZE];
+alignas(4) static uint8_t s_BlueIOIntrfTxBuff[BLUEIO_INTRF_CFIFO_MEMSIZE];
 
 static BLEINTRF_CFG s_BlueIOBleIntrfCfg = {
-	.pBleSrv = &g_UartBleSrvc,
-	.RxCharIdx = 1,
-	.TxCharIdx = 0,
+	.pBleSrv = &s_UartBleSrvc,
+	.RxCharIdx = 0,
+	.TxCharIdx = 1,
 	.PacketSize = sizeof(BLUEIO_PACKET),
 	.RxFifoMemSize = BLUEIO_INTRF_CFIFO_MEMSIZE,
 	.pRxFifoMem = s_BlueIOIntrfRxBuff,
@@ -296,7 +296,7 @@ int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buffe
 
 BleIntrf * const NusBleIntrfInit(DEVINTRF_EVTCB EvtCB)
 {
-    uint32_t err_code = BleSrvcInit(&g_NUSBleSrvc, &s_NUSBleSrvcCfg);
+    uint32_t err_code = BleSrvcInit(&s_NUSBleSrvc, &s_NUSBleSrvcCfg);
     APP_ERROR_CHECK(err_code);
 
     s_NUSBleIntrfCfg.EvtCB = EvtCB;
@@ -311,7 +311,7 @@ BleIntrf * const NusBleIntrfInit(DEVINTRF_EVTCB EvtCB)
 
 BleIntrf * const UartBleIntrfInit(DEVINTRF_EVTCB EvtCB)
 {
-    uint32_t err_code = BleSrvcInit(&g_UartBleSrvc, &s_UartSrvcCfg);
+    uint32_t err_code = BleSrvcInit(&s_UartBleSrvc, &s_UartSrvcCfg);
     APP_ERROR_CHECK(err_code);
 
     s_BlueIOBleIntrfCfg.EvtCB = EvtCB;
