@@ -37,6 +37,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "pwm.h"
 
+/** @addtogroup MiscDev
+  * @{
+  */
+
+typedef struct __Buzzer_Device {
+	PWM_DEV *pPwm;			//!< Pointer to external PWM interface
+	int DutyCycle;			//!< PWM duty cycle value for volume
+	int Chan;				//!< PWM Channel used for the buzzer
+} BUZZER_DEV;
+
+#ifdef __cplusplus
+
 class Buzzer {
 public:
 
@@ -80,7 +92,14 @@ private:
 	int vChan;			//!< PWM Channel used for the buzzer
 };
 
+extern "C" {
+#endif // __cplusplus
 
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+
+/** @} end group IMU */
 
 #endif // __BUZZER_H__
 

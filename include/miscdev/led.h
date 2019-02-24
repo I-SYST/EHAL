@@ -39,6 +39,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "device_intrf.h"
 #include "pwm.h"
 
+/** @addtogroup MiscDev
+  * @{
+  */
+
 #define LED_PIN_MAX			4
 
 /// LED types
@@ -63,7 +67,47 @@ typedef struct __LED_Dev {
 	LED_TYPE Type;
 } LED_DEV;
 
-class Led : public Device {
+/// LED device abstract base class
+///
+class LedDevice {
+public:
+
+	/**
+	 * Turns all LED 100% on
+	 */
+	virtual void On() = 0;
+
+	/**
+	 * Turns all LED off
+	 */
+	virtual void Off() = 0;
+
+	/**
+	 * Toggle or invert all LED dimming level
+	 */
+	virtual void Toggle() = 0;
+
+	/**
+	 * Get LED type
+	 *
+	 * @return	LED type
+	 */
+	LED_TYPE Type() { return vType; }
+
+	/**
+	 * Set LED type
+	 *
+	 * @return	LED type set.
+	 */
+	LED_TYPE Type(LED_TYPE Type) { vType = Type; return vType; }
+
+protected:
+private:
+	LED_TYPE vType;
+};
+
+/// Basic Led type controlled by GPIO on/off
+class Led : public LedDevice {
 public:
 	/**
 	 * @brief	Initialize as standard GPIO LED
@@ -71,22 +115,45 @@ public:
 	 * This function initializes a single LED connected on a GPIO without PWM
 	 * dimming.
 	 *
-	 * @param	Port 	: GPIO port number
-	 * @param	Pin 	: GPIO pin number
-	 * @param	Active	: LED active logic level
+	 * @param	Port 		: GPIO port number
+	 * @param	Pin 		: GPIO pin number
+	 * @param	ActLevel	: LED active logic level
 	 *
 	 * @return	true on success
 	 */
-	virtual bool Init(int Port, int Pin, LED_LOGIC Active);//, Pwm * const pPwm = NULL);
+	virtual bool Init(int Port, int Pin, LED_LOGIC ActLevel);
 
+	/**
+	 * Turns LED on.
+	 */
+	virtual void On();
+
+	/**
+	 * Turns LED off.
+	 */
+	virtual void Off();
+
+	/**
+	 * Toggle LED.
+	 */
+	virtual void Toggle();
+
+private:
+
+	LED_TYPE vType;
+	int vPort;
+	int vPin;
+	LED_LOGIC vActLevel;
+};
+
+/// Led type controlled by PWM
+class LedPwm : public LedDevice {
+public:
 	/**
 	 * @brief	Initialize as GPIO PWM LED
 	 *
-	 * This function initializes LED with PWM dimming of types
-	 *    LED_TYPE_SINGLE_PWM
-	 *    LED_TYPE_BICOLOR
-	 *    LED_TYPE_TRICOLOR
-	 *    LED_TYPE_QCOLOR
+	 * This function initializes LED with GPIO PWM dimming.  Dimming level 0-255.
+	 * Can be used for single, bi-color, tri-color or quad-color led
 	 *
 	 *
 	 * @param	pPwm		: Pointer to PWM object, this pointer is kept internally.
@@ -99,18 +166,34 @@ public:
 	virtual bool Init(Pwm * const pPwm, PWM_CHAN_CFG * const pPwmChan, int NbChan);
 
 	/**
-	 * @brief	Initialize as digital LED device
+	 * @brief	Set LED level
 	 *
-	 * This function initializes digital LED type.  This type of LED usually used as strip LED.
-	 * The LED is controlled via a serial interface.
+	 * This function set the dimming level of the LED 0-255.  On multi-color LED can be
+	 * used to mix color.
 	 *
-	 * @param	DevAddr	: Device address
-	 * @param	pIntrf	: Pointer to control interface
-	 * @param	NbLeds	: Number of LEDs to control
+	 * @param Level	: LED dimming Level 0-255.  0 = Off, 255 = 100% On. Up to 4 LEDs can be dimmed.
+	 * 					Bits 0-7  	: LED 0
+	 * 					Bits 8-15 	: LED 1
+	 * 					Bits 16-23	: LED 2
+	 * 					Bits 24-31	: LED 3
 	 *
-	 * @return	true on success
 	 */
-	virtual bool Init(uint8_t DevAddr, DeviceIntrf * const pIntrf, int NbLeds);
+	virtual void Level(uint32_t Level);
+
+	/**
+	 * Turns all LED 100% on
+	 */
+	virtual void On();
+
+	/**
+	 * Turns all LED off
+	 */
+	virtual void Off();
+
+	/**
+	 * Invert all LED dimming level
+	 */
+	virtual void Toggle();
 
 	/**
 	 * @brief	Power on or wake up device
@@ -129,18 +212,14 @@ public:
 	 */
 	virtual void Reset();
 
-	virtual void Level(uint8_t * const pLedData, int Len);
-	virtual void Level(uint32_t Level);
-	virtual void On();
-	virtual void Off();
-	virtual void Toggle();
-
 private:
-	LED_DEV vLeds[LED_PIN_MAX];
+	uint32_t vLevel;
 	int	vNbLeds;
 	Pwm *vpPwm;
 	PWM_CHAN_CFG vPwmChanCfg[LED_PIN_MAX];
 };
+
+/** @} end group IMU */
 
 #endif // __LED_H__
 

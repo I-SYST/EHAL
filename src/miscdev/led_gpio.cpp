@@ -1,14 +1,15 @@
 /**-------------------------------------------------------------------------
-@file	modem.h
+@file	led_gpio.cpp
 
-@brief	Generic modem driver definitions
+@brief	Implementation of basic LED control via gpio
+
 
 @author	Hoang Nguyen Hoan
-@date	June. 20, 2018
+@date	Feb. 23, 2019
 
 @license
 
-Copyright (c) 2018, I-SYST inc., all rights reserved
+Copyright (c) 2019, I-SYST inc., all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -31,38 +32,67 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
-#ifndef __MODEM_H__
-#define __MODEM_H__
+#include "iopinctrl.h"
+#include "miscdev/led.h"
 
-#include <string.h>
+/**
+ * @brief	Initialize as standard GPIO LED
+ *
+ * This function initializes a single LED connected on a GPIO without PWM
+ * dimming.
+ *
+ * @param	Port 	: GPIO port number
+ * @param	Pin 	: GPIO pin number
+ * @param	Active	: LED active logic level
+ *
+ * @return	true on success
+ */
+bool Led::Init(int Port, int Pin, LED_LOGIC ActLevel)
+{
+	Type(LED_TYPE_GPIO);
 
-#include "device.h"
+	vPort = Port;
+	vPin = Pin;
+	vActLevel = ActLevel;
 
-/** @addtogroup MiscDev
-  * @{
-  */
+	IOPinConfig(vPort, vPin, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
+	if (vActLevel == LED_LOGIC_LOW)
+	{
+		IOPinSet(vPort, vPin);
+	}
+	else
+	{
+		IOPinClear(vPort, vPin);
+	}
 
-typedef struct {
-	char *pInitStr;			//<<! pointer to initialization string
+	return true;
+}
 
-} MODEM_CFG;
+void Led::On()
+{
+	if (vActLevel)
+	{
+		IOPinSet(vPort, vPin);
+	}
+	else
+	{
+		IOPinClear(vPort, vPin);
+	}
+}
 
-typedef struct {
+void Led::Off()
+{
+	if (vActLevel)
+	{
+		IOPinClear(vPort, vPin);
+	}
+	else
+	{
+		IOPinSet(vPort, vPin);
+	}
+}
 
-} MODEM_DEV;
-
-class Modem : public Device {
-public:
-	virtual bool Init(MODEM_CFG &Cfg, DeviceIntrf * const pIntrf) = 0;
-	virtual bool Connect();
-	virtual bool Disconnect();
-
-protected:
-
-private:
-};
-
-/** @} end group IMU */
-
-#endif // __MODEM_H__
-
+void Led::Toggle()
+{
+	IOPinToggle(vPort, vPin);
+}
