@@ -35,44 +35,75 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "iopinctrl.h"
 #include "miscdev/led.h"
 
-bool Led::Init(int Port, int Pin, LED_LOGIC Active, Pwm * const pPwm)
+bool Led::Init(int Port, int Pin, LED_LOGIC Active)//, Pwm * const pPwm)
 {
 	vNbLeds = 1;
+	vLeds[0].Chan = 0;
 	vLeds[0].Port = Port;
 	vLeds[0].Pin = Pin;
 	vLeds[0].Act = Active;
+	vLeds[0].Type = LED_TYPE_GPIO;
 
-	vpPwm = pPwm;
+	vpPwm = nullptr;
 
 	IOPinConfig(vLeds[0].Port, vLeds[0].Pin, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
+	if (Active == LED_LOGIC_LOW)
+	{
+		IOPinSet(vLeds[0].Port, vLeds[0].Pin);
+	}
+	else
+	{
+		IOPinClear(vLeds[0].Port, vLeds[0].Pin);
+	}
 
 	return true;
 }
 
-bool Led::Init(LED_DEV * const pLedArray, int Count, Pwm * const pPwm)
+bool Led::Init(Pwm * const pPwm, PWM_CHAN_CFG * const pChanCfg, int NbChan)
 {
-	vNbLeds = Count;
+	if (pPwm == nullptr || pChanCfg == nullptr || NbChan == 0)
+	{
+		return false;
+	}
 
+	vpPwm = pPwm;
+	vNbLeds = NbChan;
+
+	memcpy(vPwmChanCfg, pChanCfg, vNbLeds * sizeof(PWM_CHAN_CFG));
+
+	vpPwm->OpenChannel(vPwmChanCfg, vNbLeds);
 	for (int i = 0; i < vNbLeds; i++)
 	{
-		vLeds[i].Port = pLedArray[i].Port;
-		vLeds[i].Pin = pLedArray[i].Pin;
-		vLeds[i].Act = pLedArray[i].Act;
-
-		IOPinConfig(vLeds[i].Port, vLeds[i].Pin, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
+		vpPwm->DutyCycle(vPwmChanCfg[i].Chan, 0);
+		vLeds[i].Chan = pChanCfg[i].Chan;
+		vLeds[i].Port = pChanCfg[i].Port;
+		vLeds[i].Pin = pChanCfg[i].Pin;
+		vLeds[i].Act = pChanCfg[i].Pol == PWM_POL_LOW ? LED_LOGIC_LOW : LED_LOGIC_HIGH;
+		vLeds[i].Type = LED_TYPE_PWM;
 	}
-	vpPwm = pPwm;
+	vpPwm->Start();
 
 	return true;
 }
 
-bool Led::Init(DeviceIntrf * const pIntrf)
+bool Led::Init(uint8_t DevAddr, DeviceIntrf * const pIntrf, int NbLeds)
 {
 	Interface(pIntrf);
 
-	vNbLeds = 0;
+	vNbLeds = NbLeds;
+
+	vLeds[0].Chan = 0;
+	vLeds[0].Port = -1;
+	vLeds[0].Pin = -1;
+	vLeds[0].Act = LED_LOGIC_HIGH;
+	vLeds[0].Type = LED_TYPE_STRIP;
 
 	return true;
+}
+
+void Led::Level(uint8_t * const pLedData, int Len)
+{
+
 }
 
 void Led::Level(uint32_t Level)
@@ -80,50 +111,112 @@ void Led::Level(uint32_t Level)
 	if (vpPwm == nullptr)
 		return;
 
-	uint8_t *p = (uint8_t*)Level;
+	uint8_t *p = (uint8_t*)&Level;
 	for (int i = 0; i < vNbLeds; i++)
 	{
-		vpPwm->DutyCycle(i, p[i]);
+		vpPwm->DutyCycle(vPwmChanCfg[i].Chan, ((uint32_t)p[i] * 100UL) >> 8UL);
 	}
 }
 
 void Led::On()
 {
-	for (int i = 0; i < vNbLeds; i++)
+	switch (vLeds[0].Type)
 	{
-		if (vLeds[i].Act)
-		{
-			IOPinSet(vLeds[i].Port, vLeds[i].Pin);
-		}
-		else
-		{
-			IOPinClear(vLeds[i].Port, vLeds[i].Pin);
-		}
+		case LED_TYPE_GPIO:
+			if (vLeds[0].Act)
+			{
+				IOPinSet(vLeds[0].Port, vLeds[0].Pin);
+			}
+			else
+			{
+				IOPinClear(vLeds[0].Port, vLeds[0].Pin);
+			}
+			break;
+		case LED_TYPE_PWM:
+			for (int i = 0; i < vNbLeds; i++)
+			{
+				vpPwm->DutyCycle(vPwmChanCfg[i].Chan, 100);
+			}
+			break;
+		case LED_TYPE_STRIP:
+			break;
 	}
 }
 
 void Led::Off()
 {
-	for (int i = 0; i < vNbLeds; i++)
+	switch (vLeds[0].Type)
 	{
-		if (vLeds[i].Act)
-		{
-			IOPinClear(vLeds[i].Port, vLeds[i].Pin);
-		}
-		else
-		{
-			IOPinSet(vLeds[i].Port, vLeds[i].Pin);
-		}
+		case LED_TYPE_GPIO:
+			if (vLeds[0].Act)
+			{
+				IOPinClear(vLeds[0].Port, vLeds[0].Pin);
+			}
+			else
+			{
+				IOPinSet(vLeds[0].Port, vLeds[0].Pin);
+			}
+			break;
+		case LED_TYPE_PWM:
+			for (int i = 0; i < vNbLeds; i++)
+			{
+				vpPwm->DutyCycle(vPwmChanCfg[i].Chan, 0);
+			}
+			break;
+		case LED_TYPE_STRIP:
+			break;
 	}
 }
 
 void Led::Toggle()
 {
-	for (int i = 0; i < vNbLeds; i++)
+	if (vLeds[0].Type == LED_TYPE_GPIO)
 	{
-		IOPinToggle(vLeds[i].Port, vLeds[i].Pin);
+		IOPinToggle(vLeds[0].Port, vLeds[0].Pin);
 	}
 }
 
+bool Led::Enable()
+{
+	if (vpPwm)
+	{
+		vpPwm->Enable();
+		vpPwm->Start();
+	}
+	return true;
+}
 
+void Led::Disable()
+{
+	if (vpPwm)
+	{
+		vpPwm->Stop();
+		vpPwm->Disable();
+	}
+}
 
+void Led::Reset()
+{
+	if (vpPwm)
+	{
+		for (int i = 0; i < vNbLeds; i++)
+		{
+			vpPwm->DutyCycle(i, 0);
+		}
+		vpPwm->Start();
+	}
+	else
+	{
+		for (int i = 0; i < vNbLeds; i++)
+		{
+			if (vLeds[i].Act == LED_LOGIC_LOW)
+			{
+				IOPinSet(vLeds[i].Port, vLeds[i].Pin);
+			}
+			else
+			{
+				IOPinClear(vLeds[i].Port, vLeds[i].Pin);
+			}
+		}
+	}
+}

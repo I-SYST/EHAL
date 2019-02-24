@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>PwmDemo</name>
+	<name>LedDemo</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -23,13 +23,12 @@
 		<nature>org.eclipse.cdt.core.ccnature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
-		<nature>org.eclipse.linuxtools.tmf.project.nature</nature>
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/pwm_demo.cpp</name>
+			<name>src/led_demo.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/exemples/pwm/pwm_demo.cpp</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/exemples/miscdev/led_demo.cpp</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
