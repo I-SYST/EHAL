@@ -40,6 +40,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "iopinctrl.h"
 #include "miscdev/led.h"
 
+
+#include "board.h"
+
 static const PWM_CFG s_PwmCfg = {
 	.DevNo = 0,
 	.Freq = 100,
@@ -53,20 +56,20 @@ static const PWM_CHAN_CFG s_PwmChanCfg[] = {
 	{
 		.Chan = 0,
 		.Pol = PWM_POL_LOW,
-		.Port = BLUEIO_LED2_PORT,
-		.Pin = BLUEIO_LED2_PIN,
+		.Port = LED2_PORT,
+		.Pin = LED2_PIN,
 	},
 	{
 		.Chan = 1,
 		.Pol = PWM_POL_LOW,
-		.Port = BLUEIO_LED3_PORT,
-		.Pin = BLUEIO_LED3_PIN,
+		.Port = LED3_PORT,
+		.Pin = LED3_PIN,
 	},
 	{
 		.Chan = 2,
 		.Pol = PWM_POL_LOW,
-		.Port = BLUEIO_LED4_PORT,
-		.Pin = BLUEIO_LED4_PIN,
+		.Port = LED4_PORT,
+		.Pin = LED4_PIN,
 	},
 };
 
@@ -94,7 +97,7 @@ int main()
 {
 	g_Pwm.Init(s_PwmCfg);
 
-	g_Led1.Init(BLUEIO_LED1_PORT, BLUEIO_LED1_PIN, LED_LOGIC_LOW);
+	g_Led1.Init(LED1_PORT, LED1_PIN, LED_LOGIC_LOW);
 
 	g_Led2.Init(&g_Pwm, (PWM_CHAN_CFG*)s_PwmChanCfg, s_NbPwmChan);
 	g_Led1.On();
