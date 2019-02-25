@@ -1,8 +1,72 @@
 /**-------------------------------------------------------------------------
 @file	led.h
 
-@brief	Generic implementation of LED device
+@brief	Implementation of LED device class
 
+This file contains definition of implementation of the LED base device class,
+basic analog led controlled by gpio and pwm. Other type of LEDs which have digital
+interface should be implemented separately case by case derived from the base
+LedDevice class
+
+Usage examples :
+
+Standard LED controlled by GPIO pin (port 0, pin 30), LED turns on when pin is at level 0
+
+Led g_Led1;
+
+g_Led1.Init(0, 30, LED_LOGIC_LOW);
+
+g_Led.On();
+
+---
+
+PWM controlled RGB LED on 3 GPIO pins, Led turns on when pin is at logic level 1
+
+First create and initialize instance of PWM
+
+static const PWM_CFG s_PwmCfg = {
+	.DevNo = 0,
+	.Freq = 100,
+	.Mode = PWM_MODE_EDGE,
+	.bIntEn = false,
+	.IntPrio = 6,
+	.pEvtHandler = NULL
+};
+
+static const PWM_CHAN_CFG s_PwmChanCfg[] = {
+	{
+		.Chan = 0,
+		.Pol = PWM_POL_HIGH,
+		.Port = LED2_PORT,
+		.Pin = LED2_PIN,
+	},
+	{
+		.Chan = 1,
+		.Pol = PWM_POL_HIGH,
+		.Port = LED3_PORT,
+		.Pin = LED3_PIN,
+	},
+	{
+		.Chan = 2,
+		.Pol = PWM_POL_HIGH,
+		.Port = LED4_PORT,
+		.Pin = LED4_PIN,
+	},
+};
+
+const int s_NbPwmChan = sizeof(s_PwmChanCfg) / sizeof(PWM_CHAN_CFG);
+
+Pwm g_Pwm;
+
+LedPwm g_Led2;
+
+	g_Pwm.Init(s_PwmCfg);
+
+	g_Led2.Init(&g_Pwm, (PWM_CHAN_CFG*)s_PwmChanCfg, s_NbPwmChan);
+
+	g_Led2.Level(0xFFFFFF); // Turns all 3 led on 100%
+
+---
 
 @author	Hoang Nguyen Hoan
 @date	Feb. 13, 2019

@@ -1,7 +1,55 @@
 /**-------------------------------------------------------------------------
 @file	led_pwm.cpp
 
-@brief	Generic implementation of LED control via PWM
+@brief	Implementation of LED control via PWM
+
+Usage example
+
+PWM controlled RGB LED on 3 GPIO pins, Led turns on when pin is at logic level 1
+
+First create and initialize instance of PWM
+
+static const PWM_CFG s_PwmCfg = {
+	.DevNo = 0,
+	.Freq = 100,
+	.Mode = PWM_MODE_EDGE,
+	.bIntEn = false,
+	.IntPrio = 6,
+	.pEvtHandler = NULL
+};
+
+static const PWM_CHAN_CFG s_PwmChanCfg[] = {
+	{
+		.Chan = 0,
+		.Pol = PWM_POL_HIGH,
+		.Port = LED2_PORT,
+		.Pin = LED2_PIN,
+	},
+	{
+		.Chan = 1,
+		.Pol = PWM_POL_HIGH,
+		.Port = LED3_PORT,
+		.Pin = LED3_PIN,
+	},
+	{
+		.Chan = 2,
+		.Pol = PWM_POL_HIGH,
+		.Port = LED4_PORT,
+		.Pin = LED4_PIN,
+	},
+};
+
+const int s_NbPwmChan = sizeof(s_PwmChanCfg) / sizeof(PWM_CHAN_CFG);
+
+Pwm g_Pwm;
+
+LedPwm g_Led2;
+
+	g_Pwm.Init(s_PwmCfg);
+
+	g_Led2.Init(&g_Pwm, (PWM_CHAN_CFG*)s_PwmChanCfg, s_NbPwmChan);
+
+	g_Led2.Level(0xFFFFFF); // Turns all 3 led on 100%
 
 
 @author	Hoang Nguyen Hoan

@@ -3,6 +3,15 @@
 
 @brief	Implementation of basic LED control via gpio
 
+Usage example
+
+Standard LED controlled by GPIO pin (port 0, pin 30), LED turns on when pin is at level 0
+
+Led g_Led1;
+
+g_Led1.Init(0, 30, LED_LOGIC_LOW);
+
+g_Led.On();
 
 @author	Hoang Nguyen Hoan
 @date	Feb. 23, 2019
