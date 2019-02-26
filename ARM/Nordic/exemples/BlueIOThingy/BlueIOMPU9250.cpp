@@ -276,7 +276,10 @@ bool MPU9250Init(DeviceIntrf * const pIntrF, Timer * const pTimer)
 	s_pTimer = pTimer;
 
 
-	g_Mpu9250.Init(s_AccelCfg, pIntrF, pTimer);
+	bool res = g_Mpu9250.Init(s_AccelCfg, pIntrF, pTimer);
+	if (res == false)
+		return res;
+
 	g_Mpu9250.Init(s_GyroCfg, NULL);
 	g_Mpu9250.Init(s_MagCfg, NULL);
 

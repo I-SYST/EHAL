@@ -330,10 +330,10 @@ void ImuInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t t
 		gyro_accuracy = (uint8_t)inv_icm20948_get_gyro_accuracy();
 
 		event.data.quaternion.accuracy_flag = min(accel_accuracy, gyro_accuracy);
-		vQuat.Q1 = event.data.quaternion.quat[0] * 32768.0;
-		vQuat.Q2 = event.data.quaternion.quat[1] * 32768.0;
-		vQuat.Q3 = event.data.quaternion.quat[2] * 32768.0;
-		vQuat.Q4 = event.data.quaternion.quat[3] * 32768.0;
+		vQuat.Q1 = event.data.quaternion.quat[0];// * 32768.0;
+		vQuat.Q2 = event.data.quaternion.quat[1];// * 32768.0;
+		vQuat.Q3 = event.data.quaternion.quat[2];// * 32768.0;
+		vQuat.Q4 = event.data.quaternion.quat[3];// * 32768.0;
 		vQuat.Timestamp = timestamp;
 	}
 		break;
