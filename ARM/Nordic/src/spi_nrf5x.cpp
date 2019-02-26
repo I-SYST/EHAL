@@ -271,8 +271,10 @@ bool nRF5xSPIStartRx(DEVINTRF * const pDev, int DevCs)
 	if (dev->pSpiDev->Cfg.Type == SPITYPE_3WIRE)
 	{
 #ifdef NRF52_SERIES
+        dev->pReg->PSEL.MISO = (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo & 0x1f) | (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PortNo << 5);
 		dev->pReg->PSEL.MOSI = -1;
 #else
+        dev->pReg->PSELMISO = (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo & 0x1f) | (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PortNo << 5);
 		dev->pReg->PSELMOSI = -1;
 #endif
 	}
@@ -354,9 +356,9 @@ void nRF5xSPIStopRx(DEVINTRF * const pDev)
 	if (dev->pSpiDev->Cfg.Type == SPITYPE_3WIRE)
 	{
 #ifdef NRF52_SERIES
-		dev->pReg->PSEL.MOSI = (dev->pSpiDev->Cfg.pIOPinMap[SPI_MOSI_IOPIN_IDX].PinNo & 0x1f) | (dev->pSpiDev->Cfg.pIOPinMap[SPI_MOSI_IOPIN_IDX].PortNo << 5);
+//		dev->pReg->PSEL.MOSI = (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo & 0x1f) | (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PortNo << 5);
 #else
-		dev->pReg->PSELMOSI = (dev->pSpiDev->Cfg.pIOPinMap[SPI_MOSI_IOPIN_IDX].PinNo & 0x1f) | (dev->pSpiDev->Cfg.pIOPinMap[SPI_MOSI_IOPIN_IDX].PortNo << 5);
+//		dev->pReg->PSELMOSI = (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo & 0x1f) | (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PortNo << 5);
 #endif
 	}
 }
@@ -376,6 +378,16 @@ bool nRF5xSPIStartTx(DEVINTRF * const pDev, int DevCs)
 	IOPinClear(dev->pSpiDev->Cfg.pIOPinMap[DevCs + SPI_SS_IOPIN_IDX].PortNo,
 			   dev->pSpiDev->Cfg.pIOPinMap[DevCs + SPI_SS_IOPIN_IDX].PinNo);
 
+    if (dev->pSpiDev->Cfg.Type == SPITYPE_3WIRE)
+    {
+#ifdef NRF52_SERIES
+        dev->pReg->PSEL.MOSI = (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo & 0x1f) | (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PortNo << 5);
+        dev->pReg->PSEL.MISO = -1;
+#else
+        dev->pReg->PSELMOSI = (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo & 0x1f) | (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PortNo << 5);
+        dev->pReg->PSELMISO = -1;
+#endif
+    }
 	return true;
 }
 
@@ -454,6 +466,16 @@ void nRF5xSPIStopTx(DEVINTRF * const pDev)
 		IOPinSet(dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PortNo,
 				dev->pSpiDev->Cfg.pIOPinMap[dev->pSpiDev->CurDevCs + SPI_SS_IOPIN_IDX].PinNo);
 	}
+    if (dev->pSpiDev->Cfg.Type == SPITYPE_3WIRE)
+    {
+#ifdef NRF52_SERIES
+        dev->pReg->PSEL.MOSI = -1;
+        dev->pReg->PSEL.MISO = (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo & 0x1f) | (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PortNo << 5);
+#else
+        dev->pReg->PSELMOSI = -1;
+        dev->pReg->PSELMISO = (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PinNo & 0x1f) | (dev->pSpiDev->Cfg.pIOPinMap[SPI_MISO_IOPIN_IDX].PortNo << 5);
+#endif
+    }
 }
 
 void SPIIrqHandler(int DevNo, DEVINTRF * const pDev)
