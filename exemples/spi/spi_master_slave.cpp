@@ -90,6 +90,7 @@ static const IOPINCFG s_SpiMasterPins[] = {
 
 static const SPICFG s_SpiMasterCfg = {
     0,//SPI_DEVNO,
+	SPITYPE_NORMAL,
     SPIMODE_MASTER,
 	s_SpiMasterPins,
     sizeof( s_SpiMasterPins ) / sizeof( IOPINCFG ),
@@ -125,6 +126,7 @@ static const IOPINCFG s_SpiSlavePins[] = {
 
 static const SPICFG s_SpiSlaveCfg = {
     1,//SPI_DEVNO,
+	SPITYPE_NORMAL,
     SPIMODE_SLAVE,
 	s_SpiSlavePins,
     sizeof( s_SpiSlavePins ) / sizeof( IOPINCFG ),
@@ -164,6 +166,8 @@ int SpiSlaveHandler(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer,
 
 			break;
 	}
+
+	return 0;
 }
 
 void HardwareInit()

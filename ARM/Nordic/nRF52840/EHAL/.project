@@ -846,9 +846,14 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/buzzer.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/miscdev/led.cpp</name>
+			<name>src/miscdev/led_gpio.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/led.cpp</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/led_gpio.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/led_pwm.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/led_pwm.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/miscdev/ledmx.c</name>

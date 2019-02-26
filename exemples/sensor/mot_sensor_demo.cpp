@@ -103,6 +103,7 @@ static const IOPINCFG s_SpiPins[] = {
 
 static const SPICFG s_SpiCfg = {
     SPI2_DEVNO,
+	SPITYPE_NORMAL,
     SPIMODE_MASTER,
     s_SpiPins,
     sizeof(s_SpiPins) / sizeof(IOPINCFG),

@@ -83,6 +83,12 @@ typedef enum __SPI_Chip_Select {
 	SPICSEL_MAN,	//!< Select control externally by application
 } SPICSEL;
 
+typedef enum __SPI_Type {
+	SPITYPE_NORMAL,				//!< Standard 4 wires CLK, MOSI, MISO, CS
+	SPITYPE_3WIRE,				//!< 3 wires MISO/MOSI mux
+	SPITYPE_QUAD,				//! QSPI
+} SPITYPE;
+
 #define SPI_MAX_RETRY			5
 
 #define SPI_SLAVEMODE_MAX_DEV	4	//!< Max number of device (CS) supported in slave mode
@@ -100,6 +106,7 @@ typedef enum __SPI_Chip_Select {
 /// Configuration data used to initialize device
 typedef struct __SPI_Config {
 	int DevNo;				//!< SPI interface number identify by chip select (CS0, CS1,..,CSn)
+	SPITYPE Type;			//!< SPI type (standard, 3 wire, quad
 	SPIMODE Mode;			//!< Master/Slave mode
 	const IOPINCFG *pIOPinMap;	//!< Define I/O pins used by SPI
 	int NbIOPins;			//!< Total number of I/O pins
