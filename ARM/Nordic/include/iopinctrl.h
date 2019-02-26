@@ -149,7 +149,7 @@ static inline __attribute__((always_inline)) void IOPinToggle(int PortNo, int Pi
 
 #endif
 
-	reg->OUT = NRF_GPIO->OUT ^ (1 << PinNo);
+	reg->OUT ^= (1 << PinNo);
 }
 
 /**
