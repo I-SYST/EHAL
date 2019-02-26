@@ -8,9 +8,9 @@ SEARCH_DIR("../../../EHAL/ARM/src")
 SEARCH_DIR("../../../../EHAL/ARM/src")
 SEARCH_DIR("../../../../../EHAL/ARM/src")
 SEARCH_DIR("../../../../../../EHAL/ARM/src")
-SEARCH_DIR("../../../../EHAL/ARM/nRF52840/CMSIS/Release")
-SEARCH_DIR("../../../../../EHAL/ARM/nRF52840/CMSIS/Release")
-SEARCH_DIR("../../../../../../EHAL/ARM/nRF52840/CMSIS/Release")
+SEARCH_DIR("../../../../EHAL/ARM/Nordic/nRF52840/CMSIS/Release")
+SEARCH_DIR("../../../../../EHAL/ARM/Nordic/nRF52840/CMSIS/Release")
+SEARCH_DIR("../../../../../../EHAL/ARM/Nordic/nRF52840/CMSIS/Release")
 GROUP(-lgcc -lc -lnosys -lCMSIS)
 
 MEMORY
