@@ -467,7 +467,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
 
         	if (role == BLE_GAP_ROLE_CENTRAL)
             {
-        		printf("Start Discovery\r\n");
+        		//printf("Start Discovery\r\n");
         		//memset(&s_DbDiscovery, 0x00, sizeof(ble_db_discovery_t));
 
         		//BlePeriphDiscService(g_BleAppData.ConnHdl, NULL);
@@ -1413,7 +1413,7 @@ bool BleAppStackInit(int CentLinkCount, int PeriLinkCount, bool bConnectable)
 	memset(&ble_cfg, 0x00, sizeof(ble_cfg));
 	ble_cfg.conn_cfg.conn_cfg_tag                     = BLEAPP_CONN_CFG_TAG;
 	ble_cfg.conn_cfg.params.gap_conn_cfg.event_length = 320;
-	ble_cfg.conn_cfg.params.gap_conn_cfg.conn_count   = BLE_GAP_CONN_COUNT_DEFAULT;
+	ble_cfg.conn_cfg.params.gap_conn_cfg.conn_count   = PeriLinkCount + CentLinkCount;//BLE_GAP_CONN_COUNT_DEFAULT;
 	err_code = sd_ble_cfg_set(BLE_CONN_CFG_GAP, &ble_cfg, ram_start);
 	APP_ERROR_CHECK(err_code);
 
@@ -1633,7 +1633,7 @@ void BleAppRun()
 void BleAppScan()
 {
 	ret_code_t err_code;
-
+//printf("BleAppScan %x\r\n", g_BleAppData.bScan);
 	if (g_BleAppData.bScan == true)
 	{
 		err_code = sd_ble_gap_scan_start(NULL, &g_BleScanReportData);

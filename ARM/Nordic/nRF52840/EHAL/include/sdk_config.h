@@ -1156,6 +1156,13 @@
 #define BLE_ADVERTISING_ENABLED 1
 #endif
 
+// <q> BLE_DB_DISCOVERY_ENABLED  - ble_db_discovery - Database discovery module
+
+
+#ifndef BLE_DB_DISCOVERY_ENABLED
+#define BLE_DB_DISCOVERY_ENABLED 1
+#endif
+
 // <q> BLE_DTM_ENABLED  - ble_dtm - Module for testing RF/PHY using DTM commands
  
 
@@ -1292,7 +1299,7 @@
 #endif
 // <o> NRF_BLE_SCAN_UUID_CNT - Number of filters for UUIDs.
 #ifndef NRF_BLE_SCAN_UUID_CNT
-#define NRF_BLE_SCAN_UUID_CNT 0
+#define NRF_BLE_SCAN_UUID_CNT 1
 #endif
 
 // <o> NRF_BLE_SCAN_NAME_CNT - Number of name filters.
@@ -1302,17 +1309,17 @@
 
 // <o> NRF_BLE_SCAN_SHORT_NAME_CNT - Number of short name filters.
 #ifndef NRF_BLE_SCAN_SHORT_NAME_CNT
-#define NRF_BLE_SCAN_SHORT_NAME_CNT 0
+#define NRF_BLE_SCAN_SHORT_NAME_CNT 1
 #endif
 
 // <o> NRF_BLE_SCAN_ADDRESS_CNT - Number of address filters.
 #ifndef NRF_BLE_SCAN_ADDRESS_CNT
-#define NRF_BLE_SCAN_ADDRESS_CNT 0
+#define NRF_BLE_SCAN_ADDRESS_CNT 1
 #endif
 
 // <o> NRF_BLE_SCAN_APPEARANCE_CNT - Number of appearance filters.
 #ifndef NRF_BLE_SCAN_APPEARANCE_CNT
-#define NRF_BLE_SCAN_APPEARANCE_CNT 0
+#define NRF_BLE_SCAN_APPEARANCE_CNT 1
 #endif
 
 // </e>
@@ -12189,7 +12196,7 @@
 
 // <o> NRF_SDH_BLE_GATT_MAX_MTU_SIZE - Static maximum MTU size. 
 #ifndef NRF_SDH_BLE_GATT_MAX_MTU_SIZE
-#define NRF_SDH_BLE_GATT_MAX_MTU_SIZE 512
+#define NRF_SDH_BLE_GATT_MAX_MTU_SIZE 247
 #endif
 
 // <o> NRF_SDH_BLE_GATTS_ATTR_TAB_SIZE - Attribute Table size in bytes. The size must be a multiple of 4. 
@@ -12199,7 +12206,7 @@
 
 // <o> NRF_SDH_BLE_VS_UUID_COUNT - The number of vendor-specific UUIDs. 
 #ifndef NRF_SDH_BLE_VS_UUID_COUNT
-#define NRF_SDH_BLE_VS_UUID_COUNT 2
+#define NRF_SDH_BLE_VS_UUID_COUNT 4
 #endif
 
 // <q> NRF_SDH_BLE_SERVICE_CHANGED  - Include the Service Changed characteristic in the Attribute Table.
