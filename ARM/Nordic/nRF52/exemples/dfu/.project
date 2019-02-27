@@ -245,6 +245,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/bootloader/nrf_bootloader.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/nrf_bootloader.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/bootloader/nrf_bootloader_app_start.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/bootloader/nrf_bootloader_app_start.c</locationURI>

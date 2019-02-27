@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 - 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2017 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -177,6 +177,53 @@ static void softdevice_evt_irq_disable(void)
 #endif
 }
 
+ret_code_t nrf_sdh_enable(nrf_clock_lf_cfg_t *clock_lf_cfg)
+{
+    ret_code_t ret_code;
+
+    if (m_nrf_sdh_enabled)
+    {
+        return NRF_ERROR_INVALID_STATE;
+    }
+
+    m_nrf_sdh_continue = true;
+
+    // Notify observers about SoftDevice enable request.
+    if (sdh_request_observer_notify(NRF_SDH_EVT_ENABLE_REQUEST) == NRF_ERROR_BUSY)
+    {
+        // Enable process was stopped.
+        return NRF_SUCCESS;
+    }
+
+    // Notify observers about starting SoftDevice enable process.
+    sdh_state_observer_notify(NRF_SDH_EVT_STATE_ENABLE_PREPARE);
+
+    CRITICAL_REGION_ENTER();
+#ifdef ANT_LICENSE_KEY
+    ret_code = sd_softdevice_enable(clock_lf_cfg, app_error_fault_handler, ANT_LICENSE_KEY);
+#else
+    ret_code = sd_softdevice_enable(clock_lf_cfg, app_error_fault_handler);
+#endif
+    m_nrf_sdh_enabled = (ret_code == NRF_SUCCESS);
+    CRITICAL_REGION_EXIT();
+
+    if (ret_code != NRF_SUCCESS)
+    {
+        return ret_code;
+    }
+
+    m_nrf_sdh_continue  = false;
+    m_nrf_sdh_suspended = false;
+
+    // Enable event interrupt.
+    // Interrupt priority has already been set by the stack.
+    softdevices_evt_irq_enable();
+
+    // Notify observers about a finished SoftDevice enable process.
+    sdh_state_observer_notify(NRF_SDH_EVT_STATE_ENABLED);
+
+    return NRF_SUCCESS;
+}
 
 ret_code_t nrf_sdh_enable_request(void)
 {
@@ -234,53 +281,6 @@ ret_code_t nrf_sdh_enable_request(void)
     return NRF_SUCCESS;
 }
 
-ret_code_t nrf_sdh_enable(nrf_clock_lf_cfg_t *clock_lf_cfg)
-{
-    ret_code_t ret_code;
-
-    if (m_nrf_sdh_enabled)
-    {
-        return NRF_ERROR_INVALID_STATE;
-    }
-
-    m_nrf_sdh_continue = true;
-
-    // Notify observers about SoftDevice enable request.
-    if (sdh_request_observer_notify(NRF_SDH_EVT_ENABLE_REQUEST) == NRF_ERROR_BUSY)
-    {
-        // Enable process was stopped.
-        return NRF_SUCCESS;
-    }
-
-    // Notify observers about starting SoftDevice enable process.
-    sdh_state_observer_notify(NRF_SDH_EVT_STATE_ENABLE_PREPARE);
-
-    CRITICAL_REGION_ENTER();
-#ifdef ANT_LICENSE_KEY
-    ret_code = sd_softdevice_enable(clock_lf_cfg, app_error_fault_handler, ANT_LICENSE_KEY);
-#else
-    ret_code = sd_softdevice_enable(clock_lf_cfg, app_error_fault_handler);
-#endif
-    m_nrf_sdh_enabled = (ret_code == NRF_SUCCESS);
-    CRITICAL_REGION_EXIT();
-
-    if (ret_code != NRF_SUCCESS)
-    {
-        return ret_code;
-    }
-
-    m_nrf_sdh_continue  = false;
-    m_nrf_sdh_suspended = false;
-
-    // Enable event interrupt.
-    // Interrupt priority has already been set by the stack.
-    softdevices_evt_irq_enable();
-
-    // Notify observers about a finished SoftDevice enable process.
-    sdh_state_observer_notify(NRF_SDH_EVT_STATE_ENABLED);
-
-    return NRF_SUCCESS;
-}
 
 ret_code_t nrf_sdh_disable_request(void)
 {
@@ -406,7 +406,7 @@ void nrf_sdh_evts_poll(void)
     }
 }
 
-
+#if 0
 #if (NRF_SDH_DISPATCH_MODEL == NRF_SDH_DISPATCH_MODEL_INTERRUPT)
 
 void SD_EVT_IRQHandler(void)
@@ -445,5 +445,6 @@ void SD_EVT_IRQHandler(void)
 #error "Unknown SoftDevice handler dispatch model."
 
 #endif // NRF_SDH_DISPATCH_MODEL
+#endif
 
 #endif // NRF_MODULE_ENABLED(NRF_SDH)

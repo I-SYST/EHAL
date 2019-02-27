@@ -8,6 +8,8 @@
 #endif
 // <h> nRF_BLE 
 
+#define BLE_GATT_ATT_MTU_DEFAULT	23
+
 #define NRF_BLE_GATT_ENABLED	1
 //==========================================================
 // <q> BLE_ADVERTISING_ENABLED  - ble_advertising - Advertising module
