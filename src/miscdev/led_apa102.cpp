@@ -79,7 +79,7 @@ void LedApa102::Off()
  * @param	pLevel : pointer to array of RGB LED to set
  * @param 	NbLeds : Number of LED to set.
  */
-void LedApa102::Level(uint32_t *pVal, int NbLeds)
+void LedApa102::Level(uint32_t * const pVal, int NbLeds, int Repeat)
 {
 	uint32_t bit = 0x80000000;
 
@@ -94,27 +94,31 @@ void LedApa102::Level(uint32_t *pVal, int NbLeds)
 		bit >>= 1;
 	}
 
-	for (int i = 0; i < NbLeds; i++)
-	{
-		bit = 0x80000000;
-		uint32_t d = (pVal[i] & 0xFFFFFF) | (0xe0 | vBrightness);
+	do {
+		uint32_t *p = pVal;
 
-		while (bit != 0)
+		for (int i = 0; i < NbLeds; i++, p++)
 		{
-			IOPinClear(vCIPortNo, vCIPinNo);
+			bit = 0x80000000;
+			*p = (*p & 0xFFFFFF) | (0xe0 | vBrightness);
 
-			if (d & bit)
+			while (bit != 0)
 			{
-				IOPinSet(vDIPortNo, vDIPinNo);
+				IOPinClear(vCIPortNo, vCIPinNo);
+
+				if (*p & bit)
+				{
+					IOPinSet(vDIPortNo, vDIPinNo);
+				}
+				else
+				{
+					IOPinClear(vDIPortNo, vDIPinNo);
+				}
+				IOPinSet(vCIPortNo, vCIPinNo);
+				bit >>= 1;
 			}
-			else
-			{
-				IOPinClear(vDIPortNo, vDIPinNo);
-			}
-			IOPinSet(vCIPortNo, vCIPinNo);
-			bit >>= 1;
 		}
-	}
+	} while (Repeat-- > 0);
 
 	// Stop frame
 	bit = 0x80000000;
@@ -129,4 +133,60 @@ void LedApa102::Level(uint32_t *pVal, int NbLeds)
 	}
 }
 
+void LedApa102::StartTx()
+{
+	uint32_t bit = 0x80000000;
+
+	// Start frame
+	IOPinClear(vDIPortNo, vDIPinNo);
+	while (bit != 0)
+	{
+		IOPinClear(vCIPortNo, vCIPinNo);
+		usDelay(1);
+		IOPinSet(vCIPortNo, vCIPinNo);
+
+		bit >>= 1;
+	}
+}
+
+void LedApa102::TxData(uint32_t * const pData, int DataLen)
+{
+	uint32_t *p = pData;
+
+	for (int i = 0; i < DataLen; i++, p++)
+	{
+		uint32_t bit = 0x80000000;
+
+		while (bit != 0)
+		{
+			IOPinClear(vCIPortNo, vCIPinNo);
+
+			if (*p & bit)
+			{
+				IOPinSet(vDIPortNo, vDIPinNo);
+			}
+			else
+			{
+				IOPinClear(vDIPortNo, vDIPinNo);
+			}
+			IOPinSet(vCIPortNo, vCIPinNo);
+			bit >>= 1;
+		}
+	}
+}
+
+void LedApa102::StopTx()
+{
+	// Stop frame
+	uint32_t bit = 0x80000000;
+	IOPinSet(vDIPortNo, vDIPinNo);
+	while (bit != 0)
+	{
+		IOPinClear(vCIPortNo, vCIPinNo);
+		usDelay(1);
+		IOPinSet(vCIPortNo, vCIPinNo);
+
+		bit >>= 1;
+	}
+}
 

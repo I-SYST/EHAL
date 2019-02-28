@@ -92,8 +92,13 @@ public:
 	 *
 	 * @param	pLevel : pointer to array of RGB LED to set
 	 * @param 	NbLeds : Number of LED to set.
+	 * @param	Repeat : Repeat count.
 	 */
-	virtual void Level(uint32_t *pVal, int NbLeds);
+	virtual void Level(uint32_t * const pVal, int NbLeds, int Repeat = 0);
+
+	void StartTx();
+	void TxData(uint32_t * const pData, int DataLen);
+	void StopTx();
 
 private:
 	int vNbLed;			//!< Total number of Led in strip
