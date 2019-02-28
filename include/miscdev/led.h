@@ -107,8 +107,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   * @{
   */
 
-#define LED_PIN_MAX			4
-
 /// LED types
 typedef enum __LED_Type {
 	LED_TYPE_GPIO,			//!< Single led Gpio On/Off
@@ -150,6 +148,32 @@ public:
 	 * Toggle or invert all LED dimming level
 	 */
 	virtual void Toggle() = 0;
+
+	/**
+	 * @brief	Set LED level
+	 *
+	 * This function set the dimming level of the LED 0-255.  On multi-color LED can be
+	 * used to mix color.  Usually used for PWM analog led
+	 *
+	 * @param Level	: LED dimming Level 0-255.  0 = Off, 255 = 100% On. Up to 4 LEDs can be dimmed.
+	 * 					Bits 0-7  	: LED 0
+	 * 					Bits 8-15 	: LED 1
+	 * 					Bits 16-23	: LED 2
+	 * 					Bits 24-31	: LED 3
+	 *
+	 */
+	virtual void Level(uint32_t Level) {}
+
+	/**
+	 * @brief	Set LED level for strip LED.
+	 *
+	 * This function sets the levels strip RGB strip LED.  These LEDs are monrally
+	 * controlled via a serial interface.
+	 *
+	 * @param	pLevel : pointer to array of RGB LED to set
+	 * @param 	NbLeds : Number of LED to set.
+	 */
+	virtual void Level(uint32_t *pLevel, int NbLeds) {}
 
 	/**
 	 * Get LED type
@@ -209,6 +233,8 @@ private:
 	int vPin;
 	LED_LOGIC vActLevel;
 };
+
+#define LEDPWM_MAX			4	//!< Max number of LEDs supported by LedPwm
 
 /// Led type controlled by PWM
 class LedPwm : public LedDevice {
@@ -280,7 +306,7 @@ private:
 	uint32_t vLevel;
 	int	vNbLeds;
 	Pwm *vpPwm;
-	PWM_CHAN_CFG vPwmChanCfg[LED_PIN_MAX];
+	PWM_CHAN_CFG vPwmChanCfg[LEDPWM_MAX];
 };
 
 /** @} end group IMU */

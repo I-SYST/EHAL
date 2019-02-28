@@ -466,6 +466,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/led.h</locationURI>
 		</link>
 		<link>
+			<name>include/miscdev/led_apa102.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/led_apa102.h</locationURI>
+		</link>
+		<link>
 			<name>include/miscdev/modem.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/modem.h</locationURI>
@@ -609,6 +614,11 @@
 			<name>src/imu/imu_mpu9250.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/imu/imu_mpu9250.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/miscdev/led_apa102.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/led_apa102.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/miscdev/led_gpio.cpp</name>
