@@ -222,28 +222,28 @@ void BlePeriphDiscEvtHandler(ble_evt_t const *p_ble_evt, void *p_context)
             if (p_ble_gattc_evt->gatt_status == BLE_GATT_STATUS_SUCCESS)
             {
             	const ble_gattc_evt_desc_disc_rsp_t * p_desc_disc_rsp_evt = &(p_ble_gattc_evt->params.desc_disc_rsp);
-            	//printf("Desc cnt %d\r\n", p_desc_disc_rsp_evt->count);
+
             	for (int i = 0; i < p_desc_disc_rsp_evt->count; i++)
             	{
                     switch (p_desc_disc_rsp_evt->descs[i].uuid.uuid)
                     {
                         case BLE_UUID_DESCRIPTOR_CLIENT_CHAR_CONFIG:
-                            periph->Services[s_CurSrvcIdx].charateristics[periph->Services[s_CurSrvcIdx].char_count].cccd_handle = p_desc_disc_rsp_evt->descs[i].handle;
+                            periph->Services[s_CurSrvcIdx].charateristics[s_CurCharIdx].cccd_handle = p_desc_disc_rsp_evt->descs[i].handle;
                             s_CurRange.start_handle++;
                             break;
 
                         case BLE_UUID_DESCRIPTOR_CHAR_EXT_PROP:
-                            periph->Services[s_CurSrvcIdx].charateristics[periph->Services[s_CurSrvcIdx].char_count].ext_prop_handle = p_desc_disc_rsp_evt->descs[i].handle;
+                            periph->Services[s_CurSrvcIdx].charateristics[s_CurCharIdx].ext_prop_handle = p_desc_disc_rsp_evt->descs[i].handle;
                             s_CurRange.start_handle++;
                             break;
 
                         case BLE_UUID_DESCRIPTOR_CHAR_USER_DESC:
-                            periph->Services[s_CurSrvcIdx].charateristics[periph->Services[s_CurSrvcIdx].char_count].user_desc_handle = p_desc_disc_rsp_evt->descs[i].handle;
+                            periph->Services[s_CurSrvcIdx].charateristics[s_CurCharIdx].user_desc_handle = p_desc_disc_rsp_evt->descs[i].handle;
                             s_CurRange.start_handle++;
                             break;
 
                         case BLE_UUID_REPORT_REF_DESCR:
-                            periph->Services[s_CurSrvcIdx].charateristics[periph->Services[s_CurSrvcIdx].char_count].report_ref_handle = p_desc_disc_rsp_evt->descs[i].handle;
+                            periph->Services[s_CurSrvcIdx].charateristics[s_CurCharIdx].report_ref_handle = p_desc_disc_rsp_evt->descs[i].handle;
                             s_CurRange.start_handle++;
                             break;
                         case BLE_UUID_CHARACTERISTIC:
@@ -280,7 +280,6 @@ void BlePeriphDiscEvtHandler(ble_evt_t const *p_ble_evt, void *p_context)
 					if (s_CurSrvcIdx < periph->NbSrvc)
 					{
 						s_CurRange = periph->Services[s_CurSrvcIdx].handle_range;
-						//printf("New1 range %x\r\n", s_CurRange);
 						uint32_t err = sd_ble_gattc_characteristics_discover(periph->ConnHdl, &s_CurRange);
 					}
 					else
@@ -295,7 +294,6 @@ void BlePeriphDiscEvtHandler(ble_evt_t const *p_ble_evt, void *p_context)
             }
             else
             {
-       			//printf("Desc Gatt status = %x\r\n", p_ble_gattc_evt->gatt_status);
     			s_CurCharIdx++;
 				if (s_CurCharIdx < periph->Services[s_CurSrvcIdx].char_count)
 				{
@@ -308,7 +306,6 @@ void BlePeriphDiscEvtHandler(ble_evt_t const *p_ble_evt, void *p_context)
 					if (s_CurSrvcIdx < periph->NbSrvc)
 					{
 						s_CurRange = periph->Services[s_CurSrvcIdx].handle_range;
-						//printf("New1 range %x\r\n", s_CurRange);
 						uint32_t err = sd_ble_gattc_characteristics_discover(periph->ConnHdl, &s_CurRange);
 					}
 					else

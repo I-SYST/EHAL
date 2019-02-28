@@ -452,11 +452,9 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
  */
 static void on_ble_evt(ble_evt_t const * p_ble_evt)
 {
-    uint32_t                         err_code;
-    ble_gap_evt_t        const * p_gap_evt = &p_ble_evt->evt.gap_evt;
+    uint32_t err_code;
+    ble_gap_evt_t const * p_gap_evt = &p_ble_evt->evt.gap_evt;
     uint16_t role = ble_conn_state_role(p_ble_evt->evt.gap_evt.conn_handle);
-
-//    printf("on_ble_evt %x\r\n", p_ble_evt->header.evt_id);
 
     switch (p_ble_evt->header.evt_id)
     {
@@ -465,20 +463,12 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
         	BleConnLedOn();
         	g_BleAppData.ConnHdl = p_ble_evt->evt.gap_evt.conn_handle;
 
-        	if (role == BLE_GAP_ROLE_CENTRAL)
-            {
-        		//printf("Start Discovery\r\n");
-        		//memset(&s_DbDiscovery, 0x00, sizeof(ble_db_discovery_t));
-
-        		//BlePeriphDiscService(g_BleAppData.ConnHdl, NULL);
-            }
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
         	BleConnLedOff();
         	g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
-        	//err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
-           // APP_ERROR_CHECK(err_code);
+
         	break;
 
         case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
@@ -694,7 +684,6 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
     ret_code_t err_code;
     uint16_t role = ble_conn_state_role(p_evt->conn_handle);
 
-//    printf("pm_evt_handler %x\r\n", p_evt->evt_id);
     switch (p_evt->evt_id)
     {
 		case PM_EVT_BONDED_PEER_CONNECTED:
@@ -804,87 +793,6 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
     }
 }
 
-/**@brief Function for handling database discovery events.
- *
- * @details This function is callback function to handle events from the database discovery module.
- *          Depending on the UUIDs that are discovered, this function should forward the events
- *          to their respective services.
- *
- * @param[in] p_event  Pointer to the database discovery event.
- */
-#if 0
-static void BleAppDBDiscoveryHandler(ble_db_discovery_evt_t * p_evt)
-{
-    ble_gatt_db_char_t * p_chars = p_evt->params.discovered_db.charateristics;
-
-    printf("BleAppDBDiscoveryHandler %d %d %d\r\n", p_evt->evt_type, s_DbDiscovery.discovery_in_progress,
-    		s_DbDiscovery.discovery_pending);
-    if (p_evt->evt_type == BLE_DB_DISCOVERY_COMPLETE)// && s_DbDiscovery.discovery_in_progress == false)
-    {
-    	BLEPERIPH_DEV dev;
-
-    	dev.ConnHdl = p_evt->conn_handle;
-    	dev.NbSrvc = s_DbDiscovery.discoveries_count;
-		//memcpy(dev.Srvc, s_DbDiscovery.services,
-		//	   s_DbDiscovery.discoveries_count * sizeof(ble_gatt_db_srv_t));
-		printf("Srv count : %d\r\n", s_DbDiscovery.discoveries_count);
-
-		BleDevDiscovered(&dev);
-/*
-		g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].ConnHdl = p_evt->conn_handle;
-		g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].SrvcCnt = s_DbDiscovery.srv_count;
-		memcpy(g_BleAppData.pPeriphDev[g_BleAppData.PeriphDevCnt].Srvc, s_DbDiscovery.services,
-				s_DbDiscovery.srv_count * sizeof(ble_gatt_db_srv_t));
-
-        uint32_t i;
-
-        for (i = 0; i < p_evt->params.discovered_db.char_count; i++)
-        {
-        	if (p_chars[i].characteristic.char_props.notify)
-        	{
-        	    uint32_t                 err_code;
-        	    ble_gattc_write_params_t write_params;
-        	    uint8_t                  buf[BLE_CCCD_VALUE_LEN];
-
-        	    buf[0] = BLE_GATT_HVX_NOTIFICATION;
-        	    buf[1] = 0;
-
-        	    write_params.write_op = BLE_GATT_OP_WRITE_REQ;
-        	    write_params.handle   = p_chars[i].cccd_handle;
-        	    write_params.offset   = 0;
-        	    write_params.len      = sizeof(buf);
-        	    write_params.p_value  = buf;
-
-        	    err_code = sd_ble_gattc_write(p_evt->conn_handle, &write_params);
-        	    APP_ERROR_CHECK(err_code);
-        	}*/
-        	/*
-            switch (p_chars[i].characteristic.uuid.uuid)
-            {
-                case BLE_UUID_NUS_RX_CHARACTERISTIC:
-                    nus_c_evt.handles.nus_rx_handle = p_chars[i].characteristic.handle_value;
-                    break;
-
-                case BLE_UUID_NUS_TX_CHARACTERISTIC:
-                    nus_c_evt.handles.nus_tx_handle = p_chars[i].characteristic.handle_value;
-                    nus_c_evt.handles.nus_tx_cccd_handle = p_chars[i].cccd_handle;
-                    break;
-
-                default:
-                    break;
-            }
-        }
-        if (p_ble_nus_c->evt_handler != NULL)
-        {
-            nus_c_evt.conn_handle = p_evt->conn_handle;
-            nus_c_evt.evt_type    = BLE_NUS_C_EVT_DISCOVERY_COMPLETE;
-            p_ble_nus_c->evt_handler(p_ble_nus_c, &nus_c_evt);
-        }*/
-//        }
-    }
-}
-#endif
-
 /**@brief Function for dispatching a SoftDevice event to all modules with a SoftDevice
  *        event handler.
  *
@@ -896,8 +804,6 @@ static void BleAppDBDiscoveryHandler(ble_db_discovery_evt_t * p_evt)
 static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
 {
     uint16_t role = ble_conn_state_role(p_ble_evt->evt.gap_evt.conn_handle);
-
-//    printf("evt %d\r\n", p_ble_evt->header.evt_id);
 
     if ((role == BLE_GAP_ROLE_CENTRAL) || /*(p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT) ||*/ g_BleAppData.AppRole & BLEAPP_ROLE_CENTRAL)
     {
@@ -1346,7 +1252,7 @@ static void fds_evt_handler(fds_evt_t const * const p_fds_evt)
 {
     if (p_fds_evt->id == FDS_EVT_GC)
     {
-        printf("GC completed");
+//        printf("GC completed");
     }
 }
 
@@ -1633,7 +1539,7 @@ void BleAppRun()
 void BleAppScan()
 {
 	ret_code_t err_code;
-//printf("BleAppScan %x\r\n", g_BleAppData.bScan);
+
 	if (g_BleAppData.bScan == true)
 	{
 		err_code = sd_ble_gap_scan_start(NULL, &g_BleScanReportData);
@@ -1692,7 +1598,8 @@ bool BleAppEnableNotify(uint16_t ConnHandle, uint16_t CharHandle)//ble_uuid_t * 
     buf[0] = BLE_GATT_HVX_NOTIFICATION;
     buf[1] = 0;
 
-    write_params.write_op = BLE_GATT_OP_WRITE_REQ;
+    write_params.write_op = BLE_GATT_OP_WRITE_CMD;//BLE_GATT_OP_WRITE_REQ;
+    write_params.flags = BLE_GATT_EXEC_WRITE_FLAG_PREPARED_WRITE,
     write_params.handle   = CharHandle;
     write_params.offset   = 0;
     write_params.len      = sizeof(buf);
