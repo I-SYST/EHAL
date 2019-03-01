@@ -39,6 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <inttypes.h>
 
 #include "blueio_types.h"
+#include "ble_app.h"
 #include "ble_service.h"
 #include "coredev/i2c.h"
 #include "coredev/spi.h"
@@ -69,7 +70,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //    #define BLE_NUSUART_MAX_DATA_LEN (BLE_GATT_MTU_SIZE_DEFAULT - OPCODE_LENGTH - HANDLE_LENGTH)
 //    #warning NRF_SDH_BLE_GATT_MAX_MTU_SIZE is not defined.
 //#endif
-#define BLE_NUSUART_MAX_DATA_LEN		21
+#define BLE_NUSUART_MAX_DATA_LEN		(NRF_BLE_MAX_MTU_SIZE - 3)
 
 #define BLE_NUS_MAX_RX_CHAR_LEN        	BLE_NUS_MAX_DATA_LEN	/**< Maximum length of the RX Characteristic (in bytes). */
 #define BLE_NUS_MAX_TX_CHAR_LEN        	BLE_NUS_MAX_DATA_LEN	/**< Maximum length of the TX Characteristic (in bytes). */

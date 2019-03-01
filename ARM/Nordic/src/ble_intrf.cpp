@@ -39,8 +39,8 @@ Modified by          Date              Description
 #include "ble_intrf.h"
 #include "ble_app.h"
 
-#define NRFBLEINTRF_PACKET_SIZE		(NRF_BLE_MAX_MTU_SIZE - 3)
-#define NRFBLEINTRF_CFIFO_SIZE		CFIFO_TOTAL_MEMSIZE(2, NRFBLEINTRF_PACKET_SIZE + sizeof(BLEINTRF_PKT) - 1)
+#define NRFBLEINTRF_PACKET_SIZE		((NRF_BLE_MAX_MTU_SIZE - 3) + sizeof(BLEINTRF_PKT) - 1)
+#define NRFBLEINTRF_CFIFO_SIZE		CFIFO_TOTAL_MEMSIZE(2, NRFBLEINTRF_PACKET_SIZE)
 
 alignas(4) static uint8_t s_nRFBleRxFifoMem[NRFBLEINTRF_CFIFO_SIZE];
 alignas(4) static uint8_t s_nRFBleTxFifoMem[NRFBLEINTRF_CFIFO_SIZE];
