@@ -181,7 +181,7 @@ void TphMS8607::Reset()
 
 bool TphMS8607::Read(TPHSENSOR_DATA &TphData)
 {
-	bool retval = false;
+//	bool retval = false;
 
 // TODO: Create UpdateData function
 // so that we get correct timestamp
@@ -256,7 +256,7 @@ float TphMS8607::ReadPressure()
 
 		int64_t off  = ((int64_t)vPTProm[2] << 17LL) + (((int64_t)vPTProm[4] * vCurDT) >> 6LL);
 		int64_t sens = ((int64_t)vPTProm[1] << 16LL) + (((int64_t)vPTProm[3] * vCurDT) >> 7LL);
-		int64_t t2;
+		//int64_t t2;
 		int64_t off2, sens2;
 
 		// Second order compensation

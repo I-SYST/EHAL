@@ -798,7 +798,7 @@ bool AgmMpu9250::UpdateData()
 	uint8_t d[32];
 	uint16_t val;
 	uint16_t cnt;
-	uint64_t t;
+	uint64_t t = 0;
 
 	//vSampleCnt++;
 
@@ -1125,22 +1125,23 @@ void AgmMpu9250::ResetFifo()
 
 bool AgmMpu9250::InitDMP(uint32_t DmpStartAddr, uint8_t * const pDmpImage, int Len)
 {
-	bool res;
+	bool res = false;
 	uint8_t regaddr;
 	uint8_t d[2];
-	uint8_t intval;
+//	uint8_t intval;
 
-	if (pDmpImage)
-	{
-		// load external image
-		res = UploadDMPImage(pDmpImage, Len);
-		d[0] = DmpStartAddr >> 8;//DMP_START_ADDR >> 8;
-		d[1] = DmpStartAddr & 0xFF;//DMP_START_ADDR & 0xFF;
-	}
+	if (pDmpImage == NULL || Len == 0)
+		return false;
+
+	// load external image
+	res = UploadDMPImage(pDmpImage, Len);
 
 	if (res)
 	{
 		vbDmpEnabled = true;
+
+		d[0] = DmpStartAddr >> 8;//DMP_START_ADDR >> 8;
+		d[1] = DmpStartAddr & 0xFF;//DMP_START_ADDR & 0xFF;
 
 		// Write DMP program start address
 		regaddr = MPU9250_DMP_PROG_START;
