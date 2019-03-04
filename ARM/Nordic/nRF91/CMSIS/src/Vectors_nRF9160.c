@@ -96,7 +96,7 @@ __attribute__((weak, alias("DEF_IRQHandler"))) void FPU_IRQHandler(void);
  *
  */
 __attribute__ ((section(".intvect"), used))
-void (* const g_Vectors[256])(void) =
+void (* const g_Vectors[200])(void) =
 {
 	(void (*) )((int32_t)&__StackTop),
 	ResetEntry,
