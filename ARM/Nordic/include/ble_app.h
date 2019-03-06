@@ -226,6 +226,7 @@ void BleAppDisconnect();
 bool BleAppScanInit(ble_uuid128_t * const pBaseUid, ble_uuid_t * const pServUid);
 //bool BleAppScanStart();
 void BleAppScan();
+void BleAppScanStop();
 bool BleAppConnect(ble_gap_addr_t * const pDevAddr, ble_gap_conn_params_t * const pConnParam);
 bool BleAppEnableNotify(uint16_t ConnHandle, uint16_t CharHandle);
 bool BleAppWrite(uint16_t ConnHandle, uint16_t CharHandle, uint8_t *pData, uint16_t DatLen);
