@@ -1555,9 +1555,12 @@ void BleAppScan()
 
 void BleAppScanStop()
 {
-	ret_code_t err_code = sd_ble_gap_scan_stop();
-	APP_ERROR_CHECK(err_code);
-    g_BleAppData.bScan = false;
+	if (g_BleAppData.bScan == true)
+	{
+		ret_code_t err_code = sd_ble_gap_scan_stop();
+		APP_ERROR_CHECK(err_code);
+		g_BleAppData.bScan = false;
+	}
 }
 
 bool BleAppScanInit(ble_uuid128_t * const pBaseUid, ble_uuid_t * const pServUid)
