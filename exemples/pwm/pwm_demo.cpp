@@ -1,5 +1,5 @@
 /**-------------------------------------------------------------------------
-@file	PwmDemo.cpp
+@example	pwm_demo.cpp
 
 @brief	Example code using PWM (Pulse Width Modulation)
 
