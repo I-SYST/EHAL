@@ -86,6 +86,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/nrfx</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/FreeRTOS/portable/Common</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -97,6 +102,16 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK/freertos/source</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/nrfx/drivers</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/nrfx/legacy</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -141,6 +156,16 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/external/freertos/source/timers.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/nrfx/drivers/src</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/nrfx/legacy/nrf_drv_clock.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/integration/nrfx/legacy/nrf_drv_clock.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/freertos/portable/CMSIS/nrf52</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -154,6 +179,11 @@
 			<name>src/nRF5_SDK/freertos/source/portable/MemMang</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/nrfx/drivers/src/nrfx_clock.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/modules/nrfx/drivers/src/nrfx_clock.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/freertos/portable/CMSIS/nrf52/port_cmsis.c</name>

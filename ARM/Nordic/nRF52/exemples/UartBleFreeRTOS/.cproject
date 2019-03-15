@@ -137,9 +137,9 @@
                                     									
                                     <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_log&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/log&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_log/src&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/log/src&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
                                     									
@@ -167,7 +167,7 @@
                                     									
                                     <listOptionValue builtIn="false" value="BOARD_CUSTOM"/>
                                     									
-                                    <listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=5"/>
+                                    <listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=6"/>
                                     									
                                     <listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
                                     									
@@ -241,9 +241,9 @@
                                     									
                                     <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_log&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/log&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_log/src&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/log/src&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
                                     									
@@ -271,7 +271,7 @@
                                     									
                                     <listOptionValue builtIn="false" value="BOARD_CUSTOM"/>
                                     									
-                                    <listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=5"/>
+                                    <listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=6"/>
                                     									
                                     <listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
                                     									
@@ -388,12 +388,6 @@
                         </toolChain>
                         					
                     </folderInfo>
-                    					
-                    <fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.481764080.1745222626" name="mpu_wrappers.c" rcbsApplicability="disable" resourcePath="src/FreeRTOS/portable/Common/mpu_wrappers.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.420253410.1056515994">
-                        						
-                        <tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.420253410.1056515994" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.420253410"/>
-                        					
-                    </fileInfo>
                     					
                     <sourceEntries>
                         						
@@ -543,9 +537,9 @@
                                     									
                                     <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_log&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/log&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_log/src&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/log/src&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
                                     									
@@ -573,7 +567,7 @@
                                     									
                                     <listOptionValue builtIn="false" value="BOARD_CUSTOM"/>
                                     									
-                                    <listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=5"/>
+                                    <listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=6"/>
                                     									
                                     <listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
                                     									
@@ -647,9 +641,9 @@
                                     									
                                     <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/scheduler&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_log&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/log&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_log/src&quot;"/>
+                                    <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/log/src&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;../../../../../../../external/nRF5_SDK/components/libraries/experimental_section_vars&quot;"/>
                                     									
@@ -677,7 +671,7 @@
                                     									
                                     <listOptionValue builtIn="false" value="BOARD_CUSTOM"/>
                                     									
-                                    <listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=5"/>
+                                    <listOptionValue builtIn="false" value="NRF_SD_BLE_API_VERSION=6"/>
                                     									
                                     <listOptionValue builtIn="false" value="SOFTDEVICE_PRESENT"/>
                                     									
