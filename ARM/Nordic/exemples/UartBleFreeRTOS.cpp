@@ -49,10 +49,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "istddef.h"
 #include "ble_app.h"
 #include "ble_service.h"
+#include "bluetooth/blueio_blesrvc.h"
 #include "blueio_board.h"
-#include "uart.h"
+#include "coredev/uart.h"
 #include "custom_board.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "iopinctrl.h"
 #include "board.h"
 
@@ -149,41 +150,38 @@ const BLEAPP_DEVDESC s_UartBleDevDesc {
 uint32_t SD_FreeRTOS_Handler(void);
 
 const BLEAPP_CFG s_BleAppCfg = {
-	{ // Clock config nrf_clock_lf_cfg_t
 #ifdef IMM_NRF51822
-		NRF_CLOCK_LF_SRC_RC,	// Source RC
-		1, 1, 0
+		.ClkCfg = { NRF_CLOCK_LF_SRC_RC, 1, 1, 0},
 #else
-		NRF_CLOCK_LF_SRC_XTAL,	// Source 32KHz XTAL
-		0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM
+		.ClkCfg = { NRF_CLOCK_LF_SRC_XTAL, 0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM},
 #endif
-
-	},
-	0, 						// Number of central link
-	1, 						// Number of peripheral link
-	BLEAPP_MODE_RTOS,//BLEAPP_MODE_APPSCHED,   // Use scheduler
-	DEVICE_NAME,                 // Device name
-	ISYST_BLUETOOTH_ID,     // PnP Bluetooth/USB vendor id
-	1,                      // PnP Product ID
-	0,						// Pnp prod version
-	true,					// Enable device information service (DIS)
-	&s_UartBleDevDesc,
-	g_ManData,              // Manufacture specific data to advertise
-	sizeof(g_ManData),      // Length of manufacture specific data
-	BLEAPP_SECTYPE_STATICKEY_MITM,//BLEAPP_SECTYPE_NONE,    // Secure connection type
-	BLEAPP_SECEXCHG_NONE,   // Security key exchange
-	NULL,      				// Service uuids to advertise
-	0, 						// Total number of uuids
-	APP_ADV_INTERVAL,       // Advertising interval in msec
-	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
-	0,                          // Slow advertising interval, if > 0, fallback to
-								// slow interval on adv timeout and advertise until connected
-	MIN_CONN_INTERVAL,
-	MAX_CONN_INTERVAL,
-	BLUEIO_CONNECT_LED_PORT,    // Led port nuber
-	BLUEIO_CONNECT_LED_PIN,     // Led pin number
-	0,							// Tx power
-	SD_FreeRTOS_Handler,		// RTOS Softdevice handler
+	.CentLinkCount = 0, 				// Number of central link
+	.PeriLinkCount = 1, 				// Number of peripheral link
+	.AppMode = BLEAPP_MODE_RTOS,		//BLEAPP_MODE_APPSCHED,   // Use scheduler
+	.pDevName = DEVICE_NAME,			// Device name
+	.VendorID = ISYST_BLUETOOTH_ID,		// PnP Bluetooth/USB vendor id
+	.ProductId = 1,						// PnP Product ID
+	.ProductVer = 0,					// Pnp prod version
+	.bEnDevInfoService = true,			// Enable device information service (DIS)
+	.pDevDesc = &s_UartBleDevDesc,
+	.pAdvManData = g_ManData,			// Manufacture specific data to advertise
+	.AdvManDataLen = sizeof(g_ManData),	// Length of manufacture specific data
+	.pSrManData = NULL,
+	.SrManDataLen = 0,
+	.SecType = BLEAPP_SECTYPE_NONE,//BLEAPP_SECTYPE_STATICKEY_MITM,//BLEAPP_SECTYPE_NONE,    // Secure connection type
+	.SecExchg = BLEAPP_SECEXCHG_NONE,	// Security key exchange
+	.pAdvUuids = NULL,      			// Service uuids to advertise
+	.NbAdvUuid = 0, 					// Total number of uuids
+	.AdvInterval = APP_ADV_INTERVAL,	// Advertising interval in msec
+	.AdvTimeout = 0,		// Advertising timeout in sec
+	.AdvSlowInterval = 0,				// Slow advertising interval, if > 0, fallback to
+										// slow interval on adv timeout and advertise until connected
+	.ConnIntervalMin = MIN_CONN_INTERVAL,
+	.ConnIntervalMax = MAX_CONN_INTERVAL,
+	.ConnLedPort = BLUEIO_CONNECT_LED_PORT,// Led port nuber
+	.ConnLedPin = BLUEIO_CONNECT_LED_PIN,// Led pin number
+	.TxPower = 0,						// Tx power
+	.SDEvtHandler = SD_FreeRTOS_Handler,		// RTOS Softdevice handler
 };
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
@@ -198,18 +196,23 @@ static IOPINCFG s_UartPins[] = {
 };
 
 const UARTCFG g_UartCfg = {
-	0,
-	s_UartPins,
-	sizeof(s_UartPins) / sizeof(IOPINCFG),
-	1000000,
-	8,
-	UART_PARITY_NONE,
-	1,	// Stop bit
-	UART_FLWCTRL_NONE,
-	true,
-	APP_IRQ_PRIORITY_LOW,
-	nRFUartEvthandler,
-	false,
+	.DevNo = 0,
+	.pIoMap = s_UartPins,
+	.IoMapLen = sizeof(s_UartPins) / sizeof(IOPINCFG),
+	.Rate = 1000000,			// Rate
+	.DataBits = 8,
+	.Parity = UART_PARITY_NONE,
+	.StopBits = 1,					// Stop bit
+	.FlowControl = UART_FLWCTRL_NONE,
+	.bIntMode = true,
+	.IntPrio = APP_IRQ_PRIORITY_LOW, 					// use APP_IRQ_PRIORITY_LOW with Softdevice
+	.EvtCallback = nRFUartEvthandler,
+	.bFifoBlocking = true,				// fifo blocking mode
+	.RxMemSize = 0,
+	.pRxMem = NULL,
+	.TxMemSize = 0,
+	.pTxMem = NULL,
+	.bDMAMode = true,
 };
 
 // UART object instance
@@ -362,6 +365,8 @@ static void RxTask(void * pvParameter)
 /* This function gets events from the SoftDevice and processes them. */
 static void BleTask(void * pvParameter)
 {
+	g_Uart.printf("UART over BLE with FreeRTOS\r\n");
+
     BleAppRun();
 }
 
