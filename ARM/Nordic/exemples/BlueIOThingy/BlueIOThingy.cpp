@@ -152,49 +152,6 @@ static const ble_uuid_t  s_AdvUuids[] = {
     {BLE_UUID_TCS_SERVICE, BLE_UUID_TYPE_VENDOR_BEGIN}
 };
 
-#if 0
-static const BLEAPP_CFG s_BleAppCfg = {
-	{ // Clock config nrf_clock_lf_cfg_t
-#ifdef IMM_NRF51822
-		NRF_CLOCK_LF_SRC_RC,	// Source RC
-		1, 1, 0
-#else
-		NRF_CLOCK_LF_SRC_XTAL,	// Source 32KHz XTAL
-		0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM
-#endif
-
-	},
-	0, 						// Number of central link
-	1, 						// Number of peripheral link
-	BLEAPP_MODE_APPSCHED,   	// Connectionless beacon type
-	DEVICE_NAME,         	// Device name
-	ISYST_BLUETOOTH_ID,    	// PnP Bluetooth/USB vendor id
-	1,                     	// PnP Product ID
-	0,						// Pnp prod version
-	false,					// Enable device information service (DIS)
-	NULL,
-	(uint8_t*)&g_AdvDataBuff,	// Manufacture specific data to advertise
-	sizeof(g_AdvDataBuff),  // Length of manufacture specific data
-	NULL,					// Manufacture specific data to advertise
-	0,  					// Length of manufacture specific data
-	BLEAPP_SECTYPE_NONE,    // Secure connection type
-	BLEAPP_SECEXCHG_NONE,   // Security key exchange
-	s_AdvUuids,      		// Service uuids to advertise
-	sizeof(s_AdvUuids) / sizeof(ble_uuid_t), 						// Total number of uuids
-	APP_ADV_INTERVAL,       // Advertising interval in msec
-	APP_ADV_TIMEOUT_IN_SECONDS,	// Advertising timeout in sec
-	0,                      // Slow advertising interval, if > 0, fallback to
-							// slow interval on adv timeout and advertise until connected
-	MIN_CONN_INTERVAL,
-	MAX_CONN_INTERVAL,
-	BLUEIO_LED1_PORT,		// Led port nuber
-	BLUEIO_LED1_PIN,     	// Led pin number
-	0, 						// Tx power
-	NULL,					// RTOS Softdevice handler
-	53,
-};
-#endif
-
 const BLEAPP_CFG s_BleAppCfg = {
 #ifdef IMM_NRF51822
 		.ClkCfg = { NRF_CLOCK_LF_SRC_RC, 1, 1, 0},
@@ -226,6 +183,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 	.ConnIntervalMax = MAX_CONN_INTERVAL,
 	.ConnLedPort = BLUEIO_CONNECT_LED_PORT,// Led port nuber
 	.ConnLedPin = BLUEIO_CONNECT_LED_PIN,// Led pin number
+	.ConnLedActLevel = 0,
 	.TxPower = 0,						// Tx power
 	.SDEvtHandler = NULL,				// RTOS Softdevice handler
 	.MaxMtu = 53,
@@ -260,22 +218,22 @@ static const IOPINCFG s_SpiPins[] = {
 };
 
 static const SPICFG s_SpiCfg = {
-    SPI2_DEVNO,
-	SPITYPE_NORMAL,
-    SPIMODE_MASTER,
-    s_SpiPins,
-    sizeof(s_SpiPins) / sizeof(IOPINCFG),
-    1000000,   // Speed in Hz
-    8,      // Data Size
-    5,      // Max retries
-    SPIDATABIT_MSB,
-    SPIDATAPHASE_SECOND_CLK, // Data phase
-    SPICLKPOL_LOW,         // clock polarity
-    SPICSEL_AUTO,
-	true,
-	false,
-    APP_IRQ_PRIORITY_LOW,      // Interrupt priority
-    NULL
+    .DevNo = SPI2_DEVNO,
+	.Type = SPITYPE_NORMAL,
+    .Mode = SPIMODE_MASTER,
+    .pIOPinMap = s_SpiPins,
+    .NbIOPins = sizeof(s_SpiPins) / sizeof(IOPINCFG),
+    .Rate = 1000000,   // Speed in Hz
+    .DataSize = 8,      // Data Size
+    .MaxRetry = 5,      // Max retries
+    .BitOrder = SPIDATABIT_MSB,
+    .DataPhase = SPIDATAPHASE_SECOND_CLK, // Data phase
+    .ClkPol = SPICLKPOL_LOW,         // clock polarity
+    .ChipSel = SPICSEL_AUTO,
+	.bDmaEn = true,
+	.bIntEn = false,
+    .IntPrio = APP_IRQ_PRIORITY_LOW,      // Interrupt priority
+    .EvtCB = NULL
 };
 
 SPI g_Spi;
@@ -284,9 +242,8 @@ SPI g_Spi;
 
 // Configure I2C interface
 static const I2CCFG s_I2cCfg = {
-	0,			// I2C device number
-	{
-
+	.DevNo = 0,			// I2C device number
+	.Pins = {
 #if defined(TPH_BME280) || defined(TPH_BME680)
 		{I2C0_SDA_PORT, I2C0_SDA_PIN, I2C0_SDA_PINOP, IOPINDIR_BI, IOPINRES_NONE, IOPINTYPE_NORMAL},
 		{I2C0_SCL_PORT, I2C0_SCL_PIN, I2C0_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
@@ -296,15 +253,15 @@ static const I2CCFG s_I2cCfg = {
 		{0, 3, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
 #endif
 	},
-	100000,		// Rate
-	I2CMODE_MASTER,
-	5,			// Retry
-	0,			// Number of slave addresses
-	{0,},		// Slave addresses
-	true,
-	false,		// use interrupt
-	APP_IRQ_PRIORITY_LOW,// Interrupt prio
-	NULL		// Event callback
+	.Rate = 100000,		// Rate
+	.Mode = I2CMODE_MASTER,
+	.MaxRetry = 5,			// Retry
+	.NbSlaveAddr = 0,			// Number of slave addresses
+	.SlaveAddr = {0,},		// Slave addresses
+	.bDmaEn = true,
+	.bIntEn = false,		// use interrupt
+	.IntPrio = APP_IRQ_PRIORITY_LOW,// Interrupt prio
+	.EvtCB = NULL		// Event callback
 };
 
 // I2C interface instance
@@ -315,16 +272,16 @@ I2C g_I2c;
 // Configure environmental sensor
 static TPHSENSOR_CFG s_TphSensorCfg = {
 #ifdef NEBLINA_MODULE
-    0,      // SPI CS index 0 connected to BME280
+	.DevAddr = 0,      // SPI CS index 0 connected to BME280
 #else
-	BME680_I2C_DEV_ADDR0,   // I2C device address
+	.DevAddr = BME680_I2C_DEV_ADDR0,   // I2C device address
 #endif
-	SENSOR_OPMODE_SINGLE,
-	100,						// Sampling frequency in mHz
-	1,
-	1,
-	1,
-	1
+	.OpMode = SENSOR_OPMODE_SINGLE,
+	.Freq = 100,						// Sampling frequency in mHz
+	.TempOvrs = 1,
+	.PresOvrs = 1,
+	.HumOvrs = 1,
+	.FilterCoeff = 1,
 };
 
 static const GASSENSOR_HEAT s_HeaterProfile[] = {
