@@ -53,7 +53,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /// @brief	Temperature sensor data
 ///
-/// Structure defining temperature sensordata
+/// Structure defining temperature sensor data
 typedef struct __TemperatureSensor_Data {
 	uint64_t Timestamp;		//!< Time stamp count in usec
 	int32_t  Temperature;	//!< Temperature in degree C, 2 decimals fixed point
@@ -63,19 +63,21 @@ typedef struct __TemperatureSensor_Data {
 
 class TempSensor;
 
-typedef void (*TEMPSENSOR_EVTCB)(TempSensor * const pSensor, TEMPSENSOR_DATA *pData);
+typedef void (*TEMPDATRDY_EVTCB)(TempSensor * const pSensor, TEMPSENSOR_DATA *pData);
 
 #pragma pack(push, 4)
 
 /// @brief	Temperature sensor configuration
 ///
 typedef struct __TempSensor_Config {
-	uint32_t		DevAddr;		//!< Either I2C dev address or CS index select if SPI is used
-	SENSOR_OPMODE 	OpMode;			//!< Operating mode
-	uint32_t		Freq;			//!< Sampling frequency in mHz (milliHerz) if continuous mode is used
-	int				TempOvrs;		//!< Oversampling measurement for temperature
-	uint32_t		FilterCoeff;	//!< Filter coefficient select value (this value is device dependent)
-	TEMPSENSOR_EVTCB EvtHandler;	//!< Event handler
+	uint32_t DevAddr;			//!< Either I2C dev address or CS index select if SPI is used
+	SENSOR_OPMODE OpMode;		//!< Operating mode
+	uint32_t Freq;				//!< Sampling frequency in mHz (milliHerz) if continuous mode is used
+	uint32_t IntPrio;			//!< Interrupt priority
+	bool bIntEn;				//!< Interrupt enable
+	int	TempOvrs;				//!< Oversampling measurement for temperature
+	uint32_t FilterCoeff;		//!< Filter coefficient select value (this value is device dependent)
+	TEMPDATRDY_EVTCB DataRdyCB;	//!< Data ready handler
 } TEMPSENSOR_CFG;
 
 #pragma pack(pop)
@@ -125,8 +127,8 @@ public:
 
 protected:
 
-	TEMPSENSOR_DATA 	vData;			//!< Last measured data
-	TEMPSENSOR_EVTCB	vEvtHandler;	//!< Event handler
+	TEMPSENSOR_DATA	vData;				//!< Last measured data
+	TEMPDATRDY_EVTCB vDataRdyHandler;	//!< Data ready event handler
 };
 
 extern "C" {

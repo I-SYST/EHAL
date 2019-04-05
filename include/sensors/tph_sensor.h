@@ -65,7 +65,7 @@ typedef struct __TPHSensor_Data {
 
 class TphSensor;
 
-typedef void (*TPHDataRdyCB)(TphSensor * const pSensor, TPHSENSOR_DATA *pData);
+typedef void (*TPHDATRDY_EVTCB)(TphSensor * const pSensor, TPHSENSOR_DATA *pData);
 
 #pragma pack(push, 4)
 
@@ -79,7 +79,7 @@ typedef struct __TPHSensor_Config {
 	int				PresOvrs;		//!< Oversampling measurement for pressure
 	int 			HumOvrs;		//!< Oversampling measurement for humidity
 	uint32_t		FilterCoeff;	//!< Filter coefficient select value (this value is device dependent)
-	TPHDataRdyCB	DataRdyCB;		//!< Callback handler for data ready
+	TPHDATRDY_EVTCB	DataRdyCB;		//!< Callback handler for data ready
 } TPHSENSOR_CFG;
 
 #pragma pack(pop)
@@ -146,7 +146,7 @@ public:
 protected:
 
 	TPHSENSOR_DATA 	vTphData;			//!< Last measured data
-	TPHDataRdyCB	vDataRdyHandler;	//!< Callback data ready handler
+	TPHDATRDY_EVTCB	vDataRdyHandler;	//!< Callback data ready handler
 };
 
 extern "C" {
