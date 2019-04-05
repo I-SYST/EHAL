@@ -552,9 +552,12 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 		return false;
 	}
 
-
 	// Get the correct register map
 	reg = s_nRF52SPIDev[pCfgData->DevNo].pReg;
+
+	// Force power on in case it was powered off previously
+	*(volatile uint32_t *)((uint32_t)s_nRF52SPIDev[pCfgData->DevNo].pReg + 0xFFC);
+	*(volatile uint32_t *)((uint32_t)s_nRF52SPIDev[pCfgData->DevNo].pReg + 0xFFC) = 1;
 
 	// Configure I/O pins
 	IOPinCfg(pCfgData->pIOPinMap, pCfgData->NbIOPins);
@@ -598,10 +601,6 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	pDev->Cfg = *pCfgData;
 	s_nRF52SPIDev[pCfgData->DevNo].pSpiDev  = pDev;
 	pDev->DevIntrf.pDevData = (void*)&s_nRF52SPIDev[pCfgData->DevNo];
-
-	// Force power on in case it was powered off previously
-	*(volatile uint32_t *)((uint32_t)s_nRF52SPIDev[pCfgData->DevNo].pReg + 0xFFC);
-	*(volatile uint32_t *)((uint32_t)s_nRF52SPIDev[pCfgData->DevNo].pReg + 0xFFC) = 1;
 
 	nRF5xSPISetRate(&pDev->DevIntrf, pCfgData->Rate);
 

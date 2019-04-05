@@ -556,6 +556,10 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 	NRF_TWI_Type *reg = s_nRF5xI2CDev[pCfgData->DevNo].pReg;
 #endif
 
+	// Force power on in case it was powered off previously
+	*(volatile uint32_t *)((uint32_t)s_nRF5xI2CDev[pCfgData->DevNo].pReg + 0xFFC);
+	*(volatile uint32_t *)((uint32_t)s_nRF5xI2CDev[pCfgData->DevNo].pReg + 0xFFC) = 1;
+
 	memcpy(pDev->Pins, pCfgData->Pins, sizeof(IOPINCFG) * I2C_MAX_NB_IOPIN);
 
 	// Configure I/O pins
@@ -576,9 +580,6 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 	s_nRF5xI2CDev[pCfgData->DevNo].pI2cDev  = pDev;
 	pDev->DevIntrf.pDevData = (void*)&s_nRF5xI2CDev[pCfgData->DevNo];
 
-	// Force power on in case it was powered off previously
-	*(volatile uint32_t *)((uint32_t)s_nRF5xI2CDev[pCfgData->DevNo].pReg + 0xFFC);
-	*(volatile uint32_t *)((uint32_t)s_nRF5xI2CDev[pCfgData->DevNo].pReg + 0xFFC) = 1;
 
 	nRF5xI2CSetRate(&pDev->DevIntrf, pCfgData->Rate);
 

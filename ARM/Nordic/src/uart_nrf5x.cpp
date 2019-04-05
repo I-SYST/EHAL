@@ -635,6 +635,10 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 
 	int devno = pCfg->DevNo;
 
+	// Force power on in case it was powered off previously
+	*(volatile uint32_t *)((uint32_t)s_nRFUartDev[devno].pReg + 0xFFC);
+	*(volatile uint32_t *)((uint32_t)s_nRFUartDev[devno].pReg + 0xFFC) = 1;
+
 	if (pCfg->pRxMem && pCfg->RxMemSize > 0)
 	{
 		pDev->hRxFifo = CFifoInit(pCfg->pRxMem, pCfg->RxMemSize, 1, pCfg->bFifoBlocking);
@@ -660,10 +664,6 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 
 	pDev->DevIntrf.pDevData = &s_nRFUartDev[devno];
 	s_nRFUartDev[devno].pUartDev = pDev;
-
-	// Force power on in case it was powered off previously
-	*(volatile uint32_t *)((uint32_t)s_nRFUartDev[devno].pReg + 0xFFC);
-	*(volatile uint32_t *)((uint32_t)s_nRFUartDev[devno].pReg + 0xFFC) = 1;
 
 #ifdef NRF51
 	pDev->DevIntrf.bDma = false;	// DMA not avail on nRF51
