@@ -53,6 +53,7 @@ Modified by          Date              Description
 #include "ble_dis.h"
 #include "nrf_ble_gatt.h"
 #include "peer_manager.h"
+#include "nfc_ble_pair_lib.h"
 //#include "ble_db_discovery.h"
 #include "app_timer.h"
 #include "app_util_platform.h"
@@ -66,6 +67,7 @@ Modified by          Date              Description
 #include "nrf_crypto.h"
 #include "nrf_ble_lesc.h"
 #include "nrf_ble_scan.h"
+#include "nrf_drv_rng.h"
 
 //#include "nrf_crypto_keys.h"
 //#include "nrf_log.h"
@@ -638,6 +640,15 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             break;
 
          case BLE_GAP_EVT_AUTH_STATUS:
+             if (p_ble_evt->evt.gap_evt.params.auth_status.auth_status == BLE_GAP_SEC_STATUS_SUCCESS)
+             {
+                 printf("Authorization succeeded!");
+             }
+             else
+             {
+                 printf("Authorization failed with code: %u!",
+                              p_ble_evt->evt.gap_evt.params.auth_status.auth_status);
+             }
 /*             printf("%x : BLE_GAP_EVT_AUTH_STATUS: status=0x%x bond=0x%x lv4: %d kdist_own:0x%x kdist_peer:0x%x\r\n",
                           role,
                           p_ble_evt->evt.gap_evt.params.auth_status.auth_status,
@@ -890,7 +901,8 @@ static void BleAppPeerMngrInit(BLEAPP_SECTYPE SecType, uint8_t SecKeyExchg, bool
 
     if (SecKeyExchg & BLEAPP_SECEXCHG_OOB)
     {
-    		sec_param.oob = 1;
+    	sec_param.oob = 1;
+//    	nfc_ble_pair_init(&g_AdvInstance, NFC_PAIRING_MODE_JUST_WORKS);
     }
 
     err_code = pm_sec_params_set(&sec_param);
@@ -970,6 +982,7 @@ void BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int Sr
 
 	if (g_BleAppData.bAdvertising == true)
 	{
+		g_BleAppData.bAdvertising = false;
 		BleAppAdvStart(BLEAPP_ADVMODE_FAST);
 	}
 
@@ -986,7 +999,6 @@ void BleAppAdvStart(BLEAPP_ADVMODE AdvMode)
 	if (g_BleAppData.bAdvertising == true)
 		return;
 
-	g_BleAppData.bAdvertising = true;
 	if (g_BleAppData.AppMode == BLEAPP_MODE_NOCONNECT)
 	{
 		uint32_t err_code = sd_ble_gap_adv_start(g_AdvInstance.adv_handle, BLEAPP_CONN_CFG_TAG);
@@ -997,6 +1009,7 @@ void BleAppAdvStart(BLEAPP_ADVMODE AdvMode)
 		uint32_t err_code = ble_advertising_start(&g_AdvInstance, (ble_adv_mode_t)AdvMode);
 	    APP_ERROR_CHECK(err_code);
 	}
+	g_BleAppData.bAdvertising = true;
 }
 
 void BleAppAdvStop()
@@ -1418,8 +1431,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 			break;
     }
 
-	// initializing the cryptography module
-    //nrf_crypto_init();
+//    nrf_ble_lesc_init();
 
 	err_code = nrf_sdh_enable((nrf_clock_lf_cfg_t *)&pBleAppCfg->ClkCfg);
     APP_ERROR_CHECK(err_code);
