@@ -121,7 +121,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-uint8_t g_AdvDataBuff[9] = {
+uint8_t g_AdvDataBuff[10] = {
 	BLEADV_MANDATA_TYPE_TPH,
 };
 
@@ -365,7 +365,7 @@ void ReadPTHData()
 		// NOTE : M0 does not access unaligned data
 		// use local 4 bytes align stack variable then mem copy
 		// skip timestamp as advertising pack is limited in size
-		memcpy(&g_TPHData, ((uint8_t*)&data) + 8, sizeof(BLEADV_MANDATA_TPHSENSOR));
+		memcpy(&g_TPHData, ((uint8_t*)&data) + sizeof(data.Timestamp), sizeof(BLEADV_MANDATA_TPHSENSOR));
 	}
 
 
@@ -386,7 +386,7 @@ void ReadPTHData()
 
 void SchedAdvData(void * p_event_data, uint16_t event_size)
 {
-	//ReadPTHData();
+	ReadPTHData();
 }
 
 void AppTimerHandler(Timer *pTimer, int TrigNo, void *pContext)
@@ -444,9 +444,13 @@ void HardwareInit()
 
 	// Turn off all LEDs
 	IOPinSet(BLUEIO_LED1_PORT, BLUEIO_LED1_PIN);
-	IOPinSet(BLUEIO_TAG_EVIM_LED2_RED_PORT, BLUEIO_TAG_EVIM_LED2_RED_PIN);
-	IOPinSet(BLUEIO_TAG_EVIM_LED2_GREEN_PORT, BLUEIO_TAG_EVIM_LED2_GREEN_PIN);
-	IOPinSet(BLUEIO_TAG_EVIM_LED2_BLUE_PORT, BLUEIO_TAG_EVIM_LED2_BLUE_PIN);
+	IOPinClear(BLUEIO_TAG_EVIM_LED2_RED_PORT, BLUEIO_TAG_EVIM_LED2_RED_PIN);
+	IOPinClear(BLUEIO_TAG_EVIM_LED2_GREEN_PORT, BLUEIO_TAG_EVIM_LED2_GREEN_PIN);
+	IOPinClear(BLUEIO_TAG_EVIM_LED2_BLUE_PORT, BLUEIO_TAG_EVIM_LED2_BLUE_PIN);
+
+	//IOPinSet(BLUEIO_TAG_EVIM_LED2_RED_PORT, BLUEIO_TAG_EVIM_LED2_RED_PIN);
+	//IOPinSet(BLUEIO_TAG_EVIM_LED2_GREEN_PORT, BLUEIO_TAG_EVIM_LED2_GREEN_PIN);
+	//IOPinSet(BLUEIO_TAG_EVIM_LED2_BLUE_PORT, BLUEIO_TAG_EVIM_LED2_BLUE_PIN);
 
     g_Timer.Init(s_TimerCfg);
 

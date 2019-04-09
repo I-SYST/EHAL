@@ -62,7 +62,7 @@ typedef struct {
 #pragma pack(pop)
 
 const ble_tcs_fw_version_t s_ThingyVersion {
-	 2, 1, 0
+	 2, 2, 0
 };
 
 BLESRVC_CHAR g_ConfChars[] = {

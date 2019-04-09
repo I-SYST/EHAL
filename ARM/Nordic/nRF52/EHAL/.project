@@ -411,6 +411,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/stddev.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/stddev.c</locationURI>
+		</link>
+		<link>
 			<name>src/sysstatus.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sysstatus.c</locationURI>
@@ -644,6 +649,11 @@
 			<name>include/sensors/sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/temp_nrf5x.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/temp_nrf5x.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/temp_sensor.h</name>
@@ -919,6 +929,11 @@
 			<name>src/sensors/agm_mpu9250.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/agm_mpu9250.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/temp_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/temp_nrf5x.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sensors/tph_bme280.cpp</name>
