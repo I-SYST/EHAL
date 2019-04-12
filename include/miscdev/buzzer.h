@@ -80,6 +80,16 @@ public:
 	virtual void Play(uint32_t Freq, uint32_t msDuration);
 
 	/**
+	 * @brief	Play Midi note
+	 *
+	 * @param	MidiNote : Midi note value 0-255
+	 * @param	msDuration	: Play duration in msec.
+	 *							if != 0, wait for it then stop
+	 *							else let running and return (no stop)
+	 */
+	virtual void Play(uint8_t MidiNote, uint32_t msDuration);
+
+	/**
 	 * @brief	Stop buzzer
 	 *
 	 */
