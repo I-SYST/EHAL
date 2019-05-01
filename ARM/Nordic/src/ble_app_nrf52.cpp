@@ -53,7 +53,7 @@ Modified by          Date              Description
 #include "ble_dis.h"
 #include "nrf_ble_gatt.h"
 #include "peer_manager.h"
-#include "nfc_ble_pair_lib.h"
+//#include "nfc_ble_pair_lib.h"
 //#include "ble_db_discovery.h"
 #include "app_timer.h"
 #include "app_util_platform.h"
@@ -118,7 +118,7 @@ extern "C" ret_code_t nrf_sdh_enable(nrf_clock_lf_cfg_t *clock_lf_cfg);
 
 // These are to be passed as parameters
 #define SCAN_INTERVAL           MSEC_TO_UNITS(100, UNIT_0_625_MS)      /**< Determines scan interval in units of 0.625 millisecond. */
-#define SCAN_WINDOW             MSEC_TO_UNITS(50, UNIT_0_625_MS)		/**< Determines scan window in units of 0.625 millisecond. */
+#define SCAN_WINDOW             MSEC_TO_UNITS(100, UNIT_0_625_MS)		/**< Determines scan window in units of 0.625 millisecond. */
 #define SCAN_TIMEOUT            0                                 		/**< Timout when scanning. 0x0000 disables timeout. */
 
 #pragma pack(push, 4)
@@ -179,7 +179,7 @@ NRF_SDH_BLE_OBSERVER(s_DbDiscovery_obs,
 
 NRF_BLE_SCAN_DEF(g_Scan);
 
-static ble_gap_scan_params_t const s_BleScanParams =
+static ble_gap_scan_params_t s_BleScanParams =
 {
 #if (NRF_SD_BLE_API_VERSION >= 6)
 	1,
@@ -1573,6 +1573,30 @@ void BleAppScanStop()
 		APP_ERROR_CHECK(err_code);
 		g_BleAppData.bScan = false;
 	}
+}
+
+bool BleAppScanInit(BLEAPP_SCAN_CFG *pCfg)
+{
+	if (pCfg == NULL)
+	{
+		return false;
+	}
+
+	s_BleScanParams.timeout = pCfg->Timeout;
+	s_BleScanParams.window = pCfg->Duration;
+	s_BleScanParams.interval = pCfg->Interval;
+
+    uint8_t uidtype = BLE_UUID_TYPE_VENDOR_BEGIN;
+
+    ret_code_t err_code = sd_ble_uuid_vs_add(&pCfg->BaseUid, &uidtype);
+    APP_ERROR_CHECK(err_code);
+
+    g_BleAppData.bScan = true;
+
+	err_code = sd_ble_gap_scan_start(&s_BleScanParams, &g_BleScanReportData);
+	APP_ERROR_CHECK(err_code);
+
+	return err_code == NRF_SUCCESS;
 }
 
 bool BleAppScanInit(ble_uuid128_t * const pBaseUid, ble_uuid_t * const pServUid)

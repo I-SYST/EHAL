@@ -147,6 +147,14 @@ typedef struct __BleApp_Config {
 //	BLEPERIPH_DEV *pPeriphDev;		//!< Connected peripheral data table
 } BLEAPP_CFG;
 
+typedef struct __BleApp_Scan_Cfg {
+	uint32_t Interval;			//!< Scan interval in msec
+	uint32_t Duration;			//!< Scan window in msec
+	uint32_t Timeout;			//!< Scan timeout in sec
+	ble_uuid128_t BaseUid;		//!< Base UUID to look for
+	ble_uuid_t ServUid;			//!< Service Uid to look for
+} BLEAPP_SCAN_CFG;
+
 #pragma pack(pop)
 
 #ifdef __cplusplus
@@ -223,7 +231,8 @@ void BleAppAdvStart(BLEAPP_ADVMODE AdvMode);
 void BleAppAdvStop();
 void BleAppDisconnect();
 
-bool BleAppScanInit(ble_uuid128_t * const pBaseUid, ble_uuid_t * const pServUid);
+bool BleAppScanInit(BLEAPP_SCAN_CFG *pCfg);
+//bool BleAppScanInit(ble_uuid128_t * const pBaseUid, ble_uuid_t * const pServUid);
 //bool BleAppScanStart();
 void BleAppScan();
 void BleAppScanStop();
