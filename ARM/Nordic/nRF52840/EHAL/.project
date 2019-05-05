@@ -346,11 +346,6 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/intelhex.c</locationURI>
 		</link>
 		<link>
-			<name>src/iopincfg_nrf5x.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/iopincfg_nrf5x.c</locationURI>
-		</link>
-		<link>
 			<name>src/isha1.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/isha1.c</locationURI>
@@ -781,9 +776,9 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_spi_nrf5x_irq.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/coredev/iopincfg_nrf5x.c</name>
+			<name>src/coredev/iopincfg_nrfx.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/iopincfg_nrf5x.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/iopincfg_nrfx.c</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/spi.cpp</name>

@@ -64,7 +64,12 @@
 									<listOptionValue builtIn="false" value="../../../../../../external/CMSIS/CMSIS/Core/Include"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/BSEC/algo"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/Invn"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/integration/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/hal"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/mdk"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/libraries/util"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/softdevice/s140/headers"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.982742739" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -81,7 +86,12 @@
 									<listOptionValue builtIn="false" value="../../../../../../external/CMSIS/CMSIS/Core/Include"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/BSEC/algo"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/Invn"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/integration/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/hal"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/mdk"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/libraries/util"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/softdevice/s140/headers"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.1628507918" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.1694903314" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -110,7 +120,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="iopincfg_nrf91.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -179,7 +189,12 @@
 									<listOptionValue builtIn="false" value="../../../../../../external/CMSIS/CMSIS/Core/Include"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/BSEC/algo"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/Invn"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/integration/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/hal"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/mdk"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/libraries/util"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/softdevice/s140/headers"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.510909697" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -196,7 +211,12 @@
 									<listOptionValue builtIn="false" value="../../../../../../external/CMSIS/CMSIS/Core/Include"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/BSEC/algo"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/Invn"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/integration/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/hal"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/mdk"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/libraries/util"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/softdevice/s140/headers"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.1522576665" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.252621786" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -225,7 +245,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="iopincfg_nrf91.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -275,8 +295,8 @@
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm.331281278" name="Remove command" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm" value="rm" valueType="string"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash.1223126191" name="Create flash image" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash" value="true" valueType="boolean"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize.1793121778" name="Print size" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize" value="true" valueType="boolean"/>
-							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.824028185" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.hard" valueType="enumerated"/>
-							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.186515114" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.fpv5spd16" valueType="enumerated"/>
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.824028185" name="Float ABI" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.hard" valueType="enumerated"/>
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.186515114" name="FPU Type" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.fpv5spd16" valueType="enumerated"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform.629622040" isAbstract="false" osList="all" superClass="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform"/>
 							<builder buildPath="${workspace_loc:/EHAL}/Debug" id="ilg.gnuarmeclipse.managedbuild.cross.builder.716289633" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="ilg.gnuarmeclipse.managedbuild.cross.builder"/>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.1322800534" name="GNU ARM Cross Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
@@ -296,7 +316,12 @@
 									<listOptionValue builtIn="false" value="../../../../../../external/CMSIS/CMSIS/Core/Include"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/BSEC/algo"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/Invn"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/integration/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/hal"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/mdk"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/libraries/util"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/softdevice/s140/headers"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.1397327651" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -313,7 +338,12 @@
 									<listOptionValue builtIn="false" value="../../../../../../external/CMSIS/CMSIS/Core/Include"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/BSEC/algo"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/Invn"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/integration/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/hal"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/mdk"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/libraries/util"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/softdevice/s140/headers"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.1264875544" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.828927279" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -342,7 +372,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="iopincfg_nrf91.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -392,8 +422,8 @@
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm.1854798965" name="Remove command" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.command.rm" value="rm" valueType="string"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash.1170638237" name="Create flash image" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.createflash" value="true" valueType="boolean"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize.302951234" name="Print size" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.addtools.printsize" value="true" valueType="boolean"/>
-							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.1568085510" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.hard" valueType="enumerated"/>
-							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.1463725037" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.fpv5spd16" valueType="enumerated"/>
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.1568085510" name="Float ABI" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.hard" valueType="enumerated"/>
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.1463725037" name="FPU Type" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.fpv5spd16" valueType="enumerated"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform.979665516" isAbstract="false" osList="all" superClass="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform"/>
 							<builder buildPath="${workspace_loc:/EHAL}/Release" id="ilg.gnuarmeclipse.managedbuild.cross.builder.453586628" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="ilg.gnuarmeclipse.managedbuild.cross.builder"/>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.695513001" name="GNU ARM Cross Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
@@ -413,7 +443,12 @@
 									<listOptionValue builtIn="false" value="../../../../../../external/CMSIS/CMSIS/Core/Include"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/BSEC/algo"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/Invn"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/integration/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/hal"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/mdk"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/libraries/util"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/softdevice/s140/headers"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.1583856521" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -430,7 +465,12 @@
 									<listOptionValue builtIn="false" value="../../../../../../external/CMSIS/CMSIS/Core/Include"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/BSEC/algo"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/Invn"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/integration/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/hal"/>
 									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/modules/nrfx/mdk"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/libraries/util"/>
+									<listOptionValue builtIn="false" value="../../../../../../external/nRF5_SDK/components/softdevice/s140/headers"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.109489321" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.1217409826" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -459,7 +499,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="iopincfg_nrf91.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

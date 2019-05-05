@@ -249,6 +249,10 @@ Modified by          Date              Description
 #define BLUEIO_TAG_EVIM_BUZZ_PIN			14
 #define BLUEIO_TAG_EVIM_BUZZ_PINOP			0
 
+#define BLUEIO_TAG_EVIM_FLASH_CS_PORT		0
+#define BLUEIO_TAG_EVIM_FLASH_CS_PIN		26
+#define BLUEIO_TAG_EVIM_FLASH_CS_PINOP		0
+
 // ***** BLUEIO-ADXL-WCHRG
 
 #define BLUEIO_ADXL_WCHRG_ADXL362_SCK_PORT		BLUEIO_SPI2_SCK_PORT
@@ -296,7 +300,7 @@ Modified by          Date              Description
 
 #define BLUEIO_ADXL_WCHRG_FLASH_CS_PORT			0
 #define BLUEIO_ADXL_WCHRG_FLASH_CS_PIN			26
-#define BLUEIO_ADXL_WCHRG_FLASH_CS_PPINOP		0
+#define BLUEIO_ADXL_WCHRG_FLASH_CS_PINOP		0
 
 
 #endif // __BLUEIO_BOARD_H__

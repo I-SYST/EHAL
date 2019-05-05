@@ -721,11 +721,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_spi_nrf5x_irq.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/coredev/iopincfg_nrf5x.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/iopincfg_nrf5x.c</locationURI>
-		</link>
-		<link>
 			<name>src/coredev/iopincfg_nrfx.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/iopincfg_nrfx.c</locationURI>

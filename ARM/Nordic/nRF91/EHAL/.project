@@ -546,6 +546,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/i2c.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/coredev/iopincfg_nrfx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/iopincfg_nrfx.c</locationURI>
+		</link>
+		<link>
 			<name>src/coredev/spi.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/spi.cpp</locationURI>
