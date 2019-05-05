@@ -1007,7 +1007,10 @@ void BleAppAdvStart(BLEAPP_ADVMODE AdvMode)
 	else
 	{
 		uint32_t err_code = ble_advertising_start(&g_AdvInstance, (ble_adv_mode_t)AdvMode);
-	    APP_ERROR_CHECK(err_code);
+		if (err_code != NRF_SUCCESS)
+		{
+			 APP_ERROR_CHECK(err_code);
+		}
 	}
 	g_BleAppData.bAdvertising = true;
 }
