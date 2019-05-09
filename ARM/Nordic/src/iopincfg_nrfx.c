@@ -212,7 +212,15 @@ void IOPinDisableInterrupt(int IntNo)
         reg->PIN_CNF[s_GpIOSenseEvt[IntNo].PortPinNo & 0xFF] &= ~GPIO_PIN_CNF_SENSE_Msk;
     }
 
-    gpiotereg->INTENCLR = 0xFFFFFFFF;
+    s_GpIOSenseEvt[IntNo].PortPinNo = -1;
+    s_GpIOSenseEvt[IntNo].Sense = IOPINSENSE_DISABLE;
+    s_GpIOSenseEvt[IntNo].SensEvtCB = NULL;
+
+    for (int i = 0; i <= IOPIN_MAX_INT; i++)
+    {
+        if (s_GpIOSenseEvt[i].SensEvtCB != NULL)
+            return;
+    }
 
 #ifdef NRF9160_XXAA
     if (s_GpIOSenseEvt[IntNo].PortPinNo & 0x8000)
@@ -231,15 +239,7 @@ void IOPinDisableInterrupt(int IntNo)
     NVIC_DisableIRQ(GPIOTE_IRQn);
 #endif
 
-    s_GpIOSenseEvt[IntNo].PortPinNo = -1;
-    s_GpIOSenseEvt[IntNo].Sense = IOPINSENSE_DISABLE;
-    s_GpIOSenseEvt[IntNo].SensEvtCB = NULL;
-
-    for (int i = 0; i <= IOPIN_MAX_INT; i++)
-    {
-        if (s_GpIOSenseEvt[i].SensEvtCB != NULL)
-            return;
-    }
+    gpiotereg->INTENCLR = 0xFFFFFFFF;
 }
 
 /**
@@ -288,24 +288,30 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
 #endif
 #endif
 
+#ifdef GPIOTE_CONFIG_PORT_Msk
+#define GPIOTE_CONFIG_PORT_PIN_Msk (GPIOTE_CONFIG_PORT_Msk | GPIOTE_CONFIG_PSEL_Msk)
+#else
+#define GPIOTE_CONFIG_PORT_PIN_Msk GPIOTE_CONFIG_PSEL_Msk
+#endif
+
 	reg->PIN_CNF[PinNo] &= ~(GPIO_PIN_CNF_SENSE_Msk << GPIO_PIN_CNF_SENSE_Pos);
 	switch (Sense)
 	{
 		case IOPINSENSE_LOW_TRANSITION:
 			gpiotereg->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_HiToLo << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
-										| ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PSEL_Msk)
+										| ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
 										| (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
 			reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
 			break;
 		case IOPINSENSE_HIGH_TRANSITION:
 			gpiotereg->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_LoToHi << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
-										| ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PSEL_Msk)
+										| ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
 										| (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
 			reg->PIN_CNF[PinNo] |= (GPIO_PIN_CNF_SENSE_High << GPIO_PIN_CNF_SENSE_Pos);
 			break;
 		case IOPINSENSE_TOGGLE:
 			gpiotereg->CONFIG[IntNo] = ((GPIOTE_CONFIG_POLARITY_Toggle << GPIOTE_CONFIG_POLARITY_Pos) & GPIOTE_CONFIG_POLARITY_Msk)
-										| ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PSEL_Msk)
+										| ((PinNo << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PORT_PIN_Msk)
 										| (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);
 			reg->PIN_CNF[PinNo] |= (3 << GPIO_PIN_CNF_SENSE_Pos);
 			break;
