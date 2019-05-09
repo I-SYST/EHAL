@@ -96,6 +96,10 @@ public:
 
 	/**
 	 * @brief	Put device in power down or power saving sleep mode
+	 *
+	 * This function is used to put the device in lowest power mode
+	 * possible so that the Enable function can wake up without full
+	 * initialization.
 	 */
 	virtual void Disable() = 0;
 
@@ -107,6 +111,14 @@ public:
 	//
 	// *** Optional implementations ***
 	//
+
+	/**
+	 * @brief	Power off the device completely.
+	 *
+	 * If supported, this will put the device in complete power down.
+	 * Full re-intialization is required to re-enable the device.
+	 */
+	virtual void PowerOff() {}
 
 	/**
 	 * @brief	Set device's map address
