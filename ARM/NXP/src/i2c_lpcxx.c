@@ -35,10 +35,13 @@ Modified by          Date              Description
 #include <stdio.h>
 #include <string.h>
 
-#include "system_LPC17xx.h"
+#include "system_core_clock.h"
 
 #include "i2c_lpcxx.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
+
+extern uint32_t SystemCoreClock;     /*!< System Clock Frequency (Core Clock)  */
+
 /*
 bool LpcI2CInit(I2CDEV *pDev, I2CCFG *pCfgData)
 {
