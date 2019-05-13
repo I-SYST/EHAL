@@ -230,6 +230,9 @@ bool AdcnRF52::Init(const ADC_CFG &Cfg, Timer *pTimer, DeviceIntrf *pIntrf)
 	if (s_AdcnRF52DevData.pDevObj != NULL && s_AdcnRF52DevData.pDevObj != this)
 		return false;
 
+	// Undocumented : Forced power on just in case that it was turned off.
+	*(volatile uint32_t *)((uint32_t)NRF_SAADC + 0xFFC) = 1;
+
 	memset(&s_AdcnRF52DevData, 0, sizeof(s_AdcnRF52DevData));
 
 	// Stop current process
@@ -372,6 +375,16 @@ void AdcnRF52::Reset()
 
 	Disable();
 	Enable();
+}
+
+void AdcnRF52::PowerOff()
+{
+	StopConversion();
+
+	// Undocumented : Turn power off
+	*(volatile uint32_t *)((uint32_t)NRF_SAADC + 0xFFC);
+	*(volatile uint32_t *)((uint32_t)NRF_SAADC + 0xFFC) = 1;
+	*(volatile uint32_t *)((uint32_t)NRF_SAADC + 0xFFC) = 0;
 }
 
 uint32_t AdcnRF52::Rate(uint32_t Val)

@@ -138,6 +138,7 @@ public:
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
+	virtual void PowerOff();
 
 private:
 };
