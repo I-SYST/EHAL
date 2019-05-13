@@ -768,6 +768,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = UART_RETRY_MAX;
 	pDev->DevIntrf.PowerOff = nRFUARTPowerOff;
+	pDev->DevIntrf.EnCnt = 1;
 
 
 #ifdef NRF52_SERIES

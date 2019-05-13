@@ -583,6 +583,7 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 
 	nRF5xI2CSetRate(&pDev->DevIntrf, pCfgData->Rate);
 
+	pDev->DevIntrf.EnCnt = 1;
 	pDev->DevIntrf.Type = DEVINTRF_TYPE_I2C;
 	pDev->DevIntrf.bDma = pCfgData->bDmaEn;
 	pDev->DevIntrf.Disable = nRF5xI2CDisable;
