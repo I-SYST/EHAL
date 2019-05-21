@@ -61,7 +61,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 #endif
 	},
 	0,						// Number of central link
-	0,						// Number of peripheral link
+	1,						// Number of peripheral link
 	BLEAPP_MODE_NOCONNECT,	// Connectionless beacon type
 	DEVICE_NAME,			// Device name
 	ISYST_BLUETOOTH_ID,		// PnP Bluetooth/USB vendor id
