@@ -80,6 +80,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DEVICE_NAME                     "EnvSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
+#define EVIM
 #ifdef NEBLINA_MODULE
 #define TPH_BME280
 #else
@@ -143,7 +144,7 @@ const BLEAPP_CFG s_BleAppCfg = {
 
 	},
 	0, 						// Number of central link
-	0, 						// Number of peripheral link
+	1, 						// Number of peripheral link
 	BLEAPP_MODE_NOCONNECT,   // Connectionless beacon type
 	DEVICE_NAME,                 // Device name
 	ISYST_BLUETOOTH_ID,     // PnP Bluetooth/USB vendor id
@@ -165,8 +166,8 @@ const BLEAPP_CFG s_BleAppCfg = {
 								// slow interval on adv timeout and advertise until connected
 	0,
 	0,
-	-1,		// Led port nuber
-	-1,     // Led pin number
+	BLUEIO_LED1_PORT,		// Led port nuber
+	BLUEIO_LED1_PIN,     // Led pin number
 	0,
 	0, 		// Tx power
 	NULL						// RTOS Softdevice handler
@@ -300,6 +301,7 @@ TphSensor &g_TphSensor = g_MS8607Sensor;
 
 GasSensor &g_GasSensor = g_Bme680Sensor;
 
+#ifdef NRF52_SERIES
 // Define available voltage sources
 static const ADC_REFVOLT s_RefVolt[] = {
 	{.Type = ADC_REFVOLT_TYPE_INTERNAL, .Voltage = 0.6 },
@@ -335,10 +337,14 @@ static const ADC_CHAN_CFG s_ChanCfg[] = {
 		.Chan = 0,
 		.RefVoltIdx = 0,
 		.Type = ADC_CHAN_TYPE_SINGLE_ENDED,
-		.Gain = 5,//1 << 8,
+		.Gain = 3,//5,//1 << 8,
 		.AcqTime = 10,
 		.BurstMode = true,
+#ifdef EVIM
+		.PinP = { .PinNo = 2, .Conn = ADC_PIN_CONN_NONE },
+#else
 		.PinP = { .PinNo = 8, .Conn = ADC_PIN_CONN_NONE },
+#endif
 	},
 };
 
@@ -359,15 +365,20 @@ void ADCEventHandler(AdcDevice *pAdcDev, ADC_EVT Evt)
 		{
 //			g_Uart.printf("%d ADC[0] = %.2fV, ADC[1] = %.2fV, ADC[2] = %.2fV, ADC[3] = %.2fV\r\n",
 //					df[0].Timestamp, df[0].Data, df[1].Data, df[2].Data, df[3].Data);
-
+#ifdef EVIM
+			uint8_t level = 100 * ((df->Data * 2.0) - 1.75)/ 1.25;
+			g_BatData.Voltage = (int32_t)(df->Data * 2000.0);
+#else
 			uint8_t level = 100 * (df->Data - 1.75)/ 1.25;
-			g_BatData.Level = level;
 			g_BatData.Voltage = (int32_t)(df->Data * 1000.0);
+#endif
+			g_BatData.Level = level;
 		}
 
 		g_Adc.Disable();
 	}
 }
+#endif
 
 void ReadPTHData()
 {
@@ -389,6 +400,7 @@ void ReadPTHData()
 */
 	if ((gascnt & 0xf) == 0)
 	{
+#ifdef NRF52_SERIES
 		g_Adc.Enable();
 		g_Adc.OpenChannel(s_ChanCfg, s_NbChan);
 		g_Adc.StartConversion();
@@ -396,6 +408,7 @@ void ReadPTHData()
 		g_AdvData.Type = BLEADV_MANDATA_TYPE_BAT;
 
 		memcpy(&g_AdvBat, &g_BatData, sizeof(BLUEIO_DATA_BAT));
+#endif
 	}
 	else if ((gascnt & 0x3) == 0)
 	{
@@ -425,10 +438,11 @@ void ReadPTHData()
 
 	g_I2c.Disable();
 
+#ifdef NRF52_SERIES
 	g_Adc.Enable();
 	g_Adc.OpenChannel(s_ChanCfg, s_NbChan);
 	g_Adc.StartConversion();
-
+#endif
 
 #endif
 	// Update advertisement data
@@ -485,9 +499,9 @@ void HardwareInit()
 
     IOPinCfg(s_GpioPins, s_NbGpioPins);
 
-	IOPinSet(0, BLUEIO_TAG_BME680_LED2_BLUE_PIN);
-	IOPinSet(0, BLUEIO_TAG_BME680_LED2_GREEN_PIN);
-	IOPinSet(0, BLUEIO_TAG_BME680_LED2_RED_PIN);
+	IOPinClear(0, BLUEIO_TAG_BME680_LED2_BLUE_PIN);
+	IOPinClear(0, BLUEIO_TAG_BME680_LED2_GREEN_PIN);
+	IOPinClear(0, BLUEIO_TAG_BME680_LED2_RED_PIN);
 
 	g_Timer.Init(s_TimerCfg);
 
@@ -552,14 +566,16 @@ void HardwareInit()
 
 	g_I2c.Disable();
 
+#ifdef NRF52_SERIES
 	g_Adc.Init(s_AdcCfg);
 	g_Adc.OpenChannel(s_ChanCfg, s_NbChan);
 	g_Adc.StartConversion();
+#endif
 
 #ifdef USE_TIMER_UPDATE
 	// Only with SDK14
 
-//	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS);
+	uint64_t period = g_Timer.EnableTimerTrigger(0, 500UL, TIMER_TRIG_TYPE_CONTINUOUS);
 #endif
 }
 
