@@ -489,7 +489,8 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
         	//g_Uart.printf("Passkey: %s\r\n", passkey);
         } break; // BLE_GAP_EVT_PASSKEY_DISPLAY
 
-#if 0
+        //*****
+        // This section is required for compatibility with iPhone X series and other devices that has Bluetooth 5 support
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
         {
 //            printf("PHY update request.\r\n");
@@ -523,7 +524,8 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             //ble_its_ble_params_info_send(&m_its, &m_ble_params_info);
 //            printf("Con params updated: CI %i, %i\r\n", (int)min_con_int, (int)max_con_int);
         } break;
-#endif
+        //*****
+
         case BLE_GATTS_EVT_SYS_ATTR_MISSING:
             // No system attributes have been stored.
             err_code = sd_ble_gatts_sys_attr_set(g_BleAppData.ConnHdl, NULL, 0, 0);
