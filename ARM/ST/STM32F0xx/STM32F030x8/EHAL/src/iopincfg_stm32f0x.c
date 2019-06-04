@@ -51,6 +51,8 @@ typedef struct {
 
 static IOPINSENS_EVTHOOK s_GpIOSenseEvt[IOPIN_MAX_INT + 1] = { {0, NULL}, };
 
+static volatile bool s_bSTM32F0xGpioEnabled = false;
+
 /**
  * @brief Configure individual I/O pin. nRF51 only have 1 port so PortNo is not used
  *
@@ -71,13 +73,39 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 	if (PortNo == -1 || PinNo == -1)
 		return;
 
-	uint32_t pos = PinNo << 1;
+	uint32_t tmp;
 
-	reg->MODER &= ~(GPIO_MODER_MODER0_Msk << pos);
+	//if (s_bSTM32F0xGpioEnabled == false)
+	{
+		switch (PortNo)
+		{
+			case 0:
+				RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+				break;
+			case 1:
+				RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
+				break;
+			case 2:
+				RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
+				break;
+			case 3:
+				RCC->AHBENR |= RCC_AHBENR_GPIODEN;
+				break;
+			case 4:
+				RCC->AHBENR |= RCC_AHBENR_GPIOFEN;
+				break;
+		}
+//		s_bSTM32F0xGpioEnabled = true;
+	}
+
+	uint32_t pos = PinNo << 1;
+	tmp = reg->MODER & ~(GPIO_MODER_MODER0_Msk << pos);
 	if (Dir == IOPINDIR_OUTPUT)
 	{
-		reg->MODER |= GPIO_MODER_MODER0_0 << pos;
+		tmp |= GPIO_MODER_MODER0_0 << pos;
 	}
+
+	reg->MODER = tmp;
 
 	uint32_t pull = reg->PUPDR & ~(3 << pos);
 
@@ -93,14 +121,15 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 		case IOPINRES_NONE:
 			break;
 	}
+	reg->PUPDR = pull;
 
-	reg->OTYPER = 0;
+	tmp = reg->OTYPER & ~(1 << PinNo);
 	if (Type == IOPINTYPE_OPENDRAIN)
 	{
-		reg->OTYPER = (1 << PinNo);
+		tmp |= (1 << PinNo);
 	}
+	reg->OTYPER = tmp;
 
-	reg->PUPDR = pull;
 }
 
 /**
@@ -119,8 +148,12 @@ void IOPinDisable(int PortNo, int PinNo)
 		return;
 
 	GPIO_TypeDef *reg = (GPIO_TypeDef *)(GPIOA_BASE + PortNo * 0x400);
+	uint32_t pos = PinNo << 1;
+	uint32_t tmp = reg->MODER & ~(GPIO_MODER_MODER0_Msk << pos);
+	reg->MODER = tmp;
 
-	reg->MODER &= ~(GPIO_MODER_MODER0_Msk << (PinNo << 1));
+	tmp= reg->PUPDR & ~(GPIO_PUPDR_PUPDR0_Msk << pos);
+	reg->PUPDR = tmp;
 }
 
 /**
