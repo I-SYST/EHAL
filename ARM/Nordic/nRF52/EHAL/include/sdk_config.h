@@ -7727,7 +7727,7 @@
 // <2=> NRF_FSTORAGE_SD 
 
 #ifndef FDS_BACKEND
-#define FDS_BACKEND 2
+#define FDS_BACKEND 	NRF_FSTORAGE_SD
 #endif
 
 // </h> 

@@ -8,33 +8,38 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include "softdevice_handler.h"
+#include "app_util_platform.h"
 #include "app_scheduler.h"
-#include "app_timer_appsh.h"
-#include "nrf_dfu_settings.h"
-#include "ble_dis.h"
 
 #include "istddef.h"
-#include "iopincfg.h"
+#include "coredev/iopincfg.h"
 #include "iopinctrl.h"
 #include "stddev.h"
 #include "custom_board.h"
 #include "lmx_blueio.h"
-#include "blueio_blesrvc.h"
 #include "ledmxio.h"
-#include "ble_periph_app.h"
+#include "ble_app.h"
+#include "ble_service.h"
+#include "bluetooth/blueio_blesrvc.h"
 
 #define DEVICE_NAME                     "LmxBLue"                            /**< Name of device. Will be included in the advertising data. */
 
 #define MANUFACTURER_NAME               "I-SYST inc."                       /**< Manufacturer. Will be passed to Device Information Service. */
-#define MODEL_NUM                       "LMX_DISPLAY"                            /**< Model number. Will be passed to Device Information Service. */
+#define MODEL_NAME                      "LMX_DISPLAY"                            /**< Model number. Will be passed to Device Information Service. */
 #define MANUFACTURER_ID                 ISYST_BLUETOOTH_ID                               /**< Manufacturer ID, part of System ID. Will be passed to Device Information Service. */
 #define ORG_UNIQUE_ID                   ISYST_BLUETOOTH_ID                               /**< Organizational Unique ID, part of System ID. Will be passed to Device Information Service. */
 
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(64, UNIT_0_625_MS)             /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
-#define APP_ADV_TIMEOUT_IN_SECONDS      180                                         /**< The advertising timeout (in units of seconds). */
+#if (NRF_SD_BLE_API_VERSION < 6)
+#define APP_ADV_TIMEOUT			      	0										/**< The advertising timeout (in units of seconds). */
+#else
+#define APP_ADV_TIMEOUT					MSEC_TO_UNITS(0, UNIT_10_MS)		/**< The advertising timeout (in units of 10ms seconds). */
+#endif
 
-void LmxBlueSrvcWrCallback(BLUEIOSRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
+#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)     /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
+#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)     /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
+
+void LmxBlueSrvcWrCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len);
 
 static const IOPINCFG s_GpioPins[] = {
 	{BLUEIO_CONNECT_LED_PORT, BLUEIO_CONNECT_LED_PIN, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// BLE connect
@@ -56,48 +61,66 @@ static const char s_WdCharDescString[] = {
 
 uint8_t g_ManData[8];
 
-BLUEIOSRVC_CHAR g_LmxChars[] = {
+BLESRVC_CHAR g_LmxChars[] = {
 	{
-		LMXBLUE_UUID_MSGCHAR,
-		256,
-		BLUEIOSVC_CHAR_PROP_WRITEWORESP,
-		s_WdCharDescString,
-		LmxBlueSrvcWrCallback
+		.Uuid = LMXBLUE_UUID_MSGCHAR,
+		.MaxDataLen = 256,
+		.Property = BLESVC_CHAR_PROP_WRITEWORESP,
+		.pDesc = s_WdCharDescString,
+		.WrCB = LmxBlueSrvcWrCallback
 	}
 };
 
-const BLUEIOSRVC_CFG s_LmxBlueSrvcCfg = {
-	BLUEIOSRVC_SECTYPE_NONE,
-	LMXBLUE_UUID_BASE,
-	LMXBLUE_UUID_SERVICE,
-	1,
-	g_LmxChars
+const BLESRVC_CFG s_LmxBlueSrvcCfg = {
+	.SecType = BLESRVC_SECTYPE_NONE,
+	.UuidBase = LMXBLUE_UUID_BASE,
+	.UuidSvc = LMXBLUE_UUID_SERVICE,
+	.NbChar = 1,
+	.pCharArray = g_LmxChars
 };
 
-BLUEIOSRVC g_LmxBleSrvc;
+BLESRVC g_LmxBleSrvc;
+
+const BLEAPP_DEVDESC s_LmxBlueDevDesc = {
+	MODEL_NAME,       		// Model name
+	MANUFACTURER_NAME,		// Manufacturer name
+	"123",					// Serial number string
+	"0.0",					// Firmware version string
+	"0.0",					// Hardware version string
+};
 
 const BLEAPP_CFG s_BleAppCfg = {
-	BLEAPP_MODE_APPSCHED,
-	"LMXBLUE",
-	"IBB-LMXBLUE",
-	"I-SYST inc.",
-	"",
-	"0.0",
-	"0.0",
-	ISYST_BLUETOOTH_ID,
-	1,
-	g_ManData,
-	sizeof(g_ManData),
-	BLEAPP_SECTYPE_NONE,
-	BLEAPP_SECEXCHG_NONE,
-	NULL,//s_AdvUuids,
-	0,//sizeof(s_AdvUuids) / sizeof(ble_uuid_t),
-	APP_ADV_INTERVAL,
-	APP_ADV_TIMEOUT_IN_SECONDS,
-	0,
-	BLUEIO_CONNECT_LED_PORT,
-	BLUEIO_CONNECT_LED_PIN,
-	NULL
+#ifdef IMM_NRF51822
+		.ClkCfg = { NRF_CLOCK_LF_SRC_RC, 1, 1, 0},
+#else
+		.ClkCfg = { NRF_CLOCK_LF_SRC_XTAL, 0, 0, NRF_CLOCK_LF_ACCURACY_20_PPM},
+#endif
+	.CentLinkCount = 0, 				// Number of central link
+	.PeriLinkCount = 1, 				// Number of peripheral link
+	.AppMode = BLEAPP_MODE_APPSCHED,	// Use scheduler
+	.pDevName = "LMXBLUE",
+	.VendorID = ISYST_BLUETOOTH_ID,		// PnP Bluetooth/USB vendor id
+	.ProductId = 1,						// PnP Product ID
+	.ProductVer = 0,					// Pnp prod version
+	.pDevDesc = &s_LmxBlueDevDesc,
+	.pAdvManData = g_ManData,
+	.AdvManDataLen = sizeof(g_ManData),
+	.pSrManData = NULL,
+	.SrManDataLen = 0,
+	.SecType = BLEAPP_SECTYPE_LESC_MITM,//BLEAPP_SECTYPE_STATICKEY_MITM,//BLEAPP_SECTYPE_NONE,    // Secure connection type
+	.SecExchg = BLEAPP_SECEXCHG_NONE,	// Security key exchange
+	.pAdvUuids = NULL,      			// Service uuids to advertise
+	.NbAdvUuid = 0, 					// Total number of uuids
+	.AdvInterval = APP_ADV_INTERVAL,	// Advertising interval in msec
+	.AdvTimeout = APP_ADV_TIMEOUT,		// Advertising timeout in sec
+	.AdvSlowInterval = 0,				// Slow advertising interval, if > 0, fallback to
+										// slow interval on adv timeout and advertise until connected
+	.ConnIntervalMin = MIN_CONN_INTERVAL,
+	.ConnIntervalMax = MAX_CONN_INTERVAL,
+	.ConnLedPort = BLUEIO_CONNECT_LED_PORT,// Led port nuber
+	.ConnLedPin = BLUEIO_CONNECT_LED_PIN,// Led pin number
+	.TxPower = 0,						// Tx power
+	.SDEvtHandler = NULL				// RTOS Softdevice handler
 };
 
 // I/O pins connection
@@ -139,23 +162,23 @@ LEDMXCFG g_LmxCfg[LMXBLUE_LINE_MAX] = {
 
 LEDMXDEV g_LmxDev[LMXBLUE_LINE_MAX] = {{0,},};
 
-void LmxBlueSrvcWrCallback(BLUEIOSRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len)
+void LmxBlueSrvcWrCallback(BLESRVC *pBlueIOSvc, uint8_t *pData, int Offset, int Len)
 {
 	LMXMSG *msg = (LMXMSG*)pData;
 	msg->Text[msg->Length] = 0;
 	//LedMxPrintLeft(&g_LmxDev, msg->Text);
 }
 
-void BlePeriphAppSrvcEvtDispatch(ble_evt_t * p_ble_evt)
+void BlePeriphEvtUserHandler(ble_evt_t * p_ble_evt)
 {
-    BlueIOBleSvcEvtHandler(&g_LmxBleSrvc, p_ble_evt);
+	BleSrvcEvtHandler(&g_LmxBleSrvc, p_ble_evt);
 }
 
-void BlePeriphAppInitServices()
+void BleAppInitUserServices()
 {
     uint32_t       err_code;
 
-    err_code = BlueIOBleSrvcInit(&g_LmxBleSrvc, &s_LmxBlueSrvcCfg);
+    err_code = BleSrvcInit(&g_LmxBleSrvc, &s_LmxBlueSrvcCfg);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -192,14 +215,10 @@ int main()
 {
     HardwareInit();
 
-    BlePeriphAppInit(&s_BleAppCfg, true);
+    BleAppInit(&s_BleAppCfg, true);
 
-    BlePeriphAppStart();
+    BleAppRun();
 
-    while(1)
-    {
-    	BlePeriphAppProcessEvt();
-    }
 	return 0;
 }
 
