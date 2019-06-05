@@ -96,7 +96,7 @@ void SystemCoreClockUpdate(void)
 		SystemCoreClock = SystemMainClkFreq / (LPC_SYSCON->SYSAHBCLKDIV & 0xff);
 }
 
-uint32_t SystemSetCoreClock(bool Crystal, int ClkFreq)
+uint32_t SystemCoreClockSet(bool Crystal, int ClkFreq)
 {
 	uint32_t sysclk = IRC_FREQ;
 
@@ -185,6 +185,6 @@ uint32_t SystemSetCoreClock(bool Crystal, int ClkFreq)
 
 void SystemInit (void)
 {
-	SystemSetCoreClock(true, OSC_FREQ);
+	SystemCoreClockSet(true, OSC_FREQ);
 	SystemCoreClockUpdate();
 }

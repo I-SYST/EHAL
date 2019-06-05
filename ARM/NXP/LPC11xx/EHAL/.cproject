@@ -118,7 +118,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/converters/adc_device.cpp|src/usb_lpc11uxx.c|src/sbuffer.c|src/sysstatus_impl.cpp|src/sdcard.c|src/i2c_lpcxx.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/i2c_lpcxx.c|src/sensors/agm_icm20948.cpp|src/converters/adc_device.cpp|src/usb_lpc11uxx.c|src/sbuffer.c|src/sysstatus_impl.cpp|src/sdcard.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
 					</sourceEntries>
 				</configuration>
@@ -243,7 +243,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/converters/adc_device.cpp|src/usb_lpc11uxx.c|src/sbuffer.c|src/sysstatus_impl.cpp|src/sdcard.c|src/i2c_lpcxx.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/i2c_lpcxx.c|src/sensors/agm_icm20948.cpp|src/converters/adc_device.cpp|src/usb_lpc11uxx.c|src/sbuffer.c|src/sysstatus_impl.cpp|src/sdcard.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
 					</sourceEntries>
 				</configuration>

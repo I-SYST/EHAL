@@ -103,7 +103,7 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
 	SystemMicroSecLoopCnt = (SystemCoreClock / 16000000);
 }
 
-uint32_t SystemSetCoreClock(uint32_t CoreFreq, int ClkFreq)
+uint32_t SystemCoreClockSet(uint32_t CoreFreq, int ClkFreq)
 {
 	uint32_t temp = 0;
 	uint32_t sysclk = ClkFreq;
@@ -281,5 +281,5 @@ void SystemConnectPLL1(void)
  */
 void SystemInit (void)
 {
-	SystemSetCoreClock(CORE_FREQ, DEF_CLK_SRC);
+	SystemCoreClockSet(CORE_FREQ, DEF_CLK_SRC);
 }

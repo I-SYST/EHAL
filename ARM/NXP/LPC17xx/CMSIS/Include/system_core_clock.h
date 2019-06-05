@@ -39,4 +39,12 @@ Modified by          Date              Description
 #define SYSTEM_CORE_CLOCK				16000000UL		// TODO: Adjust value for CPU with fixed core frequency
 #define SYSTEM_NSDELAY_CORE_FACTOR		(30UL)			// TODO: Adjustment value
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+uint32_t SystemCoreClockSet(uint32_t CoreFreq, int ClkFreq);
+#ifdef __cplusplus
+}
+#endif
+
 #endif // __SYSTEM_CORE_CLOCK_H__
