@@ -80,12 +80,6 @@
 									<listOptionValue builtIn="false" value="NRF52840_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52_SERIES"/>
 									<listOptionValue builtIn="false" value="EHAL_SBUFFER_SIZE=256"/>
-									<listOptionValue builtIn="false" value="uECC_ENABLE_VLI_API"/>
-									<listOptionValue builtIn="false" value="uECC_VLI_NATIVE_LITTLE_ENDIAN=1"/>
-									<listOptionValue builtIn="false" value="uECC_SQUARE_FUNC=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORTS_secp256r1=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORT_COMPRESSED_POINT=0"/>
-									<listOptionValue builtIn="false" value="uECC_OPTIMIZATION_LEVEL=3"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.527663341" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -123,12 +117,6 @@
 									<listOptionValue builtIn="false" value="NRF52840_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52_SERIES"/>
 									<listOptionValue builtIn="false" value="EHAL_SBUFFER_SIZE=256"/>
-									<listOptionValue builtIn="false" value="uECC_ENABLE_VLI_API"/>
-									<listOptionValue builtIn="false" value="uECC_VLI_NATIVE_LITTLE_ENDIAN=1"/>
-									<listOptionValue builtIn="false" value="uECC_SQUARE_FUNC=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORTS_secp256r1=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORT_COMPRESSED_POINT=0"/>
-									<listOptionValue builtIn="false" value="uECC_OPTIMIZATION_LEVEL=3"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.1512319786" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.1914745993" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -262,12 +250,6 @@
 									<listOptionValue builtIn="false" value="NRF52840_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52_SERIES"/>
 									<listOptionValue builtIn="false" value="EHAL_SBUFFER_SIZE=256"/>
-									<listOptionValue builtIn="false" value="uECC_ENABLE_VLI_API"/>
-									<listOptionValue builtIn="false" value="uECC_VLI_NATIVE_LITTLE_ENDIAN=1"/>
-									<listOptionValue builtIn="false" value="uECC_SQUARE_FUNC=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORTS_secp256r1=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORT_COMPRESSED_POINT=0"/>
-									<listOptionValue builtIn="false" value="uECC_OPTIMIZATION_LEVEL=3"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.701456780" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -305,12 +287,6 @@
 									<listOptionValue builtIn="false" value="NRF52840_XXAA"/>
 									<listOptionValue builtIn="false" value="NRF52_SERIES"/>
 									<listOptionValue builtIn="false" value="EHAL_SBUFFER_SIZE=256"/>
-									<listOptionValue builtIn="false" value="uECC_ENABLE_VLI_API"/>
-									<listOptionValue builtIn="false" value="uECC_VLI_NATIVE_LITTLE_ENDIAN=1"/>
-									<listOptionValue builtIn="false" value="uECC_SQUARE_FUNC=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORTS_secp256r1=1"/>
-									<listOptionValue builtIn="false" value="uECC_SUPPORT_COMPRESSED_POINT=0"/>
-									<listOptionValue builtIn="false" value="uECC_OPTIMIZATION_LEVEL=3"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.153406707" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.327749542" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
