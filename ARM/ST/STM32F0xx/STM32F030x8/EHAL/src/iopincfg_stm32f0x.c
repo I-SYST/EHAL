@@ -39,7 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "coredev/iopincfg.h"
 
-#define IOPIN_MAX_INT			(8)
+#define IOPIN_MAX_INT			(16)
 
 #pragma pack(push, 4)
 typedef struct {
@@ -163,6 +163,55 @@ void IOPinDisable(int PortNo, int PinNo)
  */
 void IOPinDisableInterrupt(int IntNo)
 {
+	if (IntNo < 0 || IntNo >= IOPIN_MAX_INT)
+	{
+		return;
+	}
+
+	int idx = (s_GpIOSenseEvt[IntNo].PortPinNo & 0xFF) >> 2;
+	uint32_t pos = (s_GpIOSenseEvt[IntNo].PortPinNo & 0x3) << 2;
+	uint32_t mask = 7 << pos;
+
+	SYSCFG->EXTICR[idx] &= ~mask;
+
+	mask = ~(1 << (s_GpIOSenseEvt[IntNo].PortPinNo & 0xFF));
+
+	EXTI->RTSR &= mask;
+	EXTI->FTSR &= mask;
+	EXTI->IMR &= mask;
+
+    s_GpIOSenseEvt[IntNo].PortPinNo = -1;
+    s_GpIOSenseEvt[IntNo].Sense = IOPINSENSE_DISABLE;
+    s_GpIOSenseEvt[IntNo].SensEvtCB = NULL;
+
+    if (IntNo < 2)
+    {
+    	if (s_GpIOSenseEvt[0].SensEvtCB == NULL && s_GpIOSenseEvt[1].SensEvtCB == NULL)
+    	{
+    		NVIC_DisableIRQ(EXTI0_1_IRQn);
+    		NVIC_ClearPendingIRQ(EXTI0_1_IRQn);
+    	}
+    }
+	else if (IntNo < 4)
+    {
+    	if (s_GpIOSenseEvt[2].SensEvtCB == NULL && s_GpIOSenseEvt[3].SensEvtCB == NULL)
+    	{
+			NVIC_DisableIRQ(EXTI2_3_IRQn);
+			NVIC_ClearPendingIRQ(EXTI2_3_IRQn);
+    	}
+    }
+	else
+    {
+		for (int i = 4; i < IOPIN_MAX_INT; i++)
+		{
+			if (s_GpIOSenseEvt[i].SensEvtCB != NULL)
+			{
+				return;
+			}
+		}
+		NVIC_DisableIRQ(EXTI4_15_IRQn);
+		NVIC_ClearPendingIRQ(EXTI4_15_IRQn);
+    }
 }
 
 /**
@@ -184,6 +233,60 @@ void IOPinDisableInterrupt(int IntNo)
  */
 bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSENSE Sense, IOPINEVT_CB pEvtCB)
 {
+	if (IntNo < 0 || IntNo >= IOPIN_MAX_INT)
+	{
+		return false;
+	}
+
+	int idx = PinNo >> 2;
+	uint32_t pos = (PinNo & 0x3) << 2;
+	uint32_t mask = 7 << pos;
+
+	SYSCFG->EXTICR[idx] &= ~mask;
+	SYSCFG->EXTICR[idx] |= PortNo << pos;
+
+	mask = 1 << PinNo;
+
+	switch (Sense)
+	{
+		case IOPINSENSE_LOW_TRANSITION:
+			EXTI->RTSR &= ~mask;
+			EXTI->FTSR |= mask;
+			break;
+		case IOPINSENSE_HIGH_TRANSITION:
+			EXTI->RTSR |= mask;
+			EXTI->FTSR &= ~mask;
+			break;
+		case IOPINSENSE_TOGGLE:
+			EXTI->RTSR |= mask;
+			EXTI->FTSR |= mask;
+			break;
+	}
+
+	EXTI->IMR |= mask;
+
+    s_GpIOSenseEvt[IntNo].Sense = Sense;
+	s_GpIOSenseEvt[IntNo].PortPinNo = (PortNo << 8) | PinNo; // For use when disable interrupt
+	s_GpIOSenseEvt[IntNo].SensEvtCB = pEvtCB;
+
+	if (IntNo < 2)
+    {
+		NVIC_ClearPendingIRQ(EXTI0_1_IRQn);
+		NVIC_SetPriority(EXTI0_1_IRQn, IntPrio);
+		NVIC_EnableIRQ(EXTI0_1_IRQn);
+    }
+	else if (IntNo < 4)
+    {
+		NVIC_ClearPendingIRQ(EXTI2_3_IRQn);
+		NVIC_SetPriority(EXTI2_3_IRQn, IntPrio);
+		NVIC_EnableIRQ(EXTI2_3_IRQn);
+    }
+	else
+    {
+		NVIC_ClearPendingIRQ(EXTI4_15_IRQn);
+		NVIC_SetPriority(EXTI4_15_IRQn, IntPrio);
+		NVIC_EnableIRQ(EXTI4_15_IRQn);
+    }
 
     return true;
 }
@@ -260,6 +363,66 @@ void IOPinSetStrength(int PortNo, int PinNo, IOPINSTRENGTH Strength)
 {
 }
 
+void __WEAK EXTI0_1_IRQHandler(void)
+{
+	if (EXTI->PR & 1)
+	{
+		EXTI->PR = 1;
 
+		if (s_GpIOSenseEvt[0].SensEvtCB)
+			s_GpIOSenseEvt[0].SensEvtCB(0);
+
+	}
+	if (EXTI->PR & 2)
+	{
+		EXTI->PR = 2;
+
+		if (s_GpIOSenseEvt[1].SensEvtCB)
+			s_GpIOSenseEvt[1].SensEvtCB(1);
+
+	}
+
+	NVIC_ClearPendingIRQ(EXTI0_1_IRQn);
+}
+
+void __WEAK EXTI2_3_IRQHandler(void)
+{
+	if (EXTI->PR & 4)
+	{
+		EXTI->PR = 4;
+
+		if (s_GpIOSenseEvt[2].SensEvtCB)
+			s_GpIOSenseEvt[2].SensEvtCB(2);
+
+	}
+	if (EXTI->PR & 8)
+	{
+		EXTI->PR = 8;
+
+		if (s_GpIOSenseEvt[3].SensEvtCB)
+			s_GpIOSenseEvt[3].SensEvtCB(3);
+
+	}
+
+	NVIC_ClearPendingIRQ(EXTI2_3_IRQn);
+}
+
+void __WEAK EXTI4_15_IRQHandler(void)
+{
+	uint32_t mask = 0x10;
+
+	for (int i = 4; i < IOPIN_MAX_INT; i++)
+	{
+		if (EXTI->PR & mask)
+		{
+			EXTI->PR = mask;
+			if (s_GpIOSenseEvt[i].SensEvtCB)
+				s_GpIOSenseEvt[i].SensEvtCB(i);
+
+		}
+	}
+
+	NVIC_ClearPendingIRQ(EXTI4_15_IRQn);
+}
 
 

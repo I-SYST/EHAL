@@ -38,11 +38,11 @@ int main()
 	{
 		IOPinSet(0, 3);
 		//for (int i = 0; i < 100000; i++);
-		msDelay(500);
+		msDelay(1000);
 		IOPinClear(0, 3);
 		IOPinSet(0, 4);
 		//for (int i = 0; i < 100000; i++);
-		msDelay(500);
+		msDelay(1000);
 		IOPinClear(0, 4);
 		//msDelay(200);
 
