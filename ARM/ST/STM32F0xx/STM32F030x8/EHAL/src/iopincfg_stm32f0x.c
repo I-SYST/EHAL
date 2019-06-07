@@ -51,8 +51,6 @@ typedef struct {
 
 static IOPINSENS_EVTHOOK s_GpIOSenseEvt[IOPIN_MAX_INT + 1] = { {0, NULL}, };
 
-static volatile bool s_bSTM32F0xGpioEnabled = false;
-
 /**
  * @brief Configure individual I/O pin. nRF51 only have 1 port so PortNo is not used
  *
@@ -70,32 +68,28 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 {
 	GPIO_TypeDef *reg = (GPIO_TypeDef *)(GPIOA_BASE + PortNo * 0x400);
 
-	if (PortNo == -1 || PinNo == -1)
+	if (PortNo == -1 || PinNo == -1 || PortNo == 4)
 		return;
 
 	uint32_t tmp;
 
-	//if (s_bSTM32F0xGpioEnabled == false)
+	switch (PortNo)
 	{
-		switch (PortNo)
-		{
-			case 0:
-				RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
-				break;
-			case 1:
-				RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
-				break;
-			case 2:
-				RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
-				break;
-			case 3:
-				RCC->AHBENR |= RCC_AHBENR_GPIODEN;
-				break;
-			case 4:
-				RCC->AHBENR |= RCC_AHBENR_GPIOFEN;
-				break;
-		}
-//		s_bSTM32F0xGpioEnabled = true;
+		case 0:	// Port A
+			RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+			break;
+		case 1: // Port B
+			RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
+			break;
+		case 2: // Port C
+			RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
+			break;
+		case 3: // Port D
+			RCC->AHBENR |= RCC_AHBENR_GPIODEN;
+			break;
+		case 5: // Port F
+			RCC->AHBENR |= RCC_AHBENR_GPIOFEN;
+			break;
 	}
 
 	uint32_t pos = PinNo << 1;
@@ -237,6 +231,8 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
 	{
 		return false;
 	}
+
+	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN;
 
 	int idx = PinNo >> 2;
 	uint32_t pos = (PinNo & 0x3) << 2;
@@ -420,6 +416,7 @@ void __WEAK EXTI4_15_IRQHandler(void)
 				s_GpIOSenseEvt[i].SensEvtCB(i);
 
 		}
+		mask <<= 1;
 	}
 
 	NVIC_ClearPendingIRQ(EXTI4_15_IRQn);
