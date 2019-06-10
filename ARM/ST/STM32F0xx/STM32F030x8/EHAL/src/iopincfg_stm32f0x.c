@@ -52,13 +52,20 @@ typedef struct {
 static IOPINSENS_EVTHOOK s_GpIOSenseEvt[IOPIN_MAX_INT + 1] = { {0, NULL}, };
 
 /**
- * @brief Configure individual I/O pin. nRF51 only have 1 port so PortNo is not used
+ * @brief Configure individual I/O pin.
  *
  * @Param 	PortNo	: Port number
- * 						Special port flag 0x80 (bit 7 set) for nRF91 secure port
+ * 						STM32 ports are named A, B, C,...
+ * 							0 = A, 1 = B, ...
  * 			PinNo  	: Pin number
  * 			PinOp	: Pin function index from 0. MCU dependent
- * 						ignore for Nordic
+ * 						for STM32
+ * 						bit 0-3 :
+ * 							0 : GPIO input
+ * 							1 : GPIO output
+ * 							2 : Alternate function (function on bit 4-7)
+ * 							3 : Analog
+ * 						bit 4-7 : Alternate function 0-7
  *
  * 			Dir     : I/O direction
  *			Resistor: Resistor configuration
@@ -94,12 +101,37 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 
 	uint32_t pos = PinNo << 1;
 	tmp = reg->MODER & ~(GPIO_MODER_MODER0_Msk << pos);
-	if (Dir == IOPINDIR_OUTPUT)
+
+	switch (PinOp & 0xF)
 	{
-		tmp |= GPIO_MODER_MODER0_0 << pos;
+		case 0:	// GPIO input
+		case 1:	// GPIO ouput
+			if (Dir == IOPINDIR_OUTPUT)
+			{
+				tmp |= 1 << pos;
+			}
+
+			break;
+		case 2:	// Alternate function
+			{
+				tmp |= 2 << pos;
+
+				pos = (PinNo & 0x7) << 2;
+				int idx = PinNo >> 3;
+
+				reg->AFR[idx] &= ~(0xf << pos);
+				reg->AFR[idx] |= (PinOp >> 4) & 0xf;
+
+			}
+			break;
+		case 3:	// Analog
+			tmp |= 3 << pos;
+			break;
 	}
 
 	reg->MODER = tmp;
+
+	pos = PinNo << 1;
 
 	uint32_t pull = reg->PUPDR & ~(3 << pos);
 
@@ -123,6 +155,9 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 		tmp |= (1 << PinNo);
 	}
 	reg->OTYPER = tmp;
+
+	// Default high speed
+	IOPinSetSpeed(IOPINSPEED_HIGH);
 
 }
 
@@ -215,8 +250,7 @@ void IOPinDisableInterrupt(int IntNo)
  * The IntNo (interrupt number) parameter is processor dependent. Some is
  * directly the hardware interrupt number other is just an index in an array
  *
- * NOTE : Port event interrupt is set when IntNo = -1.  Port event mode only
- * high transition is detected no matter the setting of pin sense
+ * STM32F0x : IntNo must be same as PinNo.  It is directly related to hardware.
  *
  * @param	IntNo	: Interrupt number. -1 for port event interrupt
  * 			IntPrio : Interrupt priority
@@ -344,6 +378,7 @@ int IOPinAllocateInterrupt(int IntPrio, int PortNo, int PinNo, IOPINSENSE Sense,
  */
 void IOPinSetSense(int PortNo, int PinNo, IOPINSENSE Sense)
 {
+	// Pin sense is not avail on this STM32.  It only sets in interrupt
 }
 
 /**
@@ -357,6 +392,40 @@ void IOPinSetSense(int PortNo, int PinNo, IOPINSENSE Sense)
  */
 void IOPinSetStrength(int PortNo, int PinNo, IOPINSTRENGTH Strength)
 {
+	// Not available on this STM32
+}
+
+/**
+ * @brief Set I/O pin speed option
+ *
+ * Some hardware allow setting pin speed. This requires the I/O already configured
+ *
+ * @param	PortNo 	: Port number (up to 32 ports)
+ * @Param	PinNo  	: Pin number (up to 32 pins)
+ * @Param	Speed	: Pin speed
+ */
+void IOPinSetSpeed(int PortNo, int PinNo, IOPINSPEED Speed)
+{
+	if (PortNo == -1 || PinNo == -1)
+		return;
+
+	GPIO_TypeDef *reg = (GPIO_TypeDef *)(GPIOA_BASE + PortNo * 0x400);
+	uint32_t pos = PinNo << 1;
+	uint32_t tmp = reg->OSPEEDR & ~(GPIO_OSPEEDR_OSPEEDR0_Msk << pos);
+
+	switch (Speed)
+	{
+		case IOPINSPEED_LOW:
+			break;
+		case IOPINSPEED_MEDIUM:
+			tmp |= (1 << pos);
+			break;
+		case IOPINSPEED_HIGH:
+			tmp |= (2 << pos);
+			break;
+	}
+
+	reg->OSPEEDR = tmp;
 }
 
 void __WEAK EXTI0_1_IRQHandler(void)
