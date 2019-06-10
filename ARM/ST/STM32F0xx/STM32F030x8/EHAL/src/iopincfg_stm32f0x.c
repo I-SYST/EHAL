@@ -157,7 +157,7 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 	reg->OTYPER = tmp;
 
 	// Default high speed
-	IOPinSetSpeed(IOPINSPEED_HIGH);
+	IOPinSetSpeed(PortNo, PinNo, IOPINSPEED_HIGH);
 
 }
 
