@@ -120,7 +120,7 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 				int idx = PinNo >> 3;
 
 				reg->AFR[idx] &= ~(0xf << pos);
-				reg->AFR[idx] |= (PinOp >> 4) & 0xf;
+				reg->AFR[idx] |= ((PinOp >> 4) & 0xf) << pos;
 
 			}
 			break;
