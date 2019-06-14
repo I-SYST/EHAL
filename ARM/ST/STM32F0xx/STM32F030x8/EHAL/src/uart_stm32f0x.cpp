@@ -346,9 +346,6 @@ static void STM32F03xUARTDisable(DEVINTRF * const pDev)
 {
 	STM32F0X_UARTDEV *dev = (STM32F0X_UARTDEV *)pDev->pDevData;
 
-	if (AtomicDec(&pDev->EnCnt) > 0)
-		return;
-
 	dev->pReg->CR1 &= ~(USART_CR1_UE | USART_CR1_RE | USART_CR1_TE);
 	dev->pReg->CR2 &= ~USART_CR2_RTOEN;
 
@@ -358,9 +355,6 @@ static void STM32F03xUARTDisable(DEVINTRF * const pDev)
 static void STM32F03xUARTEnable(DEVINTRF * const pDev)
 {
 	STM32F0X_UARTDEV *dev = (STM32F0X_UARTDEV *)pDev->pDevData;
-
-	if (AtomicInc(&pDev->EnCnt) > 1)
-		return;
 
 	dev->ErrCnt = 0;
 	dev->RxTimeoutCnt = 0;
@@ -378,11 +372,86 @@ static void STM32F03xUARTEnable(DEVINTRF * const pDev)
 
 }
 
-void STM32F03xUARTPowerOff(DEVINTRF * const pDev)
+static void STM32F03xUARTPowerOff(DEVINTRF * const pDev)
 {
-//	STM32F0X_UARTDEV *dev = (STM32F0X_UARTDEV *)pDev->pDevData;
+	STM32F0X_UARTDEV *dev = (STM32F0X_UARTDEV *)pDev->pDevData;
 
 	STM32F03xUARTDisable(pDev);
+
+	switch (dev->DevNo)
+	{
+		case 0:
+			RCC->APB2ENR &= ~RCC_APB2ENR_USART1EN;
+			break;
+#if !defined(STM32F030x4) && !defined(STM32F030x6)
+		case 1:
+			RCC->APB1ENR &= ~RCC_APB1ENR_USART2EN;
+			break;
+#endif
+#if defined(STM32F070xB) || defined(STM32F030xC)
+		case 2:
+			RCC->APB1ENR &= ~RCC_APB1ENR_USART3EN;
+			break;
+		case 3:
+			RCC->APB1ENR &= ~RCC_APB1ENR_USART4EN;
+			break;
+#endif
+#ifdef STM32F030xC
+		case 4:
+			RCC->APB1ENR &= ~RCC_APB1ENR_USART5EN;
+			break;
+		case 5:
+			RCC->APB2ENR &= ~RCC_APB2ENR_USART6EN;
+			break;
+#endif
+	}
+
+	dev->pReg->CR2 &= ~USART_CR2_CLKEN;
+}
+
+static void STM32F03xUARTReset(DEVINTRF * const pDev)
+{
+	STM32F0X_UARTDEV *dev = (STM32F0X_UARTDEV *)pDev->pDevData;
+
+	switch (dev->DevNo)
+	{
+		case 0:
+			RCC->APB2RSTR |= RCC_APB2RSTR_USART1RST;
+			usDelay(100);
+			RCC->APB2RSTR &= ~RCC_APB2RSTR_USART1RST;
+			break;
+#if !defined(STM32F030x4) && !defined(STM32F030x6)
+		case 1:
+			RCC->APB1RSTR |= RCC_APB1RSTR_USART2RST;
+			usDelay(100);
+			RCC->APB1RSTR &= ~RCC_APB1RSTR_USART2RST;
+			break;
+#endif
+#if defined(STM32F070xB) || defined(STM32F030xC)
+		case 2:
+			RCC->APB1RSTR |= RCC_APB1RSTR_USART3RST;
+			usDelay(100);
+			RCC->APB1RSTR &= ~RCC_APB1RSTR_USART3RST;
+			break;
+		case 3:
+			RCC->APB1RSTR |= RCC_APB1RSTR_USART4RST;
+			usDelay(100);
+			RCC->APB1RSTR &= ~RCC_APB1RSTR_USART4RST;
+			break;
+#endif
+#ifdef STM32F030xC
+		case 4:
+			RCC->APB1RSTR |= RCC_APB1RSTR_USART5RST;
+			usDelay(100);
+			RCC->APB1RSTR &= ~RCC_APB1RSTR_USART5RST;
+			break;
+		case 5:
+			RCC->APB2RSTR |= RCC_APB2RSTR_USART6RST;
+			usDelay(100);
+			RCC->APB2RSTR &= ~RCC_APB2RSTR_USART6RST;
+			break;
+#endif
+	}
 }
 
 bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
@@ -404,6 +473,15 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	}
 
 	int devno = pCfg->DevNo;
+	USART_TypeDef *reg = s_Stm32f03xUartDev[devno].pReg;
+
+	pDev->DevIntrf.pDevData = &s_Stm32f03xUartDev[devno];
+	s_Stm32f03xUartDev[devno].pUartDev = pDev;
+
+	STM32F03xUARTReset(&pDev->DevIntrf);
+
+	// Disable UART first because some field can't be set is it is already enabled
+	reg->CR1 &= ~USART_CR1_UE;
 
 	// Enable clock
 	switch (devno)
@@ -434,13 +512,14 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 #endif
 	}
 
+	reg->CR2 |= USART_CR2_CLKEN;
+
 	msDelay(1);
 
 	RCC->CFGR3 &= ~RCC_CFGR3_USART1SW_Msk;
 	RCC->CFGR3 |= RCC_CFGR3_USART1SW_SYSCLK;
 
 	s_FclkFreq = SYSTEM_CORE_CLOCK;
-	//s_Stm32f03xUartDev[devno].pReg->CR1 &= ~USART_CR1_OVER8;	// /16
 
 	if (pCfg->pRxMem && pCfg->RxMemSize > 0)
 	{
@@ -465,50 +544,47 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 
 	IOPinCfg(pincfg, pCfg->IoMapLen);
 
-	pDev->DevIntrf.pDevData = &s_Stm32f03xUartDev[devno];
-	s_Stm32f03xUartDev[devno].pUartDev = pDev;
-
     // Set baud
     pDev->Rate = STM32F03xUARTSetRate(&pDev->DevIntrf, pCfg->Rate);
 
 	switch (pCfg->Parity)
 	{
 		case UART_PARITY_NONE:
-			s_Stm32f03xUartDev[devno].pReg->CR1 &= ~USART_CR1_PCE;
+			reg->CR1 &= ~USART_CR1_PCE;
 			break;
 		case UART_PARITY_EVEN:
-			s_Stm32f03xUartDev[devno].pReg->CR1 |= USART_CR1_PS | USART_CR1_PCE;
+			reg->CR1 |= USART_CR1_PS | USART_CR1_PCE;
 			break;
 		case UART_PARITY_ODD:
-			s_Stm32f03xUartDev[devno].pReg->CR1 &= ~USART_CR1_PS;
-			s_Stm32f03xUartDev[devno].pReg->CR1 |= USART_CR1_PCE;
+			reg->CR1 &= ~USART_CR1_PS;
+			reg->CR1 |= USART_CR1_PCE;
 			break;
 	}
 
-	s_Stm32f03xUartDev[devno].pReg->CR1 &= ~(USART_CR1_M | (1 << 28));
+	reg->CR1 &= ~(USART_CR1_M | (1 << 28));
 
 	if (pCfg->DataBits == 9)
 	{
-		s_Stm32f03xUartDev[devno].pReg->CR1 |=  USART_CR1_M;
+		reg->CR1 |=  USART_CR1_M;
 	}
 	else if (pCfg->DataBits == 7)
 	{
-		s_Stm32f03xUartDev[devno].pReg->CR1 |=  (1 << 28);
+		reg->CR1 |=  (1 << 28);
 	}
 
-	s_Stm32f03xUartDev[devno].pReg->CR2 &= ~USART_CR2_STOP_Msk;
+	reg->CR2 &= ~USART_CR2_STOP_Msk;
 	if (pCfg->StopBits == 2)
 	{
-		s_Stm32f03xUartDev[devno].pReg->CR2 |= 2;
+		reg->CR2 |= 2;
 	}
 
     if (pCfg->FlowControl == UART_FLWCTRL_HW)
 	{
-    	s_Stm32f03xUartDev[devno].pReg->CR3 |= USART_CR3_CTSE | USART_CR3_RTSE;
+    	reg->CR3 |= USART_CR3_CTSE | USART_CR3_RTSE;
 	}
 	else
 	{
-    	s_Stm32f03xUartDev[devno].pReg->CR3 &= ~(USART_CR3_CTSE | USART_CR3_RTSE);
+    	reg->CR3 &= ~(USART_CR3_CTSE | USART_CR3_RTSE);
 	}
 
 
@@ -520,6 +596,8 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
     s_Stm32f03xUartDev[devno].TxDropCnt = 0;
 
 	pDev->DevIntrf.Type = DEVINTRF_TYPE_UART;
+	pDev->Mode = pCfg->Mode;
+	pDev->Duplex = pCfg->Duplex;
 	pDev->DataBits = pCfg->DataBits;
 	pDev->FlowControl = pCfg->FlowControl;
 	pDev->StopBits = pCfg->StopBits;
@@ -530,6 +608,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	pDev->Parity = pCfg->Parity;
 	pDev->bIntMode = pCfg->bIntMode;
 	pDev->EvtCallback = pCfg->EvtCallback;
+	pDev->DevIntrf.Reset = STM32F03xUARTReset;
 	pDev->DevIntrf.Disable = STM32F03xUARTDisable;
 	pDev->DevIntrf.Enable = STM32F03xUARTEnable;
 	pDev->DevIntrf.GetRate = STM32F03xUARTGetRate;
@@ -563,6 +642,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 #endif
 		// Not using DMA transfer on Rx. It is useless on UART as we need to process 1 char at a time
 		// cannot wait until DMA buffer is filled.
+		reg->CR3 |= USART_CR3_DMAT;
 	}
 	else
 	{
@@ -574,12 +654,18 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 		{
 			SYSCFG->CFGR1 &= ~(SYSCFG_CFGR1_USART3_DMA_RMP);
 		}
+
+		reg->CR3 &= ~(USART_CR3_DMAT | USART_CR3_DMAR);
 	}
 
-	// Select full duplex mode
-	s_Stm32f03xUartDev[devno].pReg->CR3 &= ~USART_CR3_HDSEL;
+	// Select duplex mode
+	reg->CR3 &= ~USART_CR3_HDSEL;
+	if (pDev->Duplex == UART_DUPLEX_HALF)
+	{
+		reg->CR3 |= USART_CR3_HDSEL;
+	}
 
-	uint32_t tmp = s_Stm32f03xUartDev[devno].pReg->CR1;
+	uint32_t tmp = reg->CR1;
 
 	// Disable all interrupts
 	tmp &= ~(USART_CR1_PEIE | USART_CR1_TXEIE | USART_CR1_RTOIE | USART_CR1_TCIE | USART_CR1_RXNEIE | USART_CR1_IDLEIE);
@@ -590,9 +676,9 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 
 		if (pCfg->FlowControl == UART_FLWCTRL_HW)
 	    {
-			s_Stm32f03xUartDev[devno].pReg->CR3 |= USART_CR3_CTSIE;
+			reg->CR3 |= USART_CR3_CTSIE;
 	    }
-		s_Stm32f03xUartDev[devno].pReg->CR3 |= USART_CR3_EIE;
+		reg->CR3 |= USART_CR3_EIE;
 
 		switch (devno)
 		{
@@ -640,8 +726,8 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	// Enable USART
 	tmp |= USART_CR1_UE | USART_CR1_RE | USART_CR1_TE;
 
-	s_Stm32f03xUartDev[devno].pReg->CR1 = tmp;
-	s_Stm32f03xUartDev[devno].pReg->CR2 |= USART_CR2_RTOEN;
+	reg->CR1 = tmp;
+	reg->CR2 |= USART_CR2_RTOEN;
 
 	return true;
 }
