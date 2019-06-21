@@ -121,7 +121,7 @@ void SystemInit(void)
     /* Workaround for Errata 115 "RAM: RAM content cannot be trusted upon waking up from System ON Idle or System OFF mode" found at the Errata document
        for your device located at https://www.nordicsemi.com/DocLib  */
     if (errata_115()){
-        *(volatile uint32_t *)0x40000EE4 = (*(volatile uint32_t *)0x40000EE4 & 0xFFFFFFF0) | (*(uint32_t *)0x10000258 & 0x0000000F);
+        *(volatile uint32_t *)0x40000EE4ul = (*(volatile uint32_t *)0x40000EE4ul & 0xFFFFFFF0ul) | (*(uint32_t *)0x10000258ul & 0x0000000Ful);
     }
     
     /* Workaround for Errata 120 "QSPI: Data read or written is corrupted" found at the Errata document

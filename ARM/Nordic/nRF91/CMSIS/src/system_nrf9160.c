@@ -53,6 +53,13 @@ NOTICE: This file has been modified by Nordic Semiconductor ASA.
     uint32_t SystemCoreClock __attribute__((used)) = __SYSTEM_CLOCK;
 #endif
 
+/* Global values used used in Secure mode SystemInit. */
+#if !defined(NRF_TRUSTZONE_NONSECURE)
+    /* Global values used by UICR erase fix algorithm. */
+    static uint32_t uicr_erased_value;
+    static uint32_t uicr_new_value;
+#endif
+
 /* Errata are only handled in secure mode since they usually need access to FICR. */
 #if !defined(NRF_TRUSTZONE_NONSECURE)
     static bool uicr_HFXOSRC_erased(void);
@@ -78,48 +85,6 @@ void SystemInit(void)
         #if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
           SAU->CTRL |= (1 << SAU_CTRL_ALLNS_Pos);
         #endif
-
-        /* Trimming of the device. Copy all the trimming values from FICR into the target addresses. Trim 
-         until one ADDR is not initialized. */
-        uint32_t index = 0;
-        for (index = 0; index < 256ul && NRF_FICR_S->TRIMCNF[index].ADDR != 0xFFFFFFFFul; index++){
-          #if defined ( __ICCARM__ )
-              #pragma diag_suppress=Pa082
-          #endif
-          *(volatile uint32_t *)NRF_FICR_S->TRIMCNF[index].ADDR = NRF_FICR_S->TRIMCNF[index].DATA;
-          #if defined ( __ICCARM__ )
-              #pragma diag_default=Pa082
-          #endif
-        }
-          
-        /* Set UICR->HFXOSRC and UICR->HFXOCNT to working defaults if UICR was erased */
-        if (uicr_HFXOSRC_erased() || uicr_HFXOCNT_erased()) {
-          /* Wait for pending NVMC operations to finish */
-          while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
-          
-          /* Enable write mode in NVMC */
-          NRF_NVMC_S->CONFIG = NVMC_CONFIG_WEN_Wen;
-          while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
-          
-          if (uicr_HFXOSRC_erased()){
-            /* Write default value to UICR->HFXOSRC */
-            NRF_UICR_S->HFXOSRC = (NRF_UICR_S->HFXOSRC & ~UICR_HFXOSRC_HFXOSRC_Msk) | UICR_HFXOSRC_HFXOSRC_TCXO;
-            while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
-          }
-          
-          if (uicr_HFXOCNT_erased()){
-            /* Write default value to UICR->HFXOCNT */
-            NRF_UICR_S->HFXOCNT = (NRF_UICR_S->HFXOCNT & ~UICR_HFXOCNT_HFXOCNT_Msk) | 0x20;
-            while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
-          }
-                
-          /* Enable read mode in NVMC */
-          NRF_NVMC_S->CONFIG = NVMC_CONFIG_WEN_Ren;
-          while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
-          
-          /* Reset to apply clock select update */
-          NVIC_SystemReset();
-        }
         
         /* Workaround for Errata 6 "POWER: SLEEPENTER and SLEEPEXIT events asserted after pin reset" found at the Errata document
             for your device located at https://www.nordicsemi.com/DocLib  */
@@ -138,14 +103,59 @@ void SystemInit(void)
         /* Workaround for Errata 15 "REGULATORS: LDO mode at startup" found at the Errata document
             for your device located at https://www.nordicsemi.com/DocLib  */
         if (errata_15()){
-            *((volatile uint32_t *)0x50004A38) = 0x00ul;
             NRF_REGULATORS_S->DCDCEN = REGULATORS_DCDCEN_DCDCEN_Enabled << REGULATORS_DCDCEN_DCDCEN_Pos;
         }
 
         /* Workaround for Errata 20 "RAM content cannot be trusted upon waking up from System ON Idle or System OFF mode" found at the Errata document
             for your device located at https://www.nordicsemi.com/DocLib  */
         if (errata_20()){
-            *((volatile uint32_t *)0x5003AEE4) = 0xC;
+            *((volatile uint32_t *)0x5003AEE4) = 0xE;
+        }
+
+        /* Trimming of the device. Copy all the trimming values from FICR into the target addresses. Trim
+         until one ADDR is not initialized. */
+        uint32_t index = 0;
+        for (index = 0; index < 256ul && NRF_FICR_S->TRIMCNF[index].ADDR != 0xFFFFFFFFul; index++){
+          #if defined ( __ICCARM__ )
+              #pragma diag_suppress=Pa082
+          #endif
+          *(volatile uint32_t *)NRF_FICR_S->TRIMCNF[index].ADDR = NRF_FICR_S->TRIMCNF[index].DATA;
+          #if defined ( __ICCARM__ )
+              #pragma diag_default=Pa082
+          #endif
+        }
+
+        /* Set UICR->HFXOSRC and UICR->HFXOCNT to working defaults if UICR was erased */
+        if (uicr_HFXOSRC_erased() || uicr_HFXOCNT_erased()) {
+          /* Wait for pending NVMC operations to finish */
+          while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
+
+          /* Enable write mode in NVMC */
+          NRF_NVMC_S->CONFIG = NVMC_CONFIG_WEN_Wen;
+          while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
+
+          if (uicr_HFXOSRC_erased()){
+            /* Write default value to UICR->HFXOSRC */
+            uicr_erased_value = NRF_UICR_S->HFXOSRC;
+            uicr_new_value = (uicr_erased_value & ~UICR_HFXOSRC_HFXOSRC_Msk) | UICR_HFXOSRC_HFXOSRC_TCXO;
+            NRF_UICR_S->HFXOSRC = uicr_new_value;
+            while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
+          }
+
+          if (uicr_HFXOCNT_erased()){
+            /* Write default value to UICR->HFXOCNT */
+            uicr_erased_value = NRF_UICR_S->HFXOCNT;
+            uicr_new_value = (uicr_erased_value & ~UICR_HFXOCNT_HFXOCNT_Msk) | 0x20;
+            NRF_UICR_S->HFXOCNT = uicr_new_value;
+            while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
+          }
+
+          /* Enable read mode in NVMC */
+          NRF_NVMC_S->CONFIG = NVMC_CONFIG_WEN_Ren;
+          while (NRF_NVMC_S->READY != NVMC_READY_READY_Ready);
+
+          /* Reset to apply clock select update */
+          NVIC_SystemReset();
         }
 
         /* Enable SWO trace functionality. If ENABLE_SWO is not defined, SWO pin will be used as GPIO (see Product
@@ -258,10 +268,8 @@ void SystemInit(void)
 
     bool errata_20()
     {
-        if (*(uint32_t *)0x00FF0130 == 0x9ul){
-            if (*(uint32_t *)0x00FF0134 == 0x02ul){
-                return true;
-            }
+        if (((*(uint32_t *)0x00FF0004) & 0x1E) != 0x1C){
+            return true;
         }
 
         return false;

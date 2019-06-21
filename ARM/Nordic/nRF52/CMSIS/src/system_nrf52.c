@@ -152,7 +152,7 @@ void SystemInit(void)
     /* Workaround for Errata 108 "RAM: RAM content cannot be trusted upon waking up from System ON Idle or System OFF mode" found at the Errata document
        for your device located at https://www.nordicsemi.com/DocLib  */
     if (errata_108()){
-        *(volatile uint32_t *)0x40000EE4 = *(volatile uint32_t *)0x10000258 & 0x0000004F;
+        *(volatile uint32_t *)0x40000EE4ul = *(volatile uint32_t *)0x10000258ul & 0x0000004Ful;
     }
     
     /* Workaround for Errata 136 "System: Bits in RESETREAS are set when they should not be" found at the Errata document
