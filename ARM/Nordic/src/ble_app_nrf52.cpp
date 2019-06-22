@@ -663,10 +663,10 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
                           *((uint8_t *)&p_ble_evt->evt.gap_evt.params.auth_status.kdist_own),
                           *((uint8_t *)&p_ble_evt->evt.gap_evt.params.auth_status.kdist_peer));*/
             break;
-
+/*
 #if (NRF_SD_BLE_API_VERSION >= 3)
         case BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST:
-           //printf("%x:BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST %d\r\n", p_ble_evt->header.evt_id, g_BleAppData.MaxMtu);
+//           printf("%x:BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST %d\r\n", p_ble_evt->header.evt_id, g_BleAppData.MaxMtu);
         	if (role == BLE_GAP_ROLE_CENTRAL)
         		break;
             err_code = sd_ble_gatts_exchange_mtu_reply(p_ble_evt->evt.gatts_evt.conn_handle,
@@ -675,7 +675,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
             APP_ERROR_CHECK(err_code);
             break; // BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST
 #endif
-
+*/
 #if (NRF_SD_BLE_API_VERSION > 3)
         case BLE_GATTS_EVT_HVN_TX_COMPLETE:
             break;
@@ -1241,7 +1241,7 @@ void BleGattEvtHandler(nrf_ble_gatt_t * p_gatt, const nrf_ble_gatt_evt_t * p_evt
        // m_ble_nus_max_data_len = p_evt->params.att_mtu_effective - OPCODE_LENGTH - HANDLE_LENGTH;
         //NRF_LOG_INFO("Data len is set to 0x%X(%d)\r\n", m_ble_nus_max_data_len, m_ble_nus_max_data_len);
     }
-   // printf("ATT MTU exchange completed. central 0x%x peripheral 0x%x\r\n", p_gatt->att_mtu_desired_central, p_gatt->att_mtu_desired_periph);
+ //   printf("ATT MTU exchange completed. central 0x%x peripheral 0x%x\r\n", p_gatt->att_mtu_desired_central, p_gatt->att_mtu_desired_periph);
 }
 
 /**@brief Function for initializing the GATT library. */
@@ -1725,6 +1725,7 @@ NRF_SDH_STACK_OBSERVER(m_nrf_sdh_soc_evts_poll, NRF_SDH_SOC_STACK_OBSERVER_PRIO)
     .handler   = nrf_sdh_soc_evts_poll,
     .p_context = NULL,
 };
+
 
 #if NRF_MODULE_ENABLED(NRF_CRYPTO) && NRF_MODULE_ENABLED(NRF_CRYPTO_BACKEND_CC310)
 extern nrf_crypto_backend_info_t const cc310_backend;
