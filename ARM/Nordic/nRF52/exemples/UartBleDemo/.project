@@ -30,5 +30,55 @@
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/exemples/UartBleDemo.cpp</locationURI>
 		</link>
+		<link>
+			<name>src/nfc</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrfx</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nfc/platform</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrfx/drivers</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrfx/legacy</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nfc/platform/nfc_platform.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/nfc/platform/nfc_platform.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrfx/drivers/src</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrfx/legacy/nrf_drv_clock.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/integration/nrfx/legacy/nrf_drv_clock.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrfx/drivers/src/nrfx_clock.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/modules/nrfx/drivers/src/nrfx_clock.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrfx/drivers/src/nrfx_timer.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/modules/nrfx/drivers/src/nrfx_timer.c</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>

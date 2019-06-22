@@ -132,6 +132,9 @@ There are 2 main libraries in the EHAL for each ARM based MCU.
  |   |   |   |   |-- exemples     - exemple projects
  |   |   |
  |   |   |-- ST          - ST based MCU
+ |   |   |   |-- STM32F0xx
+ |   |   |   |-- STM32F4xx
+ |   |   |   |-- STM32L0xx
  |   |   |
  |   |   |-- TI          - Texas Instruments based MCU
  |   |   |   |-- CC3200

@@ -50,6 +50,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "board.h"
 
+//#define NORDIC_NUS_SERVICE
+
 #define DEVICE_NAME                     "UARTBridge"                            /**< Name of device. Will be included in the advertising data. */
 
 #define MANUFACTURER_NAME               "I-SYST inc."							/**< Manufacturer. Will be passed to Device Information Service. */
@@ -72,14 +74,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLE_UART_UUID_BASE			NUS_BASE_UUID
 
 #define BLE_UART_UUID_SERVICE		BLE_UUID_NUS_SERVICE			/**< The UUID of the Nordic UART Service. */
-#define BLE_UART_UUID_TX_CHAR		BLE_UUID_NUS_RX_CHARACTERISTIC	/**< The UUID of the TX Characteristic. */
-#define BLE_UART_UUID_RX_CHAR		BLE_UUID_NUS_TX_CHARACTERISTIC	/**< The UUID of the RX Characteristic. */
+#define BLE_UART_UUID_READ_CHAR		BLE_UUID_NUS_TX_CHARACTERISTIC	/**< The UUID of the TX Characteristic. */
+#define BLE_UART_UUID_WRITE_CHAR	BLE_UUID_NUS_RX_CHARACTERISTIC	/**< The UUID of the RX Characteristic. */
 #else
 #define BLE_UART_UUID_BASE			BLUEIO_UUID_BASE
 
 #define BLE_UART_UUID_SERVICE		BLUEIO_UUID_UART_SERVICE		//!< BlueIO default service
-#define BLE_UART_UUID_TX_CHAR		BLUEIO_UUID_UART_RX_CHAR		//!< Data characteristic
-#define BLE_UART_UUID_RX_CHAR		BLUEIO_UUID_UART_TX_CHAR		//!< Command control characteristic
+#define BLE_UART_UUID_READ_CHAR		BLUEIO_UUID_UART_RX_CHAR		//!< Data characteristic
+#define BLE_UART_UUID_WRITE_CHAR		BLUEIO_UUID_UART_TX_CHAR		//!< Command control characteristic
 #endif
 
 int BleIntrfEvtCallback(DEVINTRF *pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer, int BufferLen);
@@ -104,7 +106,7 @@ uint8_t g_ManData[8];
 BLESRVC_CHAR g_UartChars[] = {
 	{
 		// Read characteristic
-		BLE_UART_UUID_RX_CHAR,
+		BLE_UART_UUID_READ_CHAR,
 		20,
 		BLESVC_CHAR_PROP_READ | BLESVC_CHAR_PROP_NOTIFY | BLESVC_CHAR_PROP_VARLEN,
 		s_RxCharDescString,         // char UTF-8 description string
@@ -116,9 +118,9 @@ BLESRVC_CHAR g_UartChars[] = {
 	},
 	{
 		// Write characteristic
-		BLE_UART_UUID_TX_CHAR,	// char UUID
+		BLE_UART_UUID_WRITE_CHAR,	// char UUID
 		20,                         // char max data length
-		BLESVC_CHAR_PROP_WRITEWORESP | BLESVC_CHAR_PROP_VARLEN,	// char properties define by BLUEIOSVC_CHAR_PROP_...
+		BLESVC_CHAR_PROP_WRITE | BLESVC_CHAR_PROP_WRITEWORESP | BLESVC_CHAR_PROP_VARLEN,	// char properties define by BLUEIOSVC_CHAR_PROP_...
 		s_TxCharDescString,			// char UTF-8 description string
 		NULL,         				// Callback for write char, set to NULL for read char
 		NULL,						// Callback on set notification
