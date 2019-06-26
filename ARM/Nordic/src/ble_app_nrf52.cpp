@@ -288,7 +288,14 @@ void BleAppDisconnect()
 	if (g_BleAppData.ConnHdl != BLE_CONN_HANDLE_INVALID)
     {
 		uint32_t err_code = sd_ble_gap_disconnect(g_BleAppData.ConnHdl, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
-		APP_ERROR_CHECK(err_code);
+        if (err_code == NRF_ERROR_INVALID_STATE)
+        {
+            g_BleAppData.ConnHdl = BLE_CONN_HANDLE_INVALID;
+        }
+        else
+        {
+            APP_ERROR_CHECK(err_code);
+        }
     }
 }
 
