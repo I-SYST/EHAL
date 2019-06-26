@@ -824,6 +824,21 @@ static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
 
     if ((role == BLE_GAP_ROLE_CENTRAL) || /*(p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT) ||*/ g_BleAppData.AppRole & BLEAPP_ROLE_CENTRAL)
     {
+        switch (p_ble_evt->header.evt_id)
+        {
+            case BLE_GAP_EVT_TIMEOUT:
+            {
+                const ble_gap_evt_t * p_gap_evt = &p_ble_evt->evt.gap_evt;
+
+                ble_gap_evt_timeout_t const * p_timeout = &p_gap_evt->params.timeout;
+
+                if (p_timeout->src == BLE_GAP_TIMEOUT_SRC_SCAN)
+                {
+                    g_BleAppData.bScan = false;
+                }
+            }
+            break;
+        }
         BleCentralEvtUserHandler((ble_evt_t *)p_ble_evt);
     }
     if (g_BleAppData.AppRole & BLEAPP_ROLE_PERIPHERAL)
