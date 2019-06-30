@@ -386,7 +386,7 @@ static void on_conn_params_evt(ble_conn_params_evt_t * p_evt)
     if (p_evt->evt_type == BLE_CONN_PARAMS_EVT_FAILED)
     {
         err_code = sd_ble_gap_disconnect(g_BleAppData.ConnHdl, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
-        APP_ERROR_CHECK(err_code);
+        //APP_ERROR_CHECK(err_code);
     }
 }
 
@@ -829,9 +829,11 @@ static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
 {
     uint16_t role = ble_conn_state_role(p_ble_evt->evt.gap_evt.conn_handle);
 
-    if ((role == BLE_GAP_ROLE_CENTRAL) || /*(p_ble_evt->header.evt_id == BLE_GAP_EVT_ADV_REPORT) ||*/ g_BleAppData.AppRole & BLEAPP_ROLE_CENTRAL)
+    on_ble_evt(p_ble_evt);
+    if ((role == BLE_GAP_ROLE_CENTRAL) || g_BleAppData.AppRole & BLEAPP_ROLE_CENTRAL)
     {
-        switch (p_ble_evt->header.evt_id)
+#if 0
+    	switch (p_ble_evt->header.evt_id)
         {
             case BLE_GAP_EVT_TIMEOUT:
             {
@@ -846,13 +848,13 @@ static void ble_evt_dispatch(ble_evt_t const * p_ble_evt, void *p_context)
             }
             break;
         }
+#endif
         BleCentralEvtUserHandler((ble_evt_t *)p_ble_evt);
     }
     if (g_BleAppData.AppRole & BLEAPP_ROLE_PERIPHERAL)
     {
         BlePeriphEvtUserHandler((ble_evt_t *)p_ble_evt);
     }
-    on_ble_evt(p_ble_evt);
 }
 
 /**@brief Function for the Peer Manager initialization.
@@ -1014,7 +1016,7 @@ void BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int Sr
 		BleAppAdvStart(BLEAPP_ADVMODE_FAST);
 	}
 
-	#if 0
+#if 0
     int l = min(Len, BLE_GAP_ADV_MAX_SIZE);
 
     memcpy(g_AdvInstance.manuf_data_array, pData, l);
