@@ -5,7 +5,7 @@
 
 This file must be named iopinctrl.h no matter which target
 
-This is STM32F0x implementation
+This is STM32L4x implementation
 
 
 @author	Hoang Nguyen Hoan
@@ -13,7 +13,7 @@ This is STM32F0x implementation
 
 @license
 
-Copyright (c) 2019, I-SYST inc., all rights reserved
+Copyright (c) 2014, I-SYST inc., all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -41,7 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __IOPINCTRL_H__
 
 #include <stdint.h>
-#include "stm32f0xx.h"
+#include "stm32l4xx.h"
 #include "coredev/iopincfg.h"
 
 /**
@@ -59,7 +59,7 @@ static inline __attribute__((always_inline)) void IOPinSetDir(int PortNo, int Pi
 
 	PinNo <<= 1;
 
-	reg->MODER &= ~(GPIO_MODER_MODER0_Msk << PinNo);
+	reg->MODER &= ~(GPIO_MODER_MODE0_Msk << PinNo);
 	if (Dir == IOPINDIR_OUTPUT)
 	{
 		reg->MODER |= GPIO_MODER_MODER0_0 << PinNo;

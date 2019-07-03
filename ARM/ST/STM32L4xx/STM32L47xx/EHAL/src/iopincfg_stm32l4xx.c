@@ -1,7 +1,7 @@
 /**-------------------------------------------------------------------------
-@file	iopincfg_stm32f0xx.c
+@file	iopincfg_stm32l4xx.c
 
-@brief	I/O pin configuration implementation on STM32F0x series
+@brief	I/O pin configuration implementation on STM32L4x series
 
 @author	Hoang Nguyen Hoan
 @date	June 3, 2019
@@ -35,11 +35,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "stm32f0xx.h"
+#include "stm32l4xx.h"
 
 #include "coredev/iopincfg.h"
 
 #define IOPIN_MAX_INT			(16)
+#define IOPIN_MAX_PORT			(9)
 
 #pragma pack(push, 4)
 typedef struct {
@@ -75,32 +76,15 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 {
 	GPIO_TypeDef *reg = (GPIO_TypeDef *)(GPIOA_BASE + PortNo * 0x400);
 
-	if (PortNo == -1 || PinNo == -1 || PortNo == 4)
+	if (PortNo == -1 || PinNo == -1 || PortNo > IOPIN_MAX_PORT)
 		return;
 
 	uint32_t tmp;
 
-	switch (PortNo)
-	{
-		case 0:	// Port A
-			RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
-			break;
-		case 1: // Port B
-			RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
-			break;
-		case 2: // Port C
-			RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
-			break;
-		case 3: // Port D
-			RCC->AHBENR |= RCC_AHBENR_GPIODEN;
-			break;
-		case 5: // Port F
-			RCC->AHBENR |= RCC_AHBENR_GPIOFEN;
-			break;
-	}
+	RCC->AHB2ENR |= 1 << PortNo;
 
 	uint32_t pos = PinNo << 1;
-	tmp = reg->MODER & ~(GPIO_MODER_MODER0_Msk << pos);
+	tmp = reg->MODER & ~(GPIO_MODER_MODE0_Msk << pos);
 
 	switch (PinOp & 0xF)
 	{
@@ -178,10 +162,10 @@ void IOPinDisable(int PortNo, int PinNo)
 
 	GPIO_TypeDef *reg = (GPIO_TypeDef *)(GPIOA_BASE + PortNo * 0x400);
 	uint32_t pos = PinNo << 1;
-	uint32_t tmp = reg->MODER & ~(GPIO_MODER_MODER0_Msk << pos);
+	uint32_t tmp = reg->MODER & ~(GPIO_MODER_MODE0_Msk << pos);
 	reg->MODER = tmp;
 
-	tmp= reg->PUPDR & ~(GPIO_PUPDR_PUPDR0_Msk << pos);
+	tmp= reg->PUPDR & ~(GPIO_PUPDR_PUPD0_Msk << pos);
 	reg->PUPDR = tmp;
 }
 
@@ -198,48 +182,70 @@ void IOPinDisableInterrupt(int IntNo)
 	}
 
 	int idx = (s_GpIOSenseEvt[IntNo].PortPinNo & 0xFF) >> 2;
-	uint32_t pos = (s_GpIOSenseEvt[IntNo].PortPinNo & 0x3) << 2;
-	uint32_t mask = 7 << pos;
+	uint32_t pos = (s_GpIOSenseEvt[IntNo].PortPinNo & 0xF) << 2;
+	uint32_t mask = 0xF << pos;
 
 	SYSCFG->EXTICR[idx] &= ~mask;
 
 	mask = ~(1 << (s_GpIOSenseEvt[IntNo].PortPinNo & 0xFF));
 
-	EXTI->RTSR &= mask;
-	EXTI->FTSR &= mask;
-	EXTI->IMR &= mask;
+	EXTI->RTSR1 &= mask;
+	EXTI->FTSR1 &= mask;
+	EXTI->IMR1 &= mask;
 
     s_GpIOSenseEvt[IntNo].PortPinNo = -1;
     s_GpIOSenseEvt[IntNo].Sense = IOPINSENSE_DISABLE;
     s_GpIOSenseEvt[IntNo].SensEvtCB = NULL;
 
-    if (IntNo < 2)
+    switch (IntNo)
     {
-    	if (s_GpIOSenseEvt[0].SensEvtCB == NULL && s_GpIOSenseEvt[1].SensEvtCB == NULL)
-    	{
-    		NVIC_DisableIRQ(EXTI0_1_IRQn);
-    		NVIC_ClearPendingIRQ(EXTI0_1_IRQn);
-    	}
-    }
-	else if (IntNo < 4)
-    {
-    	if (s_GpIOSenseEvt[2].SensEvtCB == NULL && s_GpIOSenseEvt[3].SensEvtCB == NULL)
-    	{
-			NVIC_DisableIRQ(EXTI2_3_IRQn);
-			NVIC_ClearPendingIRQ(EXTI2_3_IRQn);
-    	}
-    }
-	else
-    {
-		for (int i = 4; i < IOPIN_MAX_INT; i++)
-		{
-			if (s_GpIOSenseEvt[i].SensEvtCB != NULL)
-			{
-				return;
-			}
-		}
-		NVIC_DisableIRQ(EXTI4_15_IRQn);
-		NVIC_ClearPendingIRQ(EXTI4_15_IRQn);
+    	case 0:
+    		NVIC_DisableIRQ(EXTI0_IRQn);
+    		NVIC_ClearPendingIRQ(EXTI0_IRQn);
+    		break;
+    	case 1:
+    		NVIC_DisableIRQ(EXTI1_IRQn);
+    		NVIC_ClearPendingIRQ(EXTI1_IRQn);
+    		break;
+    	case 2:
+    		NVIC_DisableIRQ(EXTI2_IRQn);
+    		NVIC_ClearPendingIRQ(EXTI2_IRQn);
+    		break;
+    	case 3:
+    		NVIC_DisableIRQ(EXTI3_IRQn);
+    		NVIC_ClearPendingIRQ(EXTI3_IRQn);
+    		break;
+    	case 4:
+    		NVIC_DisableIRQ(EXTI4_IRQn);
+    		NVIC_ClearPendingIRQ(EXTI4_IRQn);
+    		break;
+    	default:
+    		if (IntNo > 4 && IntNo < 10)
+    		{
+				// Shared interrupt, make sure no one still using it
+    			for (int i = 5; i < 10; i++)
+    			{
+    				if (s_GpIOSenseEvt[i].SensEvtCB != NULL)
+    				{
+    					return;
+    				}
+    			}
+        		NVIC_DisableIRQ(EXTI9_5_IRQn);
+        		NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+    		}
+    		else
+    		{
+				// Shared interrupt, make sure no one still using it
+    			for (int i = 10; i < IOPIN_MAX_INT; i++)
+    			{
+    				if (s_GpIOSenseEvt[i].SensEvtCB != NULL)
+    				{
+    					return;
+    				}
+    			}
+        		NVIC_DisableIRQ(EXTI15_10_IRQn);
+        		NVIC_ClearPendingIRQ(EXTI15_10_IRQn);
+    		}
     }
 }
 
@@ -250,7 +256,7 @@ void IOPinDisableInterrupt(int IntNo)
  * The IntNo (interrupt number) parameter is processor dependent. Some is
  * directly the hardware interrupt number other is just an index in an array
  *
- * STM32F0x : IntNo must be same as PinNo.  It is directly related to hardware.
+ * STM32 : IntNo must be same as PinNo.  It is directly related to hardware.
  *
  * @param	IntNo	: Interrupt number. -1 for port event interrupt
  * 			IntPrio : Interrupt priority
@@ -266,56 +272,81 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
 		return false;
 	}
 
-	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN;
+	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 
 	int idx = IntNo >> 2;
-	uint32_t pos = (IntNo & 0x3) << 2;
-	uint32_t mask = 7 << pos;
+	uint32_t pos = (IntNo & 0xFF) << 2;
+	uint32_t mask = 0xF << pos;
 
 	SYSCFG->EXTICR[idx] &= ~mask;
 	SYSCFG->EXTICR[idx] |= PortNo << pos;
 
-	mask = 1 << PinNo;
+	mask = (1 << (PinNo & 0xFF));
+
+	EXTI->IMR1 |= mask;
+
+	mask &= 0x7DFF;
 
 	switch (Sense)
 	{
 		case IOPINSENSE_LOW_TRANSITION:
-			EXTI->RTSR &= ~mask;
-			EXTI->FTSR |= mask;
+			EXTI->RTSR1 &= ~mask;
+			EXTI->FTSR1 |= mask;
 			break;
 		case IOPINSENSE_HIGH_TRANSITION:
-			EXTI->RTSR |= mask;
-			EXTI->FTSR &= ~mask;
+			EXTI->RTSR1 |= mask;
+			EXTI->FTSR1 &= ~mask;
 			break;
 		case IOPINSENSE_TOGGLE:
-			EXTI->RTSR |= mask;
-			EXTI->FTSR |= mask;
+			EXTI->RTSR1 |= mask;
+			EXTI->FTSR1 |= mask;
 			break;
 	}
-
-	EXTI->IMR |= mask;
 
     s_GpIOSenseEvt[IntNo].Sense = Sense;
 	s_GpIOSenseEvt[IntNo].PortPinNo = (PortNo << 8) | PinNo; // For use when disable interrupt
 	s_GpIOSenseEvt[IntNo].SensEvtCB = pEvtCB;
 
-	if (IntNo < 2)
-    {
-		NVIC_ClearPendingIRQ(EXTI0_1_IRQn);
-		NVIC_SetPriority(EXTI0_1_IRQn, IntPrio);
-		NVIC_EnableIRQ(EXTI0_1_IRQn);
-    }
-	else if (IntNo < 4)
-    {
-		NVIC_ClearPendingIRQ(EXTI2_3_IRQn);
-		NVIC_SetPriority(EXTI2_3_IRQn, IntPrio);
-		NVIC_EnableIRQ(EXTI2_3_IRQn);
-    }
-	else
-    {
-		NVIC_ClearPendingIRQ(EXTI4_15_IRQn);
-		NVIC_SetPriority(EXTI4_15_IRQn, IntPrio);
-		NVIC_EnableIRQ(EXTI4_15_IRQn);
+	switch (IntNo)
+	{
+		case 0:
+			NVIC_ClearPendingIRQ(EXTI0_IRQn);
+			NVIC_SetPriority(EXTI0_IRQn, IntPrio);
+			NVIC_EnableIRQ(EXTI0_IRQn);
+			break;
+		case 1:
+			NVIC_ClearPendingIRQ(EXTI1_IRQn);
+			NVIC_SetPriority(EXTI1_IRQn, IntPrio);
+			NVIC_EnableIRQ(EXTI1_IRQn);
+			break;
+		case 2:
+			NVIC_ClearPendingIRQ(EXTI2_IRQn);
+			NVIC_SetPriority(EXTI2_IRQn, IntPrio);
+			NVIC_EnableIRQ(EXTI2_IRQn);
+			break;
+		case 3:
+			NVIC_ClearPendingIRQ(EXTI3_IRQn);
+			NVIC_SetPriority(EXTI3_IRQn, IntPrio);
+			NVIC_EnableIRQ(EXTI3_IRQn);
+			break;
+		case 4:
+			NVIC_ClearPendingIRQ(EXTI4_IRQn);
+			NVIC_SetPriority(EXTI4_IRQn, IntPrio);
+			NVIC_EnableIRQ(EXTI4_IRQn);
+			break;
+		default:
+			if (IntNo > 4 && IntNo < 10)
+			{
+				NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+				NVIC_SetPriority(EXTI9_5_IRQn, IntPrio);
+				NVIC_EnableIRQ(EXTI9_5_IRQn);
+			}
+			else
+			{
+				NVIC_ClearPendingIRQ(EXTI15_10_IRQn);
+				NVIC_SetPriority(EXTI15_10_IRQn, IntPrio);
+				NVIC_EnableIRQ(EXTI15_10_IRQn);
+			}
     }
 
     return true;
@@ -411,7 +442,7 @@ void IOPinSetSpeed(int PortNo, int PinNo, IOPINSPEED Speed)
 
 	GPIO_TypeDef *reg = (GPIO_TypeDef *)(GPIOA_BASE + PortNo * 0x400);
 	uint32_t pos = PinNo << 1;
-	uint32_t tmp = reg->OSPEEDR & ~(GPIO_OSPEEDR_OSPEEDR0_Msk << pos);
+	uint32_t tmp = reg->OSPEEDR & ~(GPIO_OSPEEDR_OSPEED0_Msk << pos);
 
 	switch (Speed)
 	{
@@ -428,59 +459,85 @@ void IOPinSetSpeed(int PortNo, int PinNo, IOPINSPEED Speed)
 	reg->OSPEEDR = tmp;
 }
 
-void __WEAK EXTI0_1_IRQHandler(void)
+void __WEAK EXTI0_IRQHandler(void)
 {
-	if (EXTI->PR & 1)
+	if (EXTI->PR1 & 1)
 	{
-		EXTI->PR = 1;
+		EXTI->PR1 = 1;
 
 		if (s_GpIOSenseEvt[0].SensEvtCB)
 			s_GpIOSenseEvt[0].SensEvtCB(0);
 
 	}
-	if (EXTI->PR & 2)
+
+	NVIC_ClearPendingIRQ(EXTI0_IRQn);
+}
+
+void __WEAK EXTI1_IRQHandler(void)
+{
+	if (EXTI->PR1 & 2)
 	{
-		EXTI->PR = 2;
+		EXTI->PR1 = 2;
 
 		if (s_GpIOSenseEvt[1].SensEvtCB)
 			s_GpIOSenseEvt[1].SensEvtCB(1);
 
 	}
 
-	NVIC_ClearPendingIRQ(EXTI0_1_IRQn);
+	NVIC_ClearPendingIRQ(EXTI1_IRQn);
 }
 
-void __WEAK EXTI2_3_IRQHandler(void)
+void __WEAK EXTI2_IRQHandler(void)
 {
-	if (EXTI->PR & 4)
+	if (EXTI->PR1 & 4)
 	{
-		EXTI->PR = 4;
+		EXTI->PR1 = 4;
 
 		if (s_GpIOSenseEvt[2].SensEvtCB)
 			s_GpIOSenseEvt[2].SensEvtCB(2);
 
 	}
-	if (EXTI->PR & 8)
+
+	NVIC_ClearPendingIRQ(EXTI2_IRQn);
+}
+
+void __WEAK EXTI3_IRQHandler(void)
+{
+	if (EXTI->PR1 & 8)
 	{
-		EXTI->PR = 8;
+		EXTI->PR1 = 8;
 
 		if (s_GpIOSenseEvt[3].SensEvtCB)
 			s_GpIOSenseEvt[3].SensEvtCB(3);
 
 	}
 
-	NVIC_ClearPendingIRQ(EXTI2_3_IRQn);
+	NVIC_ClearPendingIRQ(EXTI3_IRQn);
 }
 
-void __WEAK EXTI4_15_IRQHandler(void)
+void __WEAK EXTI4_IRQHandler(void)
 {
-	uint32_t mask = 0x10;
-
-	for (int i = 4; i < IOPIN_MAX_INT; i++)
+	if (EXTI->PR1 & 0x10)
 	{
-		if (EXTI->PR & mask)
+		EXTI->PR1 = 0x10;
+
+		if (s_GpIOSenseEvt[4].SensEvtCB)
+			s_GpIOSenseEvt[4].SensEvtCB(4);
+
+	}
+
+	NVIC_ClearPendingIRQ(EXTI4_IRQn);
+}
+
+void __WEAK EXTI9_5_IRQHandler(void)
+{
+	uint32_t mask = 1 << 5;
+
+	for (int i = 5; i < 10; i++)
+	{
+		if (EXTI->PR1 & mask)
 		{
-			EXTI->PR = mask;
+			EXTI->PR1 = mask;
 			if (s_GpIOSenseEvt[i].SensEvtCB)
 				s_GpIOSenseEvt[i].SensEvtCB(i);
 
@@ -488,7 +545,26 @@ void __WEAK EXTI4_15_IRQHandler(void)
 		mask <<= 1;
 	}
 
-	NVIC_ClearPendingIRQ(EXTI4_15_IRQn);
+	NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+}
+
+void __WEAK EXTI15_10_IRQHandler(void)
+{
+	uint32_t mask = 1 << 10;
+
+	for (int i = 10; i < IOPIN_MAX_INT; i++)
+	{
+		if (EXTI->PR1 & mask)
+		{
+			EXTI->PR1 = mask;
+			if (s_GpIOSenseEvt[i].SensEvtCB)
+				s_GpIOSenseEvt[i].SensEvtCB(i);
+
+		}
+		mask <<= 1;
+	}
+
+	NVIC_ClearPendingIRQ(EXTI15_10_IRQn);
 }
 
 
