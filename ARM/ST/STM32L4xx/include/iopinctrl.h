@@ -13,7 +13,7 @@ This is STM32L4x implementation
 
 @license
 
-Copyright (c) 2014, I-SYST inc., all rights reserved
+Copyright (c) 2019, I-SYST inc., all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright

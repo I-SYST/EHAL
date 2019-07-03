@@ -371,6 +371,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/include/coredev/iopincfg.h</locationURI>
 		</link>
 		<link>
+			<name>include/coredev/iopinctrl.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/iopinctrl.h</locationURI>
+		</link>
+		<link>
 			<name>include/coredev/pdm.h</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/include/coredev/pdm.h</locationURI>
@@ -584,6 +589,11 @@
 			<name>src/coredev/i2c.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/src/coredev/i2c.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/iopincfg_stm32l4xx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/iopincfg_stm32l4xx.c</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/spi.cpp</name>

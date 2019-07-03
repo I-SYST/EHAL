@@ -40,7 +40,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "coredev/iopincfg.h"
 
 #define IOPIN_MAX_INT			(16)
+
+#if defined(STM32L476xx) || defined(STM32L475xx) || defined(STM32L485xx) || defined(STM32L486xx) || defined(STM32L4R5xx) || defined(STM32L4S5xx)
+#define IOPIN_MAX_PORT			(7)
+#elif defined(STM32L496xx) || defined(STM32L4A6xx)
 #define IOPIN_MAX_PORT			(9)
+#endif
 
 #pragma pack(push, 4)
 typedef struct {
