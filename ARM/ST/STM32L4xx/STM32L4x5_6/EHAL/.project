@@ -611,6 +611,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/src/coredev/uart.c</locationURI>
 		</link>
 		<link>
+			<name>src/coredev/uart_stm32l4xx.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/uart_stm32l4xx.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/imu/imu.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/src/imu/imu.cpp</locationURI>
