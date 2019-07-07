@@ -39,11 +39,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stm32l4xx.h"
 #include "system_core_clock.h"
 
-#include "stm32l4xx_hal.h"
-
-#define STM32L4XX_HSE_XTAL_EN			false
-#define STM32L4XX_HSE_XTAL_FREQ			0
-
 uint32_t SystemCoreClock = SYSTEM_CORE_CLOCK;
 
 static SYSCLK_SRC s_Clksrc = SYSCLK_SRC_RC;
