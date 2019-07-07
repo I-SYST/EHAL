@@ -1,10 +1,16 @@
-/*--------------------------------------------------------------------------
-File   : system_core_clock.h
+/**-------------------------------------------------------------------------
+@file	system_core_clock.h
 
-Author : Hoang Nguyen Hoan          Aug. 30, 2017
+@brief
 
-Desc   : Contains core specific default clock and related clock factors
-		 for calculating delay loops, etc...
+Contains core specific default clock and related clock factors for calculating
+delay loops, etc...
+
+
+@author	Hoang Nguyen Hoan
+@date	Aug. 30, 2017
+
+@license
 
 Copyright (c) 2017, I-SYST inc., all rights reserved
 
@@ -28,16 +34,20 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
 
 #ifndef __SYSTEM_CORE_CLOCK_H__
 #define __SYSTEM_CORE_CLOCK_H__
 
+typedef enum __System_Clock_Src {
+	SYSCLK_SRC_RC,		// Internal RC
+	SYSCLK_SRC_XTAL,	// External crystal
+	SYSCLK_SRC_OSC,		// External oscillator
+} SYSCLK_SRC;
+
 #define SYSTEM_CORE_CLOCK				80000000UL
 #define SYSTEM_NSDELAY_CORE_FACTOR		(47UL)
 
+//extern uint32_t SystemCoreClock;
 
 #endif // __SYSTEM_CORE_CLOCK_H__

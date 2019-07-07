@@ -170,7 +170,7 @@ void IOPinDisable(int PortNo, int PinNo)
 	uint32_t tmp = reg->MODER & ~(GPIO_MODER_MODE0_Msk << pos);
 	reg->MODER = tmp;
 
-	tmp= reg->PUPDR & ~(GPIO_PUPDR_PUPD0_Msk << pos);
+	tmp = reg->PUPDR & ~(GPIO_PUPDR_PUPD0_Msk << pos);
 	reg->PUPDR = tmp;
 }
 
@@ -448,19 +448,7 @@ void IOPinSetSpeed(int PortNo, int PinNo, IOPINSPEED Speed)
 	GPIO_TypeDef *reg = (GPIO_TypeDef *)(GPIOA_BASE + PortNo * 0x400);
 	uint32_t pos = PinNo << 1;
 	uint32_t tmp = reg->OSPEEDR & ~(GPIO_OSPEEDR_OSPEED0_Msk << pos);
-
-	switch (Speed)
-	{
-		case IOPINSPEED_LOW:
-			break;
-		case IOPINSPEED_MEDIUM:
-			tmp |= (1 << pos);
-			break;
-		case IOPINSPEED_HIGH:
-			tmp |= (2 << pos);
-			break;
-	}
-
+	tmp |= (uint32_t)Speed << pos;
 	reg->OSPEEDR = tmp;
 }
 

@@ -78,7 +78,7 @@ typedef struct _STM32L4X_UART_Dev {
 
 #pragma pack(pop)
 
-static uint32_t s_FclkFreq = SYSTEM_CORE_CLOCK;		// FCLK frequency in Hz
+static uint32_t s_FclkFreq = SystemCoreClock;		// FCLK frequency in Hz
 
 static STM32L4X_UARTDEV s_Stm32l4xUartDev[] = {
 	{
@@ -154,12 +154,12 @@ static void UART_IRQHandler(STM32L4X_UARTDEV * const pDev)
 		}
 		if (iflag & (USART_ISR_TXE | USART_ISR_TC))
 		{
+			pDev->pReg->ICR = USART_ISR_TXE;
 			uint8_t *p = CFifoGet(dev->hTxFifo);
 			if (p != NULL)
 			{
 				pDev->pReg->TDR = *p;
 				dev->bTxReady = false;
-				pDev->pReg->ICR = USART_ISR_TXE;
 			}
 			else
 			{
@@ -176,6 +176,7 @@ static void UART_IRQHandler(STM32L4X_UARTDEV * const pDev)
 			{
 				dev->EvtCallback(dev, UART_EVT_RXTIMEOUT, NULL, CFifoUsed(dev->hRxFifo));
 			}
+			pDev->pReg->ICR = USART_ISR_RTOF;
 		}
 	}
 	else
@@ -545,6 +546,13 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 
 	IOPinCfg(pincfg, pCfg->IoMapLen);
 
+	for (int i = 0; i < pCfg->IoMapLen; i++)
+	{
+		if (pincfg[i].PortNo >= 0)
+		{
+			IOPinSetSpeed(pincfg[i].PortNo, pincfg[i].PinNo, IOPINSPEED_TURBO);
+		}
+	}
     // Set baud
     pDev->Rate = STM32L4xUARTSetRate(&pDev->DevIntrf, pCfg->Rate);
 
@@ -663,12 +671,15 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 
 	uint32_t tmp = reg->CR1;
 
+	reg->ICR = 0xFFFFFFFF;
+	(void)reg->RDR;
+
 	// Disable all interrupts
 	tmp &= ~(USART_CR1_PEIE | USART_CR1_TXEIE | USART_CR1_RTOIE | USART_CR1_TCIE | USART_CR1_RXNEIE | USART_CR1_IDLEIE);
 
 	if (pCfg->bIntMode)
 	{
-		tmp |= (USART_CR1_PEIE | USART_CR1_TXEIE | USART_CR1_RTOIE | USART_CR1_TCIE | USART_CR1_RXNEIE | USART_CR1_IDLEIE);
+		tmp |= (USART_CR1_PEIE | USART_CR1_TCIE | USART_CR1_RXNEIE);
 
 		if (pCfg->FlowControl == UART_FLWCTRL_HW)
 	    {
