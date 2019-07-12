@@ -48,6 +48,27 @@ typedef enum __System_Clock_Src {
 #define SYSTEM_CORE_CLOCK				80000000UL
 #define SYSTEM_NSDELAY_CORE_FACTOR		(47UL)
 
-//extern uint32_t SystemCoreClock;
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * @brief	Setup core clock & update SystemCoreClock variable
+ *
+ * @param ClkSel	- Clock source selection
+ *						CLKSRCSEL_IRC - Internal osc
+ *						CLKSRCSEL_MAIN - Main osc
+ *						CLKSRCSEL_RTC -	Realtime osc
+ * @param CoreFreq 	- Core target frequency
+ *
+ * @return
+ * 		Return actual frequency in Hz
+ *
+ */
+uint32_t SystemCoreClockSet(SYSCLK_SRC ClkSrc, uint32_t CoreFreq);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __SYSTEM_CORE_CLOCK_H__

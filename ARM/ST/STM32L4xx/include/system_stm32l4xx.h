@@ -1,107 +1,73 @@
-/**
-  ******************************************************************************
-  * @file    system_stm32l4xx.h
-  * @author  MCD Application Team
-  * @brief   CMSIS Cortex-M4 Device System Source File for STM32L4xx devices.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+/**-------------------------------------------------------------------------
+@file	system_stm32l4xx.h
 
-/** @addtogroup CMSIS
-  * @{
-  */
+@brief	Implementation of CMSIS Cortex-M4 Device for STM32L4xx MCU series
 
-/** @addtogroup stm32l4xx_system
-  * @{
-  */
 
-/**
-  * @brief Define to prevent recursive inclusion
-  */
-#ifndef __SYSTEM_STM32L4XX_H
-#define __SYSTEM_STM32L4XX_H
+@author	Hoang Nguyen Hoan
+@date	June 5, 2019
+
+@license
+
+Copyright (c) 2019, I-SYST inc., all rights reserved
+
+Permission to use, copy, modify, and distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright
+notice and this permission notice appear in all copies, and none of the
+names : I-SYST or its contributors may be used to endorse or
+promote products derived from this software without specific prior written
+permission.
+
+For info or contributing contact : hnhoan at i-syst dot com
+
+THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+----------------------------------------------------------------------------*/
+#ifndef __SYSTEM_STM32L4xx_H__
+#define __SYSTEM_STM32L4xx_H__
+
+#include <stdint.h>
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
-/** @addtogroup STM32L4xx_System_Includes
-  * @{
-  */
+extern uint32_t SystemCoreClock;     /*!< System Clock Frequency (Core Clock)  */
+
 
 /**
-  * @}
-  */
-
-
-/** @addtogroup STM32L4xx_System_Exported_Variables
-  * @{
-  */
-  /* The SystemCoreClock variable is updated in three ways:
-      1) by calling CMSIS function SystemCoreClockUpdate()
-      2) by calling HAL API function HAL_RCC_GetSysClockFreq()
-      3) each time HAL_RCC_ClockConfig() is called to configure the system clock frequency
-         Note: If you use this function to configure the system clock; then there
-               is no need to call the 2 first functions listed above, since SystemCoreClock
-               variable is updated automatically.
-  */
-extern uint32_t SystemCoreClock;            /*!< System Clock Frequency (Core Clock) */
-
-extern const uint8_t  AHBPrescTable[16];    /*!< AHB prescalers table values */
-extern const uint8_t  APBPrescTable[8];     /*!< APB prescalers table values */
-extern const uint32_t MSIRangeTable[12];    /*!< MSI ranges table values     */
+ * Initialize the system
+ *
+ * @param  none
+ * @return none
+ *
+ * @brief  Setup the microcontroller system.
+ *         Initialize the System and update the SystemCoreClock variable.
+ */
+__attribute__((weak)) void SystemInit (void);
 
 /**
-  * @}
-  */
-
-/** @addtogroup STM32L4xx_System_Exported_Constants
-  * @{
-  */
-
-/**
-  * @}
-  */
-
-/** @addtogroup STM32L4xx_System_Exported_Macros
-  * @{
-  */
-
-/**
-  * @}
-  */
-
-/** @addtogroup STM32L4xx_System_Exported_Functions
-  * @{
-  */
-
-extern void SystemInit(void);
-extern void SystemCoreClockUpdate(void);
-/**
-  * @}
-  */
+ * Update SystemCoreClock variable
+ *
+ * @param  none
+ * @return none
+ *
+ * @brief  Updates the SystemCoreClock with current core Clock 
+ *         retrieved from cpu registers.
+ */
+void SystemCoreClockUpdate (void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*__SYSTEM_STM32L4XX_H */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif // __SYSTEM_STM32L4xx_H__
