@@ -69,11 +69,6 @@ __attribute__ ((section (".AppStart")))
 void ResetEntry (void)
 {
 	/*
-	 * Core initialization using CMSIS
-	 */
-	SystemInit();
-
-	/*
 	 * Copy the initialized data of the ".data" segment
 	 * from the flash to ram.
 	 */
@@ -85,6 +80,10 @@ void ResetEntry (void)
 	 */
 	memset((void *)&__bss_start__, 0, (size_t)&__bss_size__);
 
+	/*
+	 * Core clock initialization using CMSIS
+	 */
+	SystemInit();
 
 	/*
 	 * Call C++ library initialization
