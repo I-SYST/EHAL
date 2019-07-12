@@ -39,13 +39,58 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stm32l4xx.h"
 #include "system_core_clock.h"
 
+#define DEFAULT_RC_FREQ		48000000
+#define XTAL_FREQ			16000000
+
 uint32_t SystemCoreClock = SYSTEM_CORE_CLOCK;
 
 static SYSCLK_SRC s_Clksrc = SYSCLK_SRC_RC;
-static uint32_t s_ClkSrcFreq = 48000000;
+static uint32_t s_ClkSrcFreq = DEFAULT_RC_FREQ;
 static const uint32_t s_MsiClkRange[] = {
 	100000, 200000, 400000, 800000, 1000000, 2000000, 4000000, 8000000, 16000000, 24000000, 32000000, 48000000
 };
+
+void SetFlashWaitState(uint32_t CoreFreq)
+{
+	uint32_t tmp = FLASH->ACR & ~FLASH_ACR_LATENCY;
+
+	if (CoreFreq <= 16000000)
+	{
+		tmp |= FLASH_ACR_LATENCY_0WS;
+	}
+	else if (CoreFreq <= 32000000)
+	{
+		tmp |= FLASH_ACR_LATENCY_1WS;
+	}
+	else if (CoreFreq <= 48000000)
+	{
+		tmp |= FLASH_ACR_LATENCY_2WS;
+	}
+	else if (CoreFreq <= 64000000)
+	{
+		tmp |= FLASH_ACR_LATENCY_3WS;
+	}
+	else
+	{
+		tmp |= FLASH_ACR_LATENCY_4WS;
+	}
+
+	FLASH->ACR = tmp;
+}
+
+uint32_t GetMsiRange(uint32_t Freq)
+{
+	int retval = sizeof(s_MsiClkRange) / sizeof(uint32_t) - 1;
+
+	do {
+		if (s_MsiClkRange[retval] <= Freq)
+		{
+			break;
+		}
+	} while (retval >= 0);
+
+	return (uint32_t)retval << RCC_CR_MSIRANGE_Pos;
+}
 
 uint32_t FindPllCfg(uint32_t SrcFreq)
 {
@@ -69,7 +114,7 @@ uint32_t FindPllCfg(uint32_t SrcFreq)
 		{
 			uint32_t vco = clk * n;
 
-			for (int r = 2; r <= 8; r <<= 1)
+			for (int r = 2; r <= 8 && vco >= 64000000 && vco <= 344000000; r += 2)
 			{
 				uint32_t sysclk = vco / r;
 
@@ -81,14 +126,7 @@ uint32_t FindPllCfg(uint32_t SrcFreq)
 						cdiff = diff;
 						pllm = m - 1;
 						plln = n;
-						pllr = r - 2;
-					}
-					if (cdiff == 0)
-					{
-						pllcfgr = (pllm << RCC_PLLCFGR_PLLM_Pos) | (plln << RCC_PLLCFGR_PLLN_Pos) |
-								  (pllr << RCC_PLLCFGR_PLLP_Pos) | (pllr << RCC_PLLCFGR_PLLQ_Pos) |
-								  (pllr << RCC_PLLCFGR_PLLR_Pos);
-						return pllcfgr;
+						pllr = (r >> 1) - 1;
 					}
 				}
 			}
@@ -105,38 +143,38 @@ void SystemCoreClockUpdate (void)
 {
 	uint32_t cfgr = RCC->CFGR;
 	uint32_t pllcfgr = RCC->PLLCFGR;
+	uint32_t clk = DEFAULT_RC_FREQ;
+
+	if (pllcfgr & RCC_PLLCFGR_PLLSRC_MSI)
+	{
+		int ridx = (RCC->CR & RCC_CR_MSIRANGE_Msk) >> RCC_CR_MSIRANGE_Pos;
+		SystemCoreClock = s_MsiClkRange[ridx];
+	}
+	else if (pllcfgr & RCC_PLLCFGR_PLLSRC_HSE)
+	{
+		SystemCoreClock = s_ClkSrcFreq;
+	}
+	else if (pllcfgr & RCC_PLLCFGR_PLLSRC_HSI)
+	{
+		SystemCoreClock = 16000000;
+	}
 
 	if (cfgr & RCC_CFGR_SWS_PLL)
 	{
 		uint32_t m = ((pllcfgr & RCC_PLLCFGR_PLLM_Msk) >> RCC_PLLCFGR_PLLM_Pos) + 1;
 		uint32_t n = (pllcfgr & RCC_PLLCFGR_PLLN_Msk) >> RCC_PLLCFGR_PLLN_Pos;
-		uint32_t r = ((pllcfgr & RCC_PLLCFGR_PLLR_Msk) >> RCC_PLLCFGR_PLLR_Pos) + 2;
-		uint32_t sysclk = (s_ClkSrcFreq * n / m) / r;
+		uint32_t r = (((pllcfgr & RCC_PLLCFGR_PLLR_Msk) >> RCC_PLLCFGR_PLLR_Pos) + 1) << 1;
+		SystemCoreClock = (SystemCoreClock * n / (m * r));
+	}
 
-		SystemCoreClock = sysclk;
-	}
-	else if (cfgr & RCC_CFGR_SWS_HSE)
-	{
-		// HSE
-		SystemCoreClock = s_ClkSrcFreq;
-	}
-	else if (cfgr & RCC_CFGR_SWS_MSI)
-	{
-		int ridx = (RCC->CR & RCC_CR_MSIRANGE_Msk) >> RCC_CR_MSIRANGE_Pos;
-		SystemCoreClock = s_MsiClkRange[ridx];
-	}
-	else
-	{
-		// HSI 8MHz
-		SystemCoreClock = 16000000;
-	}
+	// Update Flash wait state to current core freq.
+	SetFlashWaitState(SystemCoreClock);
 }
 
 uint32_t SystemCoreClockSet(SYSCLK_SRC ClkSrc, uint32_t ClkFreq)
 {
 	uint32_t cfgr = 0;
 	uint32_t pllcfgr = 0;
-	uint32_t cr = RCC->CR;
 
 	RCC->CFGR = 0;
 	RCC->PLLCFGR &= ~RCC_PLLCFGR_PLLREN;
@@ -145,11 +183,12 @@ uint32_t SystemCoreClockSet(SYSCLK_SRC ClkSrc, uint32_t ClkFreq)
 	while ((RCC->CR & RCC_CR_PLLRDY) != 0);
 	RCC->CIER = 0;
 
-	// internal defaul 48MHz RC, ready for USB clock
-	cr = RCC->CR;
-	cr &= ~RCC_CR_MSIRANGE_Msk;
-	cr |= RCC_CR_MSIRANGE_11;
-	RCC->CR = cr;
+	// Flash wait state to max core freq.
+	SetFlashWaitState(SYSTEM_CORE_CLOCK);
+
+	// internal default 48MHz RC, ready for USB clock
+	RCC->CR &= ~RCC_CR_MSIRANGE_Msk;
+	RCC->CR |= GetMsiRange(DEFAULT_RC_FREQ) | RCC_CR_MSIRGSEL;
 
 	// Select MSI 48MHz USB clock
 	RCC->CCIPR |= RCC_CCIPR_CLK48SEL_Msk;
@@ -178,15 +217,13 @@ uint32_t SystemCoreClockSet(SYSCLK_SRC ClkSrc, uint32_t ClkFreq)
 			pllcfgr |= RCC_PLLCFGR_PLLSRC_HSE;
 
 		default:	// MSI
-			s_ClkSrcFreq = 48000000;
+			s_ClkSrcFreq = DEFAULT_RC_FREQ;
 			pllcfgr |= RCC_PLLCFGR_PLLSRC_MSI;
 	}
 
 	pllcfgr |= FindPllCfg(s_ClkSrcFreq);
 
-
 	RCC->PLLCFGR = pllcfgr;
-
 
 	RCC->CR |= RCC_CR_PLLON;
 	RCC->PLLCFGR |= RCC_PLLCFGR_PLLREN;
@@ -194,10 +231,11 @@ uint32_t SystemCoreClockSet(SYSCLK_SRC ClkSrc, uint32_t ClkFreq)
 	while ((RCC->CR & RCC_CR_PLLRDY) == 0);
 
 	RCC->CFGR = cfgr;
+
+	return SYSTEM_CORE_CLOCK;
 }
 
 void SystemInit(void)
 {
 	SystemCoreClockSet(SYSCLK_SRC_RC, 0);
-	SystemCoreClockUpdate();
 }
