@@ -37,7 +37,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdint.h>
 #include <stdio.h>
+
+#ifndef __ICCARM__
 #include <unistd.h>
+#endif
 
 #define STDDEV_MAX				6		//!< Max number of standard device
 #define STDDEV_NAME_MAX			8
