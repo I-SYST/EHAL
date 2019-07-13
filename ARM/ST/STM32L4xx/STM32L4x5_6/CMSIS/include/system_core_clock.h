@@ -45,8 +45,8 @@ typedef enum __System_Clock_Src {
 	SYSCLK_SRC_OSC,		// External oscillator
 } SYSCLK_SRC;
 
-#define SYSTEM_CORE_CLOCK				80000000UL
-#define SYSTEM_NSDELAY_CORE_FACTOR		(47UL)
+#define SYSTEM_CORE_CLOCK				80000000UL	// TODO: Adjust value for CPU with fixed core frequency
+#define SYSTEM_NSDELAY_CORE_FACTOR		(47UL)		// TODO: Adjustment value for nanosec delay
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,7 +55,7 @@ extern "C" {
 /**
  * @brief	Setup core clock & update SystemCoreClock variable
  *
- * @param ClkSel	- Clock source selection
+ * @param ClkSrc	- Clock source selection
  *						CLKSRCSEL_IRC - Internal osc
  *						CLKSRCSEL_MAIN - Main osc
  *						CLKSRCSEL_RTC -	Realtime osc

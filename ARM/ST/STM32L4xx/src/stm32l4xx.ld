@@ -3,7 +3,7 @@ SEARCH_DIR("../../../src")
 SEARCH_DIR("../../../../src")
 SEARCH_DIR("../../../../../src")
 SEARCH_DIR("../../../../../../src")
-GROUP(-lCMSIS -lnosys -lstdc++ -lgcc -lc)
+GROUP(-lnosys -lstdc++ -lgcc -lc -lCMSIS)
 
 
 MEMORY

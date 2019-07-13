@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "iopinctrl.h"
 #include "coredev/uart.h"
 #include "idelay.h"
-#include "atomic.h"
+#include "interrupt.h"
 
 #define SYSCFG_CFGR1_USART3_DMA_RMP		(1<<26)
 
@@ -360,7 +360,7 @@ static void STM32F03xUARTEnable(DEVINTRF * const pDev)
 	dev->RxTimeoutCnt = 0;
 	dev->RxDropCnt = 0;
 	dev->TxDropCnt = 0;
-	pDev->bBusy = false;
+	atomic_flag_clear(&pDev->bBusy);
 
 	CFifoFlush(dev->pUartDev->hTxFifo);
 
@@ -619,11 +619,10 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	pDev->DevIntrf.StartTx = STM32F03xUARTStartTx;
 	pDev->DevIntrf.TxData = STM32F03xUARTTxData;
 	pDev->DevIntrf.StopTx = STM32F03xUARTStopTx;
-	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = UART_RETRY_MAX;
 	pDev->DevIntrf.PowerOff = STM32F03xUARTPowerOff;
 	pDev->DevIntrf.EnCnt = 1;
-
+	atomic_flag_clear(&pDev->DevIntrf.bBusy);
 
 	if (pDev->DevIntrf.bDma == true)
 	{

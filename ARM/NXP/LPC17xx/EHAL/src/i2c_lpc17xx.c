@@ -324,8 +324,8 @@ bool I2CInit(I2CDEV *pDev, const I2CCFG *pCfgData)
 	pDev->DevIntrf.Reset = NULL;
 	pDev->DevIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->DevIntrf.EvtCB = pCfgData->EvtCB;
-	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
+	atomic_flag_clear(&pDev->DevIntrf.bBusy);
 
 	return true;
 }

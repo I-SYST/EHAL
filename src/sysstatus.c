@@ -33,8 +33,9 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 //#pragma file_attr("prefersMem=external")
 #include <string.h>
+#include <stdatomic.h>
+#include <signal.h>
 
-#include "atomic.h"
 #include "sysstatus.h"
 
 // System state.  Only current state is kept
@@ -90,12 +91,12 @@ STATUS SysStatusSet(STATUS Code, char *pDesc)
 	if ((Code & SYSSTATUS_TYPE_MASK) == SYSSTATUS_TYPE_RNT)
 	{
 		// Special case for runtime state machine
-		AtomicAssign((sig_atomic_t *)&g_SysState, Code);
+		atomic_store((sig_atomic_t *)&g_SysState, Code);
 	}
 
 	g_StatusQCurrIdx = (g_StatusQCurrIdx + 1) % SYSSTATUS_MAXQUE;
 
-	AtomicAssign((sig_atomic_t *)g_StatusQue[g_StatusQCurrIdx].Code, Code);
+	atomic_store((sig_atomic_t *)g_StatusQue[g_StatusQCurrIdx].Code, Code);
 	if (pDesc)
 	{
 		strncpy(g_StatusQue[g_StatusQCurrIdx].Desc, pDesc, SYSSTATUS_DESC_MAX);

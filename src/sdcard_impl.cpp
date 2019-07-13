@@ -37,7 +37,7 @@ Modified by          Date              Description
 #include "coredev/iopincfg.h"
 #include "sdcard.h"
 #include "crc.h"
-#include "atomic.h"
+#include "interrupt.h"
 #include "idelay.h"
 
 SDCard::SDCard()

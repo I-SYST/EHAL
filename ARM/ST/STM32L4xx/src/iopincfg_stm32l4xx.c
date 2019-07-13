@@ -36,7 +36,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 
 #include "stm32l4xx.h"
-
 #include "coredev/iopincfg.h"
 
 #define IOPIN_MAX_INT			(16)

@@ -34,9 +34,11 @@ Modified by          Date              Description
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdbool.h>
+
+#include "cmsis_gcc.h"
 #include "istddef.h"
 #include "uart_lpcxx.h"
-//#include "atomic.h"
+#include "interrupt.h"
 #include "idelay.h"
 
 extern uint32_t SystemCoreClock;

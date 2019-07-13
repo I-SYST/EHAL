@@ -42,7 +42,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "iopinctrl.h"
 #include "coredev/uart.h"
 #include "idelay.h"
-#include "atomic.h"
+#include "interrupt.h"
 
 #define NRF5X_UART_HWFIFO_SIZE		6
 #define NRF5X_UART_RXTIMEOUT		15
@@ -765,10 +765,10 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	pDev->DevIntrf.StartTx = nRFUARTStartTx;
 	pDev->DevIntrf.TxData = nRFUARTTxData;
 	pDev->DevIntrf.StopTx = nRFUARTStopTx;
-	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = UART_RETRY_MAX;
 	pDev->DevIntrf.PowerOff = nRFUARTPowerOff;
 	pDev->DevIntrf.EnCnt = 1;
+	atomic_flag_clear(&pDev->DevIntrf.bBusy);
 
 
 #ifdef NRF52_SERIES

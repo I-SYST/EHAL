@@ -38,6 +38,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern unsigned long __StackTop;
 extern void ResetEntry(void);
+extern unsigned long __ICFEDIT_region_RAM_end__;
 
 void DEF_IRQHandler(void) { while(1); }
 __attribute__((weak, alias("DEF_IRQHandler"))) void NMI_Handler(void);
@@ -137,9 +138,18 @@ __attribute__((weak, alias("DEF_IRQHandler"))) void FPU_IRQHandler(void);
  * overloaded by application function
  *
  */
+#ifdef __ICCARM__
+__attribute__ ((section(".intvec"), used))
+void (* const __vector_table[])(void) = {
+#else
 __attribute__ ((section(".intvect"), used))
 void (* const g_Vectors[])(void) = {
-	(void (*) )((int32_t)&__StackTop),
+#endif
+#ifdef __ICCARM__
+  (void (*)(void) )((uint32_t)&__ICFEDIT_region_RAM_end__),
+#else
+  	(void (*)(void) )((uint32_t)&__StackTop),
+#endif
 	ResetEntry,
 	NMI_Handler,
 	HardFault_Handler,
@@ -237,7 +247,9 @@ void (* const g_Vectors[])(void) = {
 	RNG_IRQHandler,
 	FPU_IRQHandler
 };
-
+#ifdef __ICCARM__
+const uint32_t g_iVectorSize = sizeof(__vector_table) + 4;
+#else
 const uint32_t g_iVectorSize = sizeof(g_Vectors) + 4;
-
+#endif
 

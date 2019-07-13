@@ -26,11 +26,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>include/atomic.h</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/include/atomic.h</locationURI>
-		</link>
-		<link>
 			<name>include/base64.h</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/include/base64.h</locationURI>
@@ -96,6 +91,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/include/fatfs.h</locationURI>
 		</link>
 		<link>
+			<name>include/idelay.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/idelay.h</locationURI>
+		</link>
+		<link>
 			<name>include/imu</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -104,6 +104,11 @@
 			<name>include/intelhex.h</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/include/intelhex.h</locationURI>
+		</link>
+		<link>
+			<name>include/interrupt.h</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/include/interrupt.h</locationURI>
 		</link>
 		<link>
 			<name>include/isha1.h</name>

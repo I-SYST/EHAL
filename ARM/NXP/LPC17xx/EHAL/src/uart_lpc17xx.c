@@ -236,7 +236,7 @@ bool LpcUARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	pDev->DevIntrf.TxData = LpcUARTTxData;
 	pDev->DevIntrf.StopTx = LpcUARTStopTx;
 	pDev->EvtCallback = pCfg->EvtCallback;
-	pDev->DevIntrf.bBusy = false;
+	atomic_flag_clear(&pDev->DevIntrf.bBusy);
 
 	g_LpcUartDev[pCfg->DevNo].bTxReady = true;
 

@@ -40,7 +40,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "atomic.h"
+
+#ifdef __cplusplus
+	#include <atomic>
+	using namespace std;
+#else
+	#include <stdatomic.h>
+#endif
 
 /** @addtogroup device_intrf	Device Interface
   * @{
@@ -121,9 +127,9 @@ struct __device_intrf {
 	void *pDevData;			//!< Private device interface implementation data
 	int	IntPrio;			//!< Interrupt priority.  Value is implementation specific
 	DEVINTRF_EVTCB EvtCB;	//!< Interrupt based event callback function pointer. Must be set to NULL if not used
-	bool bBusy;		        //!< Busy flag to be set check and set at start and reset at end of transmission
+	atomic_flag bBusy;		        //!< Busy flag to be set check and set at start and reset at end of transmission
 	int MaxRetry;			//!< Max retry when data could not be transfered (Rx/Tx returns zero count)
-	int EnCnt;				//!< Count the number of time device is enabled, this used as ref count where multiple
+	atomic_int EnCnt;				//!< Count the number of time device is enabled, this used as ref count where multiple
 							//!< devices are using the same interface. It is to avoid it being disabled while another
 							//!< device is still using it
 	DEVINTRF_TYPE Type;     //!< Identify the type of interface
@@ -284,10 +290,10 @@ extern "C" {
  * @param	pDev	: Pointer to an instance of the Device Interface
  */
 static inline void DeviceIntrfDisable(DEVINTRF * const pDev) {
-	if (AtomicDec(&pDev->EnCnt) < 1) {
+	if (--pDev->EnCnt < 1) {
     	pDev->Disable(pDev);
-    	AtomicAssign(&pDev->EnCnt, 0);
-    }
+    	pDev->EnCnt = 0;
+	}
 }
 
 /**
@@ -296,7 +302,7 @@ static inline void DeviceIntrfDisable(DEVINTRF * const pDev) {
  * @param	pDev	: Pointer to an instance of the Device Interface
  */
 static inline void DeviceIntrfEnable(DEVINTRF * const pDev) {
-    if (AtomicInc(&pDev->EnCnt) == 1) {
+	if (++pDev->EnCnt == 1) {
     	pDev->Enable(pDev);
     }
 }
@@ -411,15 +417,15 @@ int DeviceIntrfWrite(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int Ad
  * 			false - failed.
  */
 static inline bool DeviceIntrfStartRx(DEVINTRF * const pDev, int DevAddr) {
-    if (AtomicTestAndSet(&pDev->bBusy))
-        return false;
+	if (atomic_flag_test_and_set(&pDev->bBusy))
+		return false;
 
     bool retval = pDev->StartRx(pDev, DevAddr);
 
     // In case of returned false, app would not call Stop to release busy flag
     // so we need to do that here before returning
     if (retval == false) {
-        AtomicClear(&pDev->bBusy);
+    	atomic_flag_clear(&pDev->bBusy);
     }
 
     return retval;
@@ -449,7 +455,7 @@ static inline int DeviceIntrfRxData(DEVINTRF * const pDev, uint8_t *pBuff, int B
  */
 static inline void DeviceIntrfStopRx(DEVINTRF * const pDev) {
     pDev->StopRx(pDev);
-    AtomicClear(&pDev->bBusy);
+	atomic_flag_clear(&pDev->bBusy);
 }
 
 // Initiate receive
@@ -472,7 +478,7 @@ static inline void DeviceIntrfStopRx(DEVINTRF * const pDev) {
  * 			false - failed
  */
 static inline bool DeviceIntrfStartTx(DEVINTRF * const pDev, int DevAddr) {
-    if (AtomicTestAndSet(&pDev->bBusy))
+    if (atomic_flag_test_and_set(&pDev->bBusy))
         return false;
 
     bool retval =  pDev->StartTx(pDev, DevAddr);
@@ -480,7 +486,7 @@ static inline bool DeviceIntrfStartTx(DEVINTRF * const pDev, int DevAddr) {
     // In case of returned false, app would not call Stop to release busy flag
     // so we need to do that here before returning
     if (retval == false) {
-        AtomicClear(&pDev->bBusy);
+    	atomic_flag_clear(&pDev->bBusy);
     }
 
     return retval;
@@ -511,7 +517,7 @@ static inline int DeviceIntrfTxData(DEVINTRF * const pDev, uint8_t *pData, int D
  */
 static inline void DeviceIntrfStopTx(DEVINTRF * const pDev) {
     pDev->StopTx(pDev);
-    AtomicClear(&pDev->bBusy);
+	atomic_flag_clear(&pDev->bBusy);
 }
 
 /**
@@ -699,7 +705,7 @@ public:
      * This can be in case such as start condition for I2C or Chip Select for
      * SPI or precondition for DMA transfer or whatever requires it or not
      *
-     * NOTE: This function must check & set the busy state for reentrancy
+     * NOTE: This function must check & set the busy state for re-entrancy
      *
      * On success StopRx must be called to release busy flag
      *
@@ -728,7 +734,7 @@ public:
 	 * @brief	Completion of read data phase.
 	 *
 	 * Do require post processing after data has been received via RxData
-	 * This function must clear the busy state for reentrancy.\n
+	 * This function must clear the busy state for re-entrancy.\n
 	 * Call this function only if StartRx was successful.
 	 */
 	virtual void StopRx(void) = 0;
@@ -743,7 +749,7 @@ public:
 	 * This can be in case such as start condition for I2C or Chip Select for
 	 * SPI or precondition for DMA transfer or whatever requires it or not
 	 *
-	 * NOTE: This function must check & set the busy state for reentrancy
+	 * NOTE: This function must check & set the busy state for re-entrancy
 	 *
 	 * On success StopRx must be called to release busy flag
 	 *
@@ -774,7 +780,7 @@ public:
 	 * Do require post processing
 	 * after all data was transmitted via TxData.
 	 *
-	 * NOTE: This function must clear the busy state for reentrancy
+	 * NOTE: This function must clear the busy state for re-entrancy
 	 * Call this function only if StartTx was successful.
 	 */
 	virtual void StopTx(void) = 0;

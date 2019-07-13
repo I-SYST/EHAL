@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------------*/
 #include "nrf.h"
 
+#include "istddef.h"
 #include "coredev/i2c.h"
 #include "iopinctrl.h"
 #include "idelay.h"
@@ -609,8 +610,8 @@ bool I2CInit(I2CDEV * const pDev, const I2CCFG *pCfgData)
 	pDev->DevIntrf.Reset = nRF5xI2CReset;
 	pDev->DevIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->DevIntrf.EvtCB = pCfgData->EvtCB;
-	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
+	atomic_flag_clear(&pDev->DevIntrf.bBusy);
 
 	reg->SHORTS = 0;
 

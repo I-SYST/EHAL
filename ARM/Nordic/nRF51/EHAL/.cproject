@@ -228,7 +228,7 @@
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582.1927089570" name="ledmxio.h" rcbsApplicability="disable" resourcePath="include/ledmxio.h" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="spi_nrf51.cpp|i2c_nrf51.cpp|i2c_nrf5x.cpp|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|BlueIOADC.c|atomic.c|nrf_uart_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="spi_nrf51.cpp|i2c_nrf51.cpp|i2c_nrf5x.cpp|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|BlueIOADC.c|nrf_uart_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -253,7 +253,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release.372971708" name="Release" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=" parent="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release">
+				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release.372971708" name="Release" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release">
 					<folderInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release.372971708." name="/" resourcePath="">
 						<toolChain id="ilg.gnuarmeclipse.managedbuild.cross.toolchain.lib.release.335594391" name="Cross ARM GCC" superClass="ilg.gnuarmeclipse.managedbuild.cross.toolchain.lib.release">
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.606725962" name="Optimization Level" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level" value="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.size" valueType="enumerated"/>
@@ -460,7 +460,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="spi_nrf51.cpp|i2c_nrf51.cpp|i2c_nrf5x.cpp|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|BlueIOADC.c|atomic.c|nrf_uart_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="spi_nrf51.cpp|i2c_nrf51.cpp|i2c_nrf5x.cpp|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|BlueIOADC.c|nrf_uart_impl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

@@ -36,6 +36,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __STDDEV_H__
 
 #include <stdint.h>
+#include <stdio.h>
 #include <unistd.h>
 
 #define STDDEV_MAX				6		//!< Max number of standard device

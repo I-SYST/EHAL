@@ -118,7 +118,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/i2c_lpcxx.c|src/sensors/agm_icm20948.cpp|src/converters/adc_device.cpp|src/usb_lpc11uxx.c|src/sbuffer.c|src/sysstatus_impl.cpp|src/sdcard.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/i2c_lpcxx.c|src/sensors/agm_icm20948.cpp|src/converters/adc_device.cpp|src/sysstatus_impl.cpp|src/sdcard.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
 					</sourceEntries>
 				</configuration>
@@ -144,7 +144,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release.317675944" name="Release" parent="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release">
+				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release.317675944" name="Release" optionalBuildProperties="" parent="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release">
 					<folderInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.release.317675944." name="/" resourcePath="">
 						<toolChain id="ilg.gnuarmeclipse.managedbuild.cross.toolchain.lib.release.2095764137" name="Cross ARM GCC" superClass="ilg.gnuarmeclipse.managedbuild.cross.toolchain.lib.release">
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.1264024503" name="Optimization Level" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level" value="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.size" valueType="enumerated"/>
@@ -243,7 +243,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/i2c_lpcxx.c|src/sensors/agm_icm20948.cpp|src/converters/adc_device.cpp|src/usb_lpc11uxx.c|src/sbuffer.c|src/sysstatus_impl.cpp|src/sdcard.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/i2c_lpcxx.c|src/sensors/agm_icm20948.cpp|src/converters/adc_device.cpp|src/sysstatus_impl.cpp|src/sdcard.c|src/diskio.c|include" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
 					</sourceEntries>
 				</configuration>

@@ -41,6 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __IOPINCTRL_H__
 
 #include <stdint.h>
+
 #include "stm32l4xx.h"
 #include "coredev/iopincfg.h"
 

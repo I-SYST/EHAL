@@ -35,6 +35,7 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #include <string.h>
 
+#include "istddef.h"
 #include "cfifo.h"
 #include "ble_intrf.h"
 #include "ble_app.h"
@@ -368,10 +369,10 @@ bool BleIntrfInit(BLEINTRF *pBleIntrf, const BLEINTRF_CFG *pCfg)
 	pBleIntrf->DevIntrf.StartTx = BleIntrfStartTx;
 	pBleIntrf->DevIntrf.TxData = BleIntrfTxData;
 	pBleIntrf->DevIntrf.StopTx = BleIntrfStopTx;
-	pBleIntrf->DevIntrf.bBusy = false;
 	pBleIntrf->DevIntrf.MaxRetry = 0;
 	pBleIntrf->DevIntrf.EvtCB = pCfg->EvtCB;
 	pBleIntrf->TransBuffLen = 0;
+	atomic_flag_clear(&pBleIntrf->DevIntrf.bBusy);
 
 	return true;
 }

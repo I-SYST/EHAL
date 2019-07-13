@@ -58,7 +58,9 @@ extern uint32_t SystemMicroSecLoopCnt;
  */
 static inline __attribute__((always_inline)) void usDelay(uint32_t cnt) {
 	asm volatile (
+#ifdef __GNUC__
 		".syntax unified\n"
+#endif
 			"ORRS %[ucnt], %[ucnt]\n"
 			"BEQ 2f\n"
 			"MOVS r0, %[ucnt]\n"
@@ -76,7 +78,9 @@ static inline __attribute__((always_inline)) void usDelay(uint32_t cnt) {
 			" SUBS r0, #1\n"
 			" BGT 1b\n"
 		"2:\n"
+#ifdef __GNUC__
 		".syntax divided\n"
+#endif
 		:
 		: [ucnt] "l" (cnt * SystemMicroSecLoopCnt)
 		:"r0"
@@ -95,13 +99,17 @@ static inline __attribute__((always_inline)) void usDelay(uint32_t cnt) {
  */
 static inline __attribute__((always_inline)) void nsDelay(uint32_t cnt) {
 	asm volatile (
+#ifdef __GNUC__
 		".syntax unified\n"
+#endif
 			"MOVS r1, %[ucnt]\n"
 		"1:\n"
 			" SUBS r1, #1\n"
 			" BGT 1b\n"
 		"2:\n"
+#ifdef __GNUC__
 		".syntax divided\n"
+#endif
 		:
 		: [ucnt] "l" ((cnt + (SYSTEM_NSDELAY_CORE_FACTOR >> 1)) / SYSTEM_NSDELAY_CORE_FACTOR)
 		:"r1"

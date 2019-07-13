@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------------*/
 #include "nrf.h"
 
+#include "istddef.h"
 #include "coredev/spi.h"
 #include "iopinctrl.h"
 #include "i2c_spi_nrf5x_irq.h"
@@ -617,11 +618,11 @@ bool SPIInit(SPIDEV * const pDev, const SPICFG *pCfgData)
 	pDev->DevIntrf.StopTx = nRF5xSPIStopTx;
 	pDev->DevIntrf.IntPrio = pCfgData->IntPrio;
 	pDev->DevIntrf.EvtCB = pCfgData->EvtCB;
-	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.EnCnt = 1;
 	pDev->DevIntrf.MaxRetry = pCfgData->MaxRetry;
 	pDev->DevIntrf.bDma = pCfgData->bDmaEn;
 	pDev->DevIntrf.PowerOff = nRF5xSPIPowerOff;
+	atomic_flag_clear(&pDev->DevIntrf.bBusy);
 
 	if (pCfgData->Mode == SPIMODE_SLAVE)
 	{

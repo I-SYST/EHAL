@@ -77,11 +77,12 @@ typedef enum __iopin_drive_strength {
 	IOPINSTRENGTH_STRONG,		//!< Stronger drive strength
 } IOPINSTRENGTH;
 
-/// I/O pin speed.
+/// I/O pin speed. This setting only available on some MCU
 typedef enum __iopin_speed {
 	IOPINSPEED_LOW,
 	IOPINSPEED_MEDIUM,
-	IOPINSPEED_HIGH
+	IOPINSPEED_HIGH,
+	IOPINSPEED_TURBO
 } IOPINSPEED;
 
 #pragma pack(push,4)

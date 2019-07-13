@@ -35,7 +35,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdint.h>
 #include <stdarg.h>
-//#include <atomic>
 
 #include "stm32l4xx.h"
 
@@ -43,7 +42,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "iopinctrl.h"
 #include "coredev/uart.h"
 #include "idelay.h"
-#include "atomic.h"
+#include "interrupt.h"
 
 #define RCC_CCIPR_USARTSEL_PCLK			(0)
 #define RCC_CCIPR_USARTSEL_SYSCLK		(1)
@@ -368,7 +367,7 @@ static void STM32L4xUARTEnable(DEVINTRF * const pDev)
 	dev->RxTimeoutCnt = 0;
 	dev->RxDropCnt = 0;
 	dev->TxDropCnt = 0;
-	pDev->bBusy = false;
+	atomic_flag_clear(&pDev->bBusy);
 
 	CFifoFlush(dev->pUartDev->hTxFifo);
 
@@ -627,10 +626,10 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	pDev->DevIntrf.StartTx = STM32L4xUARTStartTx;
 	pDev->DevIntrf.TxData = STM32L4xUARTTxData;
 	pDev->DevIntrf.StopTx = STM32L4xUARTStopTx;
-	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = UART_RETRY_MAX;
 	pDev->DevIntrf.PowerOff = STM32L4xUARTPowerOff;
 	pDev->DevIntrf.EnCnt = 1;
+	atomic_flag_clear(&pDev->DevIntrf.bBusy);
 
 
 	if (pDev->DevIntrf.bDma == true)

@@ -33,6 +33,7 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #include <stdio.h>
 
+#include "istddef.h"
 #include "diskio_flash.h"
 #include "idelay.h"
 

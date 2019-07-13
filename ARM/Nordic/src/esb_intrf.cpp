@@ -40,6 +40,7 @@ Modified by          Date              Description
 #include "nrf_esb_error_codes.h"
 #include "sdk_common.h"
 
+#include "istddef.h"
 #include "esb_intrf.h"
 
 
@@ -464,9 +465,9 @@ bool EsbIntrfInit(ESBINTRF *pEsbIntrf, const ESBINTRF_CFG *pCfg)
     pEsbIntrf->DevIntrf.StartTx = EsbIntrfStartTx;
     pEsbIntrf->DevIntrf.TxData = EsbIntrfTxData;
     pEsbIntrf->DevIntrf.StopTx = EsbIntrfStopTx;
-    pEsbIntrf->DevIntrf.bBusy = false;
     pEsbIntrf->DevIntrf.MaxRetry = 0;
     pEsbIntrf->DevIntrf.EvtCB = pCfg->EvtCB;
+	atomic_flag_clear(&pEsbIntrf->DevIntrf.bBusy);
 
     memcpy(&pEsbIntrf->EsbCfg, &esbcfg, sizeof(nrf_esb_config_t));
 

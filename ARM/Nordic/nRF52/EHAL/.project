@@ -511,6 +511,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/iopinctrl.h</locationURI>
 		</link>
 		<link>
+			<name>include/coredev/pdm.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/pdm.h</locationURI>
+		</link>
+		<link>
 			<name>include/coredev/spi.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/coredev/spi.h</locationURI>
@@ -724,6 +729,11 @@
 			<name>src/coredev/iopincfg_nrfx.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/iopincfg_nrfx.c</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/pdm_nrfx.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/pdm_nrfx.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/spi.cpp</name>
@@ -3103,7 +3113,7 @@
 		<link>
 			<name>src/nRF5_SDK/nrfx/drivers/src/nrfx_nfct.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/modules/nrfx/drivers/src/nrfx_nfct.c</locationURI>
+			<locationURI>$%7BPARENT-5-PROJECT_LOC%7D/external/nRF5_SDK/modules/nrfx/drivers/src/nrfx_nfct.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/nrfx/drivers/src/nrfx_rng.c</name>

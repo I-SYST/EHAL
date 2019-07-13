@@ -31,7 +31,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
-#include "atomic.h"
+#include <stdint.h>
+#include "cmsis_gcc.h"
 
 int __atomic_fetch_add_4(int *d, int val, int mem)
 {

@@ -120,7 +120,7 @@ int DeviceIntrfWrite(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int Ad
     if (pAdCmd == NULL || (AdCmdLen + DataLen) <= 0)
         return 0;
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__ICCARM__)
 	uint8_t d[100];
 #else
 	uint8_t d[AdCmdLen + DataLen];

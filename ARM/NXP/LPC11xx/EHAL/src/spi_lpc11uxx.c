@@ -121,8 +121,8 @@ bool SPIInit(SPIDEV *pDev, const SPICFG *pCfgData)
 	pDev->DevIntrf.StartTx = LpcSSPStartTx;
 	pDev->DevIntrf.TxData = LpcSSPTxData;
 	pDev->DevIntrf.StopTx = LpcSSPStopTx;
-	pDev->DevIntrf.bBusy = false;
 	pDev->DevIntrf.MaxRetry = 0;
+	atomic_flag_clear(&pDev->DevIntrf.bBusy);
 
 	LpcSSPSetRate(&pDev->DevIntrf, pCfgData->Rate);
 
