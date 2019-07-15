@@ -141,6 +141,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __DISKIO_FLASH_H__
 
 #include <stdint.h>
+#include <string.h>
+
 #include "diskio.h"
 #include "device_intrf.h"
 
