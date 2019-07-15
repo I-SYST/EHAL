@@ -36,6 +36,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------------*/
 #include <stdint.h>
 #include <string.h>
+#include <stdatomic.h>
 
 #include "cfifo.h"
 
@@ -70,8 +71,7 @@ uint8_t *CFifoGet(HCFIFO const pFifo)
 	if (getidx == pFifo->PutIdx)
 		getidx = -1;
 
-	//atomic_store((atomic_int *)&pFifo->GetIdx, getidx);
-	pFifo->GetIdx = getidx;
+	atomic_store((atomic_int *)&pFifo->GetIdx, getidx);
 
 	uint8_t *p = pFifo->pMemStart + idx * pFifo->BlkSize;
 
@@ -111,9 +111,7 @@ uint8_t *CFifoGetMultiple(HCFIFO const pFifo, int *pCnt)
 		}
 	}
 
-	//atomic_store((atomic_int *)&pFifo->GetIdx, getidx);
-
-	pFifo->GetIdx = getidx;
+	atomic_store((atomic_int *)&pFifo->GetIdx, getidx);
 
 	uint8_t *p = pFifo->pMemStart + idx * pFifo->BlkSize;
 	*pCnt = cnt;
@@ -134,20 +132,19 @@ uint8_t *CFifoPut(HCFIFO const pFifo)
         int32_t gidx = pFifo->GetIdx + 1;
         if (gidx >= pFifo->MaxIdxCnt)
             gidx = 0;
-        //atomic_store((atomic_int *)&pFifo->GetIdx, gidx);
-        pFifo->GetIdx = gidx;
+        atomic_store((atomic_int *)&pFifo->GetIdx, gidx);
+
         pFifo->DropCnt++;
     }
 	int32_t idx = pFifo->PutIdx;
 	int32_t putidx = idx + 1;
 	if (putidx >= pFifo->MaxIdxCnt)
 		putidx = 0;
-	//atomic_store((atomic_int *)&pFifo->PutIdx, putidx);
-	pFifo->PutIdx = putidx;
+	atomic_store((atomic_int *)&pFifo->PutIdx, putidx);
+
 	if (pFifo->GetIdx < 0)
 	{
-		//atomic_store((atomic_int *)&pFifo->GetIdx, idx);
-		pFifo->GetIdx = idx;
+		atomic_store((atomic_int *)&pFifo->GetIdx, idx);
 	}
 
 	uint8_t *p = pFifo->pMemStart + idx * pFifo->BlkSize;
@@ -197,13 +194,11 @@ uint8_t *CFifoPutMultiple(HCFIFO const pFifo, int *pCnt)
 		}
 	}
 
-	//atomic_store((atomic_int *)&pFifo->PutIdx, putidx);
-	pFifo->PutIdx = putidx;
+	atomic_store((atomic_int *)&pFifo->PutIdx, putidx);
 
 	if (getidx < 0)
 	{
-		//atomic_store((atomic_int *)&pFifo->GetIdx, idx);
-		pFifo->GetIdx = idx;
+		atomic_store((atomic_int *)&pFifo->GetIdx, idx);
 	}
 
 	uint8_t *p = pFifo->pMemStart + idx * pFifo->BlkSize;
@@ -215,10 +210,9 @@ uint8_t *CFifoPutMultiple(HCFIFO const pFifo, int *pCnt)
 
 void CFifoFlush(HCFIFO const pFifo)
 {
-	//atomic_store((atomic_int *)&pFifo->GetIdx, -1);
-	pFifo->GetIdx = -1;
-	//atomic_store((atomic_int *)&pFifo->PutIdx, 0);
-	pFifo->PutIdx = 0;
+	atomic_store((atomic_int *)&pFifo->GetIdx, -1);
+
+	atomic_store((atomic_int *)&pFifo->PutIdx, 0);
 }
 
 int CFifoAvail(HCFIFO const pFifo)

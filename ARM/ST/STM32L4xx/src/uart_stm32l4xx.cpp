@@ -134,57 +134,63 @@ static void UART_IRQHandler(STM32L4X_UARTDEV * const pDev)
 	int cnt = 0;
 	uint32_t iflag = pDev->pReg->ISR;
 
-	if ((iflag & (USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE)) == 0)
+	if (iflag & USART_ISR_RXNE)
 	{
-		// no error
-		if (iflag & USART_ISR_RXNE)
-		{
+		int cnt = 4;
+		do {
 			uint8_t *p = CFifoPut(dev->hRxFifo);
-			if (p != NULL)
+			if (p == NULL)
 			{
-				*p = pDev->pReg->RDR;
+				pDev->RxDropCnt++;
 				dev->bRxReady = true;
-				pDev->pReg->ICR = USART_ISR_RXNE;
 			}
-			if (dev->EvtCallback)
-			{
-				dev->EvtCallback(dev, UART_EVT_RXDATA, NULL, CFifoUsed(dev->hRxFifo));
-			}
-		}
-		if (iflag & (USART_ISR_TXE | USART_ISR_TC))
+			*p = (uint16_t)pDev->pReg->RDR & 0xFF;
+			//pDev->pReg->ICR = USART_ISR_RXNE;
+		} while (pDev->pReg->ISR & USART_ISR_RXNE && cnt-- > 0);
+
+		if (dev->EvtCallback)
 		{
-			pDev->pReg->ICR = USART_ISR_TXE;
-			uint8_t *p = CFifoGet(dev->hTxFifo);
-			if (p != NULL)
-			{
-				pDev->pReg->TDR = *p;
-				dev->bTxReady = false;
-			}
-			else
-			{
-				dev->bTxReady = true;
-			}
-			if (dev->EvtCallback)
-			{
-				dev->EvtCallback(dev, UART_EVT_TXREADY, NULL, CFifoUsed(dev->hRxFifo));
-			}
-		}
-		if (iflag & USART_ISR_RTOF)
-		{
-			if (dev->EvtCallback)
-			{
-				dev->EvtCallback(dev, UART_EVT_RXTIMEOUT, NULL, CFifoUsed(dev->hRxFifo));
-			}
-			pDev->pReg->ICR = USART_ISR_RTOF;
+			dev->EvtCallback(dev, UART_EVT_RXDATA, NULL, CFifoUsed(dev->hRxFifo));
 		}
 	}
-	else
+	if (iflag & USART_ISR_TXE)// | USART_ISR_TC))
+	{
+		//pDev->pReg->ICR = USART_ISR_TXE;
+		int cnt = 4;
+
+		do {
+
+			uint8_t *p = CFifoGet(dev->hTxFifo);
+			if (p == NULL)
+			{
+				dev->bTxReady = true;
+				break;
+			}
+			dev->bTxReady = false;
+			pDev->pReg->TDR = *p;
+		} while (pDev->pReg->ISR & USART_ISR_TXE && cnt-- > 0);
+
+		if (dev->EvtCallback)
+		{
+			dev->EvtCallback(dev, UART_EVT_TXREADY, NULL, CFifoUsed(dev->hRxFifo));
+		}
+	}
+	if (iflag & USART_ISR_RTOF)
+	{
+		if (dev->EvtCallback)
+		{
+			dev->EvtCallback(dev, UART_EVT_RXTIMEOUT, NULL, CFifoUsed(dev->hRxFifo));
+		}
+		//pDev->pReg->ICR = USART_ISR_RTOF;
+	}
+
+	if (iflag & (USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE))
 	{
 		// error
 		pDev->ErrCnt++;
 		//pDev->pReg->ICR = (USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE);
 	}
-	pDev->pReg->ICR = iflag;
+	pDev->pReg->ICR = iflag & 0x121BDF;
 }
 
 extern "C" void USART1_IRQHandler()
@@ -471,6 +477,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 
 	int devno = pCfg->DevNo;
 	USART_TypeDef *reg = s_Stm32l4xUartDev[devno].pReg;
+	uint32_t tmp;
 
 	pDev->DevIntrf.pDevData = &s_Stm32l4xUartDev[devno];
 	s_Stm32l4xUartDev[devno].pUartDev = pDev;
@@ -481,46 +488,39 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	reg->CR1 &= ~USART_CR1_UE;
 
 	// Enable clock
+	tmp = RCC->CCIPR;
 	switch (devno)
 	{
 		case 0:
+			tmp = (tmp & ~RCC_CCIPR_USART1SEL_Msk) | RCC_CCIPR_USARTSEL(1, RCC_CCIPR_USARTSEL_SYSCLK);
 			RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
-			RCC->CCIPR &= ~RCC_CCIPR_USART1SEL_Msk;
-			RCC->CCIPR |= RCC_CCIPR_USARTSEL(1, RCC_CCIPR_USARTSEL_SYSCLK);
 			break;
 		case 1:
+			tmp = (tmp & ~RCC_CCIPR_USART2SEL_Msk) | RCC_CCIPR_USARTSEL(2, RCC_CCIPR_USARTSEL_SYSCLK);
 			RCC->APB1ENR1 |= RCC_APB1ENR1_USART2EN;
-			RCC->CCIPR &= ~RCC_CCIPR_USART1SEL_Msk;
-			RCC->CCIPR |= RCC_CCIPR_USARTSEL(2, RCC_CCIPR_USARTSEL_SYSCLK);
 			break;
 		case 2:
+			tmp = (tmp & ~RCC_CCIPR_USART3SEL_Msk) | RCC_CCIPR_USARTSEL(3, RCC_CCIPR_USARTSEL_SYSCLK);
 			RCC->APB1ENR1 |= RCC_APB1ENR1_USART3EN;
-			RCC->CCIPR &= ~RCC_CCIPR_USART1SEL_Msk;
-			RCC->CCIPR |= RCC_CCIPR_USARTSEL(3, RCC_CCIPR_USARTSEL_SYSCLK);
 			break;
 		case 3:
+			tmp = (tmp & ~RCC_CCIPR_UART4SEL_Msk) | RCC_CCIPR_USARTSEL(4, RCC_CCIPR_USARTSEL_SYSCLK);
 			RCC->APB1ENR1 |= RCC_APB1ENR1_UART4EN;
-			RCC->CCIPR &= ~RCC_CCIPR_USART1SEL_Msk;
-			RCC->CCIPR |= RCC_CCIPR_USARTSEL(4, RCC_CCIPR_USARTSEL_SYSCLK);
 			break;
 		case 4:
+			tmp = (tmp & ~RCC_CCIPR_UART5SEL_Msk) | RCC_CCIPR_USARTSEL(5, RCC_CCIPR_USARTSEL_SYSCLK);
 			RCC->APB1ENR1 |= RCC_APB1ENR1_UART5EN;
-			RCC->CCIPR &= ~RCC_CCIPR_USART1SEL_Msk;
-			RCC->CCIPR |= RCC_CCIPR_USARTSEL(5, RCC_CCIPR_USARTSEL_SYSCLK);
 			break;
 		case 5:
+			tmp = (tmp & ~RCC_CCIPR_LPUART1SEL_Msk) | RCC_CCIPR_USARTSEL(6, RCC_CCIPR_USARTSEL_SYSCLK);
 			RCC->APB1ENR2 |= RCC_APB1ENR2_LPUART1EN;
-			RCC->CCIPR &= ~RCC_CCIPR_USART1SEL_Msk;
-			RCC->CCIPR |= RCC_CCIPR_USARTSEL(6, RCC_CCIPR_USARTSEL_SYSCLK);
 			break;
 	}
+	RCC->CCIPR = tmp;
 
-	reg->CR2 |= USART_CR2_CLKEN;
+	//reg->CR2 |= USART_CR2_CLKEN;
 
 	msDelay(1);
-
-
-	s_FclkFreq = SYSTEM_CORE_CLOCK;
 
 	if (pCfg->pRxMem && pCfg->RxMemSize > 0)
 	{
@@ -668,10 +668,12 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 		reg->CR3 |= USART_CR3_HDSEL;
 	}
 
-	uint32_t tmp = reg->CR1;
+	tmp = reg->CR1;
 
 	reg->ICR = 0xFFFFFFFF;
-	(void)reg->RDR;
+	reg->RQR |= USART_RQR_RXFRQ;
+
+	//(void)reg->RDR;
 
 	// Disable all interrupts
 	tmp &= ~(USART_CR1_PEIE | USART_CR1_TXEIE | USART_CR1_RTOIE | USART_CR1_TCIE | USART_CR1_RXNEIE | USART_CR1_IDLEIE);
@@ -728,6 +730,8 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 
 	reg->CR1 = tmp;
 	reg->CR2 |= USART_CR2_RTOEN;
+
+	printf("CR1 = %x, CR2 = %x, CR3 = %x\r\n", reg->CR1, reg->CR2, reg->CR3);
 
 	return true;
 }

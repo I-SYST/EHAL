@@ -41,13 +41,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include <stdbool.h>
 
-#ifdef __cplusplus
-#include <atomic>
-using namespace std;
-#else
-#include <stdatomic.h>
-#endif
-
 /** @addtogroup FIFO
   * @{
   */
@@ -56,10 +49,10 @@ using namespace std;
 
 /// Header defining a circular fifo memory block.
 typedef struct __CFIFO_Header {
-	atomic_int PutIdx;	//!< Index to start of empty data block
-	atomic_int GetIdx;	//!< Index to start of used data block
+	volatile int32_t PutIdx;	//!< Index to start of empty data block
+	volatile int32_t GetIdx;	//!< Index to start of used data block
 	int32_t MaxIdxCnt;			//!< Max block count
-	bool    bBlocking;          //!< False to push out when FIFO is full (drop)
+	bool bBlocking;          	//!< False to push out when FIFO is full (drop)
 	uint32_t DropCnt;           //!< Count dropped block
 	uint32_t BlkSize;			//!< Block size in bytes
 	uint32_t MemSize;			//!< Total FIFO memory size allocated
