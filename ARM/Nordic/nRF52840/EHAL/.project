@@ -31,11 +31,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/include/analog_comp_nrf5x.h</locationURI>
 		</link>
 		<link>
-			<name>include/atomic.h</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/atomic.h</locationURI>
-		</link>
-		<link>
 			<name>include/base64.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/base64.h</locationURI>

@@ -96,7 +96,7 @@ extern "C" ret_code_t nrf_sdh_enable(nrf_clock_lf_cfg_t *clock_lf_cfg);
 #ifdef SVCALL_AS_NORMAL_FUNCTION
 #define SCHED_QUEUE_SIZE                20                                         /**< Maximum number of events in the scheduler queue. More is needed in case of Serialization. */
 #else
-#define SCHED_QUEUE_SIZE          		20                        /**< Maximum number of events in the scheduler queue. */
+#define SCHED_QUEUE_SIZE          		30                        /**< Maximum number of events in the scheduler queue. */
 #endif
 
 #define SLAVE_LATENCY                   0                                           /**< Slave latency. */
