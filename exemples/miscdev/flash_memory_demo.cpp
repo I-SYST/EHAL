@@ -172,7 +172,7 @@ int main()
 	UARTRetargetEnable(g_Uart, STDIN_FILENO);
 
 	printf("Flash Memory Demo\r\n");
-	getchar();
+	//getchar();
 
 	g_Spi.Init(s_SpiCfg);
 

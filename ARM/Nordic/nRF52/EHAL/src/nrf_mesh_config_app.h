@@ -1,4 +1,4 @@
-/* Copyright (c) 2010 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2010 - 2019, Nordic Semiconductor ASA
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,80 +38,61 @@
 #ifndef NRF_MESH_CONFIG_APP_H__
 #define NRF_MESH_CONFIG_APP_H__
 
-#include "light_switch_example_common.h"
-
 /**
- * @defgroup NRF_MESH_CONFIG_APP nRF Mesh app config
+ * @addtogroup MESH_API_GROUP_APP_CONFIG
  *
- * Application side configuration file. Should be copied into every
- * application, and customized to fit its requirements.
+ * Should be copied into every application, and customized to fit its requirements.
  * @{
  */
 
 /**
- * @defgroup MODEL_CONFIG Model layer configuration parameters
- */
-
-/** Acknowledged message transaction timeout
- * @note Mesh Profile Specification v1.0 recommends this to be minimum 60s.
- */
-#define MODEL_ACKNOWLEDGED_TRANSACTION_TIMEOUT  (SEC_TO_US(10))
-
-/** @} end of MODEL_CONFIG */
-
-/**
  * @defgroup DEVICE_CONFIG Device configuration
- *
+ * Device global configuration parameters for the device's representation on the mesh network.
  * @{
  */
 
 /** Device company identifier. */
-#define DEVICE_COMPANY_ID (ACCESS_COMPANY_ID_NORDIC)
+#define DEVICE_COMPANY_ID (ACCESS_COMPANY_ID_NONE)
 
-/** Device product identifier*/
+/** Device product identifier. */
 #define DEVICE_PRODUCT_ID (0x0000)
 
-/** Device version identifier */
+/** Device version identifier. */
 #define DEVICE_VERSION_ID (0x0000)
-
-/** Supported features of the device. @see config_feature_bit_t */
-#define DEVICE_FEATURES (CONFIG_FEATURE_RELAY_BIT | CONFIG_FEATURE_PROXY_BIT)
 
 /** @} end of DEVICE_CONFIG */
 
 /**
- * @defgroup ACCESS_CONFIG Access layer configuration
+ * @defgroup APP_ACCESS_CONFIG Access layer configuration
+ * Configuration of access layer resource usage.
  * @{
  */
 
 /**
  * The default TTL value for the node.
  */
-#define ACCESS_DEFAULT_TTL (SERVER_NODE_COUNT)
+#define ACCESS_DEFAULT_TTL (4)
 
 /**
  * The number of models in the application.
  *
- * @note This value has to be greater than two to fit the configuration and health models,
- * plus the number of models needed by the application.
+ * @note To fit the configuration model, this value must equal at least the number
+ * of models needed by the application plus one.
  */
-#define ACCESS_MODEL_COUNT (1 + /* Configuration server */  \
-                            1 + /* Health server */  \
-                            2 + /* Generic OnOff client (2 groups) */ \
-                            2   /* Generic OnOff client (2 unicast) */)
+#define ACCESS_MODEL_COUNT (1)
 
 /**
  * The number of elements in the application.
  *
- * @warning If the application is to support multiple _instances_ of the _same_ model, they cannot
- * belong in the same element and a separate element is needed for the new instance.
+ * @warning If the application is to support _multiple instances_ of the _same_ model, these instances
+ * cannot be in the same element and a separate element is needed for each new instance of the same model.
  */
-#define ACCESS_ELEMENT_COUNT (1 + CLIENT_MODEL_INSTANCE_COUNT) /* One element per Generic OnOff client instance */
+#define ACCESS_ELEMENT_COUNT (2)
 
 /**
  * The number of allocated subscription lists for the application.
  *
- * @note The application should set this number to @ref ACCESS_MODEL_COUNT minus the number of
+ * @note This value must equal @ref ACCESS_MODEL_COUNT minus the number of
  * models operating on shared states.
  */
 #define ACCESS_SUBSCRIPTION_LIST_COUNT (ACCESS_MODEL_COUNT)
@@ -121,12 +102,14 @@
  */
 #define ACCESS_FLASH_PAGE_COUNT (1)
 
+
 /**
- * @defgroup ACCESS_RELIABLE_CONFIG Access reliable transfer configuration
+ * @defgroup ACCESS_RELIABLE_CONFIG Configuration of access layer reliable messages
+ * Configuration of the application-specific parameters of the access layer reliable messages.
  * @{
  */
 
-/** Number of allowed parallel transfers (size of internal context pool). */
+/** Number of the allowed parallel transfers (size of the internal context pool). */
 #define ACCESS_RELIABLE_TRANSFER_COUNT (ACCESS_MODEL_COUNT)
 
 /** @} end of ACCESS_RELIABLE_CONFIG */
@@ -134,26 +117,27 @@
 
 /** @} end of ACCESS_CONFIG */
 
-
 /**
  * @defgroup DSM_CONFIG Device State Manager configuration
  * Sizes for the internal storage of the Device State Manager.
  * @{
  */
 /** Maximum number of subnetworks. */
-#define DSM_SUBNET_MAX                                  (1)
-/** Maximum number of applications */
-#define DSM_APP_MAX                                     (1)
-/** Maximum number of device keys */
+#define DSM_SUBNET_MAX                                  (4)
+/** Maximum number of applications. */
+#define DSM_APP_MAX                                     (8)
+/** Maximum number of device keys. */
 #define DSM_DEVICE_MAX                                  (1)
 /** Maximum number of virtual addresses. */
-#define DSM_VIRTUAL_ADDR_MAX                            (1)
-/** Maximum number of non-virtual addresses. One for each of the servers and a group address. */
-#define DSM_NONVIRTUAL_ADDR_MAX                         (ACCESS_MODEL_COUNT + 1)
-/** Number of flash pages reserved for the DSM storage */
+#define DSM_VIRTUAL_ADDR_MAX                            (8)
+/** Maximum number of non-virtual addresses. */
+#define DSM_NONVIRTUAL_ADDR_MAX                         (16)
+/** Number of flash pages reserved for the DSM storage. */
 #define DSM_FLASH_PAGE_COUNT                            (1)
 /** @} end of DSM_CONFIG */
+
 
 /** @} */
 
 #endif /* NRF_MESH_CONFIG_APP_H__ */
+
