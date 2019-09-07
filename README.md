@@ -34,7 +34,7 @@ external vendors' SDK and library required :
 
 [nRF5_SDK](https://developer.nordicsemi.com)  : Nordic nRF5x Bluetooth Low Energy
 
-[nrf5_SDK_Mesh](https://www.nordicsemi.com/eng/nordic/Products/nRF5-SDK-for-Mesh/nRF5-SDK-for-Mesh/62377) : Nordic nRF5 SDK for Bluetoth Mesh
+[nrf5_SDK_Mesh](https://www.nordicsemi.com/Software-and-Tools/Software/nRF5-SDK-for-Mesh/Download#infotabs) : Nordic nRF5 SDK for Bluetoth Mesh
 
 [Micro-ECC](https://github.com/kmackay/micro-ecc) : Encryption library
 

@@ -7,6 +7,7 @@
 #include "app_util_platform.h"
 #include "app_scheduler.h"
 
+#include "istddef.h"
 #include "ble_app.h"
 #include "ble_service.h"
 #include "device_intrf.h"
