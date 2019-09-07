@@ -20,7 +20,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582" name="Debug" optionalBuildProperties="" parent="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug">
+				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="${cross_rm} -rf" description="" id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582" name="Debug" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=" parent="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug">
 					<folderInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.lib.debug.1508349582." name="/" resourcePath="">
 						<toolChain id="ilg.gnuarmeclipse.managedbuild.cross.toolchain.lib.debug.821069111" name="Cross ARM GCC" superClass="ilg.gnuarmeclipse.managedbuild.cross.toolchain.lib.debug">
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.1332947208" name="Optimization Level" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level" value="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.debug" valueType="enumerated"/>
@@ -77,8 +77,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include/sensors&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo/bin/Lite_version/gcc/Cortex_M0&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo/lite_version/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/Invn&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/drivers_nrf/hal&quot;"/>
@@ -148,8 +147,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include/sensors&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo/bin/Lite_version/gcc/Cortex_M0&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo/lite_version/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/Invn&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/drivers_nrf/hal&quot;"/>
@@ -310,8 +308,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include/sensors&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo/bin/Lite_version/gcc/Cortex_M0&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo/lite_version/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/Invn&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/drivers_nrf/hal&quot;"/>
@@ -381,8 +378,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../include/sensors&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CMSIS/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/CMSIS/CMSIS/Core/Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo/bin/Lite_version/gcc/Cortex_M0&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/BSEC/algo/lite_version/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/Invn&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK_12/components/drivers_nrf/hal&quot;"/>
