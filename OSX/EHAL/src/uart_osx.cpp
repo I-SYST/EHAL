@@ -295,7 +295,7 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfgData)
     pDev->DevIntrf.StartTx = OsxUARTStartTx;
     pDev->DevIntrf.TxData = OsxUARTTxData;
     pDev->DevIntrf.StopTx = OsxUARTStopTx;
-    pDev->DevIntrf.bBusy = false;
+    atomic_flag_clear(&pDev->DevIntrf.bBusy);
     
     return true;
 }
