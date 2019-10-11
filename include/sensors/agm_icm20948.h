@@ -8,27 +8,27 @@
 
 @license
 
-Copyright (c) 2018, I-SYST inc., all rights reserved
+MIT License
 
-Permission to use, copy, modify, and distribute this software for any purpose
-with or without fee is hereby granted, provided that the above copyright
-notice and this permission notice appear in all copies, and none of the
-names : I-SYST or its contributors may be used to endorse or
-promote products derived from this software without specific prior written
-permission.
+Copyright (c) 2019 I-SYST inc. All rights reserved.
 
-For info or contributing contact : hnhoan at i-syst dot com
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ----------------------------------------------------------------------------*/
 
@@ -40,7 +40,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "coredev/iopincfg.h"
 #include "sensors/accel_sensor.h"
 #include "sensors/gyro_sensor.h"
-#include "sensors/mag_sensor.h"
+#include "sensors/mag_ak09916.h"
+#include "sensors/temp_sensor.h"
 
 #define ICM20948_I2C_DEV_ADDR0			0x68		// AD0 low
 #define ICM20948_I2C_DEV_ADDR1			0x69		// AD0 high
@@ -87,6 +88,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define ICM20948_PWR_MGMT_1_CLKSEL_MASK				(7<<0)	// Clock source
 #define ICM20948_PWR_MGMT_1_CLKSEL_BITPOS			(0)
+#define ICM20948_PWR_MGMT_1_CLKSEL_INTERN_20MHZ		(0<<0)
+#define ICM20948_PWR_MGMT_1_CLKSEL_AUTO				(1<<0)
 #define ICM20948_PWR_MGMT_1_CLKSEL_STOP				(7<<0)
 #define ICM20948_PWR_MGMT_1_TEMP_DIS				(1<3)	// Disable temperature sensor
 #define ICM20948_PWR_MGMT_1_LP_EN					(1<<5)	// Low Power enable
@@ -97,8 +100,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define ICM20948_PWR_MGMT_2_DISABLE_GYRO_MASK		(7<<0)	// 0 : Gyro on, 7 : Gyro off
 #define ICM20948_PWR_MGMT_2_DISABLE_GYRO_BITPOS		(0)
-#define ICM20948_PWR_MGMT_2_DISABLE_ACCEL_MASK		(7<<3)	// 0 : Accel om, 7 Accel off
+#define ICM20948_PWR_MGMT_2_DISABLE_ACCEL_MASK		(7<<3)	// 0 : Accel on, 7 Accel off
 #define ICM20948_PWR_MGMT_2_DISABLE_ACCEL_BITPOS	(3)
+#define ICM20948_PWR_MGMT_2_DISABLE_PRESSURE_MASK	(3<<6)	// Undoc - 1 : off
+#define ICM20948_PWR_MGMT_2_DISABLE_PRESSURE_BITPOS	(6)
+#define ICM20948_PWR_MGMT_2_DISABLE_ALL				(0x7f)
+
 
 #define ICM20948_INT_PIN_CFG			(ICM20948_REG_BANK0 | 15)
 
@@ -261,6 +268,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ICM20948_GYRO_CONFIG_1_GYRO_FS_SEL_2000DPS			(3<<1)
 
 #define ICM20948_GYRO_CONFIG_1_GYRO_DLPFCFG_MASK			(7<<3)
+#define ICM20948_GYRO_CONFIG_1_GYRO_DLPFCFG_BITPOS			3
 
 #define ICM20948_GYRO_CONFIG_2			(ICM20948_REG_BANK2 | 2)
 
@@ -312,7 +320,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ICM20948_ACCEL_CONFIG_ACCEL_FS_SEL_8G				(2<<1)	// Full scale select 8g
 #define ICM20948_ACCEL_CONFIG_ACCEL_FS_SEL_16G				(3<<1)	// Full scale select 16g
 
-#define ICM20948_ACCEL_CONFIG_DLPFCFG_MASK					(7<<3)	// Low pass filter config
+#define ICM20948_ACCEL_CONFIG_ACCEL_DLPFCFG_MASK			(7<<3)	// Low pass filter config
+#define ICM20948_ACCEL_CONFIG_ACCEL_DLPFCFG_BITPOS			3
 
 #define ICM20948_ACCEL_CONFIG_2			(ICM20948_REG_BANK2 | 21)
 
@@ -519,6 +528,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define ICM20948_AK09916_CNTL3_SRST							(1<<0)	// Soft-reset
 
+#define ICM20948_ACC_MAX_RANGE			32767
+
+#define ICM20948_DMP_MEM_STARTADDR		(ICM20948_REG_BANK0 | 0x7C)
+#define ICM20948_DMP_MEM_RW           	(ICM20948_REG_BANK0 | 0x7D)
+#define ICM20948_DMP_MEM_BANKSEL		(ICM20948_REG_BANK0 | 0x7E)
+#define ICM20948_DMP_PROG_START_ADDRH	(ICM20948_REG_BANK2 | 0x50)
+#define ICM20948_DMP_PROG_START_ADDRL	(ICM20948_REG_BANK2 | 0x51)
+
+#define ICM20948_DMP_MEM_BANK_SIZE		256
 
 #pragma pack(push, 1)
 
@@ -526,7 +544,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef __cplusplus
 
-class AgmIcm20948 : public AccelSensor, public GyroSensor, public MagSensor {
+class AccelIcm20948 : public AccelSensor {
 public:
 	/**
 	 * @brief	Initialize accelerometer sensor.
@@ -540,7 +558,16 @@ public:
 	 * @return	true - Success
 	 */
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+	virtual uint16_t Scale(uint16_t Value);
+	virtual uint32_t SamplingFrequency(uint32_t Freq);
+	virtual uint32_t FilterFreq(uint32_t Freq);
 
+private:
+	virtual bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL) = 0;
+};
+
+class GyroIcm20948 : public GyroSensor {
+public:
 	/**
 	 * @brief	Initialize gyroscope sensor.
 	 *
@@ -553,7 +580,16 @@ public:
 	 * @return	true - Success
 	 */
 	virtual bool Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL);
+	virtual uint32_t Sensitivity(uint32_t Value);	// Gyro
+	virtual uint32_t SamplingFrequency(uint32_t Freq);
+	virtual uint32_t FilterFreq(uint32_t Freq);
 
+private:
+	virtual bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL) = 0;
+};
+
+class MagIcm20948 : public MagAk09916 {
+public:
 	/**
 	 * @brief	Initialize magnetometer sensor.
 	 *
@@ -566,6 +602,90 @@ public:
 	 * @return	true - Success
 	 */
 	virtual bool Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL);
+//	virtual uint32_t SamplingFrequency(uint32_t Freq);
+	//virtual bool Enable();
+	//virtual void Disable();
+
+protected:
+	int Read(uint32_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen) = 0;
+	int Write(uint32_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen) = 0;
+
+	uint8_t vMagCtrl1Val;
+	int16_t vMagSenAdj[3];
+
+private:
+	virtual bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL) = 0;
+	//virtual int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen) = 0;
+	//virtual int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen) = 0;
+
+	uint32_t vDevAddr;
+};
+
+class AgmIcm20948 : public AccelIcm20948, public GyroIcm20948, public MagIcm20948, public TempSensor {
+public:
+	/**
+	 * @brief	Initialize accelerometer sensor.
+	 *
+	 * NOTE: This sensor must be the first to be initialized.
+	 *
+	 * @param 	Cfg		: Accelerometer configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
+	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL) {
+		return AccelIcm20948::Init(Cfg, pIntrf, pTimer);
+	}
+
+	/**
+	 * @brief	Initialize gyroscope sensor.
+	 *
+	 * NOTE : Accelerometer must be initialized first prior to this one.
+	 *
+	 * @param 	Cfg		: Accelerometer configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
+	virtual bool Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL) {
+		return GyroIcm20948::Init(Cfg, pIntrf, pTimer);
+	}
+
+	/**
+	 * @brief	Initialize magnetometer sensor.
+	 *
+	 * NOTE : Accelerometer must be initialized first prior to this one.
+	 *
+	 * @param 	Cfg		: Accelerometer configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
+	virtual bool Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL) {
+		return MagIcm20948::Init(Cfg, pIntrf, pTimer);
+	}
+
+	/**
+	 * @brief	Initialize sensor (require implementation).
+	 *
+	 * @param 	CfgData : Reference to configuration data
+	 * @param	pIntrf 	: Pointer to interface to the sensor.
+	 * 					  This pointer will be kept internally
+	 * 					  for all access to device.
+	 * 					  DONOT delete this object externally
+	 * @param	pTimer	: Pointer to timer for retrieval of time stamp
+	 * 					  This pointer will be kept internally
+	 * 					  for all access to device.
+	 * 					  DONOT delete this object externally
+	 *
+	 * @return
+	 * 			- true	: Success
+	 * 			- false	: Failed
+	 */
+	virtual bool Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL);
 
 	virtual bool Enable();
 	virtual void Disable();
@@ -581,10 +701,10 @@ public:
 	virtual bool WakeOnEvent(bool bEnable, int Threshold);
 
 	virtual bool StartSampling();
-	virtual uint32_t LowPassFreq(uint32_t Freq);
+	//virtual uint32_t FilterFreq(uint32_t Freq);
 
-	virtual uint16_t Scale(uint16_t Value);			// Accel
-	virtual uint32_t Sensitivity(uint32_t Value);	// Gyro
+	//virtual uint16_t Scale(uint16_t Value);			// Accel
+	//virtual uint32_t Sensitivity(uint32_t Value);	// Gyro
 
 
 	virtual bool Read(ACCELSENSOR_RAWDATA &Data) { return AccelSensor::Read(Data); }
@@ -593,6 +713,7 @@ public:
 	virtual bool Read(GYROSENSOR_DATA &Data) { return GyroSensor::Read(Data); }
 	virtual bool Read(MAGSENSOR_RAWDATA &Data) { return MagSensor::Read(Data); }
 	virtual bool Read(MAGSENSOR_DATA &Data) { return MagSensor::Read(Data); }
+	virtual void Read(TEMPSENSOR_DATA &Data) { return TempSensor::Read(Data); }
 
 	int Read(uint16_t RegAddr, uint8_t *pBuff, int BuffLen) {
 		return Read((uint8_t*)&RegAddr, 2, pBuff, BuffLen);
@@ -603,12 +724,14 @@ public:
 
 	int Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
 	int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
-	int Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
-	int Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
+	int Read(uint32_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen);
+	int Write(uint32_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
 	bool SelectBank(uint8_t BankNo);
 
 	bool UpdateData();
 	virtual void IntHandler();
+
+	bool UploadDMPImage(uint8_t * const pDmpImage, int Len, uint16_t MemAddr);
 
 private:
 	// Default base initialization. Does detection and set default config for all sensor.
@@ -619,6 +742,7 @@ private:
 	uint8_t vMagCtrl1Val;
 	int16_t vMagSenAdj[3];
 	uint8_t vCurrBank;
+	bool vbDmpEnabled;
 };
 
 #endif // __cplusplus

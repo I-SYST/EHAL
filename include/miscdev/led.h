@@ -309,7 +309,7 @@ private:
 	PWM_CHAN_CFG vPwmChanCfg[LEDPWM_MAX];
 };
 
-/** @} end group IMU */
+/** @} end group MiscDev */
 
 #endif // __LED_H__
 

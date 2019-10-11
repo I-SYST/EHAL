@@ -77,6 +77,7 @@ typedef enum __Dev_Intrf_Type {
     DEVINTRF_TYPE_I2C,          //!< I2C (TWI)
     DEVINTRF_TYPE_CEL,          //!< Cellular (GSM, LTE,...)
     DEVINTRF_TYPE_SPI,          //!< SPI
+	DEVINTRF_TYPE_QSPI,			//!< Quad SPI
     DEVINTRF_TYPE_UART,         //!< UART or Serial port
     DEVINTRF_TYPE_USB,          //!< USB
     DEVINTRF_TYPE_WIFI,         //!< Wifi

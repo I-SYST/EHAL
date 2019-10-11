@@ -118,7 +118,7 @@ bool TphBme280::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 		return false;
 
 	Interface(pIntrf);
-	DeviceAddess(DevAddr);
+	DeviceAddress(DevAddr);
 
 	if (pTimer != NULL)
 	{

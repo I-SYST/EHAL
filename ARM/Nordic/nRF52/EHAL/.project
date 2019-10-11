@@ -386,6 +386,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/pwm_nrf52.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/pwrmgnt</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/sbuffer.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sbuffer.c</locationURI>
@@ -404,6 +409,11 @@
 			<name>src/sensors</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/slip_intrf.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/slip_intrf.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/stddev.c</name>
@@ -569,6 +579,11 @@
 			<name>include/miscdev/led_apa102.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/led_apa102.h</locationURI>
+		</link>
+		<link>
+			<name>include/miscdev/led_ncp5623b.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/led_ncp5623b.h</locationURI>
 		</link>
 		<link>
 			<name>include/miscdev/ledmx.h</name>
@@ -811,6 +826,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/led_gpio.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/miscdev/led_ncp5623b.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/led_ncp5623b.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/miscdev/led_pwm.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/miscdev/led_pwm.cpp</locationURI>
@@ -911,9 +931,24 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/pwrmgnt/pwrmgnt_as3701.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/pwrmgnt/pwrmgnt_as3701.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/sensors/a_adxl362.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/a_adxl362.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/accel_h3lis331dl.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/accel_h3lis331dl.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/accel_sensor.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/accel_sensor.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sensors/ag_bmi160.cpp</name>
@@ -934,6 +969,46 @@
 			<name>src/sensors/agm_mpu9250.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/agm_mpu9250.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/am_fxos8700cq.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/am_fxos8700cq.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/am_lsm303agr.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/am_lsm303agr.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/am_lsm303c.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/am_lsm303c.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/gyro_l3gd20h.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/gyro_l3gd20h.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/gyro_sensor.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/gyro_sensor.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/mag_ak09916.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/mag_ak09916.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/mag_bmm150.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/mag_bmm150.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/mag_sensor.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/mag_sensor.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sensors/temp_nrf5x.cpp</name>
@@ -1864,6 +1939,11 @@
 			<name>src/nRF5_SDK/mbedtls/library/gcm.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/external/mbedtls/library/gcm.c</locationURI>
+		</link>
+		<link>
+			<name>src/nRF5_SDK/mbedtls/library/platform.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/external/mbedtls/library/platform.c</locationURI>
 		</link>
 		<link>
 			<name>src/nRF5_SDK/nfc/ndef/connection_handover</name>

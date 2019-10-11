@@ -338,7 +338,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef __cplusplus
 
-class AgmLsm9ds1 : public AccelSensor, public GyroSensor, public MagSensor {
+class AccelLsm9ds1 : public AccelSensor {
 public:
 	/**
 	 * @brief	Initialize accelerometer sensor.
@@ -352,7 +352,14 @@ public:
 	 * @return	true - Success
 	 */
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+	virtual uint16_t Scale(uint16_t Value);			// Accel
 
+private:
+	virtual bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL) = 0;
+};
+
+class GyroLsm9ds1 : public GyroSensor {
+public:
 	/**
 	 * @brief	Initialize gyroscope sensor.
 	 *
@@ -365,7 +372,14 @@ public:
 	 * @return	true - Success
 	 */
 	virtual bool Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL);
+	virtual uint32_t Sensitivity(uint32_t Value);	// Gyro
 
+private:
+	virtual bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL) = 0;
+};
+
+class MagLsm9ds1 : public MagSensor {
+public:
 	/**
 	 * @brief	Initialize magnetometer sensor.
 	 *
@@ -378,6 +392,59 @@ public:
 	 * @return	true - Success
 	 */
 	virtual bool Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL);
+	virtual bool Enable();
+	virtual void Disable();
+
+private:
+	virtual bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL) = 0;
+};
+
+class AgmLsm9ds1 : public AccelLsm9ds1, public GyroLsm9ds1, public MagLsm9ds1 {
+public:
+	/**
+	 * @brief	Initialize accelerometer sensor.
+	 *
+	 * NOTE: This sensor must be the first to be initialized.
+	 *
+	 * @param 	Cfg		: Accelerometer configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
+	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL) {
+		return AccelLsm9ds1::Init(Cfg, pIntrf, pTimer);
+	}
+
+	/**
+	 * @brief	Initialize gyroscope sensor.
+	 *
+	 * NOTE : Accelerometer must be initialized first prior to this one.
+	 *
+	 * @param 	Cfg		: Accelerometer configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
+	virtual bool Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL) {
+		return GyroLsm9ds1::Init(Cfg, pIntrf, pTimer);
+	}
+
+	/**
+	 * @brief	Initialize magnetometer sensor.
+	 *
+	 * NOTE : Accelerometer must be initialized first prior to this one.
+	 *
+	 * @param 	Cfg		: Accelerometer configuration data
+	 * @param 	pIntrf	: Pointer to communication interface
+	 * @param 	pTimer	: Pointer to Timer use for time stamp
+	 *
+	 * @return	true - Success
+	 */
+	virtual bool Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL) {
+		return MagLsm9ds1::Init(Cfg, pIntrf, pTimer);
+	}
 
 	virtual bool Enable();
 	virtual void Disable();
@@ -411,6 +478,7 @@ public:
 	virtual void IntHandler();
 
 private:
+	virtual bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL) { return true; }
 };
 
 #endif // __cplusplus

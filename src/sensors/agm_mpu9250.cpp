@@ -57,7 +57,7 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	uint8_t mst = 0;
 
 	Interface(pIntrf);
-	DeviceAddess(DevAddr);
+	DeviceAddress(DevAddr);
 	vbSensorEnabled[0] = vbSensorEnabled[1] = vbSensorEnabled[2] = false;
 
 	if (pTimer != NULL)
@@ -74,7 +74,7 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 
 	int rty = 5;
 
-	// The MPU-9250 has an issue that often unresponsive when rebooting while MAg is streaming
+	// The MPU-9250 has an issue that often unresponsive when rebooting while MAG is streaming
 	// A few reset/retry would require.  Have not found workaround yet.
 	do {
 		regaddr = MPU9250_AG_PWR_MGMT_1;
@@ -94,12 +94,12 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 
 		regaddr = MPU9250_MAG_CTRL2;
 		d = MPU9250_MAG_CTRL2_SRST;
-		Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
+		MagMpu9250::Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
 
 		msDelay(100);
 
 		regaddr = MPU9250_MAG_WIA;
-		Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
+		MagMpu9250::Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
 		//printf("Mag %x\r\n", d);
 
 		// Read chip id
@@ -163,7 +163,7 @@ bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	return true;
 }
 
-bool AgmMpu9250::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+bool AccelMpu9250::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
 	uint8_t regaddr;
 	uint8_t d;
@@ -248,9 +248,9 @@ bool AgmMpu9250::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer
 		AccelSensor::vSampFreq = 500000;	// 500 Hz
 	}
 
-	AccelSensor::Range(MPU9250_ACC_MAX_RANGE);
+	AccelSensor::Range(MPU9250_AG_ADC_RANGE);
 	Scale(CfgData.Scale);
-	LowPassFreq(CfgData.LPFreq);
+	FilterFreq(CfgData.FltrFreq);
 
 	//regaddr = MPU9250_AG_ACCEL_CONFIG2;
 	//Write8(&regaddr, 1, MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B);
@@ -269,14 +269,14 @@ bool AgmMpu9250::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer
 	regaddr = MPU9250_AG_INT_ENABLE;
 	Write8(&regaddr, 1, MPU9250_AG_INT_ENABLE_RAW_RDY_EN);
 
-	vbSensorEnabled[MPU9250_ACCEL_IDX] = true;
+	//vbSensorEnabled[MPU9250_ACCEL_IDX] = true;
 
 	AccelSensor::Type(SENSOR_TYPE_ACCEL);
 
 	return true;
 }
 
-bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+bool GyroMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
 	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
 		return false;
@@ -284,8 +284,8 @@ bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 	uint8_t regaddr;
 	uint8_t d = 0;
 	uint8_t fchoice = 0;
-	uint32_t f = CfgData.LPFreq;////max(CfgData.Freq, vSampFreq);
-	GyroSensor::vSampFreq = max(CfgData.Freq, AccelSensor::vSampFreq);
+	uint32_t f = CfgData.FltrFreq;////max(CfgData.Freq, vSampFreq);
+	GyroSensor::vSampFreq = CfgData.Freq;
 
 	uint16_t smplrt = 1000000 / GyroSensor::vSampFreq;
 	uint8_t intval;
@@ -368,7 +368,7 @@ bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 	Sensitivity(CfgData.Sensitivity);
 
 
-	vbSensorEnabled[MPU9250_GYRO_IDX] = true;
+	//vbSensorEnabled[MPU9250_GYRO_IDX] = true;
 	GyroSensor::Type(SENSOR_TYPE_GYRO);
 
 	//regaddr = MPU9250_AG_FIFO_EN;
@@ -382,7 +382,7 @@ bool AgmMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer 
 	return true;
 }
 
-bool AgmMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
+bool MagMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
 	uint8_t regaddr;
 	uint8_t d[4];
@@ -469,16 +469,20 @@ bool AgmMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 
 	//msDelay(10);
 
-	MagSensor::vPrecision = 14;
+	//MagSensor::vPrecision = 14;
 	vMagCtrl1Val = 0;
-	MagSensor::vScale = 8190;
+	MagSensor::vRange = MPU9250_MAG_ADC_LOW_RANGE;
 
 	if (CfgData.Precision >= 16)
 	{
-		MagSensor::vPrecision = 16;
-		MagSensor::vScale = 32760;
+		//MagSensor::vPrecision = 16;
+		MagSensor::vRange = MPU9250_MAG_ADC_HIGH_RANGE;
 		vMagCtrl1Val = MPU9250_MAG_CTRL1_BIT_16;
 	}
+
+	MagSensor::vSensitivity[0] = MPU9250_MAG_MAX_FLUX_DENSITY / MagSensor::vRange;
+	MagSensor::vSensitivity[1] = MPU9250_MAG_MAX_FLUX_DENSITY / MagSensor::vRange;
+	MagSensor::vSensitivity[2] = MPU9250_MAG_MAX_FLUX_DENSITY / MagSensor::vRange;
 
 	if (CfgData.OpMode == SENSOR_OPMODE_CONTINUOUS)
 	{
@@ -508,13 +512,48 @@ bool AgmMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 
 	msDelay(1);
 
-	vbSensorEnabled[MPU9250_MAG_IDX] = true;
+	//vbSensorEnabled[MPU9250_MAG_IDX] = true;
 
 	regaddr = MPU9250_AG_INT_ENABLE;
 	intval |= MPU9250_AG_INT_ENABLE_RAW_RDY_EN;
 	Write8(&regaddr, 1, intval);
 
+	ClearCalibration();
+
 	return true;
+}
+
+MAGSENSOR_PRECISION MagMpu9250::Precision(MAGSENSOR_PRECISION Val)
+{
+	if (Val == vPrecision)
+	{
+		return vPrecision;
+	}
+
+	uint16_t sen[3];
+
+	if (MAGSENSOR_PRECISION_HIGH)
+	{
+		sen[0] = MPU9250_MAG_MAX_FLUX_DENSITY / MPU9250_MAG_ADC_HIGH_RANGE;
+		vMagCtrl1Val = MPU9250_MAG_CTRL1_BIT_16;
+	}
+	else
+	{
+		sen[0] = MPU9250_MAG_MAX_FLUX_DENSITY / MPU9250_MAG_ADC_LOW_RANGE;
+		vMagCtrl1Val &= ~MPU9250_MAG_CTRL1_BIT_16;
+	}
+
+	uint8_t regaddr = MPU9250_MAG_CTRL1;
+	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &vMagCtrl1Val, 1);
+
+	sen[1] = sen[0];
+	sen[2] = sen[0];
+
+	Sensitivity(sen);
+
+	vPrecision = Val;
+
+	return vPrecision;
 }
 
 bool AgmMpu9250::Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf, Timer * const pTimer)
@@ -558,9 +597,10 @@ bool AgmMpu9250::Enable()
 	{
 		printf("Mag Enabled\r\n");
 
+		MagMpu9250::Enable();
 		// Enable Mag
-		regaddr = MPU9250_MAG_CTRL1;
-		Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &vMagCtrl1Val, 1);
+//		regaddr = MPU9250_MAG_CTRL1;
+//		Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &vMagCtrl1Val, 1);
 	}
 
 
@@ -585,9 +625,10 @@ void AgmMpu9250::Disable()
 	Write8(&regaddr, 1, MPU9250_AG_USER_CTRL_I2C_MST_EN);
 
 	// Disable Mag
-	regaddr = MPU9250_MAG_CTRL1;
+	//regaddr = MPU9250_MAG_CTRL1;
 	//uint8_t d = 0;
-	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
+	//Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
+	MagMpu9250::Disable();
 
 	// Disable Accel Gyro
 	Write8(&regaddr, 1,
@@ -677,48 +718,48 @@ uint32_t AgmMpu9250::LowPassFreq(uint32_t Freq)
 	{
 		rate = 4000;
 		d = MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B;
-		AccelSensor::LowPassFreq(1130);
+		AccelSensor::FilterFreq(1130);
 	}
 	else if (Freq < 10)
 	{
 		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_5HZ;
-		AccelSensor::LowPassFreq(5);
+		AccelSensor::FilterFreq(5);
 	}
 	else if (Freq < 20)
 	{
 		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_10HZ;
-		AccelSensor::LowPassFreq(10);
+		AccelSensor::FilterFreq(10);
 	}
 	else if (Freq < 40)
 	{
 		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_20HZ;
-		AccelSensor::LowPassFreq(20);
+		AccelSensor::FilterFreq(20);
 	}
 	else if (Freq < 50)
 	{
 		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_41HZ;
-		AccelSensor::LowPassFreq(41);
+		AccelSensor::FilterFreq(41);
 	}
 	else if (Freq < 100)
 	{
 		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_92HZ;
-		AccelSensor::LowPassFreq(92);
+		AccelSensor::FilterFreq(92);
 	}
 	else if (Freq < 200)
 	{
 		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_184HZ;
-		AccelSensor::LowPassFreq(184);
+		AccelSensor::FilterFreq(184);
 	}
 	else if (Freq < 500)
 	{
 		d = MPU9250_AG_ACCEL_CONFIG2_A_DLPFCFG_460HZ;
-		AccelSensor::LowPassFreq(460);
+		AccelSensor::FilterFreq(460);
 	}
 	else
 	{
 		rate = 4000;
 		d = MPU9250_AG_ACCEL_CONFIG2_ACCEL_FCHOICE_B;
-		AccelSensor::LowPassFreq(1130);
+		AccelSensor::FilterFreq(1130);
 	}
 
 	Write8(&regaddr, 1, d);// | MPU9250_AG_ACCEL_CONFIG2_FIFO_SIZE_1024);
@@ -729,11 +770,11 @@ uint32_t AgmMpu9250::LowPassFreq(uint32_t Freq)
 	Write8(&regaddr, 1, d);
 
 
-	return AccelSensor::LowPassFreq();
+	return AccelSensor::FilterFreq();
 }
 
 // Accel scale
-uint16_t AgmMpu9250::Scale(uint16_t Value)
+uint16_t AccelMpu9250::Scale(uint16_t Value)
 {
 	uint8_t regaddr = MPU9250_AG_ACCEL_CONFIG;
 
@@ -762,7 +803,7 @@ uint16_t AgmMpu9250::Scale(uint16_t Value)
 }
 
 // Gyro scale
-uint32_t AgmMpu9250::Sensitivity(uint32_t Value)
+uint32_t GyroMpu9250::Sensitivity(uint32_t Value)
 {
 	uint8_t regaddr = MPU9250_AG_GYRO_CONFIG;
 	uint8_t d = Read8(&regaddr, 1) & MPU9250_AG_GYRO_CONFIG_FCHOICE_MASK;
@@ -840,7 +881,7 @@ bool AgmMpu9250::UpdateData()
 		if (vbSensorEnabled[MPU9250_MAG_IDX] == true)
 		{
 			regaddr = MPU9250_MAG_ST1;
-			Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d[val], 8);
+			MagMpu9250::Read(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d[val], 8);
 		}
 	}
 
@@ -883,17 +924,17 @@ bool AgmMpu9250::UpdateData()
 		{
 			val = (((int16_t)d[idx]) << 8L) | d[idx + 1];
 			val += (val * vMagSenAdj[0]) >> 8L;
-			MagSensor::vData.X = (int16_t)(val * (MPU9250_MAG_MAX_FLUX_DENSITY << 8) / MagSensor::vScale);
+			MagSensor::vData.X = (int16_t)(val * (MPU9250_MAG_MAX_FLUX_DENSITY << 8) / MagSensor::vRange);
 
 			idx += 2;
 			val = (((int16_t)d[idx]) << 8) | d[idx + 1];
 			val += (val * vMagSenAdj[1]) >> 8L;
-			MagSensor::vData.Y = (int16_t)(val * (MPU9250_MAG_MAX_FLUX_DENSITY << 8) / MagSensor::vScale);
+			MagSensor::vData.Y = (int16_t)(val * (MPU9250_MAG_MAX_FLUX_DENSITY << 8) / MagSensor::vRange);
 
 			idx += 2;
 			val = (((int16_t)d[idx]) << 8) | d[idx + 1];
 			val += (val * vMagSenAdj[2]) >> 8L;
-			MagSensor::vData.Z = (int16_t)(val * (MPU9250_MAG_MAX_FLUX_DENSITY << 8) / MagSensor::vScale);
+			MagSensor::vData.Z = (int16_t)(val * (MPU9250_MAG_MAX_FLUX_DENSITY << 8) / MagSensor::vRange);
 
 			MagSensor::vData.Timestamp = t;
 			MagSensor::vSampleTime = t;
@@ -925,7 +966,7 @@ int AgmMpu9250::Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int Dat
 	return Device::Write(pCmdAddr, CmdAddrLen, pData, DataLen);
 }
 
-int AgmMpu9250::Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
+int MagMpu9250::Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
 {
 	int retval = 0;
 
@@ -945,6 +986,7 @@ int AgmMpu9250::Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t
 			d[3] = MPU9250_AG_I2C_SLV0_CTRL_I2C_SLV0_EN |cnt;
 
 			Write(d, 4, NULL, 0);
+			//Write8(d, 3, d[3]);
 
 			// Delay require for transfer to complete
 			msDelay(15 + cnt);
@@ -968,7 +1010,7 @@ int AgmMpu9250::Read(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t
 	return retval;
 }
 
-int AgmMpu9250::Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen)
+int MagMpu9250::Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen)
 {
 	int retval = 0;
 
@@ -987,7 +1029,8 @@ int AgmMpu9250::Write(uint8_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_
 			regaddr = MPU9250_AG_I2C_SLV0_DO;
 			Write8(&regaddr, 1, *pData);
 
-			Write(d, 4, NULL, 0);
+			//Write(d, 4, NULL, 0);
+			Write8(d, 3, d[3]);
 
 			d[2]++;
 			pData++;
@@ -1220,3 +1263,17 @@ bool AgmMpu9250::UploadDMPImage(uint8_t *pDmpImage, int Len)
 	return true;
 }
 
+bool MagMpu9250::Enable()
+{
+	uint8_t regaddr = MPU9250_MAG_CTRL1;
+	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &vMagCtrl1Val, 1);
+
+	return true;
+}
+
+void MagMpu9250::Disable()
+{
+	uint8_t regaddr = MPU9250_MAG_CTRL1;
+	uint8_t d = 0;
+	Write(MPU9250_MAG_I2C_DEVADDR, &regaddr, 1, &d, 1);
+}

@@ -43,7 +43,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __DEVICE_H__
 
 #include <stdint.h>
-#include <string.h>
 
 #ifndef __cplusplus
 #include <stdbool.h>
@@ -129,7 +128,7 @@ public:
 	 *
 	 * @param 	Addr : Device's address or zero based chip select index
 	 */
-	virtual void DeviceAddess(uint32_t Addr) { vDevAddr =  Addr; }
+	virtual void DeviceAddress(uint32_t Addr) { vDevAddr =  Addr; }
 
 	/**
 	 * @brief	Get device's map address
@@ -270,7 +269,7 @@ public:
 	 */
 	bool Valid() { return vbValid; }
 
-	DEVINTRF_TYPE InterfaceType() { return vpIntrf != NULL ? vpIntrf->Type() : DEVINTRF_TYPE_UNKOWN; }
+	DEVINTRF_TYPE InterfaceType() { return vpIntrf != nullptr ? vpIntrf->Type() : DEVINTRF_TYPE_UNKOWN; }
 
 	/**
 	 * @brief	Get timer pointer used for timestamping
@@ -284,6 +283,7 @@ public:
 	void SetEvtHandler(DEVEVTCB EvtHandler) { vEvtHandler = EvtHandler; }
 
 protected:
+
 	/**
 	 * @brief	Store device id.
 	 *

@@ -101,7 +101,7 @@ public:
 	virtual bool WakeOnEvent(bool bEnable, int Threshold);
 
 	virtual bool StartSampling();
-	virtual uint32_t LowPassFreq(uint32_t Freq);
+	virtual uint32_t FilterFreq(uint32_t Freq);
 
 	virtual uint16_t Scale(uint16_t Value);			// Accel
 	virtual uint32_t Sensitivity(uint32_t Value);	// Gyro

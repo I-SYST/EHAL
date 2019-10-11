@@ -127,7 +127,7 @@ bool AgmInvnIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 		return false;
 
 	Interface(pIntrf);
-	DeviceAddess(DevAddr);
+	DeviceAddress(DevAddr);
 
 	if (pTimer != NULL)
 	{
@@ -175,7 +175,7 @@ bool AgmInvnIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 	rc = inv_icm20948_initialize(&vIcmDevice, s_Dmp3Image, sizeof(s_Dmp3Image));
 	/* Initialize auxiliary sensors */
 	inv_icm20948_register_aux_compass( &vIcmDevice, INV_ICM20948_COMPASS_ID_AK09916, AK0991x_DEFAULT_I2C_ADDR);
-//	rc = inv_icm20948_initialize_auxiliary(&vIcmDevice);
+	//rc = inv_icm20948_initialize_auxiliary(&vIcmDevice);
 
 	// re-initialize base state structure
 	inv_icm20948_init_structure(&vIcmDevice);
@@ -295,27 +295,27 @@ bool AgmInvnIcm20948::WakeOnEvent(bool bEnable, int Threshold)
 }
 
 // Accel low pass frequency
-uint32_t AgmInvnIcm20948::LowPassFreq(uint32_t Freq)
+uint32_t AgmInvnIcm20948::FilterFreq(uint32_t Freq)
 {
-	return AccelSensor::LowPassFreq();
+	return AccelSensor::FilterFreq(Freq);
 }
 
 // Accel scale
 uint16_t AgmInvnIcm20948::Scale(uint16_t Value)
 {
-	return AccelSensor::Scale();
+	return AccelSensor::Scale(Value);
 }
 
 // Gyro scale
 uint32_t AgmInvnIcm20948::Sensitivity(uint32_t Value)
 {
 
-	return GyroSensor::Sensitivity();
+	return GyroSensor::Sensitivity(Value);
 }
 
 bool AgmInvnIcm20948::UpdateData()
 {
-//	inv_icm20948_poll_sensor(&vIcmDevice, (void*)this, SensorEventHandler);
+	inv_icm20948_poll_sensor(&vIcmDevice, (void*)this, SensorEventHandler);
 
 	return true;
 }

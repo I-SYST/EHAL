@@ -43,7 +43,7 @@ bool AccelAdxl362::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, 
 		return false;
 
 	Interface(pIntrf);
-	DeviceAddess(Cfg.DevAddr);
+	DeviceAddress(Cfg.DevAddr);
 
 	if (pTimer != NULL)
 	{

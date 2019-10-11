@@ -78,7 +78,7 @@ bool TphMS8607::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *p
 	//TPHSENSOR_CFG *cfg = (TPHSENSOR_CFG*)pCfgData;
 
 	Interface(pIntrf);
-	DeviceAddess(CfgData.DevAddr);
+	DeviceAddress(CfgData.DevAddr);
 
 	vpTimer = pTimer;
 

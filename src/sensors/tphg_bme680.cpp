@@ -257,7 +257,7 @@ bool TphgBme680::Init(const TPHSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	if (pIntrf != NULL && pIntrf != Interface())
 	{
 		Interface(pIntrf);
-		DeviceAddess(CfgData.DevAddr);
+		DeviceAddress(CfgData.DevAddr);
 	}
 
 	if (pTimer != NULL)
@@ -380,7 +380,7 @@ bool TphgBme680::Init(const GASSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	if (pIntrf != NULL && pIntrf != Interface())
 	{
 		Interface(pIntrf);
-		DeviceAddess(CfgData.DevAddr);
+		DeviceAddress(CfgData.DevAddr);
 	}
 
 
