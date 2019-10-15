@@ -431,7 +431,7 @@ static int nRFUARTSetRate(DEVINTRF * const pDev, int Rate)
 {
 	NRF5X_UARTDEV *dev = (NRF5X_UARTDEV *)pDev->pDevData;
 
-	int rate = s_BaudnRF[s_NbBaudnRF].Baud;
+	int rate = 0;
 
 	for (int i = 0; i < s_NbBaudnRF; i++)
 	{
