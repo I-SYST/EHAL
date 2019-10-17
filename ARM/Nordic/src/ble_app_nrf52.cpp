@@ -90,7 +90,7 @@ extern "C" ret_code_t nrf_sdh_enable(nrf_clock_lf_cfg_t *clock_lf_cfg);
 #define BLEAPP_OBSERVER_PRIO           1                                           /**< Application's BLE observer priority. You shouldn't need to modify this value. */
 //#define BLEAPP_CONN_CFG_TAG            1                                           /**< A tag identifying the SoftDevice BLE configuration. */
 
-#define APP_TIMER_OP_QUEUE_SIZE         10                                           /**< Size of timer operation queues. */
+#define APP_TIMER_OP_QUEUE_SIZE         20                                           /**< Size of timer operation queues. */
 
 #define SCHED_MAX_EVENT_DATA_SIZE sizeof(app_timer_event_t) /**< Maximum size of scheduler events. Note that scheduler BLE stack events do not contain any data, as the events are being pulled from the stack in the event handler. */
 #ifdef SVCALL_AS_NORMAL_FUNCTION
@@ -140,7 +140,7 @@ typedef struct _BleAppData {
 	int MaxMtu;
 	bool bSecure;
 	bool bAdvertising;
-	bool bScan;
+	std::atomic<bool> bScan;
 } BLEAPP_DATA;
 
 #pragma pack(pop)
@@ -299,13 +299,13 @@ void BleAppDisconnect()
     }
 }
 
-void BleAppGapDeviceNameSet(const char* ppDeviceName)
+void BleAppGapDeviceNameSet(const char* pDeviceName)
 {
     uint32_t                err_code;
 
     err_code = sd_ble_gap_device_name_set(&s_gap_conn_mode,
-                                          (const uint8_t *)ppDeviceName,
-                                          strlen( ppDeviceName ));
+                                          (const uint8_t *)pDeviceName,
+                                          strlen( pDeviceName ));
     APP_ERROR_CHECK(err_code);
     ble_advertising_restart_without_whitelist(&g_AdvInstance);
 }
@@ -471,7 +471,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt)
         	g_BleAppData.bAdvertising = false;
         	BleConnLedOn();
         	g_BleAppData.ConnHdl = p_ble_evt->evt.gap_evt.conn_handle;
-
+        	g_BleAppData.bScan = false;
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
@@ -1478,7 +1478,7 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     sd_ble_gap_tx_power_set(BLE_GAP_TX_POWER_ROLE_ADV, g_AdvInstance.adv_handle, GetValidTxPower(pBleAppCfg->TxPower));
 
-	if (pBleAppCfg->PeriLinkCount > 0 && pBleAppCfg->AdvInterval > 0)
+    if (pBleAppCfg->PeriLinkCount > 0 && pBleAppCfg->AdvInterval > 0)
 	{
 		g_BleAppData.AppRole |= BLEAPP_ROLE_PERIPHERAL;
 
@@ -1599,6 +1599,11 @@ void BleAppScan()
 	    g_BleAppData.bScan = true;
 
 		err_code = sd_ble_gap_scan_start(&s_BleScanParams, &g_BleScanReportData);
+		if (err_code == NRF_ERROR_INVALID_STATE)
+		{
+			 err_code = sd_ble_gap_scan_stop();
+			 err_code = sd_ble_gap_scan_start(&s_BleScanParams, &g_BleScanReportData);
+		}
 		APP_ERROR_CHECK(err_code);
 	}
 }

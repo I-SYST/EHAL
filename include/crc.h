@@ -61,6 +61,23 @@ extern "C" {
 uint8_t crc8_ccitt(uint8_t *pData, int Len, uint8_t SeedVal);
 
 /**
+ * @brief   Calculate 8 bits CRC value
+ *
+ * Brute force general crc calculation where polynomial value is passed
+ * as parameter
+ *
+ *	ex. : ATM Polynomial : x8 + x2 + x + 1 => 0x107
+ *
+ * @param	Poly	: Polynomial value
+ * 			pData 	: Pointer to data buffer to calculate
+ * 			Len		: Data length in bytes
+ * 			SeedVal : Initial CRC seed value
+ *
+ * @return	8 bits CRC value
+ */
+uint8_t crc8(uint16_t Poly, uint8_t *pData, int Len, uint8_t SeedVal);
+
+/**
  * @brief	Calculate 16 bits CRC value.
  *
  * Polynomial : x16 + x15 + x2 + 1 (CRC-16-ANSI)\n

@@ -176,6 +176,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/pwm.h</locationURI>
 		</link>
 		<link>
+			<name>include/pwrmgnt</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>include/sdcard.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sdcard.h</locationURI>
@@ -601,6 +606,21 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/miscdev/modem.h</locationURI>
 		</link>
 		<link>
+			<name>include/pwrmgnt/fg_lc709203f.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/pwrmgnt/fg_lc709203f.h</locationURI>
+		</link>
+		<link>
+			<name>include/pwrmgnt/pm_as3701.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/pwrmgnt/pm_as3701.h</locationURI>
+		</link>
+		<link>
+			<name>include/pwrmgnt/pwrmgnt.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/pwrmgnt/pwrmgnt.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/a_adxl362.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/a_adxl362.h</locationURI>
@@ -931,9 +951,14 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/pwrmgnt/pwrmgnt_as3701.cpp</name>
+			<name>src/pwrmgnt/fg_lc709203f.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/pwrmgnt/pwrmgnt_as3701.cpp</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/pwrmgnt/fg_lc709203f.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/pwrmgnt/pm_as3701.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/pwrmgnt/pm_as3701.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sensors/a_adxl362.cpp</name>

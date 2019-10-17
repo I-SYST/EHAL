@@ -11,27 +11,27 @@ such as a PMIC chip or MCU builtin power management
 
 @license
 
-Copyright (c) 2019, I-SYST, all rights reserved
+MIT License
 
-Permission to use, copy, modify, and distribute this software for any purpose
-with or without fee is hereby granted, provided that the above copyright
-notice and this permission notice appear in all copies, and none of the
-names : I-SYST, I-SYST inc. or its contributors may be used to endorse or
-promote products derived from this software without specific prior written
-permission.
+Copyright (c) 2019 I-SYST inc. All rights reserved.
 
-For info or contributing contact : hnhoan at i-syst dot com
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ----------------------------------------------------------------------------*/
 #ifndef __PWRMGNT_H__
@@ -75,7 +75,8 @@ typedef struct __Bat_Profile {
 	uint32_t OpVolt;		//!< Battery nominal operating voltage in mV
 	uint32_t ChrgVolt;		//!< Battery charge voltage in mV
 	uint32_t Capacity;		//!< Battery capacity in mAh
-	uint32_t ThermBConst;	//!< Thermistor B constant
+	uint32_t ThermBetaConst;//!< Thermistor Beta constant
+	uint32_t ThermResistor;	//!< Thermistor resistor value in KOhms
 } BAT_PROFILE;
 
 typedef void (*PWRMGNT_EVTCB)(PowerMgnt *pSelf, PWREVT Evt);
@@ -87,8 +88,11 @@ typedef struct __Power_Config {
 	int32_t VEndChrg;					//!< End of charge voltage level in mV
 	uint32_t ChrgCurr;					//!< Charge current in mA
 	uint32_t ChrgTimeout;				//!< Charge timeout in minutes
+	BAT_PROFILE * const pBatProf;		//!< Pointer to battery profile
 	bool bIntEn;						//!< Interrupt enable
 	int IntPrio;						//!< Interrupt priority
+	int OffSwPin;						//!< Power switch button I/O pin assignment
+	int OffSwHold;						//!< Power switch off hold time in seconds
 	LED_DEV * const pLed;
 	int NbLed;
 	PWRMGNT_EVTCB pEvtHandler;
@@ -130,6 +134,7 @@ public:
 	virtual uint32_t SetCharge(PWR_CHARGE_TYPE Type, int32_t mVoltEoC, uint32_t mACurr) = 0;
 
 	virtual bool Charging() { return false; }
+	virtual bool Battery() { return false; }
 
 	/**
 	 * @brief	Interrupt handler
@@ -151,7 +156,8 @@ private:
 typedef void (*FGLOWCB)(PowerMgnt * const pPwrMnt);
 
 typedef struct __FuelGauge_Cfg {
-	BAT_PROFILE &BatProf;		//!< Reference to battery profile
+	uint8_t DevAddr;
+	const BAT_PROFILE &BatProf;		//!< Reference to battery profile
 	FGLOWCB	BatLowHandler;		//!< Battery low event handler
 } FUELGAUGE_CFG;
 
@@ -162,19 +168,32 @@ public:
 	/**
 	 * @brief	Get battery level
 	 *
-	 * @return	Battery level in (0-100) %
+	 * Returns battery level in 1 digit fixed point decimal.
+	 *
+	 * ex. 123 => 12.3%
+	 *
+	 * @return	Battery level in (0-100) % in 1 digit fixed point
 	 */
-	virtual uint8_t BatLevel() = 0;
-	virtual int32_t BatTemperature() = 0;
-	virtual int32_t BatVoltage() = 0;
+	virtual uint16_t Level() = 0;
+	/**
+	 * @brief	Get battery temperature
+	 *
+	 * Returns battery temperature in 1 digit fixed point decimal.
+	 *
+	 * ex. 123 => 12.3 C
+	 *
+	 * @return	Battery level in (0-100) degree C in 1 digit fixed point
+	 */
+	virtual int32_t Temperature() = 0;
+	virtual int32_t Voltage() = 0;
 
 protected:
 	void LowBatAlert() { if (vBatLowHandler) vBatLowHandler(vpPwrMgnt); }
 
-private:
+protected:
 	FGLOWCB	vBatLowHandler;		//!< Low battery event handler
-	BAT_PROFILE vBetProfile;
-	PowerMgnt * const vpPwrMgnt;
+	BAT_PROFILE vBatProfile;
+	PowerMgnt *vpPwrMgnt;
 };
 
 #ifdef __cplusplus

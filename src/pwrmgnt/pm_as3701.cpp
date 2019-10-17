@@ -1,5 +1,5 @@
 /**-------------------------------------------------------------------------
-@file	pwrmgnt_as3701.cpp
+@file	pm_as3701.cpp
 
 @brief	Power management implementation of the AS3701
 
@@ -9,33 +9,33 @@
 
 @license
 
-Copyright (c) 2019, I-SYST, all rights reserved
+MIT License
 
-Permission to use, copy, modify, and distribute this software for any purpose
-with or without fee is hereby granted, provided that the above copyright
-notice and this permission notice appear in all copies, and none of the
-names : I-SYST, I-SYST inc. or its contributors may be used to endorse or
-promote products derived from this software without specific prior written
-permission.
+Copyright (c) 2019 I-SYST inc. All rights reserved.
 
-For info or contributing contact : hnhoan at i-syst dot com
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ----------------------------------------------------------------------------*/
 #include "istddef.h"
-#include "pwrmgnt/pwrmgnt_as3701.h"
+#include "pwrmgnt/pm_as3701.h"
 
-bool PowerMgntAS3701::Init(const PWRCFG &Cfg, DeviceIntrf * const pIntrf)
+bool PmAs3701::Init(const PWRCFG &Cfg, DeviceIntrf * const pIntrf)
 {
 	if (pIntrf == NULL)
 	{
@@ -65,6 +65,41 @@ bool PowerMgntAS3701::Init(const PWRCFG &Cfg, DeviceIntrf * const pIntrf)
 
 	SetCharge(PWR_CHARGE_TYPE_AUTO, Cfg.VEndChrg, Cfg.ChrgCurr);
 
+	if (Cfg.pBatProf)
+	{
+		regaddr = AS3701_CHARGER_SUPERVISION_REG;
+		d = 0;
+
+		if (Cfg.pBatProf->ThermBetaConst < 3500)
+		{
+			d |= AS3701_CHARGER_SUPERVISION_NTC_BETA_3000;
+		}
+		else if (Cfg.pBatProf->ThermBetaConst < 4000)
+		{
+			d |= AS3701_CHARGER_SUPERVISION_NTC_BETA_3500;
+		}
+		else if (Cfg.pBatProf->ThermBetaConst < 4500)
+		{
+			d |= AS3701_CHARGER_SUPERVISION_NTC_BETA_4000;
+		}
+		else if (Cfg.pBatProf->ThermBetaConst < 4000)
+		{
+			d |= AS3701_CHARGER_SUPERVISION_NTC_BETA_3500;
+		}
+		else
+		{
+			d |= AS3701_CHARGER_SUPERVISION_NTC_BETA_4500;
+		}
+
+		if (Cfg.pBatProf->ThermResistor < 100)
+		{
+			d |= AS3701_CHARGER_SUPERVISION_NTC_10K;
+		}
+
+		Write8(&regaddr, 1, d | AS3701_CHARGER_SUPERVISION_NTC_HIGH_ON | AS3701_CHARGER_SUPERVISION_NTC_HIGH_ON |
+			   AS3701_CHARGER_SUPERVISION_NTC_INPUT_NONE);
+	}
+
 	vNbLed = min(Cfg.NbLed, AS3701_LED_MAXCNT);
 
 	for (int i = 0; i < vNbLed; i++)
@@ -90,7 +125,7 @@ bool PowerMgntAS3701::Init(const PWRCFG &Cfg, DeviceIntrf * const pIntrf)
 	return true;
 }
 
-int32_t PowerMgntAS3701::SetVout(size_t VoutIdx, int32_t mVolt, uint32_t mALimit)
+int32_t PmAs3701::SetVout(size_t VoutIdx, int32_t mVolt, uint32_t mALimit)
 {
 	int v = 0;
 
@@ -166,7 +201,7 @@ int32_t PowerMgntAS3701::SetVout(size_t VoutIdx, int32_t mVolt, uint32_t mALimit
  *
  * @return	true - If success
  */
-bool PowerMgntAS3701::Enable()
+bool PmAs3701::Enable()
 {
 	return true;
 }
@@ -178,7 +213,7 @@ bool PowerMgntAS3701::Enable()
  * possible so that the Enable function can wake up without full
  * initialization.
  */
-void PowerMgntAS3701::Disable()
+void PmAs3701::Disable()
 {
 
 }
@@ -186,12 +221,12 @@ void PowerMgntAS3701::Disable()
 /**
  * @brief	Reset device to it initial default state
  */
-void PowerMgntAS3701::Reset()
+void PmAs3701::Reset()
 {
 
 }
 
-void PowerMgntAS3701::PowerOff()
+void PmAs3701::PowerOff()
 {
 	uint8_t regaddr = AS3701_SD_CTRL1_REG;
 	uint8_t d = Read8(&regaddr, 1) & ~AS3701_SD_CTRL1_SD1_ENBABLE;
@@ -199,7 +234,7 @@ void PowerMgntAS3701::PowerOff()
 	Write8(&regaddr, 1, d);
 }
 
-uint32_t PowerMgntAS3701::SetCharge(PWR_CHARGE_TYPE Type, int32_t mVoltEoC, uint32_t mACurr)
+uint32_t PmAs3701::SetCharge(PWR_CHARGE_TYPE Type, int32_t mVoltEoC, uint32_t mACurr)
 {
 	uint8_t regaddr = AS3701_CHARGER_VOLTAGE_CTRL_REG;
 	uint8_t d = 0;
@@ -230,19 +265,15 @@ uint32_t PowerMgntAS3701::SetCharge(PWR_CHARGE_TYPE Type, int32_t mVoltEoC, uint
 
 	regaddr = AS3701_CHARGER_CURRENT_CTRL_REG;
 
-	if (Type == PWR_CHARGE_TYPE_TRICKLE)
-	{
-		d = (mACurr - 11) / 12;
-	}
-	else
-	{
-		d = (mACurr - 88);
-	}
+	d = ((mACurr - 11) / 12) << 4;	// Trickle current
+	d |= ((mACurr - 44) / 45) & 0xFF;
 
 	Write8(&regaddr, 1, d);
 
 	regaddr = AS3701_CHARGER_CTRL_REG;
-	d = Read8(&regaddr, 1) | AS3701_CHARGER_CTRL_USB_CHGEN | AS3701_CHARGER_CTRL_BAT_CHARGING_ENABLE;
+	d = Read8(&regaddr, 1) & ~AS3701_CHARGER_CTRL_USB_CURRENT_MASK;
+	d |= AS3701_CHARGER_CTRL_USB_CHGEN | AS3701_CHARGER_CTRL_BAT_CHARGING_ENABLE |
+		 AS3701_CHARGER_CTRL_AUTO_RESUME | 8;
 	Write8(&regaddr, 1, d);
 
 	return true;
@@ -251,7 +282,7 @@ uint32_t PowerMgntAS3701::SetCharge(PWR_CHARGE_TYPE Type, int32_t mVoltEoC, uint
 /**
  * Turns all LED 100% on
  */
-void PowerMgntAS3701::On()
+void PmAs3701::On()
 {
 	uint8_t regaddr = AS3701_GPIO_SIGNAL_OUT_REG;//AS3701_PWM_CONTROL_LOW_REG;//AS3701_CURR1_VALUE_REG;
 	uint8_t mask = 0;
@@ -274,7 +305,7 @@ void PowerMgntAS3701::On()
 /**
  * Turns all LED off
  */
-void PowerMgntAS3701::Off()
+void PmAs3701::Off()
 {
 	uint8_t regaddr = AS3701_GPIO_SIGNAL_OUT_REG;//AS3701_PWM_CONTROL_LOW_REG;//AS3701_CURR1_VALUE_REG;
 	uint8_t mask = 0;
@@ -297,12 +328,12 @@ void PowerMgntAS3701::Off()
 /**
  * Toggle or invert all LED dimming level
  */
-void PowerMgntAS3701::Toggle()
+void PmAs3701::Toggle()
 {
 
 }
 
-void PowerMgntAS3701::Level(uint32_t Level)
+void PmAs3701::Level(uint32_t Level)
 {
 	uint8_t regaddr = AS3701_GPIO_SIGNAL_OUT_REG;
 	uint32_t mask = 0xff;
@@ -337,7 +368,7 @@ void PowerMgntAS3701::Level(uint32_t Level)
 	Write8(&regaddr, 1, d);
 }
 
-bool PowerMgntAS3701::Charging()
+bool PmAs3701::Charging()
 {
 	uint8_t regaddr = AS3701_CHARGER_STATUS1_REG;
 	uint8_t flag = Read8(&regaddr, 1);
@@ -357,7 +388,15 @@ bool PowerMgntAS3701::Charging()
 	return false;
 }
 
-void PowerMgntAS3701::IrqHandler()
+bool PmAs3701::Battery()
+{
+	uint8_t regaddr = AS3701_CHARGER_STATUS1_REG;
+	uint8_t flag = Read8(&regaddr, 1);
+
+	return !(flag & AS3701_CHARGER_STATUS1_NO_BAT);
+}
+
+void PmAs3701::IrqHandler()
 {
 	uint8_t regaddr = AS3701_INTERRUPT_STATUS1_REG;
 	uint8_t flag = Read8(&regaddr, 1);
