@@ -148,7 +148,7 @@ static const ACCELSENSOR_CFG s_AccelCfg = {
 	.OpMode = SENSOR_OPMODE_CONTINUOUS,
 	.Freq = 150000,
 	.Scale = 2,
-	.LPFreq = 0,
+	.FltrFreq = 0,
 	.bInter = true,
 	.IntPol = DEVINTR_POL_LOW,
 };
@@ -158,14 +158,14 @@ static const GYROSENSOR_CFG s_GyroCfg = {
 	.OpMode = SENSOR_OPMODE_CONTINUOUS,
 	.Freq = 50000,
 	.Sensitivity = 10,
-	.LPFreq = 200,
+	.FltrFreq = 200,
 };
 
 static const MAGSENSOR_CFG s_MagCfg = {
 	.DevAddr = 0,
 	.OpMode = SENSOR_OPMODE_CONTINUOUS,//SENSOR_OPMODE_SINGLE,
 	.Freq = 50000,
-	.Precision = 14,
+	.Precision = MAGSENSOR_PRECISION_HIGH,
 };
 
 void ImuEvtHandler(Device * const pDev, DEV_EVT Evt);

@@ -226,8 +226,8 @@ static IOPINCFG s_UartPins[] = {
 /// UART configuration
 const UARTCFG g_UartCfg = {
 	.DevNo = 0,							// Device number zero based
-	.pIoMap = s_UartPins,				// UART assigned pins
-	.IoMapLen = sizeof(s_UartPins) / sizeof(IOPINCFG),	// Total number of UART pins used
+	.pIOPinMap = s_UartPins,				// UART assigned pins
+	.NbIOPins = sizeof(s_UartPins) / sizeof(IOPINCFG),	// Total number of UART pins used
 	.Rate = 115200,						// Baudrate
 	.DataBits = 8,						// Data bits
 	.Parity = UART_PARITY_NONE,			// Parity

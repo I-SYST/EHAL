@@ -46,7 +46,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 
-#define FIFOSIZE			CFIFO_MEMSIZE(256)
+#define FIFOSIZE			CFIFO_MEMSIZE(64)
 
 uint8_t g_TxBuff[FIFOSIZE];
 
@@ -60,22 +60,22 @@ static IOPINCFG s_UartPins[] = {
 // UART configuration data
 const UARTCFG g_UartCfg = {
 	.DevNo = 0,
-	.pIoMap = s_UartPins,
-	.IoMapLen = sizeof(s_UartPins) / sizeof(IOPINCFG),
+	.pIOPinMap = s_UartPins,
+	.NbIOPins = sizeof(s_UartPins) / sizeof(IOPINCFG),
 	.Rate = 1000000,			// Rate
 	.DataBits = 8,
 	.Parity = UART_PARITY_NONE,
 	.StopBits = 1,					// Stop bit
-	.FlowControl = UART_FLWCTRL_NONE,
+	.FlowControl = UART_FLWCTRL_HW,
 	.bIntMode = true,
 	.IntPrio = 1, 					// use APP_IRQ_PRIORITY_LOW with Softdevice
 	.EvtCallback = nRFUartEvthandler,
 	.bFifoBlocking = true,				// fifo blocking mode
 	.RxMemSize = 0,
 	.pRxMem = NULL,
-	.TxMemSize = FIFOSIZE,
-	.pTxMem = g_TxBuff,
-	.bDMAMode = true,
+	.TxMemSize = 0,//FIFOSIZE,
+	.pTxMem = NULL,//g_TxBuff,
+	.bDMAMode = false,
 };
 
 #ifdef DEMO_C

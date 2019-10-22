@@ -197,8 +197,8 @@ static IOPINCFG s_UartPins[] = {
 
 const UARTCFG g_UartCfg = {
 	.DevNo = 0,
-	.pIoMap = s_UartPins,
-	.IoMapLen = sizeof(s_UartPins) / sizeof(IOPINCFG),
+	.pIOPinMap = s_UartPins,
+	.NbIOPins = sizeof(s_UartPins) / sizeof(IOPINCFG),
 	.Rate = 1000000,			// Rate
 	.DataBits = 8,
 	.Parity = UART_PARITY_NONE,

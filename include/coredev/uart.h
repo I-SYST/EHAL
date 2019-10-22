@@ -138,8 +138,8 @@ typedef int (*UARTEVTCB)(UARTDEV * const pDev, UART_EVT EvtId, uint8_t *pBuffer,
 /// Configuration data used to initialize device
 typedef struct {
 	int DevNo;					//!< UART device number
-	const void *pIoMap;			//!< Pointer to IO mapping.  This can be either IOPINCFG array or device path string
-	int IoMapLen;				//!< Nb of elements in IOPINCFG array or string length of device path
+	const void *pIOPinMap;		//!< Pointer to IO mapping.  This can be either IOPINCFG array or device path string
+	int NbIOPins;				//!< Nb of elements in IOPINCFG array or string length of device path
 	int Rate;					//!< Baudrate, set to 0 for auto baudrate
 	int DataBits;				//!< Number of data bits
 	UART_PARITY Parity;			//!< Data parity
