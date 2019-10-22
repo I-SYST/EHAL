@@ -41,18 +41,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "istddef.h"
 #include "iopinctrl.h"
 #include "coredev/uart.h"
-#include "idelay.h"
 #include "interrupt.h"
 
-#define NRF5X_UART_HWFIFO_SIZE		6
-#define NRF5X_UART_RXTIMEOUT		15
-#define NRF5X_UART_BUFF_SIZE		16
+// There is no indication in the datasheet about how many hardware fifo
+// this value seems to produce best performance
+#define NRF5X_UART_HWFIFO_SIZE		4
 
 #ifdef NRF52840_XXAA
 #define NRF52_UART_DMA_MAX_LEN		65535
 #else
 #define NRF52_UART_DMA_MAX_LEN		255
 #endif
+
+// Default fifo size if one is not provided is not provided in the config.
+#define NRF5X_UART_BUFF_SIZE		(4 * NRF5X_UART_HWFIFO_SIZE)
 
 #define NRF5X_UART_CFIFO_SIZE		CFIFO_MEMSIZE(NRF5X_UART_BUFF_SIZE)
 
@@ -71,8 +73,6 @@ typedef struct _nRF_UART_Dev {
 	uint32_t RxTimeoutCnt;
 	uint32_t TxDropCnt;
 	uint32_t ErrCnt;
-//	volatile bool bRxReady;
-//	volatile bool bTxReady;
 	uint32_t RxPin;
 	uint32_t TxPin;
 	uint32_t CtsPin;
@@ -138,8 +138,6 @@ bool nRFUARTWaitForRxReady(NRF5X_UARTDEV * const pDev, uint32_t Timeout)
 	do {
 		if (pDev->pReg->EVENTS_RXDRDY || pDev->pUartDev->bRxReady)
 		{
-//			pDev->pReg->EVENTS_RXDRDY = 0;
-//			pDev->pReg->EVENTS_RXTO = 0;
 			return true;
 		}
 	} while (Timeout-- > 0);
@@ -152,8 +150,6 @@ bool nRFUARTWaitForTxReady(NRF5X_UARTDEV * const pDev, uint32_t Timeout)
 	do {
 		if (pDev->pReg->EVENTS_TXDRDY || pDev->pUartDev->bTxReady == true)
 		{
-			//pDev->pReg->EVENTS_TXDRDY = 0;
-			//pDev->bTxReady = true;
 			return true;
 		}
 	} while (Timeout-- > 0);
@@ -163,7 +159,6 @@ bool nRFUARTWaitForTxReady(NRF5X_UARTDEV * const pDev, uint32_t Timeout)
 
 static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 {
-	//uint8_t buff[NRFUART_CFIFO_SIZE];
 	int len = 0;
 	int cnt = 0;
 #ifdef NRF52_SERIES
@@ -181,7 +176,6 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 
 	if (pDev->pReg->EVENTS_RXDRDY || rxto)
 	{
-		//s_nRF51RxTimeOutCnt = 0;
 		uint8_t *d;
 
 		cnt = 0;
@@ -411,13 +405,20 @@ static void UART_IRQHandler(NRF5X_UARTDEV * const pDev)
 	}
 }
 
-extern "C" void UART0_IRQHandler()
+#ifdef __cplusplus
+extern "C" {
+   void UART0_IRQHandler();
+   void UARTE1_IRQHandler();
+}
+#endif	// __cplusplus
+
+void UART0_IRQHandler()
 {
 	UART_IRQHandler(&s_nRFUartDev[0]);
 }
 
 #ifdef NRF52840_XXAA
-extern "C" void UARTE1_IRQHandler()
+void UARTE1_IRQHandler()
 {
 	UART_IRQHandler(&s_nRFUartDev[1]);
 }
@@ -623,7 +624,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 		return false;
 	}
 
-	if (pCfg->pIoMap == NULL || pCfg->IoMapLen <= 0)
+	if (pCfg->pIOPinMap == NULL || pCfg->NbIOPins <= 0)
 	{
 		return false;
 	}
@@ -657,10 +658,10 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 		pDev->hTxFifo = CFifoInit(s_nRFUartDev[devno].TxFifoMem, NRF5X_UART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
 	}
 
-	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIoMap;
+	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIOPinMap;
 
 	IOPinSet(pincfg[UARTPIN_TX_IDX].PortNo, pincfg[UARTPIN_TX_IDX].PinNo);
-	IOPinCfg(pincfg, pCfg->IoMapLen);
+	IOPinCfg(pincfg, pCfg->NbIOPins);
 
 	pDev->DevIntrf.pDevData = &s_nRFUartDev[devno];
 	s_nRFUartDev[devno].pUartDev = pDev;
