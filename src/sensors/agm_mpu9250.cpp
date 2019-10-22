@@ -473,7 +473,7 @@ bool MagMpu9250::Init(const MAGSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *
 	vMagCtrl1Val = 0;
 	MagSensor::vRange = MPU9250_MAG_ADC_LOW_RANGE;
 
-	if (CfgData.Precision >= 16)
+	if (CfgData.Precision == MAGSENSOR_PRECISION_HIGH)
 	{
 		//MagSensor::vPrecision = 16;
 		MagSensor::vRange = MPU9250_MAG_ADC_HIGH_RANGE;
