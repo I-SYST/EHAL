@@ -112,6 +112,15 @@ bool PmAs3701::Init(const PWRCFG &Cfg, DeviceIntrf * const pIntrf)
 		}
 	}
 
+	regaddr = AS3701_REF_CTRL_REG;
+	d = Read8(&regaddr, 1) & ~(AS3701_REF_CTRL_LPRESS_DELAY_8 | AS3701_REF_CTRL_TAST_SW_SWITCH);
+	if (Cfg.OffSwHold < 8)
+	{
+		d |= AS3701_REF_CTRL_LPRESS_DELAY_4;
+	}
+
+	Write8(&regaddr, 1, d);
+
 	if (Cfg.bIntEn)
 	{
 		regaddr = AS3701_INTERRUPT_MASK1_REG;
