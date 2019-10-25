@@ -48,6 +48,7 @@ typedef struct __Slip_Device {
 	DEVINTRF DevIntrf;					//!< This interface
 	DEVINTRF *pPhyIntrf;				//!< Physical transport interface
 	void *pObj;							//!< Slip object instance
+	volatile bool bSlipEnd;				//!< true - indicate slip packet complete
 } SLIPDEV;
 
 #ifdef __cplusplus
@@ -65,7 +66,7 @@ static inline int SlipRx(SLIPDEV * const pDev, uint8_t *pBuff, int Bufflen) {
 static inline int SlipTx(SLIPDEV * const pDev, uint8_t *pData, int Datalen) {
 	return DeviceIntrfTx(&pDev->DevIntrf, 0, pData, Datalen);
 }
-
+static inline bool SlipRxCompleted(SLIPDEV * const pDev) { return pDev->bSlipEnd; }
 
 #ifdef __cplusplus
 }
@@ -193,6 +194,8 @@ public:
 	 * Call this function only if StartTx was successful.
 	 */
 	virtual void StopTx(void) { DeviceIntrfStopTx(*this); }
+
+	bool RxCompleted() { return vDevData.bSlipEnd; }
 
 private:
 	SLIPDEV vDevData;

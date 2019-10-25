@@ -161,6 +161,7 @@ int SlipIntrfRxDataBlocking(DEVINTRF * const pDevIntrf, uint8_t *pBuff, int Buff
 	uint8_t d;
 
 	uint8_t *p = pBuff;
+	dev->bSlipEnd = false;
 
 	while (BuffLen > 0)
 	{
@@ -168,7 +169,10 @@ int SlipIntrfRxDataBlocking(DEVINTRF * const pDevIntrf, uint8_t *pBuff, int Buff
 		{
 			if (*pBuff == SLIP_END_CODE)
 			{
-				return cnt;
+//				cnt++;
+				dev->bSlipEnd = true;
+
+				break;
 			}
 			if (*pBuff == SLIP_ESC_CODE)
 			{
@@ -212,6 +216,8 @@ int SlipIntrfRxDataNonBlocking(DEVINTRF * const pDevIntrf, uint8_t *pBuff, int B
 	int cnt = 0;
 	uint8_t d;
 
+	dev->bSlipEnd = false;
+
 	if (*pBuff == SLIP_ESC_CODE)
 	{
 		if (dev->pPhyIntrf->RxData(dev->pPhyIntrf, &d, 1) <= 0)
@@ -242,7 +248,9 @@ int SlipIntrfRxDataNonBlocking(DEVINTRF * const pDevIntrf, uint8_t *pBuff, int B
 
 		if (*pBuff == SLIP_END_CODE)
 		{
-			cnt++;
+			//cnt++;
+			dev->bSlipEnd = true;
+
 			break;
 		}
 		if (*pBuff == SLIP_ESC_CODE)
@@ -320,7 +328,7 @@ bool SlipIntrfStartTx(DEVINTRF * const pDevIntrf, int DevAddr)
  *
  * @return	Number of bytes sent including the SLIP code
  */
-#if 1
+#if 0
 int SlipIntrfTxData(DEVINTRF * const pDevIntrf, uint8_t *pData, int DataLen)
 {
 	SLIPDEV *dev = (SLIPDEV *)pDevIntrf->pDevData;
@@ -542,7 +550,7 @@ bool SlipInit(SLIPDEV * const pDev, DEVINTRF * const pPhyIntrf, bool bBlocking)
 	pDev->DevIntrf.StopTx = SlipIntrfStopTx;
 	pDev->DevIntrf.IntPrio = 0;
 	pDev->DevIntrf.EvtCB = nullptr;
-	pDev->DevIntrf.MaxRetry = 5;
+	pDev->DevIntrf.MaxRetry = 0;
 	pDev->DevIntrf.bDma = false;
 	pDev->DevIntrf.PowerOff = SlipIntrfPowerOff;
 	pDev->DevIntrf.EnCnt = 1;
