@@ -1160,7 +1160,7 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
     {
 //        err_code = ble_advdata_encode(&initdata.advdata, g_AdvData.adv_data.p_data, &g_AdvData.adv_data.len);
         g_AdvInstance.adv_data.adv_data.len = BLE_GAP_ADV_SET_DATA_SIZE_MAX;
-        g_AdvInstance.adv_data.adv_data.p_data = g_AdvInstance.enc_advdata;
+        g_AdvInstance.adv_data.adv_data.p_data = g_AdvInstance.enc_advdata[0];
 
         err_code = ble_advdata_encode(&initdata.advdata, g_AdvInstance.adv_data.adv_data.p_data, &g_AdvInstance.adv_data.adv_data.len);
         APP_ERROR_CHECK(err_code);
