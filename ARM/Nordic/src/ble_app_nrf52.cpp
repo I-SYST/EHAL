@@ -1476,8 +1476,6 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     //err_code = ble_lesc_init();
     //APP_ERROR_CHECK(err_code);
 
-    sd_ble_gap_tx_power_set(BLE_GAP_TX_POWER_ROLE_ADV, g_AdvInstance.adv_handle, GetValidTxPower(pBleAppCfg->TxPower));
-
     if (pBleAppCfg->PeriLinkCount > 0 && pBleAppCfg->AdvInterval > 0)
 	{
 		g_BleAppData.AppRole |= BLEAPP_ROLE_PERIPHERAL;
@@ -1536,6 +1534,9 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     NVIC_ClearPendingIRQ(FPU_IRQn);
     NVIC_EnableIRQ(FPU_IRQn);
 #endif
+
+    err_code = sd_ble_gap_tx_power_set(BLE_GAP_TX_POWER_ROLE_ADV, g_AdvInstance.adv_handle, GetValidTxPower(pBleAppCfg->TxPower));
+    APP_ERROR_CHECK(err_code);
 
     return true;
 }
