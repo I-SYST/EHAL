@@ -361,6 +361,11 @@
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/fstorage/nrf_fstorage_nvmc.c</locationURI>
 		</link>
 		<link>
+			<name>src/nRF5_SDK/libraries/fstorage/nrf_fstorage_sd.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/fstorage/nrf_fstorage_sd.c</locationURI>
+		</link>
+		<link>
 			<name>src/nRF5_SDK/libraries/scheduler/app_scheduler.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/external/nRF5_SDK/components/libraries/scheduler/app_scheduler.c</locationURI>
