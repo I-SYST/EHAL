@@ -68,6 +68,8 @@ Modified by          Date              Description
 #include "nrf_ble_lesc.h"
 #include "nrf_ble_scan.h"
 #include "nrf_drv_rng.h"
+#include "nrf_bootloader_info.h"
+#include "nrf_pwr_mgmt.h"
 
 //#include "nrf_crypto_keys.h"
 //#include "nrf_log.h"
@@ -250,8 +252,9 @@ void BleAppEnterDfu()
 {
     // SDK14 use this
     uint32_t err_code = sd_power_gpregret_clr(0, 0xffffffff);
-    err_code = sd_power_gpregret_set(0, 0xB1);//BOOTLOADER_DFU_START);
-    NVIC_SystemReset();
+    err_code = sd_power_gpregret_set(0, BOOTLOADER_DFU_START);
+    nrf_pwr_mgmt_shutdown(NRF_PWR_MGMT_SHUTDOWN_GOTO_DFU);
+   // NVIC_SystemReset();
 #if 0
 
     uint32_t err_code = nrf_dfu_flash_init(true);
