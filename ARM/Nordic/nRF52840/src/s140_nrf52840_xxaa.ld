@@ -28,7 +28,7 @@ MEMORY
 	NOINIT (rwx) :  ORIGIN = 0x20007F80, LENGTH = 0x80
 
 	/** Location of bootloader setting in flash. */
-	BOOTLOADER_SETTINGS (rw) : ORIGIN = 0x0007F000, LENGTH = 0x1000
+	BOOTLOADER_SETTINGS (rw) : ORIGIN = 0x000FF000, LENGTH = 0x1000
 }
 
 
