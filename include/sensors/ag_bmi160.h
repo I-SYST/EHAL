@@ -174,6 +174,7 @@ SOFTWARE.
 #define BMI160_ACC_RANGE_ACC_RANGE_2G						(3)
 #define BMI160_ACC_RANGE_ACC_RANGE_4G						(5)
 #define BMI160_ACC_RANGE_ACC_RANGE_8G						(8)
+#define BMI160_ACC_RANGE_ACC_RANGE_16G						(0xC)
 
 #define BMI160_GYR_CONF             0x42
 #define BMI160_GYR_CONF_GYR_ODR_MASK                        (0xF<<0)

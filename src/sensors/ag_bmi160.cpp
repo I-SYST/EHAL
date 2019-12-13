@@ -93,21 +93,28 @@ uint8_t AccelBmi160::Scale(uint8_t Value)
 {
 	uint8_t regaddr = BMI160_ACC_RANGE;
 
-	if (Value < 4)
+	if (Value < 3)
 	{
 		Write8(&regaddr, 1, BMI160_ACC_RANGE_ACC_RANGE_2G);
 		Value = 2;
 	}
-	else if (Value < 8)
+	else if (Value < 6)
 	{
 		Write8(&regaddr, 1, BMI160_ACC_RANGE_ACC_RANGE_4G);
 		Value = 4;
 	}
-	else
+	else if (Value < 12)
 	{
 		Write8(&regaddr, 1, BMI160_ACC_RANGE_ACC_RANGE_8G);
 		Value = 8;
 	}
+	else
+	{
+		Write8(&regaddr, 1, BMI160_ACC_RANGE_ACC_RANGE_16G);
+		Value = 16;
+	}
+
+	msDelay(1);	// Require delay, donot remove
 
 	vData.Scale = Value;
 
@@ -690,6 +697,10 @@ void AgBmi160::Reset()
 
 	msDelay(1);
 
+	regaddr = BMI160_CMD;
+	Write8(&regaddr, 1, BMI160_CMD_FIFO_FLUSH);
+
+	msDelay(10);
 	//MagBmi160::Reset();
 
 //	msDelay(5);
@@ -710,6 +721,15 @@ bool AgBmi160::UpdateData()
 		return false;
 	}
 
+	if (len > 1024)
+	{
+		uint8_t regaddr = BMI160_CMD;
+		Write8(&regaddr, 1, BMI160_CMD_FIFO_FLUSH);
+
+		msDelay(10);
+
+		return false;
+	}
 	//printf("len %d\r\n", len);
 
 	uint8_t buff[BMI160_FIFO_MAX_SIZE];
