@@ -721,6 +721,7 @@ bool AgBmi160::UpdateData()
 		return false;
 	}
 
+#if 0
 	if (len > 1024)
 	{
 		uint8_t regaddr = BMI160_CMD;
@@ -730,6 +731,9 @@ bool AgBmi160::UpdateData()
 
 		return false;
 	}
+#else
+	len = min(len, BMI160_FIFO_MAX_SIZE);
+#endif
 	//printf("len %d\r\n", len);
 
 	uint8_t buff[BMI160_FIFO_MAX_SIZE];
