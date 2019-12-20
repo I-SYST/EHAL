@@ -179,6 +179,7 @@ void MagBmm150::Disable()
 	d |= (BMM150_CTRL3_CHAN_X_DIS | BMM150_CTRL3_CHAN_Y_DIS | BMM150_CTRL3_CHAN_Y_DIS);
 	MagBmm150::Write(&regaddr, 1, &d, 1);
 
+	regaddr = BMM150_CTRL2_REG;
 	MagBmm150::Read(&regaddr, 1, &d, 1);
 	d &= ~BMM150_CTRL2_OPMODE_MASK;
 	d |= BMM150_CTRL2_OPMODE_SLEEP;
