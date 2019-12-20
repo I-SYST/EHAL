@@ -465,24 +465,33 @@ bool MagBmi160::Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer
 
 	vDevAddr = Cfg.DevAddr;
 
-	Write8(&regaddr, 1, BMI160_CMD_MAG_SET_PMU_MODE_NORMAL);
-
-	msDelay(1);
-
-	regaddr = BMI160_PMU_STATUS;
-	d = Read8(&regaddr, 1);
-
 	// Set IF : prim autoconf, secondary : Mag
 	regaddr = BMI160_IF_CONF;
 	d = Read8(&regaddr, 1) & ~BMI160_IF_CONF_IF_MODE_MASK;
 	d |= BMI160_IF_CONF_IF_MODE_AUTO_MAG;
 	Write8(&regaddr, 1, d);
 
+	msDelay(1);
+
 	regaddr = BMI160_MAG_IF_0;
 	Write8(&regaddr, 1, Cfg.DevAddr << 1);
 
+	msDelay(1);
+
 	regaddr = BMI160_MAG_IF_1;
 	Write8(&regaddr, 1, BMI160_MAG_IF_1_MAG_RD_BURST_8 | BMI160_MAG_IF_1_MAG_MANUAL_EN);
+
+	msDelay(1);
+
+	regaddr = BMI160_CMD;
+	Write8(&regaddr, 1, BMI160_CMD_MAG_SET_PMU_MODE_NORMAL);
+
+	msDelay(1);
+
+	regaddr = BMI160_PMU_STATUS;
+	do {
+		d = Read8(&regaddr, 1);
+	} while ((d & BMI160_PMU_STATUS_MAG_PMU_STATUS_NORMAL) == 0);
 
 	return MagBmm150::Init(Cfg, pIntrf, pTimer);
 }
@@ -492,13 +501,17 @@ uint32_t MagBmi160::SamplingFrequency(uint32_t Freq)
 	uint8_t regaddr = BMI160_MAG_CONF;
 	uint32_t odrval = Read8(&regaddr, 1) & ~BMI160_MAG_CONF_MAG_ODR_MASK;
 	uint32_t f = 0;
-	uint32_t dif = 100000;
+	uint32_t dif = Freq;
 
-	if (Freq < 50000)
+	// Get supported freq from Mag
+	Freq = MagBmm150::SamplingFrequency(Freq);
+
+	// Try to match ODR
+	if (Freq < 25000)
 	{
 		for (int i = 0; i < 7; i++)
 		{
-			uint32_t t = 50000 >> (7 - i);
+			uint32_t t = 25000 >> (7 - i);
 			uint32_t x = labs(Freq - t);
 			if (x < dif)
 			{
@@ -513,7 +526,7 @@ uint32_t MagBmi160::SamplingFrequency(uint32_t Freq)
 	{
 		for (int i = 0; i < 5; i++)
 		{
-			uint32_t t = 50000 << i;
+			uint32_t t = 25000 << i;
 			uint32_t x = labs(Freq - t);
 			if (x < dif)
 			{
@@ -566,6 +579,17 @@ bool MagBmi160::Enable()
 	Write8(&regaddr, 1, BMM150_DATA_X_LSB_REG);
 
 	return true;
+}
+
+void MagBmi160::Disable()
+{
+	MagBmm150::Disable();
+
+	uint8_t regaddr;
+	uint8_t d;
+
+	regaddr = BMI160_CMD;
+	Write8(&regaddr, 1, BMI160_CMD_MAG_SET_PMU_MODE_SUSPEND);
 }
 
 int MagBmi160::Read(uint32_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
@@ -687,6 +711,7 @@ void AgBmi160::Disable()
 {
 	AccelBmi160::Disable();
 	GyroBmi160::Disable();
+	MagBmi160::Disable();
 }
 
 void AgBmi160::Reset()
@@ -868,7 +893,7 @@ bool AgBmi160::UpdateData()
 		}
 	}
 
-	if (dflag == 0xf && vEvtHandler)
+	if (dflag != 0 && vEvtHandler)
 	{
 		vEvtHandler(this, DEV_EVT_DATA_RDY);
 	}
