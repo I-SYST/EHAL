@@ -524,6 +524,7 @@ public:
 	virtual bool Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
 	virtual uint32_t SamplingFrequency(uint32_t Freq);
 	virtual bool Enable();
+	virtual void Disable();
 	virtual void Reset() { MagBmm150::Reset(); }
 
 private:
