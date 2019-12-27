@@ -128,9 +128,9 @@ struct __device_intrf {
 	void *pDevData;			//!< Private device interface implementation data
 	int	IntPrio;			//!< Interrupt priority.  Value is implementation specific
 	DEVINTRF_EVTCB EvtCB;	//!< Interrupt based event callback function pointer. Must be set to NULL if not used
-	atomic_flag bBusy;		        //!< Busy flag to be set check and set at start and reset at end of transmission
+	atomic_flag bBusy;		//!< Busy flag to be set check and set at start and reset at end of transmission
 	int MaxRetry;			//!< Max retry when data could not be transfered (Rx/Tx returns zero count)
-	atomic_int EnCnt;				//!< Count the number of time device is enabled, this used as ref count where multiple
+	atomic_int EnCnt;		//!< Count the number of time device is enabled, this used as ref count where multiple
 							//!< devices are using the same interface. It is to avoid it being disabled while another
 							//!< device is still using it
 	DEVINTRF_TYPE Type;     //!< Identify the type of interface

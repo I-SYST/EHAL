@@ -40,7 +40,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdint.h>
 #include <stdio.h>
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 
 /// I/O pin resistor configuration
 typedef enum __iopin_resistor {
