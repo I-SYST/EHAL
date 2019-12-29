@@ -225,7 +225,18 @@ void BleAppEnterDfu();
 void BleAppRun();
 uint16_t BleAppGetConnHandle();
 void BleAppGapDeviceNameSet(const char* ppDeviceName);
-void BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int SrLen);
+
+/**
+ *
+ * @param pAdvData
+ * @param AdvLen
+ * @param pSrData
+ * @param SrLen
+ *
+ * @return	true - Advertising
+ * 			false - Not advertising
+ */
+bool BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int SrLen);
 void BleAppAdvTimeoutHandler();
 void BleAppAdvStart(BLEAPP_ADVMODE AdvMode);
 void BleAppAdvStop();
