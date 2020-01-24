@@ -162,9 +162,9 @@ public:
 protected:
 
 	ACCELSENSOR_RAWDATA vData;		//!< Current sensor data updated with UpdateData()
+	ACCELINTCB vIntHandler;
 
 private:
-	ACCELINTCB vIntHandler;
 	uint16_t vScale;			//!< Sensor data scale in g force (2g, 4g, ...)
 	float vCalibGain[3][3];
 	float vCalibOffset[3];
