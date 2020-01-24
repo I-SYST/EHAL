@@ -152,8 +152,8 @@ public:
 	/**
 	 * @brief	Set LED level
 	 *
-	 * This function set the dimming level of the LED 0-255.  On multi-color LED can be
-	 * used to mix color.  Usually used for PWM analog led
+	 * This function set the dimming level of the LED 0-255.  On multicolor LED can be
+	 * used to mix color.  Usually used for PWM led
 	 *
 	 * @param Level	: LED dimming Level 0-255.  0 = Off, 255 = 100% On. Up to 4 LEDs can be dimmed.
 	 * 					Bits 0-7  	: LED 0
@@ -167,7 +167,7 @@ public:
 	/**
 	 * @brief	Set LED level for strip LED.
 	 *
-	 * This function sets the levels strip RGB strip LED.  These LEDs are monrally
+	 * This function sets the levels strip RGB strip LED.  These LEDs are normally
 	 * controlled via a serial interface.
 	 *
 	 * @param	pLevel : pointer to array of RGB LED to set
@@ -243,7 +243,7 @@ public:
 	 * @brief	Initialize as GPIO PWM LED
 	 *
 	 * This function initializes LED with GPIO PWM dimming.  Dimming level 0-255.
-	 * Can be used for single, bi-color, tri-color or quad-color led
+	 * Can be used for single, bicolor, tricolor or quadcolor led
 	 *
 	 *
 	 * @param	pPwm		: Pointer to PWM object, this pointer is kept internally.
@@ -258,7 +258,7 @@ public:
 	/**
 	 * @brief	Set LED level
 	 *
-	 * This function set the dimming level of the LED 0-255.  On multi-color LED can be
+	 * This function set the dimming level of the LED 0-255.  On multicolor LED can be
 	 * used to mix color.
 	 *
 	 * @param Level	: LED dimming Level 0-255.  0 = Off, 255 = 100% On. Up to 4 LEDs can be dimmed.

@@ -37,6 +37,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "led.h"
 
+#define APA102_BLUE			0xFF0000
+#define APA102_GREEN		0x00FF00
+#define APA102_RED			0x0000FF
+
+#define APA102_OFF			0
+#define APA102_ON			0xFFFFFF
+
 typedef struct __APA102_Config {
 	int NbLed;
 	uint8_t CIPortNo;
@@ -46,7 +53,7 @@ typedef struct __APA102_Config {
 	uint8_t Brightness;
 } APA102_CFG;
 
-class LedApa102 : public Led {
+class LedApa102 : public LedDevice {
 public:
 	bool Init(APA102_CFG &Cfg);
 
@@ -72,14 +79,14 @@ public:
 	/**
 	 * @brief	Set LED level
 	 *
-	 * This function set the dimming level of the LED 0-255.  On multi-color LED can be
+	 * This function set the dimming level of the LED 0-255.  On multicolor LED can be
 	 * used to mix color.  Usually used for PWM analog led
 	 *
 	 * @param Level	: LED dimming Level 0-255.  0 = Off, 255 = 100% On. Up to 4 LEDs can be dimmed.
-	 * 					Bits 0-7  	: LED 0
-	 * 					Bits 8-15 	: LED 1
-	 * 					Bits 16-23	: LED 2
-	 * 					Bits 24-31	: LED 3
+	 * 				  For APA102 :
+	 * 					Bits 0-7  	: LED 0 (Red)
+	 * 					Bits 8-15 	: LED 1 (Green)
+	 * 					Bits 16-23	: LED 2 (Blue)
 	 *
 	 */
 	virtual void Level(uint32_t Val) { Level(&Val, 1); }
@@ -87,7 +94,7 @@ public:
 	/**
 	 * @brief	Set LED level for strip LED.
 	 *
-	 * This function sets the levels strip RGB strip LED.  These LEDs are monrally
+	 * This function sets the levels strip RGB strip LED.  These LEDs are normally
 	 * controlled via a serial interface.
 	 *
 	 * @param	pLevel : pointer to array of RGB LED to set
@@ -95,10 +102,6 @@ public:
 	 * @param	Repeat : Repeat count.
 	 */
 	virtual void Level(uint32_t * const pVal, int NbLeds, int Repeat = 0);
-
-	void StartTx();
-	void TxData(uint32_t * const pData, int DataLen);
-	void StopTx();
 
 private:
 	int vNbLed;			//!< Total number of Led in strip

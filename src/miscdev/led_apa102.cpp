@@ -55,7 +55,7 @@ bool LedApa102::Init(APA102_CFG &Cfg)
  */
 void LedApa102::On()
 {
-	uint32_t Val = 0xFFFFFF;
+	uint32_t Val = APA102_ON;
 
 	Level(&Val, 1);
 }
@@ -65,7 +65,7 @@ void LedApa102::On()
  */
 void LedApa102::Off()
 {
-	uint32_t Val = 0;
+	uint32_t Val = APA102_OFF;
 
 	Level(&Val, 1);
 }
@@ -73,7 +73,7 @@ void LedApa102::Off()
 /**
  * @brief	Set LED level for strip LED.
  *
- * This function sets the levels strip RGB strip LED.  These LEDs are monrally
+ * This function sets the levels strip RGB strip LED.  These LEDs are normally
  * controlled via a serial interface.
  *
  * @param	pLevel : pointer to array of RGB LED to set
@@ -88,25 +88,24 @@ void LedApa102::Level(uint32_t * const pVal, int NbLeds, int Repeat)
 	while (bit != 0)
 	{
 		IOPinClear(vCIPortNo, vCIPinNo);
-		usDelay(1);
+		//usDelay(1);
 		IOPinSet(vCIPortNo, vCIPinNo);
 
 		bit >>= 1;
 	}
 
 	do {
-		uint32_t *p = pVal;
-
-		for (int i = 0; i < NbLeds; i++, p++)
+		for (int i = 0; i < NbLeds; i++)
 		{
+			uint32_t p = pVal[i];
 			bit = 0x80000000;
-			*p = (*p & 0xFFFFFF) | (0xe0 | vBrightness);
+			p = (p & 0xFFFFFF) | ((0xe0 | vBrightness) << 24);
 
 			while (bit != 0)
 			{
 				IOPinClear(vCIPortNo, vCIPinNo);
 
-				if (*p & bit)
+				if (p & bit)
 				{
 					IOPinSet(vDIPortNo, vDIPinNo);
 				}
@@ -126,67 +125,9 @@ void LedApa102::Level(uint32_t * const pVal, int NbLeds, int Repeat)
 	while (bit != 0)
 	{
 		IOPinClear(vCIPortNo, vCIPinNo);
-		usDelay(1);
+		//usDelay(1);
 		IOPinSet(vCIPortNo, vCIPinNo);
 
 		bit >>= 1;
 	}
 }
-
-void LedApa102::StartTx()
-{
-	uint32_t bit = 0x80000000;
-
-	// Start frame
-	IOPinClear(vDIPortNo, vDIPinNo);
-	while (bit != 0)
-	{
-		IOPinClear(vCIPortNo, vCIPinNo);
-		usDelay(1);
-		IOPinSet(vCIPortNo, vCIPinNo);
-
-		bit >>= 1;
-	}
-}
-
-void LedApa102::TxData(uint32_t * const pData, int DataLen)
-{
-	uint32_t *p = pData;
-
-	for (int i = 0; i < DataLen; i++, p++)
-	{
-		uint32_t bit = 0x80000000;
-
-		while (bit != 0)
-		{
-			IOPinClear(vCIPortNo, vCIPinNo);
-
-			if (*p & bit)
-			{
-				IOPinSet(vDIPortNo, vDIPinNo);
-			}
-			else
-			{
-				IOPinClear(vDIPortNo, vDIPinNo);
-			}
-			IOPinSet(vCIPortNo, vCIPinNo);
-			bit >>= 1;
-		}
-	}
-}
-
-void LedApa102::StopTx()
-{
-	// Stop frame
-	uint32_t bit = 0x80000000;
-	IOPinSet(vDIPortNo, vDIPinNo);
-	while (bit != 0)
-	{
-		IOPinClear(vCIPortNo, vCIPinNo);
-		usDelay(1);
-		IOPinSet(vCIPortNo, vCIPinNo);
-
-		bit >>= 1;
-	}
-}
-
