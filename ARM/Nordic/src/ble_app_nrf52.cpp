@@ -1071,12 +1071,18 @@ __WEAK void BleAppAdvInit(const BLEAPP_CFG *pCfg)
 
     memset(&initdata, 0, sizeof(ble_advertising_init_t));
 
-    g_BleAppData.ManufData.company_identifier = pCfg->VendorID;
-    g_BleAppData.ManufData.data.p_data = (uint8_t*)pCfg->pAdvManData;
-    g_BleAppData.ManufData.data.size = pCfg->AdvManDataLen;
-    g_BleAppData.SRManufData.company_identifier = pCfg->VendorID;
-    g_BleAppData.SRManufData.data.p_data = (uint8_t*)pCfg->pSrManData;
-    g_BleAppData.SRManufData.data.size = pCfg->SrManDataLen;
+    if (pCfg->pAdvManData != NULL)
+    {
+		g_BleAppData.ManufData.company_identifier = pCfg->VendorID;
+		g_BleAppData.ManufData.data.p_data = (uint8_t*)pCfg->pAdvManData;
+		g_BleAppData.ManufData.data.size = pCfg->AdvManDataLen;
+    }
+    if (pCfg->pSrManData != NULL)
+    {
+		g_BleAppData.SRManufData.company_identifier = pCfg->VendorID;
+		g_BleAppData.SRManufData.data.p_data = (uint8_t*)pCfg->pSrManData;
+		g_BleAppData.SRManufData.data.size = pCfg->SrManDataLen;
+    }
 
     // Build advertising data struct to pass into @ref ble_advertising_init.
 
