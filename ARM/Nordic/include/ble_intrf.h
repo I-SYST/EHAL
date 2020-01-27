@@ -45,7 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   * @{
   */
 
-#define BLEINTRF_TRANSBUFF_MAXLEN       256
+#define BLEINTRF_TRANSBUFF_MAXLEN       512
 
 /**
  * Calculate require mem
@@ -89,6 +89,8 @@ typedef struct __BleDeviceInterf {
     int			PacketSize;	//!< BLE packet size
     HCFIFO		hRxFifo;
     HCFIFO		hTxFifo;
+    uint32_t	RxDropCnt;
+    uint32_t	TxDropCnt;
     uint8_t     TransBuff[BLEINTRF_TRANSBUFF_MAXLEN];  //
     int         TransBuffLen;   //!< Data length
 } BLEINTRF;
