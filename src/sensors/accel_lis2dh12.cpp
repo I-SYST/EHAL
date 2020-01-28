@@ -99,6 +99,14 @@ bool AccelLis2dh12::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf,
 	{
 		regaddr = LIS2DH12_FIFO_CTRL_REG;
 		d = Read8(&regaddr, 1) & ~LIS2DH12_FIFO_CTRL_REG_TR_MASK;
+
+		regaddr = LIS2DH12_CTRL_REG3;
+		Write8(&regaddr, 1, LIS2DH12_CTRL_REG3_I1_OVERRUN | LIS2DH12_CTRL_REG3_I1_WTM | LIS2DH12_CTRL_REG3_I1_IA1);
+
+		regaddr = LIS2DH12_INT1_CFG;
+		Write8(&regaddr, 1, 0xff);
+
+		vbIntEn = true;
 	}
 
 	Enable();
@@ -282,12 +290,20 @@ bool AccelLis2dh12::Enable()
 
 	regaddr = LIS2DH12_FIFO_CTRL_REG;
 	d = Read8(&regaddr, 1) & ~LIS2DH12_FIFO_CTRL_REG_FM_MASK;
-	d |= LIS2DH12_FIFO_CTRL_REG_FM_FIFO;
-	Write8(&regaddr, 1, d);
 
-	regaddr = LIS2DH12_CTRL_REG5;
-	d = Read8(&regaddr, 1) | LIS2DH12_CTRL_REG5_FIFO_EN;
-	Write8(&regaddr, 1, d);
+	if (vbIntEn)
+	{
+		d |= LIS2DH12_FIFO_CTRL_REG_FM_FIFO;
+		Write8(&regaddr, 1, d);
+
+		regaddr = LIS2DH12_CTRL_REG5;
+		d = Read8(&regaddr, 1) | LIS2DH12_CTRL_REG5_FIFO_EN;
+		Write8(&regaddr, 1, d);
+	}
+	else
+	{
+		Write8(&regaddr, 1, d);
+	}
 
 	return true;
 }
@@ -346,6 +362,8 @@ void AccelLis2dh12::IntHandler()
 		regaddr = LIS2DH12_FIFO_CTRL_REG;
 		d = Read8(&regaddr, 1) & ~LIS2DH12_FIFO_CTRL_REG_FM_MASK;
 		Write8(&regaddr, 1, d);
+		d |= LIS2DH12_FIFO_CTRL_REG_FM_FIFO;
+		Write8(&regaddr, 1, d);
 	}
 }
 
@@ -358,10 +376,21 @@ bool AccelLis2dh12::UpdateData()
 	regaddr = LIS2DH12_FIFO_SRC_REG;
 	fstatus = Read8(&regaddr, 1);
 
-	if ((fstatus & LIS2DH12_FIFO_SRC_REG_FSS_MASK) || d & 0xf)
+	bool avail = false;
+
+	if ((fstatus & LIS2DH12_FIFO_SRC_REG_FSS_MASK) & vbIntEn)
+	{
+		avail = true;
+	}
+	else if (d & 0xf)
+	{
+		avail = true;
+	}
+
+	if (avail == true)
 	{
 		// New data avail
-
+//printf("fstatus %x\r\n", fstatus);
 		if (vpTimer)
 		{
 			vData.Timestamp = vpTimer->uSecond();

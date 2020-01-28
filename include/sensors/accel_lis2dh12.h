@@ -297,6 +297,7 @@ public:
 	bool UpdateData();
 
 private:
+	bool vbIntEn;
 };
 
 #endif // __ACCEL_LIS2DH12_H__
