@@ -626,6 +626,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/a_adxl362.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/accel_lis2dh12.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/accel_lis2dh12.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/accel_sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/accel_sensor.h</locationURI>
@@ -939,6 +944,11 @@
 			<name>src/sensors/accel_h3lis331dl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/accel_h3lis331dl.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/sensors/accel_lis2dh12.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/accel_lis2dh12.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sensors/accel_sensor.cpp</name>
