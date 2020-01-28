@@ -36,7 +36,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifndef __unix__
 #ifdef __GNUC__
+#ifndef __PROGRAM_START
 #define __PROGRAM_START		// Define to fix compile bug in CMSIS 5.6
+#endif
 #include "cmsis_gcc.h"
 #elif defined (__ICCARM__)
 #include "cmsis_iccarm.h"
