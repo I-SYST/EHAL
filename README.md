@@ -24,7 +24,7 @@ Library source code on GitHub at https://github.com/I-SYST/EHAL
 
 * Need to port a specific driver or MCU ? Put your request in issues. It will get done eventually. If you want to have it faster, a fee based port is available.   
  
-* EHAL is being outgrown. We are gradually moving to the new [IOsonata](https://github.com/IOsonata/IOsonata) in order to support more archtecture & platforms.  We are re-organizing the new library for easier project integrations in order to response to more demands for other environnements.  Current status : progressing well. New features will be added to the IOsanata.  We will keep updating EHAL for bug fixes. If you are new user or starting a new project, it would be best to start with IOsonata.  Thank you for your supports. 
+* EHAL is being outgrown. We've moved to the new [IOsonata](https://github.com/IOsonata/IOsonata) in order to support more archtecture & platforms.  We are re-organizing the new library for easier project integrations in order to response to more demands for other environnements.  Current status : progressing well. New features will be added to the IOsanata.  We will keep updating EHAL for bug fixes. If you are new user or starting a new project, it would be best to start with IOsonata.  Thank you for your supports. 
 ---
  
 external vendors' SDK and library required :
