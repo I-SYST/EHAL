@@ -38,18 +38,7 @@ SOFTWARE.
 #include "sensors/accel_lis2dh12.h"
 #include "idelay.h"
 
-/**
- * @brief	Initialize accelerometer sensor.
- *
- * NOTE: This sensor must be the first to be initialized.
- *
- * @param 	Cfg		: Accelerometer configuration data
- * @param 	pIntrf	: Pointer to communication interface
- * @param 	pTimer	: Pointer to Timer use for time stamp
- *
- * @return	true - Success
- */
-bool AccelLis2dh12::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer)
+bool AccelLis2dh12::Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer)
 {
 	if (pIntrf == NULL)
 	{
@@ -57,11 +46,11 @@ bool AccelLis2dh12::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf,
 	}
 
 	Interface(pIntrf);
-	DeviceAddress(Cfg.DevAddr);
+	DeviceAddress(DevAddr);
 
 	if (pTimer != NULL)
 	{
-		AccelSensor::vpTimer = pTimer;
+		vpTimer = pTimer;
 	}
 
 	Reset();
@@ -75,9 +64,34 @@ bool AccelLis2dh12::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf,
 		return false;
 	}
 
-	Type(SENSOR_TYPE_ACCEL);
 	DeviceID(d);
 	Valid(true);
+
+	return true;
+}
+
+/**
+ * @brief	Initialize accelerometer sensor.
+ *
+ * NOTE: This sensor must be the first to be initialized.
+ *
+ * @param 	Cfg		: Accelerometer configuration data
+ * @param 	pIntrf	: Pointer to communication interface
+ * @param 	pTimer	: Pointer to Timer use for time stamp
+ *
+ * @return	true - Success
+ */
+bool AccelLis2dh12::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer)
+{
+	if (vbValid == false)
+	{
+		if (Init(Cfg.DevAddr, pIntrf, pTimer) == false)
+		{
+			return false;
+		}
+	}
+
+	AccelSensor::Type(SENSOR_TYPE_ACCEL);
 
 	if (Cfg.IntHandler)
 	{
@@ -85,12 +99,12 @@ bool AccelLis2dh12::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf,
 	}
 
 	// High res 12bits default
-	regaddr = LIS2DH12_CTRL_REG4;
-	d = Read8(&regaddr, 1) | LIS2DH12_CTRL_REG4_HR;
+	uint8_t regaddr = LIS2DH12_CTRL_REG4;
+	uint8_t d = Read8(&regaddr, 1) | LIS2DH12_CTRL_REG4_HR;
 	Write8(&regaddr, 1, d);
 
-	Range(2047);
-	vData.Range = 2047;
+	AccelSensor::Range(2047);
+	AccelSensor::vData.Range = 2047;
 
 	Scale(Cfg.Scale);
 	uint32_t f = SamplingFrequency(Cfg.Freq);
@@ -143,6 +157,37 @@ bool AccelLis2dh12::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf,
 	return true;
 }
 
+bool AccelLis2dh12::Init(const TEMPSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer)
+{
+	if (vbValid == false)
+	{
+		if (Init(Cfg.DevAddr, pIntrf, pTimer) == false)
+		{
+			return false;
+		}
+	}
+
+	TempSensor::Type(SENSOR_TYPE_TEMP);
+
+	uint8_t regaddr = LIS2DH12_TEMP_CFG_REG;
+	Write8(&regaddr, 1, LIS2DH12_TEMP_CFG_EN);
+
+	regaddr = LIS2DH12_CTRL_REG1;
+	uint8_t d = Read8(&regaddr, 1);
+
+	if (d & LIS2DH12_CTRL_REG1_LPEN)
+	{
+		TempSensor::Range(127);
+	}
+	else
+	{
+		TempSensor::Range(511);
+	}
+
+	return true;
+}
+
+
 uint16_t AccelLis2dh12::Scale(uint16_t Value)
 {
 	uint8_t regaddr = LIS2DH12_CTRL_REG4;
@@ -170,7 +215,7 @@ uint16_t AccelLis2dh12::Scale(uint16_t Value)
 
 	Write8(&regaddr, 1, d);
 
-	vData.Scale = Value;
+	AccelSensor::vData.Scale = Value;
 
 	return AccelSensor::Scale(Value);
 }
@@ -188,6 +233,7 @@ uint32_t AccelLis2dh12::SamplingFrequency(uint32_t Freq)
 	uint8_t d = Read8(&regaddr, 1) & ~(LIS2DH12_CTRL_REG4_HR);
 	uint32_t f = 0;
 	uint32_t range = 2047;
+	uint32_t trange = 511;
 
 	regaddr = LIS2DH12_CTRL_REG1;
 	d = Read8(&regaddr, 1) & ~(LIS2DH12_CTRL_REG1_ODR_MASK | LIS2DH12_CTRL_REG1_LPEN);
@@ -199,6 +245,7 @@ uint32_t AccelLis2dh12::SamplingFrequency(uint32_t Freq)
 		f = 5376000;
 		d |= LIS2DH12_CTRL_REG1_ODR_HR_LP | LIS2DH12_CTRL_REG1_LPEN;
 		range = 127;
+		trange = 127;
 	}
 	else if (Freq < 5000)
 	{
@@ -254,6 +301,7 @@ uint32_t AccelLis2dh12::SamplingFrequency(uint32_t Freq)
 		f = 1620000;
 		d |= LIS2DH12_CTRL_REG1_ODR_1620HZ | LIS2DH12_CTRL_REG1_LPEN;
 		range = 127;
+		trange = 127;
 	}
 	else
 	{
@@ -261,6 +309,7 @@ uint32_t AccelLis2dh12::SamplingFrequency(uint32_t Freq)
 		f = 5376000;
 		d |= LIS2DH12_CTRL_REG1_ODR_HR_LP | LIS2DH12_CTRL_REG1_LPEN;
 		range = 127;
+		trange = 127;
 	}
 
 	Write8(&regaddr, 1, d);
@@ -276,8 +325,9 @@ uint32_t AccelLis2dh12::SamplingFrequency(uint32_t Freq)
 	regaddr = LIS2DH12_REFERENCE;
 	d = Read8(&regaddr, 1);
 
-	Range(range);
-	vData.Range = range;
+	AccelSensor::Range(range);
+	AccelSensor::vData.Range = range;
+	TempSensor::Range(trange);
 
 	return  AccelSensor::SamplingFrequency(f);
 }
@@ -418,9 +468,12 @@ void AccelLis2dh12::IntHandler()
 		{
 			ACCELSENSOR_DATA data;
 
-			Read(data);
+			AccelSensor::Read(data);
 
 			vIntHandler(&data);
+
+//			TEMPSENSOR_DATA tdata;
+//			TempSensor::Read(tdata);
 		}
 	}
 
@@ -440,6 +493,12 @@ bool AccelLis2dh12::UpdateData()
 	uint8_t regaddr = LIS2DH12_STATUS_REG;
 	uint8_t d = Read8(&regaddr, 1);
 	uint8_t fstatus;
+	uint32_t ts = 0;
+
+	if (vpTimer)
+	{
+		ts = vpTimer->uSecond();
+	}
 
 	regaddr = LIS2DH12_FIFO_SRC_REG;
 	fstatus = Read8(&regaddr, 1);
@@ -460,17 +519,41 @@ bool AccelLis2dh12::UpdateData()
 		// New data avail
 		if (vpTimer)
 		{
-			vData.Timestamp = vpTimer->uSecond();
+			AccelSensor::vData.Timestamp = ts;
 		}
 		for (int i = 0; i < fstatus & 0x1f; i++)
 		{
 			regaddr = LIS2DH12_OUT_X_L | 0x40;
-			Device::Read(&regaddr, 1, (uint8_t*)vData.Val, 6);
+			Device::Read(&regaddr, 1, (uint8_t*)AccelSensor::vData.Val, 6);
 		}
-
-		return true;
 	}
 
-	return false;
+	regaddr = LIS2DH12_STATUS_REG_AUX;
+	d = Read8(&regaddr, 1);
+	if (d & LIS2DH12_STATUS_REG_AUX_TDA)
+	{
+		if (vpTimer)
+		{
+			TempSensor::vData.Timestamp = ts;
+		}
+
+		regaddr = LIS2DH12_OUT_TEMP_L | 0x40;
+		uint16_t t = 0;
+		Device::Read(&regaddr, 1, (uint8_t*)&t, 2);
+
+		int32_t r = TempSensor::Range();
+		if (r <= 127)
+		{
+			TempSensor::vData.Temperature = t * 100 / 256;
+		}
+		else
+		{
+			TempSensor::vData.Temperature = t * 100 * LIS2DH12_TEMP_MAX_C / (64 * r);
+		}
+
+		avail = true;
+	}
+
+	return avail;
 }
 

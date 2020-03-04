@@ -1,5 +1,5 @@
 /**-------------------------------------------------------------------------
-@file	a_adxl362.h
+@file	accel_adxl362.h
 
 @brief	Implementation of Analog ADXL362 accelerometer
 

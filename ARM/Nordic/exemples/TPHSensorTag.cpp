@@ -80,7 +80,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DEVICE_NAME                     "EnvSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
-#define EVIM
+//#define EVIM
 #ifdef NEBLINA_MODULE
 #define TPH_BME280
 #else
@@ -498,11 +498,11 @@ void HardwareInit()
 	NRF_POWER->DCDCEN = 1;
 
     IOPinCfg(s_GpioPins, s_NbGpioPins);
-
+#ifdef EVIM
 	IOPinClear(0, BLUEIO_TAG_BME680_LED2_BLUE_PIN);
 	IOPinClear(0, BLUEIO_TAG_BME680_LED2_GREEN_PIN);
 	IOPinClear(0, BLUEIO_TAG_BME680_LED2_RED_PIN);
-
+#endif
 	g_Timer.Init(s_TimerCfg);
 
 	// Initialize I2C

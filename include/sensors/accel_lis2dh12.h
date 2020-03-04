@@ -40,6 +40,7 @@ SOFTWARE.
 
 #include "coredev/iopincfg.h"
 #include "sensors/accel_sensor.h"
+#include "sensors/temp_sensor.h"
 
 #define LIS2DH12_I2C_DEVADDR				0x18	//!< 7 bits i2c address for SA0 = 0
 #define LIS2DH12_I2C_DEVADDR1				0x19	//!< 7 bits i2c address for SA0 = 1
@@ -245,8 +246,9 @@ SOFTWARE.
 
 #define LIS2DH12_ACT_DUR					0x3F		//!< Sleep-to-wake duration
 
+#define LIS2DH12_TEMP_MAX_C					127
 
-class AccelLis2dh12 : public AccelSensor {
+class AccelLis2dh12 : public AccelSensor, public TempSensor {
 public:
 	/**
 	 * @brief	Initialize accelerometer sensor.
@@ -260,6 +262,25 @@ public:
 	 * @return	true - Success
 	 */
 	bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+
+	/**
+	 * @brief	Initialize sensor (require implementation).
+	 *
+	 * @param 	CfgData : Reference to configuration data
+	 * @param	pIntrf 	: Pointer to interface to the sensor.
+	 * 					  This pointer will be kept internally
+	 * 					  for all access to device.
+	 * 					  DONOT delete this object externally
+	 * @param	pTimer	: Pointer to timer for retrieval of time stamp
+	 * 					  This pointer will be kept internally
+	 * 					  for all access to device.
+	 * 					  DONOT delete this object externally
+	 *
+	 * @return
+	 * 			- true	: Success
+	 * 			- false	: Failed
+	 */
+	bool Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL);
 
 	uint16_t Scale(uint16_t Value);
 	/**
@@ -296,7 +317,15 @@ public:
 	void IntHandler();
 	bool UpdateData();
 
+//	bool Read(ACCELSENSOR_RAWDATA &Data) { return AccelSensor::Read(Data); }
+//	bool Read(ACCELSENSOR_DATA &Data) { return AccelSensor::Read(Data); }
+//	void Read(TEMPSENSOR_DATA &Data) { TempSensor::Read(Data); }
+	bool StartSampling() { return true; }
+
 private:
+
+	bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+
 	bool vbIntEn;
 };
 

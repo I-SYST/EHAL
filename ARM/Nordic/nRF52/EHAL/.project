@@ -621,9 +621,14 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/pwrmgnt/pwrmgnt.h</locationURI>
 		</link>
 		<link>
-			<name>include/sensors/a_adxl362.h</name>
+			<name>include/sensors/accel_adxl362.h</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/a_adxl362.h</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/accel_adxl362.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/accel_h3lis331dl.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/accel_h3lis331dl.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/accel_lis2dh12.h</name>
@@ -661,9 +666,39 @@
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/agm_mpu9250.h</locationURI>
 		</link>
 		<link>
+			<name>include/sensors/am_fxos8700cq.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/am_fxos8700cq.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/am_lsm303agr.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/am_lsm303agr.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/am_lsm303c.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/am_lsm303c.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/bsec_datatypes.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/bsec_datatypes.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/bsec_interface.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/bsec_interface.h</locationURI>
+		</link>
+		<link>
 			<name>include/sensors/gas_sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gas_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/gyro_l3gd20h.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/gyro_l3gd20h.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/gyro_sensor.h</name>
@@ -674,6 +709,16 @@
 			<name>include/sensors/humi_sensor.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/humi_sensor.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/mag_ak09916.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/mag_ak09916.h</locationURI>
+		</link>
+		<link>
+			<name>include/sensors/mag_bmm150.h</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/include/sensors/mag_bmm150.h</locationURI>
 		</link>
 		<link>
 			<name>include/sensors/mag_sensor.h</name>
@@ -936,9 +981,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/pwrmgnt/pm_as3701.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/sensors/a_adxl362.cpp</name>
+			<name>src/sensors/accel_adxl362.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/a_adxl362.cpp</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/accel_adxl362.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sensors/accel_h3lis331dl.cpp</name>

@@ -59,7 +59,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "blueio_board.h"
 #include "idelay.h"
 
-#include "bsec_interface.h"
+#include "sensors/bsec_interface.h"
 
 #define BME680		// To use Bosch BME680 with Air Quality Index
 #include "board.h"
@@ -166,7 +166,7 @@ static const I2CCFG s_I2cCfg = {
 
 I2C g_I2c;
 
-//#define TPH_I2C		// To use I2C interface
+#define TPH_I2C		// To use I2C interface
 
 #ifdef	TPH_I2C
 DeviceIntrf *g_pIntrf = &g_I2c;

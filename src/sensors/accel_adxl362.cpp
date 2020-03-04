@@ -1,5 +1,5 @@
 /**-------------------------------------------------------------------------
-@file	a_adxl362.cpp
+@file	accel_adxl362.cpp
 
 @brief	Implementation of Analog ADXL362 accelerometer
 
@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
 
-#include "sensors/a_adxl362.h"
+#include "sensors/accel_adxl362.h"
 
 bool AccelAdxl362::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer)
 {

@@ -68,7 +68,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sensors/tph_ms8607.h"
 #include "sensors/tphg_bme680.h"
 #include "sensors/agm_mpu9250.h"
-#include "sensors/a_adxl362.h"
+#include "sensors/accel_adxl362.h"
 #include "timer_nrf5x.h"
 #include "timer_nrf_app_timer.h"
 #include "board.h"
