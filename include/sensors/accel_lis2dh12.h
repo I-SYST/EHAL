@@ -317,9 +317,9 @@ public:
 	void IntHandler();
 	bool UpdateData();
 
-//	bool Read(ACCELSENSOR_RAWDATA &Data) { return AccelSensor::Read(Data); }
-//	bool Read(ACCELSENSOR_DATA &Data) { return AccelSensor::Read(Data); }
-//	void Read(TEMPSENSOR_DATA &Data) { TempSensor::Read(Data); }
+	bool Read(ACCELSENSOR_RAWDATA &Data) { return AccelSensor::Read(Data); }
+	bool Read(ACCELSENSOR_DATA &Data) { return AccelSensor::Read(Data); }
+	void Read(TEMPSENSOR_DATA &Data) { TempSensor::Read(Data); }
 	bool StartSampling() { return true; }
 
 private:
