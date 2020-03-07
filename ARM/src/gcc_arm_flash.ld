@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
-File   : gcc_arm.ld
+File   : gcc_arm_flash.ld
 
 Author : Hoang Nguyen Hoan          Jan. 19, 2012
 
@@ -146,17 +146,17 @@ SECTIONS {
 		*(.gcc_except_table .gcc_except_table.*) 
 	} > FLASH
 	
+	. = ALIGN(4);
 	__text_end__ = .;
+    __etext = .;
 	
 	.eh_frame : ONLY_IF_RW 
 	{ 
-/*		. = ALIGN(4);*/
 		*(.eh_frame) 
 	} > RAM
 	
 	.gcc_except_table : ONLY_IF_RW 
 	{ 
-/*		. = ALIGN(4);*/
 		*(.gcc_except_table .gcc_except_table.*) 
 	} > RAM
 	
