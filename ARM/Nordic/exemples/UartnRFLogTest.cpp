@@ -1,10 +1,39 @@
-//============================================================================
-// Name        : main.cpp
-// Author      : Nguyen Hoan Hoang
-// Version     :
-// Copyright   : Copyright (c) 2020, I-SYST inc.
-// Description : Hello World in C++
-//============================================================================
+/**-------------------------------------------------------------------------
+@example	UartnRFLogTest.cpp
+
+
+@brief	nrf_log with uart backend test
+
+Demo code using EHAL library in integration with Nordic SDK
+
+@author	Hoang Nguyen Hoan
+@date	Mar. 12, 2020
+
+@license
+
+MIT License
+
+Copyright (c) 2020 I-SYST inc. All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+----------------------------------------------------------------------------*/
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
@@ -47,14 +76,7 @@ static const UARTCFG s_UartCfg = {
 	.bDMAMode = false,
 };
 
-#ifdef DEMO_C
-// For C programming
-UARTDEV g_UartDev;
-#else
-// For C++ object programming
-// UART object instance
 UART g_Uart;
-#endif
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen)
 {
