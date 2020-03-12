@@ -133,6 +133,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/ringbuf&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -280,6 +281,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/ringbuf&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -337,7 +339,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="nRF5_SDK/libraries/crypto/backend/micro_ecc|nrf5_SDK_Mesh/mesh/serial/src/serial_uart.c|sensors/am_lsm303c.cpp|sensors/am_fxos8700cq.cpp|sensors/am_lsm303agr.cpp|sensors/accel_h3lis331dl.cpp|nrf5_SDK_Mesh/serial/src/serial_uart.c|sysstatus_impl.cpp|nRF5_SDK/libraries/log|coredev/iopincfg_nrf5x.c|nRF5_SDK/softdevice/common/softdevice_handler|nRF5_SDK/drivers_nrf|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|ble_app.cpp|nRF5_SDK_12|nRF5_SDK_Mesh/core/src/log.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/drivers_nrf/hal|nRF5_SDK/drivers_nrf/rng|atomic.c|diskio.c|nRF5_SDK/softdevice/common/nrf_sdh_soc.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/drivers_nrf/power|nRF5_SDK/softdevice/common/nrf_sdh.c|nRF5_SDK/softdevice/common/nrf_sdh_freertos.c|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="nRF5_SDK/libraries/crypto/backend/micro_ecc|nrf5_SDK_Mesh/mesh/serial/src/serial_uart.c|sensors/am_lsm303c.cpp|sensors/am_fxos8700cq.cpp|sensors/am_lsm303agr.cpp|sensors/accel_h3lis331dl.cpp|nrf5_SDK_Mesh/serial/src/serial_uart.c|sysstatus_impl.cpp|coredev/iopincfg_nrf5x.c|nRF5_SDK/softdevice/common/softdevice_handler|nRF5_SDK/drivers_nrf|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|ble_app.cpp|nRF5_SDK_12|nRF5_SDK_Mesh/core/src/log.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/drivers_nrf/hal|nRF5_SDK/drivers_nrf/rng|atomic.c|diskio.c|nRF5_SDK/softdevice/common/nrf_sdh_soc.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/drivers_nrf/power|nRF5_SDK/softdevice/common/nrf_sdh.c|nRF5_SDK/softdevice/common/nrf_sdh_freertos.c|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -474,6 +476,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/ringbuf&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -621,6 +624,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/ringbuf&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -677,7 +681,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="nRF5_SDK/libraries/crypto/backend/micro_ecc|nrf5_SDK_Mesh/mesh/serial/src/serial_uart.c|sensors/am_lsm303c.cpp|sensors/am_fxos8700cq.cpp|sensors/am_lsm303agr.cpp|sensors/accel_h3lis331dl.cpp|nrf5_SDK_Mesh/serial/src/serial_uart.c|sysstatus_impl.cpp|nRF5_SDK/libraries/log|coredev/iopincfg_nrf5x.c|nRF5_SDK/softdevice/common/softdevice_handler|nRF5_SDK/drivers_nrf|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|ble_app.cpp|nRF5_SDK_12|nRF5_SDK_Mesh/core/src/log.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/drivers_nrf/hal|nRF5_SDK/drivers_nrf/rng|atomic.c|diskio.c|nRF5_SDK/softdevice/common/nrf_sdh_soc.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/drivers_nrf/power|nRF5_SDK/softdevice/common/nrf_sdh.c|nRF5_SDK/softdevice/common/nrf_sdh_freertos.c|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="nRF5_SDK/libraries/crypto/backend/micro_ecc|nrf5_SDK_Mesh/mesh/serial/src/serial_uart.c|sensors/am_lsm303c.cpp|sensors/am_fxos8700cq.cpp|sensors/am_lsm303agr.cpp|sensors/accel_h3lis331dl.cpp|nrf5_SDK_Mesh/serial/src/serial_uart.c|sysstatus_impl.cpp|coredev/iopincfg_nrf5x.c|nRF5_SDK/softdevice/common/softdevice_handler|nRF5_SDK/drivers_nrf|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|ble_app.cpp|nRF5_SDK_12|nRF5_SDK_Mesh/core/src/log.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/drivers_nrf/hal|nRF5_SDK/drivers_nrf/rng|atomic.c|diskio.c|nRF5_SDK/softdevice/common/nrf_sdh_soc.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/drivers_nrf/power|nRF5_SDK/softdevice/common/nrf_sdh.c|nRF5_SDK/softdevice/common/nrf_sdh_freertos.c|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -816,6 +820,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/ringbuf&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -963,6 +968,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/ringbuf&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -1019,7 +1025,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="nRF5_SDK/libraries/crypto/backend/micro_ecc|nrf5_SDK_Mesh/mesh/serial/src/serial_uart.c|sensors/am_lsm303c.cpp|sensors/am_fxos8700cq.cpp|sensors/am_lsm303agr.cpp|sensors/accel_h3lis331dl.cpp|nrf5_SDK_Mesh/serial/src/serial_uart.c|sysstatus_impl.cpp|nRF5_SDK/libraries/log|coredev/iopincfg_nrf5x.c|nRF5_SDK/softdevice/common/softdevice_handler|nRF5_SDK/drivers_nrf|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|ble_app.cpp|nRF5_SDK_12|nRF5_SDK_Mesh/core/src/log.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/drivers_nrf/hal|nRF5_SDK/drivers_nrf/rng|atomic.c|diskio.c|nRF5_SDK/softdevice/common/nrf_sdh_soc.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/drivers_nrf/power|nRF5_SDK/softdevice/common/nrf_sdh.c|nRF5_SDK/softdevice/common/nrf_sdh_freertos.c|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="nRF5_SDK/libraries/crypto/backend/micro_ecc|nrf5_SDK_Mesh/mesh/serial/src/serial_uart.c|sensors/am_lsm303c.cpp|sensors/am_fxos8700cq.cpp|sensors/am_lsm303agr.cpp|sensors/accel_h3lis331dl.cpp|nrf5_SDK_Mesh/serial/src/serial_uart.c|sysstatus_impl.cpp|coredev/iopincfg_nrf5x.c|nRF5_SDK/softdevice/common/softdevice_handler|nRF5_SDK/drivers_nrf|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|ble_app.cpp|nRF5_SDK_12|nRF5_SDK_Mesh/core/src/log.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/drivers_nrf/hal|nRF5_SDK/drivers_nrf/rng|atomic.c|diskio.c|nRF5_SDK/softdevice/common/nrf_sdh_soc.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/drivers_nrf/power|nRF5_SDK/softdevice/common/nrf_sdh.c|nRF5_SDK/softdevice/common/nrf_sdh_freertos.c|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -1158,6 +1164,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/ringbuf&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -1305,6 +1312,7 @@
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/fds&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/atomic_fifo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/strerror&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/ringbuf&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/util&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/delay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../../../../external/nRF5_SDK/components/libraries/pwr_mgmt&quot;"/>
@@ -1361,7 +1369,7 @@
 					<sourceEntries>
 						<entry excluding="include|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
-						<entry excluding="nRF5_SDK/libraries/crypto/backend/micro_ecc|nrf5_SDK_Mesh/mesh/serial/src/serial_uart.c|sensors/am_lsm303c.cpp|sensors/am_fxos8700cq.cpp|sensors/am_lsm303agr.cpp|sensors/accel_h3lis331dl.cpp|nrf5_SDK_Mesh/serial/src/serial_uart.c|sysstatus_impl.cpp|nRF5_SDK/libraries/log|coredev/iopincfg_nrf5x.c|nRF5_SDK/softdevice/common/softdevice_handler|nRF5_SDK/drivers_nrf|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|ble_app.cpp|nRF5_SDK_12|nRF5_SDK_Mesh/core/src/log.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/drivers_nrf/hal|nRF5_SDK/drivers_nrf/rng|atomic.c|diskio.c|nRF5_SDK/softdevice/common/nrf_sdh_soc.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/drivers_nrf/power|nRF5_SDK/softdevice/common/nrf_sdh.c|nRF5_SDK/softdevice/common/nrf_sdh_freertos.c|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="nRF5_SDK/libraries/crypto/backend/micro_ecc|nrf5_SDK_Mesh/mesh/serial/src/serial_uart.c|sensors/am_lsm303c.cpp|sensors/am_fxos8700cq.cpp|sensors/am_lsm303agr.cpp|sensors/accel_h3lis331dl.cpp|nrf5_SDK_Mesh/serial/src/serial_uart.c|sysstatus_impl.cpp|coredev/iopincfg_nrf5x.c|nRF5_SDK/softdevice/common/softdevice_handler|nRF5_SDK/drivers_nrf|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_uart.c|ble_app.cpp|nRF5_SDK_12|nRF5_SDK_Mesh/core/src/log.c|nRF5_SDK/libraries/fstorage/fstorage.c|nRF5_SDK/drivers_nrf/hal|nRF5_SDK/drivers_nrf/rng|atomic.c|diskio.c|nRF5_SDK/softdevice/common/nrf_sdh_soc.c|nRF5_SDK/libraries/experimental_log/src/nrf_log_backend_rtt.c|nRF5_SDK/drivers_nrf/power|nRF5_SDK/softdevice/common/nrf_sdh.c|nRF5_SDK/softdevice/common/nrf_sdh_freertos.c|nRF5_SDK/libraries/crypto/nrf_crypto_svc.c|nRF5_SDK/libraries/bootloader/dfu/nrf_dfu_flash.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
