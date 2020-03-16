@@ -172,8 +172,13 @@ bool AccelLis2dh12::Init(const TEMPSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, 
 	uint8_t regaddr = LIS2DH12_TEMP_CFG_REG;
 	Write8(&regaddr, 1, LIS2DH12_TEMP_CFG_EN);
 
+	regaddr = LIS2DH12_CTRL_REG4;
+	uint8_t d = Read8(&regaddr, 1) | LIS2DH12_CTRL_REG4_BDU;
+	Write8(&regaddr, 1, d);
+
 	regaddr = LIS2DH12_CTRL_REG1;
-	uint8_t d = Read8(&regaddr, 1);
+	d = Read8(&regaddr, 1);
+
 
 	if (d & LIS2DH12_CTRL_REG1_LPEN)
 	{
@@ -544,11 +549,11 @@ bool AccelLis2dh12::UpdateData()
 		int32_t r = TempSensor::Range();
 		if (r <= 127)
 		{
-			TempSensor::vData.Temperature = t * 100 / 256;
+			TempSensor::vData.Temperature = t * 100 / 256 + 2500;
 		}
 		else
 		{
-			TempSensor::vData.Temperature = t * 100 * LIS2DH12_TEMP_MAX_C / (64 * r);
+			TempSensor::vData.Temperature = t * 100 / (64 * r) + 2500;
 		}
 
 		avail = true;
