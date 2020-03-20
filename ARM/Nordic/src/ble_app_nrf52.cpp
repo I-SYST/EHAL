@@ -1541,7 +1541,14 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     if (g_BleAppData.AppRole & BLEAPP_ROLE_PERIPHERAL || pBleAppCfg->AppMode == BLEAPP_MODE_NOCONNECT)
     {
+        err_code = sd_ble_gap_tx_power_set(BLE_GAP_TX_POWER_ROLE_ADV, g_AdvInstance.adv_handle, GetValidTxPower(pBleAppCfg->TxPower));
+        APP_ERROR_CHECK(err_code);
     	BleAppAdvInit(pBleAppCfg);
+    }
+    else
+    {
+        err_code = sd_ble_gap_tx_power_set(BLE_GAP_TX_POWER_ROLE_SCAN_INIT, g_AdvInstance.adv_handle, GetValidTxPower(pBleAppCfg->TxPower));
+        APP_ERROR_CHECK(err_code);
     }
 
 #if (__FPU_USED == 1)
@@ -1551,8 +1558,6 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
     NVIC_EnableIRQ(FPU_IRQn);
 #endif
 
-    err_code = sd_ble_gap_tx_power_set(BLE_GAP_TX_POWER_ROLE_ADV, g_AdvInstance.adv_handle, GetValidTxPower(pBleAppCfg->TxPower));
-    APP_ERROR_CHECK(err_code);
 
     return true;
 }
