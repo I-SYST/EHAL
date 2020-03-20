@@ -1541,9 +1541,9 @@ bool BleAppInit(const BLEAPP_CFG *pBleAppCfg, bool bEraseBond)
 
     if (g_BleAppData.AppRole & BLEAPP_ROLE_PERIPHERAL || pBleAppCfg->AppMode == BLEAPP_MODE_NOCONNECT)
     {
+    	BleAppAdvInit(pBleAppCfg);
         err_code = sd_ble_gap_tx_power_set(BLE_GAP_TX_POWER_ROLE_ADV, g_AdvInstance.adv_handle, GetValidTxPower(pBleAppCfg->TxPower));
         APP_ERROR_CHECK(err_code);
-    	BleAppAdvInit(pBleAppCfg);
     }
     else
     {
