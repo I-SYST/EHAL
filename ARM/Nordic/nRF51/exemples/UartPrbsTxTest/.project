@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>UartPrbsTest</name>
+	<name>UartPrbsTxTest</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -28,7 +28,13 @@
 		<link>
 			<name>src/uart_prbs_tx.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/exemples/uart/uart_prbs_tx.cpp</locationURI>
+			<locationURI>$%7BPARENT-5-PROJECT_LOC%7D/exemples/uart/uart_prbs_tx.cpp</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-4-PROJECT_LOC%7D</value>
+		</variable>
+	</variableList>
 </projectDescription>

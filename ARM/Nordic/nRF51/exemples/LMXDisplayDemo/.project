@@ -26,11 +26,4 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src/Vectors_nRF51.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/Vectors_nRF51.c</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

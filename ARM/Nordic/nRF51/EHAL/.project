@@ -681,11 +681,6 @@
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK_12/external/micro-ecc/micro-ecc/uECC.c</locationURI>
 		</link>
 		<link>
-			<name>src/sensors/a_adxl362.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/a_adxl362.cpp</locationURI>
-		</link>
-		<link>
 			<name>src/sensors/ag_bmi160.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/sensors/ag_bmi160.cpp</locationURI>

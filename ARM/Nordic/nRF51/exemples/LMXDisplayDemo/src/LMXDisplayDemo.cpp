@@ -57,9 +57,17 @@ main()
 
 	g_LmxDev.Init(g_Cfg);
 
+	while (1)
+	{
 	g_LmxDev.PrintLeft("Hello!");
-	usDelay(5000);
+	usDelay(500000);
 	g_LmxDev.PrintRight("Ola!");
+	usDelay(500000);
+
+	g_LmxDev.SetRam(0, 0xFF, 32, 0);
+	usDelay(500000);
+	}
+	while(1);
 
 	return 0;
 }
