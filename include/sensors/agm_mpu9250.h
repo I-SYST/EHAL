@@ -426,6 +426,10 @@ SOFTWARE.
 
 #pragma pack(pop)
 
+#define MPU9250_ACCEL_IDX		0
+#define MPU9250_GYRO_IDX		1
+#define MPU9250_MAG_IDX			2
+
 #ifdef __cplusplus
 
 class AccelMpu9250 : public AccelSensor {
@@ -513,7 +517,8 @@ public:
 	 * @return	true - Success
 	 */
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL) {
-		return AccelMpu9250::Init(Cfg, pIntrf, pTimer);
+		vbSensorEnabled[MPU9250_ACCEL_IDX] = AccelMpu9250::Init(Cfg, pIntrf, pTimer);
+		return vbSensorEnabled[MPU9250_ACCEL_IDX];
 	}
 
 	/**
@@ -528,7 +533,8 @@ public:
 	 * @return	true - Success
 	 */
 	virtual bool Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL) {
-		return GyroMpu9250::Init(Cfg, pIntrf, pTimer);
+		vbSensorEnabled[MPU9250_GYRO_IDX] = GyroMpu9250::Init(Cfg, pIntrf, pTimer);
+		return vbSensorEnabled[MPU9250_GYRO_IDX];
 	}
 
 	/**
@@ -543,7 +549,8 @@ public:
 	 * @return	true - Success
 	 */
 	virtual bool Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf* const pIntrf, Timer * const pTimer = NULL) {
-		return MagMpu9250::Init(Cfg, pIntrf, pTimer);
+		vbSensorEnabled[MPU9250_MAG_IDX] = MagMpu9250::Init(Cfg, pIntrf, pTimer);
+		return vbSensorEnabled[MPU9250_MAG_IDX];
 	}
 
 	virtual bool Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL);

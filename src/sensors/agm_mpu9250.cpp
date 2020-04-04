@@ -39,10 +39,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sensors/agm_mpu9250.h"
 #include "iopinctrl.h"
 
-#define MPU9250_ACCEL_IDX		0
-#define MPU9250_GYRO_IDX		1
-#define MPU9250_MAG_IDX			2
-
 bool AgmMpu9250::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 {
 	if (vbInitialized)
