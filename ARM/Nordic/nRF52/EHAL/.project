@@ -971,6 +971,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/nrf5_SDK_Mesh/external</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>src/nrf5_SDK_Mesh/mesh</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -1317,6 +1322,11 @@
 		</link>
 		<link>
 			<name>src/nRF5_SDK/softdevice/common</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/nrf5_SDK_Mesh/external/app_timer</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -2049,6 +2059,11 @@
 			<name>src/nRF5_SDK/softdevice/common/nrf_sdh_soc.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/external/nRF5_SDK/components/softdevice/common/nrf_sdh_soc.c</locationURI>
+		</link>
+		<link>
+			<name>src/nrf5_SDK_Mesh/external/app_timer/app_timer_workaround.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/external/nrf5_SDK_Mesh/external/app_timer/app_timer_workaround.c</locationURI>
 		</link>
 		<link>
 			<name>src/nrf5_SDK_Mesh/mesh/access/src</name>
