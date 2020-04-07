@@ -86,6 +86,8 @@ typedef struct __PressureSensor_Config {
 class PressSensor : public Sensor {
 public:
 
+	PressSensor() { Type(SENSOR_TYPE_PRESSURE); }
+
 	/**
 	 * @brief	Initialize sensor (require implementation).
 	 *

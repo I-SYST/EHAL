@@ -88,6 +88,8 @@ typedef struct __TempSensor_Config {
 class TempSensor : public Sensor {
 public:
 
+	TempSensor() { Type(SENSOR_TYPE_TEMP); }
+
 	/**
 	 * @brief	Initialize sensor (require implementation).
 	 *

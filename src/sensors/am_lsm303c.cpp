@@ -86,8 +86,8 @@ bool AccLsm303c::Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * cons
 
 	uint8_t regaddr;
 	uint8_t d;
-	uint8_t userctrl = 0;///*MPU9250_AG_USER_CTRL_FIFO_EN | MPU9250_AG_USER_CTRL_DMP_EN |*/ MPU9250_AG_USER_CTRL_I2C_MST_EN;
-	uint8_t mst = 0;
+	//uint8_t userctrl = 0;///*MPU9250_AG_USER_CTRL_FIFO_EN | MPU9250_AG_USER_CTRL_DMP_EN |*/ MPU9250_AG_USER_CTRL_I2C_MST_EN;
+	//uint8_t mst = 0;
 
 	Interface(pIntrf);
 	DeviceAddress(DevAddr);
@@ -159,14 +159,14 @@ int AccLsm303c::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int Buff
 {
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
-		((SPI*)vpIntrf)->Mode(SPIMODE_3WIRE);
+		((SPI*)vpIntrf)->Phy(SPIPHY_3WIRE);
 	}
 
 	int retval = Device::Read(pCmdAddr, CmdAddrLen, pBuff, BuffLen);
 
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
-		((SPI*)vpIntrf)->Mode(SPIMODE_NORMAL);
+		((SPI*)vpIntrf)->Phy(SPIPHY_NORMAL);
 	}
 
 	return retval;
@@ -190,14 +190,14 @@ int AccLsm303c::Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int Dat
 {
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
-		((SPI*)vpIntrf)->Mode(SPIMODE_3WIRE);
+		((SPI*)vpIntrf)->Phy(SPIPHY_3WIRE);
 	}
 
 	int retval = Device::Write(pCmdAddr, CmdAddrLen, pData, DataLen);
 
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
-		((SPI*)vpIntrf)->Mode(SPIMODE_NORMAL);
+		((SPI*)vpIntrf)->Phy(SPIPHY_NORMAL);
 	}
 
 	return retval;

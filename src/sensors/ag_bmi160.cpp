@@ -586,7 +586,6 @@ void MagBmi160::Disable()
 	MagBmm150::Disable();
 
 	uint8_t regaddr;
-	uint8_t d;
 
 	regaddr = BMI160_CMD;
 	Write8(&regaddr, 1, BMI160_CMD_MAG_SET_PMU_MODE_SUSPEND);
@@ -903,8 +902,6 @@ bool AgBmi160::UpdateData()
 
 void AgBmi160::IntHandler()
 {
-	bool res = false;
-
 	uint8_t regaddr = BMI160_STATUS;
 	uint8_t d[8];
 

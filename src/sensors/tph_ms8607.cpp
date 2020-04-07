@@ -299,7 +299,7 @@ float TphMS8607::ReadHumidity()
 	uint8_t d[4];
 
 	vpIntrf->Tx(MS8607_RHDEV_ADDR, &cmd, 1);
-	int count = vpIntrf->Rx(MS8607_RHDEV_ADDR, (uint8_t*)d, 3);
+	vpIntrf->Rx(MS8607_RHDEV_ADDR, (uint8_t*)d, 3);
 
 	raw = ((uint32_t)d[0] << 8) + (d[1] & 0xFC);
 

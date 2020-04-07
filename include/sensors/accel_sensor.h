@@ -157,7 +157,10 @@ public:
 	virtual void ClearCalibration();
 	virtual bool StartSampling() { return true; }
 
-	AccelSensor() { ClearCalibration(); }
+	AccelSensor() {
+		Type(SENSOR_TYPE_ACCEL);
+		ClearCalibration();
+	}
 
 protected:
 

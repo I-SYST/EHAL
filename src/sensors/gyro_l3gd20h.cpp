@@ -57,8 +57,8 @@ bool GyroL3gd20h::Init(const GYROSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Ti
 
 	uint8_t regaddr;
 	uint8_t d;
-	uint8_t userctrl = 0;///*MPU9250_AG_USER_CTRL_FIFO_EN | MPU9250_AG_USER_CTRL_DMP_EN |*/ MPU9250_AG_USER_CTRL_I2C_MST_EN;
-	uint8_t mst = 0;
+	//uint8_t userctrl = 0;///*MPU9250_AG_USER_CTRL_FIFO_EN | MPU9250_AG_USER_CTRL_DMP_EN |*/ MPU9250_AG_USER_CTRL_I2C_MST_EN;
+	//uint8_t mst = 0;
 
 	if (pTimer != NULL)
 	{
@@ -130,5 +130,5 @@ void GyroL3gd20h::Reset()
 
 	msDelay(1);
 
-	uint8_t d = Write8(&regaddr, 1, 0);
+	Write8(&regaddr, 1, 0);
 }

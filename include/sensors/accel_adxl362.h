@@ -34,8 +34,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
 
-#ifndef __A_ADXL362_H__
-#define __A_ADXL362_H__
+#ifndef __ACCEL_ADXL362_H__
+#define __ACCEL_ADXL362_H__
 
 #include <inttypes.h>
 
@@ -228,5 +228,5 @@ private:
 };
 
 
-#endif //__A_ADXL362_H__
+#endif //__ACCEL_ADXL362_H__
 

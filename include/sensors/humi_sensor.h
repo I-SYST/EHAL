@@ -86,6 +86,8 @@ typedef struct __HumiditySensor_Config {
 class HumiSensor : public Sensor {
 public:
 
+	HumiSensor() { Type(SENSOR_TYPE_HUMI); }
+
 	/**
 	 * @brief	Initialize sensor (require implementation).
 	 *

@@ -159,14 +159,14 @@ int AccLsm303agr::Read(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int Bu
 {
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
-		((SPI*)vpIntrf)->Mode(SPIMODE_3WIRE);
+		((SPI*)vpIntrf)->Phy(SPIPHY_3WIRE);
 	}
 
 	int retval = Device::Read(pCmdAddr, CmdAddrLen, pBuff, BuffLen);
 
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
-		((SPI*)vpIntrf)->Mode(SPIMODE_NORMAL);
+		((SPI*)vpIntrf)->Phy(SPIPHY_NORMAL);
 	}
 
 	return retval;
@@ -190,14 +190,14 @@ int AccLsm303agr::Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int D
 {
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
-		((SPI*)vpIntrf)->Mode(SPIMODE_3WIRE);
+		((SPI*)vpIntrf)->Phy(SPIPHY_3WIRE);
 	}
 
 	int retval = Device::Write(pCmdAddr, CmdAddrLen, pData, DataLen);
 
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
 	{
-		((SPI*)vpIntrf)->Mode(SPIMODE_NORMAL);
+		((SPI*)vpIntrf)->Phy(SPIPHY_NORMAL);
 	}
 
 	return retval;

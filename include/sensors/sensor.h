@@ -133,6 +133,12 @@ public:
 	 */
 	virtual bool UpdateData() = 0;
 
+	/**
+	 * @brief	Interrupt handler (optional)
+	 *
+	 * Sensor that supports interrupt can implement this to handle interrupt.
+	 * Use generic DEVEVTCB callback and DEV_EVT to send event to user application
+	 */
 	virtual void IntHandler() {}
 
 	/**
@@ -227,7 +233,6 @@ public:
 	 *				- SENSOR_STATE_SAMPLING
 	 */
 	virtual SENSOR_STATE State() { return vState; }
-
 	operator SENSOR_STATE () { return vState; }
 
 	static void TimerTrigHandler(Timer * const pTimer, int TrigNo, void * const pContext) {
@@ -256,7 +261,6 @@ public:
 	 * @brief	Get type of this object.
 	 */
 	SENSOR_TYPE Type() { return vType; }
-
 	operator SENSOR_TYPE () { return vType; }
 
 	/**

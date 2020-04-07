@@ -148,7 +148,7 @@ bool AgmInvnIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 
 	inv_icm20948_register_aux_compass(&vIcmDevice, INV_ICM20948_COMPASS_ID_AK09916, (uint8_t)AK0991x_DEFAULT_I2C_ADDR);
 
-	int rc = 	rc = inv_icm20948_get_whoami(&vIcmDevice, &d);
+	inv_icm20948_get_whoami(&vIcmDevice, &d);
 
 	if (d != ICM20948_WHO_AM_I_ID)
 	{
@@ -172,7 +172,7 @@ bool AgmInvnIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 		inv_icm20948_set_matrix(&vIcmDevice, s_CfgMountingMatrix, (inv_icm20948_sensor)i);
 	}
 
-	rc = inv_icm20948_initialize(&vIcmDevice, s_Dmp3Image, sizeof(s_Dmp3Image));
+	inv_icm20948_initialize(&vIcmDevice, s_Dmp3Image, sizeof(s_Dmp3Image));
 	/* Initialize auxiliary sensors */
 	inv_icm20948_register_aux_compass( &vIcmDevice, INV_ICM20948_COMPASS_ID_AK09916, AK0991x_DEFAULT_I2C_ADDR);
 	//rc = inv_icm20948_initialize_auxiliary(&vIcmDevice);
@@ -187,9 +187,6 @@ bool AgmInvnIcm20948::Init(uint32_t DevAddr, DeviceIntrf *pIntrf, Timer *pTimer)
 
 bool AgmInvnIcm20948::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer *pTimer)
 {
-	uint16_t regaddr;
-	uint8_t d;
-
 	if (Init(CfgData.DevAddr, pIntrf, pTimer) == false)
 		return false;
 
@@ -245,7 +242,7 @@ bool AgmInvnIcm20948::Enable()
 
 	/* Disable all sensors */
 	while(i-- > 0) {
-		int rc = inv_icm20948_enable_sensor(&vIcmDevice, (inv_icm20948_sensor)i, 1);
+		inv_icm20948_enable_sensor(&vIcmDevice, (inv_icm20948_sensor)i, 1);
 	}
 
 	return true;
@@ -257,7 +254,7 @@ void AgmInvnIcm20948::Disable()
 
 	/* Disable all sensors */
 	while(i-- > 0) {
-		int rc = inv_icm20948_enable_sensor(&vIcmDevice, (inv_icm20948_sensor)i, 0);
+		inv_icm20948_enable_sensor(&vIcmDevice, (inv_icm20948_sensor)i, 0);
 	}
 }
 

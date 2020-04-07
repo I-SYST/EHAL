@@ -138,6 +138,10 @@ public:
 
     virtual void SetCalibration(float (&Gain)[3][3], float (&Offset)[3]);
 	virtual void ClearCalibration();
+	GyroSensor() {
+		Type(SENSOR_TYPE_GYRO);
+		ClearCalibration();
+	}
 
 protected:
 

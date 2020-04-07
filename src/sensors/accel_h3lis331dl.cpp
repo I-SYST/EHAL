@@ -69,7 +69,7 @@ bool AccelH3lis331dl::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntr
 	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI || (vDevAddr != H3LIS331DL_I2C_DEVADDR && vDevAddr != H3LIS331DL_I2C_DEVADDR1))
 	{
 		regaddr = H3LIS331DL_CTRL_REG4_REG;
-		if (((SPI*)vpIntrf)->Mode() == SPIMODE_3WIRE)
+		if (((SPI*)vpIntrf)->Phy() == SPIPHY_3WIRE)
 		{
 			d = Read8(&regaddr, 1) | H3LIS331DL_CTRL_REG4_SIM_3WIRE;
 			Write8(&regaddr, 1, d);
