@@ -249,27 +249,23 @@ int BleIntrfTxData(DEVINTRF *pDevIntrf, uint8_t *pData, int DataLen)
     int maxlen = intrf->PacketSize - sizeof(pkt->Len);
 	int cnt = 0;
 
-    //uint32_t state = DisableInterrupt();
-	//while (DataLen > 0)
+	while (DataLen > 0)
 	{
+	    uint32_t state = DisableInterrupt();
 		pkt = (BLEINTRF_PKT *)CFifoPut(intrf->hTxFifo);
-		//if (pkt == NULL)
-		//	break;
-		if (pkt)
-		{
-			int l = min(DataLen, maxlen);
-			memcpy(pkt->Data, pData, l);
-			pkt->Len = l;
-			DataLen -= l;
-			pData += l;
-			cnt += l;
-		}
-		else
+		EnableInterrupt(state);
+		if (pkt == NULL)
 		{
 			intrf->TxDropCnt++;
+			break;
 		}
+		int l = min(DataLen, maxlen);
+		memcpy(pkt->Data, pData, l);
+		pkt->Len = l;
+		DataLen -= l;
+		pData += l;
+		cnt += l;
 	}
-   // EnableInterrupt(state);
 
     BleIntrfNotify(intrf);
 
