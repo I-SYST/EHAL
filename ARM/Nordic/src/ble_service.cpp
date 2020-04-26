@@ -1,37 +1,40 @@
-/*--------------------------------------------------------------------------
-File   : ble_service.c
+/**-------------------------------------------------------------------------
+@file	ble_service.c
 
-Author : Hoang Nguyen Hoan          Mar. 25, 2014
+@brief	Implement Bluetooth LE service and characteristic
 
-Desc   : Implementation allow the creation of generic custom Bluetooth Smart
-		 service with multiple user defined characteristics.
-		 This implementation is to be used with Nordic SDK
+Implementation allow the creation of generic custom Bluetooth Smart service
+with multiple user defined characteristics.
 
-Copyright (c) 2014, I-SYST inc., all rights reserved
+This implementation is to be used with Nordic SDK
 
-Permission to use, copy, modify, and distribute this software for any purpose
-with or without fee is hereby granted, provided that the above copyright
-notice and this permission notice appear in all copies, and none of the
-names : I-SYST or its contributors may be used to endorse or
-promote products derived from this software without specific prior written
-permission.
+@author	Hoang Nguyen Hoan
+@date	Mar. 25, 2014
 
-For info or contributing contact : hnhoan at i-syst dot com
+@license
 
-THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+MIT License
 
-----------------------------------------------------------------------------
-Modified by          Date              	Description
-Hoan				Mar. 11, 2017		Renaming
+Copyright (c) 2014-2020 I-SYST inc. All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 ----------------------------------------------------------------------------*/
 #include <stdint.h>
 #include <string.h>
@@ -90,6 +93,18 @@ uint32_t BleSrvcCharSetValue(BLESRVC *pSrvc, int Idx, uint8_t *pData, uint16_t D
     return err_code;
 }
 
+void GatherLongWrBuff(GATLWRHDR *pHdr)
+{
+	uint8_t *p = (uint8_t*)pHdr + pHdr->Len + sizeof(GATLWRHDR);
+	GATLWRHDR *hdr = (GATLWRHDR*)p;
+	if (hdr->Handle == pHdr->Handle)
+	{
+		GatherLongWrBuff(hdr);
+		pHdr->Len += hdr->Len;
+		memcpy(p, p + sizeof(GATLWRHDR), hdr->Len);
+	}
+}
+
 void BleSrvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt)
 {
     switch (pBleEvt->header.evt_id)
@@ -100,6 +115,10 @@ void BleSrvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt)
 
         case BLE_GAP_EVT_DISCONNECTED:
         	pSrvc->ConnHdl = BLE_CONN_HANDLE_INVALID;
+        	for (int i = 0; i < pSrvc->NbChar; i++)
+        	{
+        		pSrvc->pCharArray[i].bNotify = false;
+        	}
             break;
 
         case BLE_GATTS_EVT_WRITE:
@@ -114,12 +133,27 @@ void BleSrvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt)
 						//printf("Long Write\r\n");
 						GATLWRHDR *hdr = (GATLWRHDR *)pSrvc->pLongWrBuff;
 					    uint8_t *p = (uint8_t*)pSrvc->pLongWrBuff + sizeof(GATLWRHDR);
-						while (hdr->Handle == pSrvc->pCharArray[i].Hdl.value_handle)
+						if (hdr->Handle == pSrvc->pCharArray[i].Hdl.value_handle)
 					    {
+#if 1
+							GatherLongWrBuff(hdr);
 							pSrvc->pCharArray[i].WrCB(pSrvc, p, hdr->Offset, hdr->Len);
-							p += hdr->Len;
-							hdr = (GATLWRHDR*)p;
-							p += sizeof(GATLWRHDR);
+#else
+							bool done = false;
+							GATLWRHDR hdr1;
+							uint8_t *p1 = p + hdr->Len;
+							memcpy(&hdr1, p1, sizeof(GATLWRHDR));
+
+							while (hdr1.Handle == hdr->Handle)
+							{
+								p1 += sizeof(GATLWRHDR);
+								memcpy(&p[hdr->Len], p1, pSrvc->LongWrBuffSize - hdr->Len - sizeof(GATLWRHDR));
+								hdr->Len += hdr1.Len;
+								p1 = p + hdr->Len;
+								memcpy(&hdr1, p1, sizeof(GATLWRHDR));
+							}
+							pSrvc->pCharArray[i].WrCB(pSrvc, p, hdr->Offset, hdr->Len);
+#endif
 					    }
 					}
 					else
@@ -137,7 +171,9 @@ void BleSrvcEvtHandler(BLESRVC *pSrvc, ble_evt_t *pBleEvt)
 							}
 							// Set notify callback
 							if (pSrvc->pCharArray[i].SetNotifCB)
+							{
 								pSrvc->pCharArray[i].SetNotifCB(pSrvc, pSrvc->pCharArray[i].bNotify);
+							}
 						}
 						else if ((p_evt_write->handle == pSrvc->pCharArray[i].Hdl.value_handle) &&
 								 (pSrvc->pCharArray[i].WrCB != NULL))
@@ -382,6 +418,7 @@ uint32_t BleSrvcInit(BLESRVC *pSrvc, const BLESRVC_CFG *pCfg)
         {
             return err;
         }
+        pSrvc->pCharArray[i].bNotify = false;
     }
 
     pSrvc->pLongWrBuff = pCfg->pLongWrBuff;
