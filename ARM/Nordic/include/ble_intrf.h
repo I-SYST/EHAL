@@ -45,12 +45,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   * @{
   */
 
-#define BLEINTRF_TRANSBUFF_MAXLEN       512
-
-/**
- * Calculate require mem
- */
-#define BLEINTRF_CFIFO_TOTAL_MEMSIZE(NbBlk, BlkSize)    CFIFO_TOTAL_MEMSIZE(NbBlk, BlkSize + 2)
+#define BLEINTRF_TRANSBUFF_MAXLEN       509
 
 /**
  * This structure define the CFIFO data packet
@@ -65,6 +60,12 @@ typedef struct __BleDeviceInterfPacket {
     uint8_t     Data[1];// Data container array
 } BLEINTRF_PKT;
 #pragma pack(pop)
+
+/**
+ * Calculate require mem
+ */
+#define BLEINTRF_PKHDR_LEN			(sizeof(BLEINTRF_PKT) - 1)
+#define BLEINTRF_CFIFO_TOTAL_MEMSIZE(npk, pksize)	CFIFO_TOTAL_MEMSIZE(npk, pksize + BLEINTRF_PKHDR_LEN)
 
 #pragma pack(push, 4)
 

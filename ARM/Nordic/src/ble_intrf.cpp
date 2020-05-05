@@ -43,8 +43,8 @@ Modified by          Date              Description
 #include "ble_app.h"
 #include "interrupt.h"
 
-#define NRFBLEINTRF_PACKET_SIZE		((NRF_BLE_MAX_MTU_SIZE - 3) + sizeof(BLEINTRF_PKT) - 1)
-#define NRFBLEINTRF_CFIFO_SIZE		CFIFO_TOTAL_MEMSIZE(2, NRFBLEINTRF_PACKET_SIZE)
+#define NRFBLEINTRF_PACKET_SIZE		(NRF_BLE_MAX_MTU_SIZE - 3)// + sizeof(BLEINTRF_PKT) - 1)
+#define NRFBLEINTRF_CFIFO_SIZE		BLEINTRF_CFIFO_TOTAL_MEMSIZE(2, NRFBLEINTRF_PACKET_SIZE)
 
 alignas(4) static uint8_t s_nRFBleRxFifoMem[NRFBLEINTRF_CFIFO_SIZE];
 alignas(4) static uint8_t s_nRFBleTxFifoMem[NRFBLEINTRF_CFIFO_SIZE];
@@ -246,7 +246,7 @@ int BleIntrfTxData(DEVINTRF *pDevIntrf, uint8_t *pData, int DataLen)
 {
 	BLEINTRF *intrf = (BLEINTRF*)pDevIntrf->pDevData;
     BLEINTRF_PKT *pkt;
-    int maxlen = intrf->PacketSize - sizeof(pkt->Len);
+    int maxlen = intrf->PacketSize - BLEINTRF_PKHDR_LEN;
 	int cnt = 0;
 
 	while (DataLen > 0)
@@ -325,7 +325,7 @@ void BleIntrfRxWrCB(BLESRVC *pBleSvc, uint8_t *pData, int Offset, int Len)
 			intrf->RxDropCnt++;
 			break;
 		}
-		int l = min(intrf->PacketSize - 4, Len);
+		int l = min(intrf->PacketSize - BLEINTRF_PKHDR_LEN, Len);
 		memcpy(pkt->Data, pData, l);
 		pkt->Len = l;
 		Len -= l;
@@ -345,11 +345,11 @@ bool BleIntrfInit(BLEINTRF *pBleIntrf, const BLEINTRF_CFG *pCfg)
 
 	if (pCfg->PacketSize <= 0)
 	{
-		pBleIntrf->PacketSize = NRFBLEINTRF_PACKET_SIZE;
+		pBleIntrf->PacketSize = NRFBLEINTRF_PACKET_SIZE + BLEINTRF_PKHDR_LEN;
 	}
 	else
 	{
-		pBleIntrf->PacketSize = pCfg->PacketSize;
+		pBleIntrf->PacketSize = pCfg->PacketSize + BLEINTRF_PKHDR_LEN;
 	}
 
 	if (pCfg->pRxFifoMem == NULL || pCfg->pTxFifoMem == NULL)
@@ -415,7 +415,7 @@ bool BleIntrf::RequestToSend(int NbBytes)
 	if (vBleIntrf.hTxFifo)
 	{
 		int avail = CFifoAvail(vBleIntrf.hTxFifo);
-		if ((avail * vBleIntrf.PacketSize) > NbBytes)
+		if ((avail * (vBleIntrf.PacketSize - BLEINTRF_PKHDR_LEN)) > NbBytes)
 			retval = true;
 	}
 	else
