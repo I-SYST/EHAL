@@ -1253,6 +1253,7 @@ void BleAppDisInit(const BLEAPP_CFG *pBleAppCfg)
 			ble_srv_ascii_to_utf8(&dis_init.hw_rev_str, (char*)pBleAppCfg->pDevDesc->pHwVerStr);
 	}
 
+    pnp_id.vendor_id_source = BLE_DIS_VENDOR_ID_SRC_BLUETOOTH_SIG;
     pnp_id.vendor_id  = pBleAppCfg->VendorID;
     pnp_id.product_id = pBleAppCfg->ProductId;
     dis_init.p_pnp_id = &pnp_id;
