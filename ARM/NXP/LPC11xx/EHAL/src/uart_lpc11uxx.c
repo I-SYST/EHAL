@@ -222,8 +222,8 @@ bool UARTInit(UARTDEV *pDev, const UARTCFG *pCfg)
 	}
 
 	// Configure I/O pins
-	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIoMap;
-	IOPinCfg(pincfg, pCfg->IoMapLen);
+	IOPINCFG *pincfg = (IOPINCFG*)pCfg->pIOPinMap;
+	IOPinCfg(pincfg, pCfg->NbIOPins);
 
 
 	reg->TER = 0;	// Disable Tx
