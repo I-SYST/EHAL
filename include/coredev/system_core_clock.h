@@ -1,11 +1,9 @@
 /**-------------------------------------------------------------------------
 @file	system_core_clock.h
 
-@brief
+@brief	Contains generic system clock settings
 
-Contains core specific default clock and related clock factors for calculating
-delay loops, etc...
-
+These functions must be implemented per target.
 
 @author	Hoang Nguyen Hoan
 @date	Aug. 30, 2017
@@ -39,56 +37,86 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SYSTEM_CORE_CLOCK_H__
 #define __SYSTEM_CORE_CLOCK_H__
 
-typedef enum __System_Clock_Src {
-	SYSCLK_SRC_RC,		// Internal RC
-	SYSCLK_SRC_XTAL,	// External crystal
-	SYSCLK_SRC_OSC,		// External oscillator
-} SYSCLK_SRC;
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
 
-#define SYSTEM_CORE_CLOCK				80000000UL	// TODO: Adjust value for CPU with fixed core frequency
-#define SYSTEM_NSDELAY_CORE_FACTOR		(40UL)		// TODO: Adjustment value for nanosec delay
+#include <stdint.h>
+
+#pragma pack(push, 4)
+
+///
+/// Enum defining clock oscillator types
+///
+/// Many integrated circuits allow the section of different type of oscillator to use as clock
+/// source. This enum defines commonly used types.
+typedef enum __Osc_Type {
+	OSC_TYPE_RC,	//!< internal RC
+	OSC_TYPE_XTAL,	//!< external crystal
+	OSC_TYPE_TCXO,	//!< external oscillator
+} OSC_TYPE;
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * @brief	Setup core clock & update SystemCoreClock variable
+ * @brief	Select core clock oscillator type
  *
  * @param	ClkSrc : Clock source selection
- *						CLKSRCSEL_IRC - Internal osc
- *						CLKSRCSEL_MAIN - Main osc
- *						CLKSRCSEL_RTC -	Realtime osc
- * @param	CoreFreq : Core target frequency
+ *						OSC_TYPE_RC - Internal RC
+ *						OSC_TYPE_XTAL - External crystal
+ *						OSC_TYPE_CTXO -	External oscillator
+ * @param	OscFreq : Oscillator frequency
  *
- * @return
- * 		Return actual frequency in Hz
+ * @return	true - success
  *
  */
-uint32_t SystemCoreClockSet(SYSCLK_SRC ClkSrc, uint32_t CoreFreq);
+bool SystemCoreClockSelect(OSC_TYPE ClkSrc, uint32_t OscFreq);
 
 /**
- * @brief	Get high frequency clock frequency (HCLK)
+ * @brief	Select low frequency clock oscillator type
  *
- * @return	HCLK clock frequency in Hz.
+ * @param	ClkSrc : Clock source selection
+ *						OSC_TYPE_RC - Internal RC
+ *						OSC_TYPE_XTAL - External crystal
+ *						OSC_TYPE_CTXO -	External oscillator
+ * @param	OscFreq : Oscillator frequency
+ *
+ * @return	true - success
+ *
  */
-uint32_t SystemHFClockGet();
+bool SystemLowFreqClockSelect(OSC_TYPE ClkSrc, uint32_t OscFreq);
+
+/**
+ * @brief	Get core clock frequency
+ *
+ * @return	Core frequency in Hz.
+ */
+uint32_t SystemCoreClockGet();
 
 /**
  * @brief	Get peripheral clock frequency (PCLK)
  *
+ * @param	Idx : Zero based peripheral clock number. Many processors can
+ * 				  have more than 1 peripheral clock settings.
+ *
  * @return	Peripheral clock frequency in Hz.
  */
-uint32_t SystemPeriphClockGet();
+uint32_t SystemPeriphClockGet(int Idx);
 
 /**
  * @brief	Set peripheral clock (PCLK) frequency
  *
+ * @param	Idx  : Zero based peripheral clock number. Many processors can
+ * 				   have more than 1 peripheral clock settings.
  * @param	Freq : Clock frequency in Hz.
  *
  * @return	Actual frequency set in Hz.
  */
-uint32_t SystemPeriphClockSet(uint32_t Freq);
+uint32_t SystemPeriphClockSet(int Idx, uint32_t Freq);
 
 
 #ifdef __cplusplus

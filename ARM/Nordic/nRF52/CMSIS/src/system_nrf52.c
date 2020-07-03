@@ -31,6 +31,7 @@ NOTICE: This file has been modified by Nordic Semiconductor ASA.
 /*lint ++flb "Enter library region" */
 
 #define __SYSTEM_CLOCK_64M      (64000000UL)
+#define SYSTEM_NSDELAY_CORE_FACTOR		(46UL)
 
 static bool errata_12(void);
 static bool errata_16(void);
@@ -52,6 +53,8 @@ static bool errata_182(void);
 #elif defined ( __GNUC__ )
     uint32_t SystemCoreClock __attribute__((used)) = __SYSTEM_CLOCK_64M;
 #endif
+
+uint32_t SystemnsDelayFactor = SYSTEM_NSDELAY_CORE_FACTOR;
 
 void SystemCoreClockUpdate(void)
 {
@@ -81,31 +84,31 @@ void SystemInit(void)
     #endif
     
     /* Workaround for Errata 12 "COMP: Reference ladder not correctly calibrated" found at the Errata document
-       for your device located at https://infocenter.nordicsemi.com/index.jsp */
+       for your device located at https://www.nordicsemi.com/DocLib */
     if (errata_12()){
         *(volatile uint32_t *)0x40013540 = (*(uint32_t *)0x10000324 & 0x00001F00) >> 8;
     }
     
     /* Workaround for Errata 16 "System: RAM may be corrupt on wakeup from CPU IDLE" found at the Errata document
-       for your device located at https://infocenter.nordicsemi.com/index.jsp */
+       for your device located at https://www.nordicsemi.com/DocLib */
     if (errata_16()){
         *(volatile uint32_t *)0x4007C074 = 3131961357ul;
     }
 
     /* Workaround for Errata 31 "CLOCK: Calibration values are not correctly loaded from FICR at reset" found at the Errata document
-       for your device located at https://infocenter.nordicsemi.com/index.jsp */
+       for your device located at https://www.nordicsemi.com/DocLib */
     if (errata_31()){
         *(volatile uint32_t *)0x4000053C = ((*(volatile uint32_t *)0x10000244) & 0x0000E000) >> 13;
     }
 
     /* Workaround for Errata 32 "DIF: Debug session automatically enables TracePort pins" found at the Errata document
-       for your device located at https://infocenter.nordicsemi.com/index.jsp */
+       for your device located at https://www.nordicsemi.com/DocLib */
     if (errata_32()){
         CoreDebug->DEMCR &= ~CoreDebug_DEMCR_TRCENA_Msk;
     }
 
     /* Workaround for Errata 36 "CLOCK: Some registers are not reset when expected" found at the Errata document
-       for your device located at https://infocenter.nordicsemi.com/index.jsp  */
+       for your device located at https://www.nordicsemi.com/DocLib  */
     if (errata_36()){
         NRF_CLOCK->EVENTS_DONE = 0;
         NRF_CLOCK->EVENTS_CTTO = 0;
@@ -113,13 +116,13 @@ void SystemInit(void)
     }
 
     /* Workaround for Errata 37 "RADIO: Encryption engine is slow by default" found at the Errata document
-       for your device located at https://infocenter.nordicsemi.com/index.jsp  */
+       for your device located at https://www.nordicsemi.com/DocLib  */
     if (errata_37()){
         *(volatile uint32_t *)0x400005A0 = 0x3;
     }
 
     /* Workaround for Errata 57 "NFCT: NFC Modulation amplitude" found at the Errata document
-       for your device located at https://infocenter.nordicsemi.com/index.jsp  */
+       for your device located at https://www.nordicsemi.com/DocLib  */
     if (errata_57()){
         *(volatile uint32_t *)0x40005610 = 0x00000005;
         *(volatile uint32_t *)0x40005688 = 0x00000001;
@@ -128,7 +131,7 @@ void SystemInit(void)
     }
 
     /* Workaround for Errata 66 "TEMP: Linearity specification not met with default settings" found at the Errata document
-       for your device located at https://infocenter.nordicsemi.com/index.jsp  */
+       for your device located at https://www.nordicsemi.com/DocLib  */
     if (errata_66()){
         NRF_TEMP->A0 = NRF_FICR->TEMP.A0;
         NRF_TEMP->A1 = NRF_FICR->TEMP.A1;
@@ -150,13 +153,13 @@ void SystemInit(void)
     }
 
     /* Workaround for Errata 108 "RAM: RAM content cannot be trusted upon waking up from System ON Idle or System OFF mode" found at the Errata document
-       for your device located at https://infocenter.nordicsemi.com/index.jsp  */
+       for your device located at https://www.nordicsemi.com/DocLib  */
     if (errata_108()){
         *(volatile uint32_t *)0x40000EE4ul = *(volatile uint32_t *)0x10000258ul & 0x0000004Ful;
     }
     
     /* Workaround for Errata 136 "System: Bits in RESETREAS are set when they should not be" found at the Errata document
-       for your device located at https://infocenter.nordicsemi.com/index.jsp  */
+       for your device located at https://www.nordicsemi.com/DocLib  */
     if (errata_136()){
         if (NRF_POWER->RESETREAS & POWER_RESETREAS_RESETPIN_Msk){
             NRF_POWER->RESETREAS =  ~POWER_RESETREAS_RESETPIN_Msk;
@@ -164,7 +167,7 @@ void SystemInit(void)
     }
     
     /* Workaround for Errata 182 "RADIO: Fixes for anomalies #102, #106, and #107 do not take effect" found at the Errata document
-       for your device located at https://infocenter.nordicsemi.com/index.jsp  */
+       for your device located at https://www.nordicsemi.com/DocLib  */
     if (errata_182()){
         *(volatile uint32_t *) 0x4000173C |= (0x1 << 10);
     }

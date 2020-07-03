@@ -32,6 +32,7 @@ NOTICE: This file has been modified by Nordic Semiconductor ASA.
 
 
 #define __SYSTEM_CLOCK      (16000000UL)     /*!< nRF51 devices use a fixed System Clock Frequency of 16MHz */
+#define SYSTEM_NSDELAY_CORE_FACTOR		(250UL)
 
 static bool is_manual_peripheral_setup_needed(void);
 static bool is_disabled_in_debug_needed(void);
@@ -45,6 +46,8 @@ static bool is_peripheral_domain_setup_needed(void);
 #elif defined   ( __GNUC__ )
     uint32_t SystemCoreClock __attribute__((used)) = __SYSTEM_CLOCK;
 #endif
+
+uint32_t SystemnsDelayFactor = SYSTEM_NSDELAY_CORE_FACTOR;
 
 void SystemCoreClockUpdate(void)
 {

@@ -37,6 +37,9 @@ Modified by          Date              Description
 #include "LPC17xx.h"
 #include "system_LPC17xx.h"
 
+#define SYSTEM_CORE_CLOCK				16000000UL		// TODO: Adjust value for CPU with fixed core frequency
+#define SYSTEM_NSDELAY_CORE_FACTOR		(30UL)			// TODO: Adjustment value
+
 #define OSC_FREQ				OSC_FREQ_16MHZ  /* Installed oscillator frequency */
 #define IRC_FREQ				(4000000UL)		/* Internal RC freq */
 #define RTC_FREQ				(32768UL)		/* RTC frequency */
@@ -53,7 +56,9 @@ Modified by          Date              Description
  */
 uint32_t SystemCoreClock = IRC_FREQ;/*!< System Clock Frequency (Core Clock)*/
 uint32_t SystemClkFreq = IRC_FREQ;	/* System clock frequency, reset default IRC */
+
 extern uint32_t SystemMicroSecLoopCnt;
+uint32_t SystemnsDelayFactor = SYSTEM_NSDELAY_CORE_FACTOR;
 
 uint32_t GetSysClk(void)
 {

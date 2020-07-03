@@ -37,23 +37,11 @@ SOFTWARE.
 
 #include <stdint.h>
 
-#include "istddef.h"
+#include "coredev/system_core_clock.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * @brief	Set main oscillator type & frequency
- *
- * @param	Type : Type of oscillator
- * 					- OSC_TYPE_RC : internal RC
- * @param	Freq : Oscillator frequency in Hz
- *
- * @return	true - success
- * 			false - unsupported oscillator or frequency
- */
-bool SystemSetMainOsc(OSC_TYPE Type, uint32_t Freq);
 
 /**
  * @brief Setup the microcontroller system.

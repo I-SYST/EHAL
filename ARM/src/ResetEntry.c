@@ -35,7 +35,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdio.h>
 
-#include <system_core_clock.h>
+//#include "coredev/system_core_clock.h"
 
 extern unsigned long __etext;	// Begin of data in FLASH location
 extern unsigned long __data_loc__;

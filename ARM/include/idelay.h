@@ -38,9 +38,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __IDELAY_H__
 
 #include <stdint.h>
-#include "system_core_clock.h"
+#include "coredev/system_core_clock.h"
 
 extern uint32_t SystemMicroSecLoopCnt;
+extern uint32_t SystemnsDelayFactor;
 
 /** @addtogroup Utilities
   * @{
@@ -78,7 +79,8 @@ static inline __attribute__((always_inline)) void usDelay(uint32_t cnt) {
 			" SUBS r0, #1\n"
 			" BGT 1b\n"
 		"2:\n"
-#ifdef __GNUC__
+#if defined ( __ARMCC_VERSION )
+#elif defined ( __GNUC__ )
 		".syntax divided\n"
 #endif
 		:
@@ -107,11 +109,13 @@ static inline __attribute__((always_inline)) void nsDelay(uint32_t cnt) {
 			" SUBS r1, #1\n"
 			" BGT 1b\n"
 		"2:\n"
-#ifdef __GNUC__
+#if defined ( __ARMCC_VERSION )
+#elif defined ( __GNUC__ )
 		".syntax divided\n"
 #endif
 		:
-		: [ucnt] "l" ((cnt + (SYSTEM_NSDELAY_CORE_FACTOR >> 1)) / SYSTEM_NSDELAY_CORE_FACTOR)
+		: [ucnt] "l" ((cnt + (SystemnsDelayFactor >> 1)) / SystemnsDelayFactor)//(SYSTEM_NSDELAY_CORE_FACTOR >> 1)) / SYSTEM_NSDELAY_CORE_FACTOR)
+//		: [ucnt] "l" ((cnt + (SYSTEM_NSDELAY_CORE_FACTOR >> 1)) / SYSTEM_NSDELAY_CORE_FACTOR)
 		:"r1"
 		 );
 }
