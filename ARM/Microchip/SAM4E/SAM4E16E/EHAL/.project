@@ -691,6 +691,11 @@
 			<locationURI>PARENT-5-PROJECT_LOC/src/coredev/uart.c</locationURI>
 		</link>
 		<link>
+			<name>src/coredev/uart_sam4e.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/uart_sam4e.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/imu/imu.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/src/imu/imu.cpp</locationURI>
