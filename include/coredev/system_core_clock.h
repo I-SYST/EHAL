@@ -1,9 +1,9 @@
 /**-------------------------------------------------------------------------
 @file	system_core_clock.h
 
-@brief	Contains generic system clock settings
+@brief	Contains generic system clock definitions and settings
 
-These functions must be implemented per target.
+These functions can be implemented per target.
 
 @author	Hoang Nguyen Hoan
 @date	Aug. 30, 2017
@@ -56,6 +56,26 @@ typedef enum __Osc_Type {
 	OSC_TYPE_TCXO,	//!< external oscillator
 } OSC_TYPE;
 
+///
+/// This structure defines the the MCU oscillators
+///
+/// Most MCU has 2 oscillator.
+/// The core oscillator often referred to as high frequency or main or core
+/// The low frequency is often a 32768Hz oscillator for realtime clock or low power clock
+///
+/// Modern compiler such as the GNU GCC allow declaration of weak type global variable
+/// that can be overloaded.  In the library system startup code contains a weak global
+/// variable '__WEAK MCU_OSC g_McuOsc' that define a default oscillator.  Firmware can
+/// overload this variable in the main firmware with the oscillator selection for the
+/// intended board.
+///
+typedef struct __Mcu_Osc {
+	OSC_TYPE HFType;		//!< Core, high frequency oscillator type
+	uint32_t HFFreq;		//!< Core, high frequency oscillator frequency in Hz
+	OSC_TYPE LFType;		//!< Low frequency oscillator type
+	uint32_t LFFreq;		//!< Low frequency oscillator frequency in Hz (usually 32768)
+} MCU_OSC;
+
 #pragma pack(pop)
 
 #ifdef __cplusplus
@@ -100,21 +120,29 @@ uint32_t SystemCoreClockGet();
 /**
  * @brief	Get peripheral clock frequency (PCLK)
  *
+ * Most often the PCLK numbering starts from 1 (PCLK1, PCLK2,...).
+ * Therefore the clock Idx parameter = 0 indicate PCK1, 1 indicate PCLK2
+ *
  * @param	Idx : Zero based peripheral clock number. Many processors can
  * 				  have more than 1 peripheral clock settings.
  *
  * @return	Peripheral clock frequency in Hz.
+ * 			0 - Bad clock number
  */
 uint32_t SystemPeriphClockGet(int Idx);
 
 /**
  * @brief	Set peripheral clock (PCLK) frequency
  *
+ * Most often the PCLK numbering starts from 1 (PCLK1, PCLK2,...).
+ * Therefore the clock Idx parameter = 0 indicate PCK1, 1 indicate PCLK2
+ *
  * @param	Idx  : Zero based peripheral clock number. Many processors can
  * 				   have more than 1 peripheral clock settings.
  * @param	Freq : Clock frequency in Hz.
  *
  * @return	Actual frequency set in Hz.
+ * 			0 - Failed
  */
 uint32_t SystemPeriphClockSet(int Idx, uint32_t Freq);
 
