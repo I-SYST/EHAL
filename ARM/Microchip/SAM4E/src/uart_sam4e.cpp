@@ -36,13 +36,15 @@ SOFTWARE.
 #include <string.h>
 
 #include "sam4e.h"
+#include "component/pdc.h"
 
 #include "interrupt.h"
 #include "coredev/iopincfg.h"		
 #include "coredev/uart.h"
 #include "cfifo.h"
 
-#define SAM4_UART_CFIFO_SIZE		CFIFO_MEMSIZE(16)
+#define SAM4_UART_CFIFO_SIZE		16
+#define SAM4_UART_CFIFO_MEMSIZE		CFIFO_MEMSIZE(SAM4_UART_CFIFO_SIZE)
 
 #pragma pack(push, 4)
 
@@ -53,36 +55,40 @@ typedef struct _Sam_Uart_Dev {
 		Sam4eUart *pUartReg;
 		Sam4eUsart *pUSartReg;
 	};
+	Sam4ePdc *pPdc;
 	UARTDEV	*pUartDev;		// Pointer to generic UART dev. data
-	uint8_t RxFifoMem[SAM4_UART_CFIFO_SIZE];
-	uint8_t TxFifoMem[SAM4_UART_CFIFO_SIZE];
+	uint8_t RxFifoMem[SAM4_UART_CFIFO_MEMSIZE];
+	uint8_t TxFifoMem[SAM4_UART_CFIFO_MEMSIZE];
 	uint8_t PdcRxByte;
 	uint8_t PdcTxBuff[SAM4_UART_CFIFO_SIZE];
-	Sam4ePdc *pPdc;
 } SAM4_UARTDEV;
 
 #pragma pack(pop)
 
 static SAM4_UARTDEV s_Sam4UartDev[] = {
 	{
-		0,
-		ID_UART0,
-		SAM4E_UART0,
+		.DevNo = 0,
+		.SamDevId = ID_UART0,
+		.pUartReg = SAM4E_UART0,
+		.pPdc = SAM4E_PDC_UART0,
 	},
 	{
-		1,
-		ID_UART1,
-		SAM4E_UART1,
+		.DevNo = 1,
+		.SamDevId = ID_UART1,
+		.pUartReg = SAM4E_UART1,
+		.pPdc = SAM4E_PDC_UART1,
 	},
 	{
-		2,
-		ID_USART0,
+		.DevNo = 2,
+		.SamDevId = ID_USART0,
 		.pUSartReg = SAM4E_USART0,
+		.pPdc = SAM4E_PDC_USART0,
 	},
 	{
-		3,
-		ID_USART1,
+		.DevNo = 3,
+		.SamDevId = ID_USART1,
 		.pUSartReg = SAM4E_USART1,
+		.pPdc = SAM4E_PDC_USART1,
 	},
 };
 
@@ -104,30 +110,73 @@ void Sam4UartIntHandler(SAM4_UARTDEV *pDev)
 	bool err = false;
 	int cnt = 10;
 
-	while ((status & UART_SR_RXRDY) && (cnt-- > 0))
+	if (status & UART_SR_RXRDY)
 	{
-		uint8_t *p = CFifoPut(pDev->pUartDev->hRxFifo);
-		if (p == NULL)
+		do
 		{
-			break;
-		}
-		*p = pDev->pUartReg->UART_RHR;
-		status = pDev->pUartReg->UART_SR;
-	}
+			uint8_t *p = CFifoPut(pDev->pUartDev->hRxFifo);
+			if (p == NULL)
+			{
+				break;
+			}
 
+			*p = pDev->pUartReg->UART_RHR;
+			status = pDev->pUartReg->UART_SR;
+
+		} while ((status & UART_SR_RXRDY) && (cnt-- > 0));
+
+		if (pDev->pUartDev->EvtCallback)
+		{
+			pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXDATA, NULL, 0);
+		}
+	}
 	cnt = 10;
 
-	while ((status & UART_SR_TXRDY) && (cnt-- > 0))
+	if (pDev->pUartDev->DevIntrf.bDma == true)
 	{
-		uint8_t *p = CFifoGet(pDev->pUartDev->hTxFifo);
-		if (p == NULL)
+		if (status & UART_IER_ENDTX)
 		{
-			pDev->pUartDev->bTxReady = true;
-			pDev->pUartReg->UART_IDR = UART_IER_TXRDY;
-			break;
+			int l = SAM4_UART_CFIFO_SIZE;
+			uint8_t *p = CFifoGetMultiple(pDev->pUartDev->hTxFifo, &l);
+			if (p)
+			{
+				memcpy(pDev->PdcTxBuff, p, l);
+				pDev->pPdc->PERIPH_TPR = (uint32_t)pDev->PdcTxBuff;
+				pDev->pPdc->PERIPH_TCR = l;
+				pDev->pPdc->PERIPH_PTCR = PERIPH_PTCR_TXTEN;
+			}
+			else
+			{
+				pDev->pPdc->PERIPH_TCR = 0;
+				pDev->pPdc->PERIPH_PTCR = PERIPH_PTCR_TXTDIS;
+				pDev->pUartReg->UART_IDR = UART_IER_ENDTX;
+			}
+
+			if (pDev->pUartDev->EvtCallback)
+			{
+				pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_TXREADY, NULL, 0);
+			}
 		}
-		pDev->pUartReg->UART_THR = *p;
-		status = pDev->pUartReg->UART_SR;
+	}
+	else if (status & UART_SR_TXRDY)
+	{
+		do
+		{
+			uint8_t *p = CFifoGet(pDev->pUartDev->hTxFifo);
+			if (p == NULL)
+			{
+				pDev->pUartDev->bTxReady = true;
+				pDev->pUartReg->UART_IDR = UART_IER_TXEMPTY;//UART_IER_TXRDY;
+				break;
+			}
+			pDev->pUartReg->UART_THR = *p;
+			status = pDev->pUartReg->UART_SR;
+		} while ((status & UART_SR_TXRDY) && (cnt-- > 0));
+
+		if (pDev->pUartDev->EvtCallback)
+		{
+			pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_TXREADY, NULL, 0);
+		}
 	}
 
 	if (status & UART_SR_OVRE)
@@ -170,32 +219,74 @@ void Sam4USartIntHandler(SAM4_UARTDEV *pDev)
 	bool err = false;
 	int cnt = 10;
 
-	while ((status & US_CSR_RXRDY) && cnt-- > 0)
+	if (status & UART_SR_RXRDY)
 	{
-		uint8_t *p = CFifoPut(pDev->pUartDev->hRxFifo);
-		if (p == NULL)
+		do
 		{
-			break;
+			uint8_t *p = CFifoPut(pDev->pUartDev->hRxFifo);
+			if (p == NULL)
+			{
+				break;
+			}
+			*p = pDev->pUSartReg->US_RHR & US_RHR_RXCHR_Msk;
+			status = pDev->pUSartReg->US_CSR;
+		} while ((status & US_CSR_RXRDY) && cnt-- > 0);
+
+		if (pDev->pUartDev->EvtCallback)
+		{
+			pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_RXDATA, NULL, 0);
 		}
-		*p = pDev->pUSartReg->US_RHR & US_RHR_RXCHR_Msk;
-		status = pDev->pUSartReg->US_CSR;
+	}
+	
+	if (pDev->pUartDev->DevIntrf.bDma == true)
+	{
+		if (status & US_IER_ENDTX)
+		{
+			int l = SAM4_UART_CFIFO_SIZE;
+			uint8_t *p = CFifoGetMultiple(pDev->pUartDev->hTxFifo, &l);
+			if (p)
+			{
+				memcpy(pDev->PdcTxBuff, p, l);
+				pDev->pPdc->PERIPH_TPR = (uint32_t)pDev->PdcTxBuff;
+				pDev->pPdc->PERIPH_TCR = l;
+				pDev->pPdc->PERIPH_PTCR = PERIPH_PTCR_TXTEN;
+			}
+			else
+			{
+				pDev->pPdc->PERIPH_TCR = 0;
+				pDev->pPdc->PERIPH_PTCR = PERIPH_PTCR_TXTDIS;
+				pDev->pUartReg->UART_IDR = US_IER_ENDTX;
+			}
+
+			if (pDev->pUartDev->EvtCallback)
+			{
+				pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_TXREADY, NULL, 0);
+			}
+		}
+	}
+	else if (status & US_CSR_TXRDY)
+	{
+		cnt = 10;
+
+		do
+		{
+			uint8_t *p = CFifoGet(pDev->pUartDev->hTxFifo);
+			if (p == NULL)
+			{
+				pDev->pUartDev->bTxReady = true;
+				pDev->pUSartReg->US_IDR = US_IER_TXRDY;
+				break;
+			}
+			pDev->pUSartReg->US_THR = US_THR_TXCHR(*p);
+			status = pDev->pUSartReg->US_CSR;
+		} while (status & US_CSR_TXRDY && cnt-- > 0);
+
+		if (pDev->pUartDev->EvtCallback)
+		{
+			pDev->pUartDev->EvtCallback(pDev->pUartDev, UART_EVT_TXREADY, NULL, 0);
+		}
 	}
 
-	cnt = 10;
-	
-	while (status & US_CSR_TXRDY && cnt-- > 0)
-	{
-		uint8_t *p = CFifoGet(pDev->pUartDev->hTxFifo);
-		if (p == NULL)
-		{
-			pDev->pUartDev->bTxReady = true;
-			pDev->pUSartReg->US_IDR = US_IER_TXRDY;
-			break;
-		}
-		pDev->pUSartReg->US_THR = US_THR_TXCHR(*p);
-		status = pDev->pUSartReg->US_CSR;
-	}
-	
 	if (status & UART_SR_OVRE)
 	{
 		// Overrun
@@ -360,31 +451,55 @@ static int Sam4UARTTxData(DEVINTRF * const pDev, uint8_t *pData, int Datalen)
 			
 			if (dev->DevNo < 2)
 			{
-				rdy = dev->pUartReg->UART_SR & UART_SR_TXRDY;
-				//while (!uart_is_tx_ready(dev->pUartReg));
+				rdy = dev->pUartDev->DevIntrf.bDma == true ?
+					  dev->pUartReg->UART_SR & UART_SR_ENDTX :
+					  dev->pUartReg->UART_SR & UART_SR_TXRDY;
 			}
 			else
 			{
-				rdy = dev->pUSartReg->US_CSR & US_CSR_TXRDY;
-				//while (!usart_is_tx_ready(dev->pUSartReg));
+				rdy = dev->pUartDev->DevIntrf.bDma == true ?
+					  dev->pUSartReg->US_CSR & US_CSR_ENDTX :
+					  dev->pUSartReg->US_CSR & US_CSR_TXRDY;
 			}
-			
 			if (rdy == true)
 			{
-				uint8_t *p = CFifoGet(dev->pUartDev->hTxFifo);
-				if (p)
+				if (dev->pUartDev->DevIntrf.bDma == true)
 				{
-					dev->pUartDev->bTxReady = false;
-			
-					if (dev->DevNo < 2)
+					int l = SAM4_UART_CFIFO_SIZE;
+					uint8_t *p = CFifoGetMultiple(dev->pUartDev->hTxFifo, &l);
+					if (p)
 					{
-						dev->pUartReg->UART_THR = *p;
-						dev->pUartReg->UART_IER = UART_IER_TXRDY;
+						memcpy(dev->PdcTxBuff, p, l);
+						dev->pPdc->PERIPH_TPR = (uint32_t)dev->PdcTxBuff;
+						dev->pPdc->PERIPH_TCR = l;
+						dev->pPdc->PERIPH_PTCR = PERIPH_PTCR_TXTEN;
+						if (dev->DevNo < 2)
+						{
+							dev->pUartReg->UART_IER = UART_IER_ENDTX;
+						}
+						else
+						{
+							dev->pUSartReg->US_IER = US_IER_ENDTX;
+						}
 					}
-					else
+				}
+				else
+				{
+					uint8_t *p = CFifoGet(dev->pUartDev->hTxFifo);
+					if (p)
 					{
-						dev->pUSartReg->US_THR = US_THR_TXCHR(*p);
-						dev->pUSartReg->US_IER = US_IER_TXRDY;
+						dev->pUartDev->bTxReady = false;
+
+						if (dev->DevNo < 2)
+						{
+							dev->pUartReg->UART_THR = *p;
+							dev->pUartReg->UART_IER = UART_IER_TXEMPTY;//UART_IER_TXRDY;
+						}
+						else
+						{
+							dev->pUSartReg->US_THR = US_THR_TXCHR(*p);
+							dev->pUSartReg->US_IER = US_IER_TXRDY;
+						}
 					}
 				}
 			}
@@ -454,7 +569,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	}
 	else
 	{
-		pDev->hRxFifo = CFifoInit(s_Sam4UartDev[devno].RxFifoMem, SAM4_UART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
+		pDev->hRxFifo = CFifoInit(s_Sam4UartDev[devno].RxFifoMem, SAM4_UART_CFIFO_MEMSIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	if (pCfg->pTxMem && pCfg->TxMemSize > 0)
@@ -463,7 +578,7 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 	}
 	else
 	{
-		pDev->hTxFifo = CFifoInit(s_Sam4UartDev[devno].TxFifoMem, SAM4_UART_CFIFO_SIZE, 1, pCfg->bFifoBlocking);
+		pDev->hTxFifo = CFifoInit(s_Sam4UartDev[devno].TxFifoMem, SAM4_UART_CFIFO_MEMSIZE, 1, pCfg->bFifoBlocking);
 	}
 
 	pDev->DevIntrf.pDevData = &s_Sam4UartDev[devno];
@@ -510,9 +625,23 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 				break;
 		}
 
+		if (pCfg->bDMAMode == true)
+		{
+			s_Sam4UartDev[devno].pUartDev->DevIntrf.bDma = true;
+			s_Sam4UartDev[devno].pUartReg->UART_PTCR = UART_PTCR_TXTEN;
+			s_Sam4UartDev[devno].pUartReg->UART_IER = UART_IER_RXRDY;// | UART_IER_ENDTX;//UART_IER_TXBUFE;
+			s_Sam4UartDev[devno].pPdc->PERIPH_TPR = (uint32_t)s_Sam4UartDev[devno].PdcTxBuff;
+			s_Sam4UartDev[devno].pPdc->PERIPH_TCR = 0;
+			s_Sam4UartDev[devno].pPdc->PERIPH_PTCR = PERIPH_PTCR_TXTDIS;
+		}
+		else
+		{
+			s_Sam4UartDev[devno].pUartDev->DevIntrf.bDma = false;
+			s_Sam4UartDev[devno].pUartReg->UART_PTCR = UART_PTCR_RXTDIS | UART_PTCR_TXTDIS;
+			s_Sam4UartDev[devno].pUartReg->UART_IER = UART_IER_RXRDY;// | UART_IER_TXEMPTY;//UART_IER_TXRDY;
+		}
 		s_Sam4UartDev[devno].pUartReg->UART_MR = mode;
 		s_Sam4UartDev[devno].pUartReg->UART_CR = UART_CR_RXEN | UART_CR_TXEN;
-		s_Sam4UartDev[devno].pUartReg->UART_IER = UART_IER_RXRDY | UART_IER_TXRDY;
 		s_Sam4UartDev[devno].pUartReg->UART_CR = UART_CR_RSTSTA;
 	}
 	else
@@ -577,6 +706,19 @@ bool UARTInit(UARTDEV * const pDev, const UARTCFG *pCfg)
 		
 		s_Sam4UartDev[devno].pUSartReg->US_MR = mode;
 
+		if (pCfg->bDMAMode == true)
+		{
+			s_Sam4UartDev[devno].pUartDev->DevIntrf.bDma = true;
+			s_Sam4UartDev[devno].pUSartReg->US_PTCR = US_PTCR_TXTEN;
+			s_Sam4UartDev[devno].pPdc->PERIPH_TPR = (uint32_t)s_Sam4UartDev[devno].PdcTxBuff;
+			s_Sam4UartDev[devno].pPdc->PERIPH_TCR = 0;
+			s_Sam4UartDev[devno].pPdc->PERIPH_PTCR = PERIPH_PTCR_TXTDIS;
+		}
+		else
+		{
+			s_Sam4UartDev[devno].pUartDev->DevIntrf.bDma = false;
+			s_Sam4UartDev[devno].pUSartReg->US_PTCR = US_PTCR_RXTDIS | US_PTCR_TXTDIS;
+		}
 		s_Sam4UartDev[devno].pUSartReg->US_CR = US_CR_TXEN | US_CR_RXEN;
 		s_Sam4UartDev[devno].pUSartReg->US_IER = US_IER_RXRDY;
 		s_Sam4UartDev[devno].pUSartReg->US_CR = US_CR_RSTSTA;
