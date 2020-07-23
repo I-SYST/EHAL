@@ -54,6 +54,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   * @{
   */
 
+/// Minimum timing
+#define I2C_SCL_STD_MODE_MAX_SPEED			100		// KHz
+#define I2C_SCL_TLOW_STD_MODE_MIN			4700	// ns
+#define I2C_SCL_THIGH_STD_MODE_MIN			4000	// ns
+
+#define I2C_SCL_FAST_MODE_MAX_SPEED			400		// KHz
+#define I2C_SCL_TLOW_FAST_MODE_MIN			1300	// ns
+#define I2C_SCL_THIGH_FAST_MODE_MIN			600		// ns
+
+#define I2C_SCL_FAST_MODE_PLUS_MAX_SPEED	1000	// KHz
+#define I2C_SCL_TLOW_FAST_MODE_PLUS_MIN		500		// ns
+#define I2C_SCL_THIGH_FAST_MODE_PLUS_MIN	260		// ns
+
 /// I2C Status code
 typedef enum __I2C_Status {
 	I2CSTATUS_START_COND = 8,		//!< Start condition transmitted
@@ -235,11 +248,11 @@ public:
 	bool Init(const I2CCFG &CfgData) { return I2CInit(&vDevData, &CfgData); }
 	operator DEVINTRF * const () { return &vDevData.DevIntrf; }
 	operator I2CDEV& () { return vDevData; };	// Get config data
-	int Rate(int RateHz) { return DeviceIntrfSetRate(&vDevData.DevIntrf, RateHz); }
-	int Rate(void) { return vDevData.Rate; };	// Get rate in Hz
+	uint32_t Rate(uint32_t RateHz) { return DeviceIntrfSetRate(&vDevData.DevIntrf, RateHz); }
+	uint32_t Rate(void) { return vDevData.Rate; };	// Get rate in Hz
 	void Enable(void) { DeviceIntrfEnable(&vDevData.DevIntrf); }
 	void Disable(void) { DeviceIntrfDisable(&vDevData.DevIntrf); }
-	virtual bool StartRx(int DevAddr) {
+	virtual bool StartRx(uint32_t DevAddr) {
 		return DeviceIntrfStartRx(&vDevData.DevIntrf, DevAddr);
 	}
 	// Receive Data only, no Start/Stop condition
@@ -247,7 +260,7 @@ public:
 		return DeviceIntrfRxData(&vDevData.DevIntrf, pBuff, BuffLen);
 	}
 	virtual void StopRx(void) { DeviceIntrfStopRx(&vDevData.DevIntrf); }
-	virtual bool StartTx(int DevAddr) {
+	virtual bool StartTx(uint32_t DevAddr) {
 		return DeviceIntrfStartTx(&vDevData.DevIntrf, DevAddr);
 	}
 	// Send Data only, no Start/Stop condition
