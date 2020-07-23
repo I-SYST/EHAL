@@ -299,7 +299,7 @@ int SDCard::WriteData(uint8_t *pData, int Len)
 		if ((d[0] & 0x1f) != 0x5)
 		{
 			// Failed write, read status
-			int r = Cmd(13, 0);
+			Cmd(13, 0);
 			//printf("SDCard Write resp error: %x %d, r = %x\n\r", d[0], t, r);
 			return 0;
 		}
@@ -318,12 +318,12 @@ uint32_t SDCard::GetNbSect(void)
 	return vDev.TotalSect;
 }
 
-// @return	size in BYTE
-uint64_t SDCard::GetSize(void)
+// @return	size in KBYTE
+uint32_t SDCard::GetSize(void)
 {
 	uint8_t data[20];
 	uint32_t c_size, c_size_mult, read_bl_len;
-	uint32_t size = 0;
+	uint64_t size = 0;
 
 	memset(data, 0, 20);
 
@@ -340,16 +340,16 @@ uint64_t SDCard::GetSize(void)
 		c_size++;
 		c_size_mult = 4 << ((data[10] >> 7) | ((data[9] & 3) << 1));
 		read_bl_len = 1 << (data[5] & 0x0F);
-		size = c_size * c_size_mult * read_bl_len / 1024;
+		size = c_size * c_size_mult * read_bl_len / 1024ULL;
 	}
 	else
 	{
 		// Vers 2.0
 		// Bits 48-69
-		size = (uint64_t)(((data[7] & 0x3f) << 16u) | (data[8] << 8u) | data[9]) * 512;
+		size = (uint64_t)(((data[7] & 0x3f) << 16ULL) | (data[8] << 8ULL) | data[9]) * 512ULL;
 	}
 
-	return size;
+	return size / 1024ULL;
 }
 
 int SDCard::ReadSingleBlock(uint32_t Addr, uint8_t *pData, int len)

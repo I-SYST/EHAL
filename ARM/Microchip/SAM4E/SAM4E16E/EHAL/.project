@@ -276,11 +276,6 @@
 			<locationURI>PARENT-5-PROJECT_LOC/src/isha256.c</locationURI>
 		</link>
 		<link>
-			<name>src/md5.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/src/md5.c</locationURI>
-		</link>
-		<link>
 			<name>src/miscdev</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -669,6 +664,11 @@
 			<name>src/coredev/i2c.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/src/coredev/i2c.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/i2c_sam4e.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_sam4e.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/iopincfg_sam4e.c</name>

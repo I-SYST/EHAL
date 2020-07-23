@@ -96,7 +96,7 @@ public:
 	 * @return 	Actual transfer rate per second set.  It is the real capable rate
 	 * 			closest to rate being requested.
 	 */
-	int Rate(int DataRate) { return DeviceIntrfSetRate(*this, DataRate); }
+	uint32_t Rate(uint32_t DataRate) { return DeviceIntrfSetRate(*this, DataRate); }
 
 	/**
 	 * @brief	Get data rate of the interface in Hertz.
@@ -107,7 +107,7 @@ public:
 	 *
 	 * @return	Transfer rate per second
 	 */
-	int Rate(void) { return DeviceIntrfGetRate(*this); }
+	uint32_t Rate(void) { return DeviceIntrfGetRate(*this); }
 
     /**
      * @brief	Prepare start condition to receive data with subsequence RxData.
@@ -124,7 +124,7 @@ public:
      * @return 	true - Success\n
      * 			false - failed.
      */
-	virtual bool StartRx(int DevAddr) { return DeviceIntrfStartRx(*this, DevAddr); }
+	virtual bool StartRx(uint32_t DevAddr) { return DeviceIntrfStartRx(*this, DevAddr); }
 
 	/**
 	 * @brief	Receive data into pBuff passed in parameter.  Assuming StartRx was
@@ -168,7 +168,7 @@ public:
 	 * @return 	true - Success\n
 	 * 			false - failed
 	 */
-	virtual bool StartTx(int DevAddr) { return DeviceIntrfStartTx(*this, DevAddr); }
+	virtual bool StartTx(uint32_t DevAddr) { return DeviceIntrfStartTx(*this, DevAddr); }
 
 	/**
 	 * @brief	Transfer data from pData passed in parameter.  Assuming StartTx was

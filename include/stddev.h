@@ -38,15 +38,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include <stdio.h>
 
-#ifndef __ICCARM__
+#if defined (__ICCARM__) || defined (__ARMCC_VERSION)
+#define STDIN_FILENO    0       /* standard input file descriptor */
+#define STDOUT_FILENO   1       /* standard output file descriptor */
+#define STDERR_FILENO   2       /* standard error file descriptor */
+#else
 #include <unistd.h>
 #endif
 
-#define STDDEV_MAX				6		//!< Max number of standard device
+#define STDDEV_MAX					6		//!< Max number of standard device
 #define STDDEV_NAME_MAX			8
 
-#define STDFS_FILENO			3		//!< Default File system
-#define STDDEV_USER_FILENO		4		//!< Start of user device fileno idx
+#define STDFS_FILENO				3		//!< Default File system
+#define STDDEV_USER_FILENO	4		//!< Start of user device fileno idx
 
 // open
 typedef int (*STDDEVOPEN)(void * const pDevObj, const char *pDevName, int Flags, int Mode);
@@ -80,7 +84,7 @@ extern "C" {
  * @brief	Install block device into stdio syscall
  *
  * @param	pDev 	: Pointer to standard device descriptor structure
- * @param	MapIp	: Mapping id
+ * @param	MapId	: Mapping id
  * 						STDIN_FILENO 	- to replace stdin
  * 						STDOUT_FILENO 	- to replace stdout
  * 						STDERR_FILENO	- to replace stderr

@@ -51,7 +51,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __BLUEIOTHINGY_H__
 
 #include "coredev/spi.h"
-#include "timer_nrf5x.h"
+#include "timer_nrfx.h"
 
 #ifdef NRF51
 #define BLE_GATT_ATT_MTU_DEFAULT 23

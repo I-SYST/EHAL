@@ -396,9 +396,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/pulse_train.c</locationURI>
 		</link>
 		<link>
-			<name>src/pwm_nrf52.cpp</name>
+			<name>src/pwm_nrfx.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/pwm_nrf52.cpp</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/pwm_nrfx.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/sbuffer.c</name>
@@ -811,14 +811,19 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/i2c.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/coredev/i2c_nrf5x.cpp</name>
+			<name>src/coredev/i2c_nrfx.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_nrf5x.cpp</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_nrfx.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/i2c_spi_nrf5x_irq.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/i2c_spi_nrf5x_irq.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/coredev/i2s_nrfx.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/i2s_nrfx.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/iopincfg_nrfx.c</name>
@@ -831,9 +836,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/spi.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/coredev/spi_nrf5x.cpp</name>
+			<name>src/coredev/spi_nrfx.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/spi_nrf5x.cpp</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/spi_nrfx.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/timer.cpp</name>
@@ -841,14 +846,14 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/timer.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/coredev/timer_hf_nrf5x.cpp</name>
+			<name>src/coredev/timer_hf_nrfx.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/timer_hf_nrf5x.cpp</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_hf_nrfx.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/coredev/timer_lf_nrf5x.cpp</name>
+			<name>src/coredev/timer_lf_nrfx.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/timer_lf_nrf5x.cpp</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/timer_lf_nrfx.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/timer_nrf_app_timer.cpp</name>
@@ -861,9 +866,9 @@
 			<locationURI>PARENT-4-PROJECT_LOC/src/coredev/uart.c</locationURI>
 		</link>
 		<link>
-			<name>src/coredev/uart_nrf5x.cpp</name>
+			<name>src/coredev/uart_nrfx.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrf5x.cpp</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/uart_nrfx.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/imu/imu.cpp</name>

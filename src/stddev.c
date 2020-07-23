@@ -33,20 +33,11 @@ Modified by          Date              Description
 ----------------------------------------------------------------------------*/
 #include <stdlib.h>
 #include <string.h>
-#ifdef __ICCARM__
-#define STDIN_FILENO    0       /* standard input file descriptor */
-#define STDOUT_FILENO   1       /* standard output file descriptor */
-#define STDERR_FILENO   2       /* standard error file descriptor */
-#else
-#include <unistd.h>
-#endif
 
 #include "stddev.h"
 
 #define STDDEV_FDIDX_MASK		0xF
 #define STDDEV_FDIDX_NBITS		4
-
-
 
 STDDEV *g_DevTable[STDDEV_MAX] = {
 	NULL,

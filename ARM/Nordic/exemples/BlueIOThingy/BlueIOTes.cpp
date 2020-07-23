@@ -129,7 +129,8 @@ BLESRVC_CHAR g_EnvChars[] = {
 /// Service definition
 const BLESRVC_CFG s_EnvSrvcCfg = {
     BLESRVC_SECTYPE_NONE,       // Secure or Open service/char
-    THINGY_BASE_UUID,           // Base UUID
+    {THINGY_BASE_UUID,},        // Base UUID
+	1,
     BLE_UUID_TES_SERVICE,       // Service UUID
     sizeof(g_EnvChars) / sizeof(BLESRVC_CHAR),  // Total number of characteristics for the service
     g_EnvChars,                 // Pointer a an array of characteristic

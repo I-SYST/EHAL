@@ -183,7 +183,7 @@ bool ImuInvnIcm20948::Enable()
 
 	/* Disable all sensors */
 	while(i-- > 0) {
-		int rc = inv_icm20948_enable_sensor(vpIcmDevice, (inv_icm20948_sensor)i, 1);
+		inv_icm20948_enable_sensor(vpIcmDevice, (inv_icm20948_sensor)i, 1);
 	}
 
 	return true;
@@ -195,7 +195,7 @@ void ImuInvnIcm20948::Disable()
 
 	/* Disable all sensors */
 	while(i-- > 0) {
-		int rc = inv_icm20948_enable_sensor(vpIcmDevice, (inv_icm20948_sensor)i, 0);
+		inv_icm20948_enable_sensor(vpIcmDevice, (inv_icm20948_sensor)i, 0);
 	}
 	inv_icm20948_set_chip_power_state(vpIcmDevice, CHIP_AWAKE, 0);
 }
@@ -266,7 +266,7 @@ void ImuInvnIcm20948::SensorEventHandler(void * context, enum inv_icm20948_senso
 
 void ImuInvnIcm20948::UpdateData(enum inv_icm20948_sensor sensortype, uint64_t timestamp, const void * data, const void *arg)
 {
-	float raw_bias_data[6];
+	//float raw_bias_data[6];
 	inv_sensor_event_t event;
 	//uint8_t sensor_id = convert_to_generic_ids[sensortype];
 

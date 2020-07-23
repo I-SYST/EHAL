@@ -182,7 +182,7 @@ void Sam4UartIntHandler(SAM4_UARTDEV *pDev)
 	if (status & UART_SR_OVRE)
 	{
 		// Overrun
-		pDev->pUartDev->RxOECnt++;
+		pDev->pUartDev->RxOvrErrCnt++;
 		//uart_reset_status(pDev->pUartReg);
 		err = true;
 	}
@@ -291,7 +291,7 @@ void Sam4USartIntHandler(SAM4_UARTDEV *pDev)
 	{
 		// Overrun
 		err = true;
-		pDev->pUartDev->RxOECnt++;
+		pDev->pUartDev->RxOvrErrCnt++;
 	}
 
 	if (status & UART_SR_FRAME)
@@ -314,11 +314,11 @@ void USART1_Handler( void )
 	Sam4USartIntHandler(&s_Sam4UartDev[3]);
 }
 
-static inline int Sam4UARTGetRate(DEVINTRF * const pDev) {
+static inline uint32_t Sam4UARTGetRate(DEVINTRF * const pDev) {
 	return ((SAM4_UARTDEV*)pDev->pDevData)->pUartDev->Rate;
 }
 
-static int Sam4UARTSetRate(DEVINTRF * const pDev, int Rate)
+static uint32_t Sam4UARTSetRate(DEVINTRF * const pDev, uint32_t Rate)
 {
 	SAM4_UARTDEV *dev = (SAM4_UARTDEV *)pDev->pDevData;
 	uint32_t cd = 0;
@@ -355,7 +355,7 @@ static int Sam4UARTSetRate(DEVINTRF * const pDev, int Rate)
 	return Rate;
 }
 
-static inline bool Sam4UARTStartRx(DEVINTRF * const pSerDev, int DevAddr) {
+static inline bool Sam4UARTStartRx(DEVINTRF * const pSerDev, uint32_t DevAddr) {
 	return true;
 }
 
@@ -416,7 +416,7 @@ static int Sam4UARTRxData(DEVINTRF * const pDev, uint8_t *pBuff, int Bufflen)
 static inline void Sam4UARTStopRx(DEVINTRF * const pDev) {
 }
 
-static inline bool Sam4UARTStartTx(DEVINTRF * const pDev, int DevAddr) {
+static inline bool Sam4UARTStartTx(DEVINTRF * const pDev, uint32_t DevAddr) {
 	return true;
 }
 

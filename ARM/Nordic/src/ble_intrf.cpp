@@ -90,7 +90,7 @@ void BleIntrfEnable(DEVINTRF *pDevIntrf)
  *
  * @return Transfer rate per second
  */
-int BleIntrfGetRate(DEVINTRF *pDevIntrf)
+uint32_t BleIntrfGetRate(DEVINTRF *pDevIntrf)
 {
 	return 0;	// BLE has no rate
 }
@@ -108,7 +108,7 @@ int BleIntrfGetRate(DEVINTRF *pDevIntrf)
  * @return 	Actual transfer rate per second set.  It is the real capable rate
  * 			closes to rate being requested.
  */
-int BleIntrfSetRate(DEVINTRF *pDevIntrf, int Rate)
+uint32_t BleIntrfSetRate(DEVINTRF *pDevIntrf, uint32_t Rate)
 {
 	return 0; // BLE has no rate
 }
@@ -127,7 +127,7 @@ int BleIntrfSetRate(DEVINTRF *pDevIntrf, int Rate)
  * @return 	true - Success
  * 			false - failed.
  */
-bool BleIntrfStartRx(DEVINTRF *pDevIntrf, int DevAddr)
+bool BleIntrfStartRx(DEVINTRF *pDevIntrf, uint32_t DevAddr)
 {
 	return true;
 }
@@ -193,7 +193,7 @@ void BleIntrfStopRx(DEVINTRF *pSerDev)
  * @return 	true - Success
  * 			false - failed
  */
-bool BleIntrfStartTx(DEVINTRF *pDevIntrf, int DevAddr)
+bool BleIntrfStartTx(DEVINTRF *pDevIntrf, uint32_t DevAddr)
 {
 	return true;
 }

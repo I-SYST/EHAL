@@ -190,7 +190,7 @@ public:
 	 * @brief	Get sampling frequency.
 	 * 		The sampling frequency is relevant only in continuous mode
 	 *
-	 * @return	Frequency in mHz (milliHerz)
+	 * @return	Frequency in mHz (milliHertz)
 	 */
 	virtual uint32_t SamplingFrequency() { return vSampFreq; }
 
@@ -199,7 +199,7 @@ public:
 	 *
 	 * The sampling frequency is relevant only in continuous mode.
 	 *
-	 * @return	Frequency in mHz (milliHerz)
+	 * @return	Frequency in mHz (milliHertz)
 	 */
 	virtual uint32_t SamplingFrequency(uint32_t Freq) {
 		vSampFreq = Freq;

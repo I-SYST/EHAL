@@ -40,8 +40,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /// Clock source used for the timer
 typedef enum __Timer_Clock_Src {
-	TIMER_CLKSRC_DEFAULT,	//!< Device default clock source
-    TIMER_CLKSRC_INTERNAL,	//!< Internal RC oscillator
+	TIMER_CLKSRC_DEFAULT,	//!< Device default clock source (auto select best src)
+	TIMER_CLKSRC_LFRC,		//!< Low frequency internal RC oscillator
+    TIMER_CLKSRC_HFRC,		//!< High frequency internal RC oscillator
     TIMER_CLKSRC_LFXTAL,	//!< Low frequency crystal
     TIMER_CLKSRC_HFXTAL		//!< High frequency crystal
 } TIMER_CLKSRC;
@@ -124,7 +125,7 @@ public:
      * @param	Cfg	: Timer configuration data.
      *
      * @return
-     * 			- true 	: Scuccess
+     * 			- true 	: Success
      * 			- false : Otherwise
      */
     virtual bool Init(const TIMER_CFG &Cfg) = 0;

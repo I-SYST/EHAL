@@ -35,13 +35,6 @@ Modified by          Date              Description
 #include <stdio.h>
 #include <stdint.h>
 #include <stdarg.h>
-#ifdef __ICCARM__
-#define STDIN_FILENO    0       /* standard input file descriptor */
-#define STDOUT_FILENO   1       /* standard output file descriptor */
-#define STDERR_FILENO   2       /* standard error file descriptor */
-#else
-#include <unistd.h>
-#endif
 
 #include "stddev.h"
 #include "coredev/uart.h"

@@ -265,10 +265,6 @@ bool AccelMpu9250::Init(const ACCELSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Tim
 	regaddr = MPU9250_AG_INT_ENABLE;
 	Write8(&regaddr, 1, MPU9250_AG_INT_ENABLE_RAW_RDY_EN);
 
-	//vbSensorEnabled[MPU9250_ACCEL_IDX] = true;
-
-	AccelSensor::Type(SENSOR_TYPE_ACCEL);
-
 	return true;
 }
 
@@ -363,10 +359,6 @@ bool GyroMpu9250::Init(const GYROSENSOR_CFG &CfgData, DeviceIntrf *pIntrf, Timer
 
 	Range(MPU9250_AG_ADC_RANGE);
 	Sensitivity(CfgData.Sensitivity);
-
-
-	//vbSensorEnabled[MPU9250_GYRO_IDX] = true;
-	GyroSensor::Type(SENSOR_TYPE_GYRO);
 
 	//regaddr = MPU9250_AG_FIFO_EN;
 	//d = Read8(&regaddr, 1);

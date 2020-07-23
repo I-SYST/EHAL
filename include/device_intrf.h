@@ -39,13 +39,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __DEVICEINTRF_H__
 
 #include <stdint.h>
-#include <stdbool.h>
 
 #ifdef __cplusplus
 	#include <atomic>
 	using namespace std;
 #else
-	#include <stdatomic.h>
+#include <stdbool.h>
+#include <stdatomic.h>
 #endif
 
 /** @addtogroup device_intrf	Device Interface
@@ -81,6 +81,8 @@ typedef enum __Dev_Intrf_Type {
     DEVINTRF_TYPE_UART,         //!< UART or Serial port
     DEVINTRF_TYPE_USB,          //!< USB
     DEVINTRF_TYPE_WIFI,         //!< Wifi
+	DEVINTRF_TYPE_I2S,			//!< I2S
+	DEVINTRF_TYPE_PDM,			//!< PDM
 } DEVINTRF_TYPE;
 
 /// @brief	Device Interface forward data structure type definition.
@@ -128,9 +130,9 @@ struct __device_intrf {
 	void *pDevData;			//!< Private device interface implementation data
 	int	IntPrio;			//!< Interrupt priority.  Value is implementation specific
 	DEVINTRF_EVTCB EvtCB;	//!< Interrupt based event callback function pointer. Must be set to NULL if not used
-	atomic_flag bBusy;		//!< Busy flag to be set check and set at start and reset at end of transmission
+	atomic_flag bBusy;		        //!< Busy flag to be set check and set at start and reset at end of transmission
 	int MaxRetry;			//!< Max retry when data could not be transfered (Rx/Tx returns zero count)
-	atomic_int EnCnt;		//!< Count the number of time device is enabled, this used as ref count where multiple
+	atomic_int EnCnt;				//!< Count the number of time device is enabled, this used as ref count where multiple
 							//!< devices are using the same interface. It is to avoid it being disabled while another
 							//!< device is still using it
 	DEVINTRF_TYPE Type;     //!< Identify the type of interface
@@ -168,7 +170,7 @@ struct __device_intrf {
 	 *
 	 * @return	Transfer rate per second
 	 */
-	int (*GetRate)(DEVINTRF * const pDevIntrf);
+	uint32_t (*GetRate)(DEVINTRF * const pDevIntrf);
 
 	/**
 	 * @brief	Set data rate of the interface in Hertz.  This is not a clock frequency
@@ -181,7 +183,7 @@ struct __device_intrf {
 	 * @return 	Actual transfer rate per second set.  It is the real capable rate
 	 * 			closest to rate being requested.
 	 */
-	int (*SetRate)(DEVINTRF * const pDevIntrf, int Rate);
+	uint32_t (*SetRate)(DEVINTRF * const pDevIntrf, uint32_t Rate);
 
 	/**
 	 * @brief	Prepare start condition to receive data with subsequence RxData.
@@ -195,7 +197,7 @@ struct __device_intrf {
 	 * @return 	true - Success\n
 	 * 			false - failed.
 	 */
-	bool (*StartRx)(DEVINTRF * const pDevIntrf, int DevAddr);
+	bool (*StartRx)(DEVINTRF * const pDevIntrf, uint32_t DevAddr);
 
 	/**
 	 * @brief	Receive data into pBuff passed in parameter.  Assuming StartRx was
@@ -230,7 +232,7 @@ struct __device_intrf {
 	 * @return 	true - Success\n
 	 * 			false - failed
 	 */
-	bool (*StartTx)(DEVINTRF * const pDevIntrf, int DevAddr);
+	bool (*StartTx)(DEVINTRF * const pDevIntrf, uint32_t DevAddr);
 
 	/**
 	 * @brief	Transfer data from pData passed in parameter.  Assuming StartTx was
@@ -317,7 +319,7 @@ static inline void DeviceIntrfEnable(DEVINTRF * const pDev) {
  *
  * @return	Transfer rate per second
  */
-static inline int DeviceIntrfGetRate(DEVINTRF * const pDev) {
+static inline uint32_t DeviceIntrfGetRate(DEVINTRF * const pDev) {
 	return pDev->GetRate(pDev);
 }
 
@@ -334,7 +336,7 @@ static inline int DeviceIntrfGetRate(DEVINTRF * const pDev) {
  * @return 	Actual transfer rate per second set.  It is the real capable rate
  * 			closest to rate being requested.
  */
-static inline int DeviceIntrfSetRate(DEVINTRF * const pDev, int Rate) {
+static inline uint32_t DeviceIntrfSetRate(DEVINTRF * const pDev, uint32_t Rate) {
 	return pDev->SetRate(pDev, Rate);
 }
 
@@ -350,7 +352,7 @@ static inline int DeviceIntrfSetRate(DEVINTRF * const pDev, int Rate) {
  *
  * @return	Number of bytes read
  */
-int DeviceIntrfRx(DEVINTRF * const pDev, int DevAddr, uint8_t *pBuff, int BuffLen);
+int DeviceIntrfRx(DEVINTRF * const pDev, uint32_t DevAddr, uint8_t *pBuff, int BuffLen);
 
 /**
  * @brief	Full transmit data sequence.
@@ -364,7 +366,7 @@ int DeviceIntrfRx(DEVINTRF * const pDev, int DevAddr, uint8_t *pBuff, int BuffLe
  *
  * @return	Number of bytes read
  */
-int DeviceIntrfTx(DEVINTRF * const pDev, int DevAddr, uint8_t *pData, int DataLen);
+int DeviceIntrfTx(DEVINTRF * const pDev, uint32_t DevAddr, uint8_t *pData, int DataLen);
 
 /**
  * @brief	Device read transfer.
@@ -381,7 +383,7 @@ int DeviceIntrfTx(DEVINTRF * const pDev, int DevAddr, uint8_t *pData, int DataLe
  *
  * @return	Number of bytes read
  */
-int DeviceIntrfRead(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
+int DeviceIntrfRead(DEVINTRF * const pDev, uint32_t DevAddr, uint8_t *pAdCmd, int AdCmdLen,
                     uint8_t *pRxBuff, int RxLen);
 
 /**
@@ -399,7 +401,7 @@ int DeviceIntrfRead(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int AdC
  *
  * @return	Number of bytes of data sent (not counting the Addr/Cmd).
  */
-int DeviceIntrfWrite(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int AdCmdLen,
+int DeviceIntrfWrite(DEVINTRF * const pDev, uint32_t DevAddr, uint8_t *pAdCmd, int AdCmdLen,
                      uint8_t *pData, int DataLen);
 
 /**
@@ -417,7 +419,7 @@ int DeviceIntrfWrite(DEVINTRF * const pDev, int DevAddr, uint8_t *pAdCmd, int Ad
  * @return 	true - Success\n
  * 			false - failed.
  */
-static inline bool DeviceIntrfStartRx(DEVINTRF * const pDev, int DevAddr) {
+static inline bool DeviceIntrfStartRx(DEVINTRF * const pDev, uint32_t DevAddr) {
 	if (atomic_flag_test_and_set(&pDev->bBusy))
 		return false;
 
@@ -478,7 +480,7 @@ static inline void DeviceIntrfStopRx(DEVINTRF * const pDev) {
  * @return 	true - Success\n
  * 			false - failed
  */
-static inline bool DeviceIntrfStartTx(DEVINTRF * const pDev, int DevAddr) {
+static inline bool DeviceIntrfStartTx(DEVINTRF * const pDev, uint32_t DevAddr) {
     if (atomic_flag_test_and_set(&pDev->bBusy))
         return false;
 
@@ -593,7 +595,7 @@ public:
 	 * @return 	Actual transfer rate per second set.  It is the real capable rate
 	 * 			closest to rate being requested.
 	 */
-	virtual int Rate(int DataRate) = 0;
+	virtual uint32_t Rate(uint32_t DataRate) = 0;
 
 	/**
 	 * @brief	Get data rate of the interface in Hertz.
@@ -604,7 +606,7 @@ public:
 	 *
 	 * @return	Transfer rate per second
 	 */
-	virtual int Rate(void) = 0;
+	virtual uint32_t Rate(void) = 0;
 
 	/**
 	 * @brief	Turn off/Deep sleep the interface.
@@ -641,7 +643,7 @@ public:
 	 *
 	 * @return	Number of bytes read
 	 */
-	virtual int Rx(int DevAddr, uint8_t *pBuff, int BuffLen) {
+	virtual int Rx(uint32_t DevAddr, uint8_t *pBuff, int BuffLen) {
 		return DeviceIntrfRx(*this,DevAddr, pBuff, BuffLen);
 	}
 
@@ -656,7 +658,7 @@ public:
 	 *
 	 * @return	Number of bytes read
 	 */
-	virtual int Tx(int DevAddr, uint8_t *pData, int DataLen) {
+	virtual int Tx(uint32_t DevAddr, uint8_t *pData, int DataLen) {
 		return DeviceIntrfTx(*this, DevAddr, pData, DataLen);
 	}
 
@@ -674,7 +676,7 @@ public:
 	 *
 	 * @return	Number of bytes read
 	 */
-    virtual int Read(int DevAddr, uint8_t *pAdCmd, int AdCmdLen, uint8_t *pBuff, int BuffLen) {
+    virtual int Read(uint32_t DevAddr, uint8_t *pAdCmd, int AdCmdLen, uint8_t *pBuff, int BuffLen) {
         return DeviceIntrfRead(*this, DevAddr, pAdCmd, AdCmdLen, pBuff, BuffLen);
     }
 
@@ -692,7 +694,7 @@ public:
      *
      * @return	Number of bytes of data sent (not counting the Addr/Cmd).
      */
-    virtual int Write(int DevAddr, uint8_t *pAdCmd, int AdCmdLen, uint8_t *pData, int DataLen) {
+    virtual int Write(uint32_t DevAddr, uint8_t *pAdCmd, int AdCmdLen, uint8_t *pData, int DataLen) {
         return DeviceIntrfWrite(*this, DevAddr, pAdCmd, AdCmdLen, pData, DataLen);
     }
 
@@ -715,7 +717,7 @@ public:
      * @return 	true - Success\n
      * 			false - failed.
      */
-	virtual bool StartRx(int DevAddr) = 0;
+	virtual bool StartRx(uint32_t DevAddr) = 0;
 
 	/**
 	 * @brief	Receive data into pBuff passed in parameter.  Assuming StartRx was
@@ -759,7 +761,7 @@ public:
 	 * @return 	true - Success\n
 	 * 			false - failed
 	 */
-	virtual bool StartTx(int DevAddr) = 0;
+	virtual bool StartTx(uint32_t DevAddr) = 0;
 
 	/**
 	 * @brief	Transfer data from pData passed in parameter.  Assuming StartTx was

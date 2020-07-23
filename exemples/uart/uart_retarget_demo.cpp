@@ -42,6 +42,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "coredev/iopincfg.h"
 #include "coredev/uart.h"
 #include "stddev.h"
+#include "coredev/system_core_clock.h"
 
 // This include contain i/o definition the board in use
 #include "board.h"
@@ -61,14 +62,14 @@ static IOPINCFG s_UartPins[] = {
 
 // UART configuration data
 const UARTCFG g_UartCfg = {
-	0,
+	UART_DEVNO,
 	s_UartPins,
 	sizeof(s_UartPins) / sizeof(IOPINCFG),
 	115200,			// Rate
 	8,
 	UART_PARITY_NONE,
 	1,					// Stop bit
-	UART_FLWCTRL_HW,
+	UART_FLWCTRL_NONE,
 	true,
 	1, 					// use APP_IRQ_PRIORITY_LOW with Softdevice
 	nRFUartEvthandler,
@@ -86,6 +87,10 @@ UARTDEV g_UartDev;
 // For C++ object programming
 // UART object instance
 UART g_Uart;
+#endif
+
+#ifdef BOARD_OSC
+MCU_OSC g_McuOsc = BOARD_OSC;
 #endif
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen)
@@ -111,6 +116,7 @@ int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int Buffe
 int main()
 {
 	bool res;
+	//SystemCoreClockSelect(OSC_TYPE_XTAL, 16000000);
 
 #ifdef DEMO_C
 	res = UARTInit(&g_UartDev, &g_UartCfg);

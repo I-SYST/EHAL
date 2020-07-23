@@ -38,7 +38,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 #include <string.h>
 
-#include "dirent.h"
+#include "sys/dirent.h"
 #include "diskio.h"
 
 /** @addtogroup Storage

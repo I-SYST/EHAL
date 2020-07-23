@@ -35,9 +35,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __TIMER_NRF_APP_TIMER_H__
 #define __TIMER_NRF_APP_TIMER_H__
 
-#include "coredev/timer.h"
-#include "nrf_peripherals.h"
 #include "app_timer.h"
+#include "coredev/timer.h"
 
 /// App Timer implementation class
 ///

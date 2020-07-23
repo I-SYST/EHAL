@@ -11,6 +11,7 @@
 #include "blueio_board.h"
 
 //#define NORDIC_DK
+#define UART_DEVNO				0
 
 #ifdef NORDIC_DK
 #define UART_TX_PIN			9//7

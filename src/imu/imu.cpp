@@ -1,7 +1,7 @@
 /**-------------------------------------------------------------------------
 @file	imu.cpp
 
-@brief	Implementation of an Inertial Measurement Unit
+@brief	Implementation of an Inertia Measurement Unit
 
 This a generic abstraction layer for IMU sensor fusion.  It is a mean to
 provide a common interface to different sensor fusion library out there.
@@ -73,6 +73,9 @@ IMU_FEATURE Imu::Feature(IMU_FEATURE FeatureBit, bool bEnDis)
 	return vActiveFeature;
 }
 
+bool Imu::Quaternion(bool bEn, int NbAxis)
+{
 
+}
 
 

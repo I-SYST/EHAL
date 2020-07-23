@@ -159,11 +159,11 @@ SOFTWARE.
 #define LSM303AGR_FIFO_CTRL_FTH_MASK							(0x1F<<0)	//!< Fifo threshold
 #define LSM303AGR_FIFO_CTRL_TR_INT1								(0<<5)		//!< Trigger selection on INT1
 #define LSM303AGR_FIFO_CTRL_TR_INT2								(1<<5)		//!< Trigger selection on INT2
-#define LSM303AGR_FIFO_CTRL_FMODE_MASK							(3<<6)		//!< Fifo mode
-#define LSM303AGR_FIFO_CTRL_FMODE_BYPASS						(0<<6)
-#define LSM303AGR_FIFO_CTRL_FMODE_FIFO_MODE						(1<<6)
-#define LSM303AGR_FIFO_CTRL_FMODE_STREAM_MODE					(2<<6)
-#define LSM303AGR_FIFO_CTRL_FMODE_STREAM_TO_FIFO_MODE			(3<<6)
+#define LSM303AGR_FIFO_CTRL_FM_MASK								(3<<6)		//!< Fifo mode
+#define LSM303AGR_FIFO_CTRL_FM_BYPASS							(0<<6)		//!< Bypass
+#define LSM303AGR_FIFO_CTRL_FM_FIFO								(1<<6)		//!< FIFO mode
+#define LSM303AGR_FIFO_CTRL_FM_STREAM							(2<<6)		//!< Stream mode
+#define LSM303AGR_FIFO_CTRL_FM_STREAM_TO_FIFO					(3<<6)		//!< Stream-to-FIFO mode
 
 #define LSM303AGR_FIFO_SRC_REG				0x2F
 #define LSM303AGR_FIFO_SRC_FSS_MASK								(0x1F<<0)	//!< Fifo stored data level
@@ -332,9 +332,10 @@ SOFTWARE.
 #define LSM303AGR_OUTZ_L_REG_M_REG				0x6C
 #define LSM303AGR_OUTZ_H_REG_M_REG				0x6D
 
+#define LSM303AGR_MAG_SENSITTIVITY				150		// nanoTesla per bit
 
 // Accel, Mag, Temperature
-class AccLsm303agr : public AccelSensor, public TempSensor  {
+class AccelLsm303agr : public AccelSensor, public TempSensor  {
 public:
 	/**
 	 * @brief	Initialize accelerometer sensor.
@@ -348,20 +349,31 @@ public:
 	 * @return	true - Success
 	 */
 	virtual bool Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
-	virtual uint16_t Scale(uint16_t Value) { return 0; }			// Accel
-
 	virtual bool Init(const TEMPSENSOR_CFG &CfgData, DeviceIntrf * const pIntrf = NULL, Timer * const pTimer = NULL);
+	virtual uint32_t SamplingFrequency(uint32_t Freq);
+	virtual uint8_t Scale(uint8_t Value);
+
+	/**
+	 * @brief	Set and enable filter cutoff frequency
+	 *
+	 * Optional implementation can override this to implement filtering supported by the device
+	 *
+	 * @param	Freq : Filter frequency in mHz
+	 *
+	 * @return	Actual frequency in mHz
+	 */
+	virtual uint32_t FilterFreq(uint32_t Freq);
+
 
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
+	virtual void PowerOff();
 
 	virtual bool Read(ACCELSENSOR_RAWDATA &Data) { return AccelSensor::Read(Data); }
 	virtual bool Read(ACCELSENSOR_DATA &Data) { return AccelSensor::Read(Data); }
 
-	bool UpdateData() { return false; }
-
-	virtual bool StartSampling() { return false; }
+	bool UpdateData();
 
 	/**
 	 * @brief	Read device's register/memory block.
@@ -395,12 +407,19 @@ public:
 	 */
 	virtual int Write(uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen);
 
+	/**
+	 * @brief	Interrupt handler (optional)
+	 *
+	 * Sensor that supports interrupt can implement this to handle interrupt.
+	 * Use generic DEVEVTCB callback and DEV_EVT to send event to user application
+	 */
+	virtual void IntHandler();
+	virtual bool StartSampling() { return true; }
+
 private:
-	// Default base initialization. Does detection and set default config for all sensor.
-	// All sensor init must call this first prio to initializing itself
 	bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer);
 
-	bool vbInitialized;
+	int32_t vRShift;	//!< Data are left justify. This var contains shift right value to right justify
 };
 
 class MagLsm303agr : public MagSensor  {
@@ -417,24 +436,29 @@ public:
 	 * @return	true - Success
 	 */
 	virtual bool Init(const MAGSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
+	uint32_t SamplingFrequency(uint32_t Freq);
 
 	virtual bool Enable();
 	virtual void Disable();
 	virtual void Reset();
 
+	bool UpdateData();
+
 	virtual bool Read(MAGSENSOR_RAWDATA &Data) { return MagSensor::Read(Data); }
 	virtual bool Read(MAGSENSOR_DATA &Data) { return MagSensor::Read(Data); }
 
-	bool UpdateData() { return false; }
-
-	virtual bool StartSampling() { return false; }
+	/**
+	 * @brief	Interrupt handler (optional)
+	 *
+	 * Sensor that supports interrupt can implement this to handle interrupt.
+	 * Use generic DEVEVTCB callback and DEV_EVT to send event to user application
+	 */
+	virtual void IntHandler();
+	virtual bool StartSampling() { return true; }
 
 private:
-	// Default base initialization. Does detection and set default config for all sensor.
-	// All sensor init must call this first prio to initializing itself
-	bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer);
 
-	bool vbInitialized;
+	int16_t vOffset[3];
 };
 
 

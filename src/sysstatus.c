@@ -91,12 +91,12 @@ STATUS SysStatusSet(STATUS Code, char *pDesc)
 	if ((Code & SYSSTATUS_TYPE_MASK) == SYSSTATUS_TYPE_RNT)
 	{
 		// Special case for runtime state machine
-		atomic_store((atomic_uint *)&g_SysState, Code);
+		atomic_store((atomic_uint_fast32_t *)&g_SysState, Code);
 	}
 
 	g_StatusQCurrIdx = (g_StatusQCurrIdx + 1) % SYSSTATUS_MAXQUE;
 
-	atomic_store((atomic_uint *)g_StatusQue[g_StatusQCurrIdx].Code, Code);
+	atomic_store((atomic_uint_fast32_t *)g_StatusQue[g_StatusQCurrIdx].Code, Code);
 	if (pDesc)
 	{
 		strncpy(g_StatusQue[g_StatusQCurrIdx].Desc, pDesc, SYSSTATUS_DESC_MAX);

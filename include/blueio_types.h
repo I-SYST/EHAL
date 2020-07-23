@@ -100,13 +100,13 @@ typedef struct __BlueIO_Data_Mag {
 
 /// Proximity sensor data
 typedef struct __BlueIO_Data_Proxy {
-	uint32_t Id;					//!< Sensor ID
+	uint32_t Id;				//!< Sensor ID
 	uint32_t Val;				//!< Range value
 } BLUEIO_DATA_PROXY;
 
 /// ADC data
 typedef struct __BlueIO_Data_Adc {
-	uint32_t ChanId;				//!< ADC channel id
+	uint32_t ChanId;			//!< ADC channel id
 	float	 Voltage;			//!< Voltage measured
 } BLUEIO_DATA_ADC;
 
@@ -134,7 +134,7 @@ typedef struct __BlueIO_Data_Button {
 /// Motion sensor data
 typedef struct __BlueIO_Data_Motiont {
 	uint32_t Id;				//!< Sensor ID
-	uint32_t Val;				//!< Detection state (0 - no motion, 1 - motion
+	uint32_t Val;				//!< Detection state (0 - no motion, 1 - motion)
 } BLUEIO_DATA_MOTION;
 
 #define BLUEIO_I2C_DATA_LEN_MAX		6

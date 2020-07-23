@@ -116,7 +116,7 @@ typedef struct __ADC_Channel_Config {
 
 class AdcDevice;	// Forward declare
 
-typedef void (*ADC_EVTCB)(AdcDevice *pDev, ADC_EVT Evt);
+//typedef void (*ADC_EVTCB)(AdcDevice *pDev, ADC_EVT Evt);
 
 typedef struct __ADC_Config {
     ADC_CONV_MODE Mode;			//!< Conversion mode
@@ -125,11 +125,11 @@ typedef struct __ADC_Config {
 	int			NbRefVolt;		//!< Total number of reference voltage input
 	uint8_t		DevAddr;		//!< Device address. For example I2C device address
 	int			Resolution;		//!< Sampling resolution in bits
-	int			Rate;			//!< Sampling rate in Hz
+	int			Rate;			//!< Sampling rate in mHz
 	int			OvrSample;		//!< Oversample
 	bool		bInterrupt;		//!< Enable/Disable interrupt
 	int			IntPrio;		//!< Interrupt priority
-	ADC_EVTCB	EvtHandler;		//!< ADC event handler
+	DEVEVTCB	EvtHandler;		//!< Device event handler
 } ADC_CFG;
 
 typedef struct __ADC_Data_Packet {
@@ -141,7 +141,7 @@ typedef struct __ADC_Data_Packet {
 #pragma pack(pop)
 
 /// ADC generic base class. implementation must derive from this class.
-class AdcDevice : virtual public Device {
+class AdcDevice : public Device {
 public:
 
 	/**
@@ -166,7 +166,7 @@ public:
 	 *
 	 * @return	Real rate value set in Hz
 	 */
-	virtual uint32_t Rate(uint32_t Val) = 0;
+	virtual uint32_t Rate(uint32_t Val) { vRate = Val; return vRate; }
 
 	/**
 	 * @brief	Get conversion rate for continuous mode only
@@ -182,7 +182,7 @@ public:
 	 *
 	 * @return	Real resolution value set in bits
 	 */
-	virtual uint16_t Resolution(uint16_t Val) = 0;
+	virtual uint16_t Resolution(uint16_t Val) { vResolution = Val; return vResolution; }
 
 	/**
 	 * @brief 	Get current conversion resolution
@@ -221,6 +221,13 @@ public:
 	virtual void StopConversion() = 0;
 
 	/**
+	 * @brief	Read data from device if available
+	 *
+	 * @return	true if new data is available
+	 */
+	virtual bool UpdateData() = 0;
+
+	/**
 	 * @brief	Read converted data multiple channels
 	 *
 	 * @param	pBuff : Buffer to receive converted data
@@ -238,7 +245,7 @@ public:
 	 *
 	 * @return	true - data available
 	 */
-	virtual bool Read(int Chan, ADC_DATA *pBuff);
+	virtual bool Read(int Chan, ADC_DATA *pBuff) = 0;
 
 	/**
 	 * @brief	Execute auto calibration
@@ -251,17 +258,17 @@ public:
 	virtual void Mode(ADC_CONV_MODE Mode) { vMode = Mode; }
 
 protected:
-	void SetEvtHandler(ADC_EVTCB EvtHandler) { vEvtHandler = EvtHandler; }
+	//void SetEvtHandler(ADC_EVTCB EvtHandler) { vEvtHandler = EvtHandler; }
 	void SetRefVoltage(const ADC_REFVOLT * const pRefVolt, int NbRefVolt) {
 		vpRefVolt = pRefVolt;
 		vNbRefVolt = NbRefVolt;
 	}
-
+/*
 	void EvtHandler(ADC_EVT Evt) {
 		if (vEvtHandler)
 			vEvtHandler(this, Evt);
 	}
-
+*/
 	const ADC_REFVOLT *vpRefVolt;	//!< pointer to array of predefined reference voltages
 	int vNbRefVolt;					//!< number of reference voltages (array size)
 	uint16_t vResolution;			//!< Resolution in bits
@@ -271,7 +278,7 @@ protected:
 	uint32_t vIntPrio;				//!< Interrupt priority
 
 private:
-	ADC_EVTCB vEvtHandler;
+//	ADC_EVTCB vEvtHandler;
 };
 
 /** @} End of group Converters */

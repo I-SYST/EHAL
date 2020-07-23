@@ -1,11 +1,17 @@
-/*--------------------------------------------------------------------------
-File   : diskio.c
+/**-------------------------------------------------------------------------
+@example	pulse_train.c
 
-Author : Hoang Nguyen Hoan          Mar. 1, 2015
+@brief	Pulse train example
 
-Desc   : Generic Disk I/O driver
+This example shows how to use GPIO to generate a pulse train.
+A pulse moving from 1 GPIO to the next
 
-Copyright (c) 2015, I-SYST, all rights reserved
+@author	Hoang Nguyen Hoan
+@date	Aug. 31, 2014
+
+@license
+
+Copyright (c) 2014, I-SYST inc., all rights reserved
 
 Permission to use, copy, modify, and distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright
@@ -27,46 +33,46 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-----------------------------------------------------------------------------
-Modified by          Date              Description
-
 ----------------------------------------------------------------------------*/
+#include <stdio.h>
+#include <stdbool.h>
 
-#include <string.h>
+#include "coredev/iopincfg.h"
+#include "iopinctrl.h"
+#include "idelay.h"
+#include "pulse_train.h"
 
-#include "istddef.h"
-#include "crc.h"
-#include "diskio.h"
+#include "board.h"
 
-bool DiskIOInit(DISKIODEV *pDev, DISKIOCFG *pCfg)
+/// Pulse train config
+static const PULSE_TRAIN_PIN s_PulseTrainPins[] = PULSE_TRAIN_PINS_MAP;
+
+PULSE_TRAIN_CFG g_PulseTrainCfg = {
+	.pPins = (PULSE_TRAIN_PIN *)s_PulseTrainPins,
+	.NbPins = sizeof(s_PulseTrainPins) / sizeof(PULSE_TRAIN_PIN),
+	.Period = 1,
+	.Pol = PULSE_TRAIN_POL_HIGH
+};
+
+//
+// Print a greeting message on standard output and exit.
+//
+// On embedded platforms this might require semi-hosting or similar.
+//
+// For example, for toolchains derived from GNU Tools for Embedded,
+// to enable semi-hosting, the following was added to the linker:
+//
+// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lm -lrdimon -Wl,--end-group
+//
+// Adjust it for other toolchains.
+//
+
+int main()
 {
-	if (pDev == NULL || pCfg == NULL)
-		return false;
+	// Pulse train forever
+	PulseTrain(&g_PulseTrainCfg, 0);
 
-
-	return true;
-}
-
-uint32_t DiskIOGetSize(DISKIODEV *pDev)
-{
 	return 0;
 }
 
-
-int DiskIOSectRead(DISKIODEV *pDev, uint32_t Addr, uint8_t *pData, int len)
-{
-	if (pData)
-	{
-	}
-	return 0;
-}
-
-int DiskIOSectWrite(DISKIODEV *pDev, uint32_t Addr, uint8_t *pData, int Len)
-{
-	if (pData)
-	{
-	}
-
-	return 0;
-}
 

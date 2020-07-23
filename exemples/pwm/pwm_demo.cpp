@@ -36,6 +36,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "pwm.h"
 #include "idelay.h"
 
+#include "board.h"
+
 static const PWM_CFG s_PwmCfg = {
 	.DevNo = 0,
 	.Freq = 1000,
@@ -50,13 +52,13 @@ static const PWM_CHAN_CFG s_PwmChanCfg[] = {
 		.Chan = 0,
 		.Pol = PWM_POL_HIGH,
 		.Port = 0,
-		.Pin = 25,
+		.Pin = 18,
 	},
 	{
 		.Chan = 1,
 		.Pol = PWM_POL_HIGH,
 		.Port = 0,
-		.Pin = 22,
+		.Pin = 19,
 	},
 };
 

@@ -1,7 +1,7 @@
 /**-------------------------------------------------------------------------
-@file	timer_nrf5x.h
+@file	timer_nrfx.h
 
-@brief	Timer class implementation on Nordic nRF51 & nRF52 series
+@brief	Timer class implementation on Nordic nRF5x & nRF91 series
 
 
 @author	Hoang Nguyen Hoan
@@ -33,31 +33,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
 
-#ifndef __TIMER_NRF5x_H__
-#define __TIMER_NRF5x_H__
+#ifndef __TIMER_NRFX_H__
+#define __TIMER_NRFX_H__
 
 #include <stdint.h>
 
 #include "nrf.h"
+#include "nrf_peripherals.h"
 
 #include "coredev/timer.h"
 
 /// Low frequency timer using Real Time Counter (RTC) 32768 Hz clock source.
 ///
-#define TIMER_NRF5X_RTC_BASE_FREQ   		32768
-#ifdef NRF52_SERIES
-#define TIMER_NRF5X_RTC_MAX                 3           //!< 3 RTC available on nRF52
-#else
-#define TIMER_NRF5X_RTC_MAX                 2           //!< 2 RTC available on nRF51
-#endif
-#define TIMER_NRF5X_RTC_MAX_TRIGGER_EVT     4           //!< Max number of supported counter trigger event
+#define TIMER_NRFX_RTC_BASE_FREQ   			32768
+#define TIMER_NRFX_RTC_MAX                 	RTC_COUNT	//!< Number RTC available
+#define TIMER_NRFX_RTC_MAX_TRIGGER_EVT     	RTC1_CC_NUM	//!< Max number of supported counter trigger event
 
 /// Low frequency timer implementation class.
 ///
-class TimerLFnRF5x : public Timer {
+class TimerLFnRFx : public Timer {
 public:
-	TimerLFnRF5x();
-    virtual ~TimerLFnRF5x();
+	TimerLFnRFx();
+    virtual ~TimerLFnRFx();
 
 	virtual bool Init(const TIMER_CFG &Cfg);
 	virtual bool Enable();
@@ -66,9 +63,13 @@ public:
 	virtual uint32_t Frequency(uint32_t Freq);
 	virtual uint32_t Frequency(void) { return vFreq; }
 	virtual uint64_t TickCount();
-    int MaxTimerTrigger() { return TIMER_NRF5X_RTC_MAX_TRIGGER_EVT; }
+    int MaxTimerTrigger() { return vMaxNbTrigEvt; }
     /**
 	 * @brief	Enable millisecond timer trigger event.
+	 *
+	 * Note: this must be implemented in each class. Otherwise it won't be
+	 * visible to compiler from base class.  This is due to limitation of
+	 * polymorphism of C++
 	 *
 	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
 	 * @param   msPeriod : Trigger period in msec.
@@ -107,27 +108,27 @@ public:
 protected:
 private:
     NRF_RTC_Type *vpReg;
-    uint32_t vCC[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
-    TIMER_TRIGGER vTrigger[TIMER_NRF5X_RTC_MAX_TRIGGER_EVT];
+    int vMaxNbTrigEvt;		//!< Number of trigger is not the same for all timers.
+    uint32_t vCC[TIMER_NRFX_RTC_MAX_TRIGGER_EVT];
+    TIMER_TRIGGER vTrigger[TIMER_NRFX_RTC_MAX_TRIGGER_EVT];
 };
 
 /// High frequency timer using Timer 16MHz clock source.
 ///
-#define TIMER_NRF5X_HF_BASE_FREQ   			16000000
-#ifdef NRF52_SERIES
-#define TIMER_NRF5X_HF_MAX              	5           //!< 5 high frequency timer available on nRF52
-#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	6           //!< Max number of supported counter trigger event
+#define TIMER_NRFX_HF_BASE_FREQ   			16000000
+#define TIMER_NRFX_HF_MAX              		TIMER_COUNT		//!< Number high frequency timer available
+#if TIMER_NRFX_HF_MAX < 4
+#define TIMER_NRFX_HF_MAX_TRIGGER_EVT  		TIMER2_CC_NUM	//!< Max number of supported counter trigger event
 #else
-#define TIMER_NRF5X_HF_MAX              	3           //!< 3 high frequency timer available on nRF51
-#define TIMER_NRF5X_HF_MAX_TRIGGER_EVT  	4           //!< Max number of supported counter trigger event
+#define TIMER_NRFX_HF_MAX_TRIGGER_EVT  		TIMER3_CC_NUM	//!< Max number of supported counter trigger event
 #endif
 
 /// High frequency timer implementation class
 ///
-class TimerHFnRF5x : public Timer {
+class TimerHFnRFx : public Timer {
 public:
-    TimerHFnRF5x();
-    virtual ~TimerHFnRF5x();
+    TimerHFnRFx();
+    virtual ~TimerHFnRFx();
 
     virtual bool Init(const TIMER_CFG &Cfg);
     virtual bool Enable();
@@ -135,15 +136,14 @@ public:
     virtual void Reset();
     virtual uint32_t Frequency(uint32_t Freq);
     virtual uint64_t TickCount();
-    int MaxTimerTrigger() {
-#ifdef NRF52_SERIES
-    	return vMaxNbTrigEvt;
-#else
-    	return TIMER_NRF5X_HF_MAX_TRIGGER_EVT;
-#endif
-    }
+    int MaxTimerTrigger() { return vMaxNbTrigEvt; }
+
     /**
 	 * @brief	Enable millisecond timer trigger event.
+	 *
+	 * Note: this must be implemented in each class. Otherwise it won't be
+	 * visible to compiler from base class.  This is due to limitation of
+	 * polymorphism of C++
 	 *
 	 * @param   TrigNo : Trigger number to enable. Index value starting at 0
 	 * @param   msPeriod : Trigger period in msec.
@@ -184,8 +184,12 @@ private:
 
     NRF_TIMER_Type *vpReg;
     int vMaxNbTrigEvt;		//!< Number of trigger is not the same for all timers.
-    uint32_t vCC[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
-    TIMER_TRIGGER vTrigger[TIMER_NRF5X_HF_MAX_TRIGGER_EVT];
+    uint32_t vCC[TIMER_NRFX_HF_MAX_TRIGGER_EVT];
+    TIMER_TRIGGER vTrigger[TIMER_NRFX_HF_MAX_TRIGGER_EVT];
 };
 
-#endif // __TIMER_NRF5x_H__
+// For backward compatibility, uncomment the lines bellow
+//typedef TimerLFnRFx		TimerLFnRF5x;
+//typedef TimerHFnRFx		TimerHFnRF5x;
+
+#endif // __TIMER_NRFX_H__

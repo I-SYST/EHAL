@@ -37,6 +37,7 @@ Modified by          Date              Description
 #ifndef __CUSTOM_BOARD_H__
 #define __CUSTOM_BOARD_H__
 
+#include "nrf.h"
 #include "blueio_board.h"
 
 #define LEDS_NUMBER    3

@@ -104,13 +104,13 @@ bool FATFSVDiskInit(FATFS_VDISK *pVDisk, const FATFS_VDISKCFG *pCfg)
 	if (pVDisk == NULL)
 		return false;
 
-	uint32_t nbsect, nbcluster;
-	uint32_t RsvdCount, RootDirCnt;
+	//uint32_t nbsect, nbcluster;
+	//uint32_t RsvdCount, RootDirCnt;
 	//uint32_t partstartsect = 0;
 	//memset(pVDisk->Fat32, 0, sizeof(pVDisk->Fat32));
 
 	//nbsect = (pCfg->DataSize + pCfg->SectSize - 1) / pCfg->SectSize + OS_REQUIRE_CLUSTERS;
-	nbsect = pCfg->VolumeSize /  pCfg->SectSize;
+	//nbsect = pCfg->VolumeSize /  pCfg->SectSize;
 
 	pVDisk->pMbrSect = pCfg->pMbrSect;
 	pVDisk->pFat1 = pCfg->pFat1;

@@ -34,7 +34,7 @@ Modified by          Date              Description
 
 #include <string.h>
 #include <stdio.h>
-#include <atomic>
+//#include <atomic>
 
 #include "istddef.h"
 #include "crc.h"

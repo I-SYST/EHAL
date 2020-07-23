@@ -105,7 +105,7 @@ int main()
      err_code = nrfx_uarte_init(&g_Uarte, &g_UarteCfg, uart_error_handle);
     if (err_code != NRF_SUCCESS)
     {
-    	printf("Error %x\n\r", err_code);
+    	//printf("Error %x\n\r", err_code);
     }
 
 

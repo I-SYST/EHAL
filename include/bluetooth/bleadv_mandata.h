@@ -43,6 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /// Manufacture specific advertisement data type
 #define BLEADV_MANDATA_TYPE_SN			0xFF						//!< Device Serial Number or UID (8 bytes)
+#define BLEADV_MANDATA_TYPE_APP			BLUEIO_DATA_TYPE_APP		//!< Battery level data
 #define BLEADV_MANDATA_TYPE_TPH			BLUEIO_DATA_TYPE_TPH		//!< Environmental sensor data (Temperature, Pressure, Humidity)
 #define BLEADV_MANDATA_TYPE_GAS			BLUEIO_DATA_TYPE_GAS		//!< Gas sensor data
 #define BLEADV_MANDATA_TYPE_ACCEL		BLUEIO_DATA_TYPE_ACCEL		//!< Accelerometer sensor data
@@ -62,8 +63,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /// Generic manufacture specific data format in advertisement
 typedef struct __BleApp_Advertising_ManData {
-	uint8_t Type;							//!< Data types (see defined code above)
-	uint8_t Data[BLEADV_MANDATA_LEN_MAX];	//!< Type specific data follows can be more than 1 bytes
+	uint8_t Type;		//!< Data types (see defined code above)
+	uint8_t Data[1];	//!< Type specific data follows can be more than 1 bytes
 } BLEADV_MANDATA;
 
 /// Environmental sensor data

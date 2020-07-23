@@ -153,6 +153,19 @@ public:
 	 */
 	virtual uint16_t Scale(uint16_t Value);
 
+	/**
+	 * @brief	Set max measurement range of the device
+	 *
+	 * This function sets the maximum positive value of the raw data that can be read from
+	 * the sensor. Sensor device can implement this function to allow configuration variable
+	 * range value.
+	 *
+	 * @param	Max positive range value
+	 *
+	 * @return	Actual maximum positive range value of the raw data
+	 */
+	virtual uint32_t Range(uint32_t Value) { vData.Range = Value; return Sensor::Range(Value); }
+
     virtual void SetCalibration(float (&Gain)[3][3], float (&Offset)[3]);
 	virtual void ClearCalibration();
 	virtual bool StartSampling() { return true; }
@@ -161,6 +174,7 @@ public:
 		Type(SENSOR_TYPE_ACCEL);
 		ClearCalibration();
 	}
+	AccelSensor(AccelSensor&);	// Copy ctor not allowed
 
 protected:
 

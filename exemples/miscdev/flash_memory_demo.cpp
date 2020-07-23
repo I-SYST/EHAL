@@ -33,13 +33,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------------*/
 #include <stdio.h>
 
-// EHAL includes
 #include "coredev/uart.h"
 #include "coredev/spi.h"
 #include "diskio_flash.h"
 #include "stddev.h"
-#include "board.h"
 #include "idelay.h"
+
+#include "board.h"
 
 #define FIFOSIZE			CFIFO_MEMSIZE(256)
 
@@ -75,20 +75,14 @@ static const UARTCFG s_UartCfg = {
 
 UART g_Uart;
 
-//********** SPI Master **********
-static const IOPINCFG s_SpiPins[] = {
-    {SPI_SCK_PORT, SPI_SCK_PIN, SPI_SCK_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},		// SCK
-    {SPI_MISO_PORT, SPI_MISO_PIN, SPI_MISO_PINOP, IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},	// MISO
-    {SPI_MOSI_PORT, SPI_MOSI_PIN, SPI_MOSI_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},		// MOSI
-    {SPI_FLASH_CS_PORT, SPI_FLASH_CS_PIN, SPI_FLASH_CS_PINOP, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},	// CS
-};
+static const IOPINCFG s_SpiPins[] = SPI_PINS_CFG;
 
 static const SPICFG s_SpiCfg = {
 	.DevNo = SPI_DEVNO,
-	.Type = SPITYPE_NORMAL,
+	.Phy = SPI_PHY,
     .Mode = SPIMODE_MASTER,
 	.pIOPinMap = s_SpiPins,
-    .NbIOPins = sizeof( s_SpiPins ) / sizeof( IOPINCFG ),
+	.NbIOPins = sizeof(s_SpiPins) / sizeof(IOPINCFG),
     .Rate = 4000000,   // Speed in Hz
     .DataSize = 8,      // Data Size
     .MaxRetry = 5,      // Max retries
@@ -96,13 +90,61 @@ static const SPICFG s_SpiCfg = {
     .DataPhase = SPIDATAPHASE_FIRST_CLK, // Data phase
     .ClkPol = SPICLKPOL_HIGH,         // clock polarity
     .ChipSel = SPICSEL_AUTO,
-	.bDmaEn = true,	// DMA
+	.bDmaEn = false,	// DMA
 	.bIntEn = false,
     .IntPrio = 6, //APP_IRQ_PRIORITY_LOW,      // Interrupt priority
     .EvtCB = NULL
 };
 
 SPI g_Spi;
+
+//#endif
+
+bool MX25U1635E_init(int pDevNo, DeviceIntrf* ppInterface);
+bool FlashWriteDelayCallback(int DevNo, DeviceIntrf *pInterf);
+
+static FLASHDISKIO_CFG s_FlashDiskCfg = {
+    .DevNo = 0,
+    .TotalSize = 32 * 1024 / 8,      // 32 Mbits
+	.SectSize = 4,		// 4K
+    .BlkSize = 32,		// 32K
+    .WriteSize = 256,
+    .AddrSize = 3,                          // 3 bytes addressing
+    .pInitCB = MX25U1635E_init,
+    .pWaitCB = FlashWriteDelayCallback,
+};
+
+// Micron N25Q128A
+static FLASHDISKIO_CFG s_N25Q128A_QFlashCfg = {
+    .DevNo = 0,
+    .TotalSize = 128 * 1024 / 8,      // 128 Mbits
+	.SectSize = 4,		// 4K
+    .BlkSize = 32,		// 32K
+    .WriteSize = 256,
+    .AddrSize = 3,      // 3 bytes addressing
+	//.DevId = 0x18ba20,//0x1628c2,	// C21628
+	//.DevIdSize = 3,
+    .pInitCB = NULL,
+    .pWaitCB = FlashWriteDelayCallback,
+	.RdCmd = { FLASH_CMD_QREAD, 10},
+	.WrCmd = { FLASH_CMD_QWRITE, 0 },
+};
+
+// Macronix MX25R3235F
+static FLASHDISKIO_CFG s_MX25R3235F_QFlashCfg = {
+    .DevNo = 0,
+    .TotalSize = 32 * 1024 / 8,      // 32 Mbits
+	.SectSize = 4,		// 4K
+    .BlkSize = 64,		// 64K
+    .WriteSize = 256,
+    .AddrSize = 3,                          // 3 bytes addressing
+//	.DevId = 0x1628c2,	// C21628
+//	.DevIdSize = 3,
+    .pInitCB = NULL,
+    .pWaitCB = NULL,
+	.RdCmd = { FLASH_CMD_4READ, 6},
+	.WrCmd = { FLASH_CMD_4WRITE, 0 },
+};
 
 FlashDiskIO g_FlashDiskIO;
 
@@ -111,26 +153,15 @@ DISKIO_CACHE_DESC g_FlashCache = {
     -1, 0xFFFFFFFF, s_FlashCacheMem
 };
 
-/// mx66u51235f
-bool mx66u51235f_init(int pDevNo, DeviceIntrf* ppInterface);
 bool FlashWriteDelayCallback(int DevNo, DeviceIntrf *pInterf)
 {
+	msDelay(3);
 	return true;
 }
 
-static FLASHDISKIO_CFG s_FlashDiskCfg = {
-    .DevNo = 0,
-    .TotalSize = 256 * 1024 * 1024 / 8,      // 256 Mbits
-    .EraseSize = 0x10000,
-    .WriteSize = 128,
-    .AddrSize = 4,                          // 256+ Mbits needs 4 bytes addressing
-    .pInitCB = mx66u51235f_init,
-    .pWaitCB = FlashWriteDelayCallback,
-};
-
-bool mx66u51235f_init(int pDevNo, DeviceIntrf* ppInterface)
+bool MX25U1635E_init(int DevNo, DeviceIntrf* pInterface)
 {
-    if (ppInterface == NULL)
+    if (pInterface == NULL)
         return false;
 
     int cnt = 0;
@@ -139,13 +170,14 @@ bool mx66u51235f_init(int pDevNo, DeviceIntrf* ppInterface)
     uint32_t r = 0;
 
     d = FLASH_CMD_READID;
-    cnt = ppInterface->Read(pDevNo, (uint8_t*)&d, 1, (uint8_t*)&r, 2 );
-    if ( r != 0x25C2 )
-    	return false;
+    cnt = pInterface->Read(DevNo, (uint8_t*)&d, 1, (uint8_t*)&r, 2 );
+    //if ( r != 0x28C2 )
+    //	return false;
 
+    printf("Flash found!\r\n");
     // Enable write
     d = FLASH_CMD_EN4B;
-    cnt = ppInterface->Tx(pDevNo, (uint8_t*)&d, 1);
+    cnt = pInterface->Tx(DevNo, (uint8_t*)&d, 1);
 
     return true;
 }
@@ -162,51 +194,71 @@ bool mx66u51235f_init(int pDevNo, DeviceIntrf* ppInterface)
 //
 // Adjust it for other toolchains.
 //
-
 int main()
 {
-	g_Uart.Init(s_UartCfg);
+	//g_Uart.Init(s_UartCfg);
 
 	// Retarget printf to UART
-	UARTRetargetEnable(g_Uart, STDOUT_FILENO);
-	UARTRetargetEnable(g_Uart, STDIN_FILENO);
+	//UARTRetargetEnable(g_Uart, STDOUT_FILENO);
+	//UARTRetargetEnable(g_Uart, STDIN_FILENO);
 
 	printf("Flash Memory Demo\r\n");
 	//getchar();
 
 	g_Spi.Init(s_SpiCfg);
 
-    IOPinConfig(FLASH_HOLD_PORT, FLASH_HOLD_PIN, FLASH_HOLD_PINOP, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL);
+   // IOPinConfig(FLASH_HOLD_PORT, FLASH_HOLD_PIN, FLASH_HOLD_PINOP, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL);
 
-	g_FlashDiskIO.Init(s_FlashDiskCfg, &g_Spi, &g_FlashCache, 1);
+	// Regular SPI FLash
+	//g_FlashDiskIO.Init(s_N25Q128A_QFlashCfg, &g_Spi, &g_FlashCache, 1);
+
+	// QSPI flash
+	//g_FlashDiskIO.Init(s_N25Q128A_QFlashCfg, &g_Spi, &g_FlashCache, 1);
+	g_FlashDiskIO.Init(s_MX25R3235F_QFlashCfg, &g_Spi, &g_FlashCache, 1);
+
+	//g_QFlash.Init(s_QFlashCfg, &g_FlashCache, 1);
 
 	uint8_t buff[512];
+	uint8_t buff2[512];
 	uint8_t tmp[512];
 	uint16_t *p = (uint16_t*)buff;
 
-	memset(tmp, 0, 512);
+	memset(tmp, 0xa5, 512);
 	for (int i = 0; i < 256; i++)
 	{
-		p[i] = i;
+		p[i] = 255-i;
 	}
-
 
 	printf("Erasing... Please wait\r\n");
 
 	// Ease could take a few minutes
-	g_FlashDiskIO.Erase();
-
+	//g_FlashDiskIO.EraseBlock(0, 4);
+	//g_FlashDiskIO.Erase();
 	printf("Writing 2KB data...\r\n");
 
-	g_FlashDiskIO.SectWrite(0, buff);
-	g_FlashDiskIO.SectWrite(2, buff);
-	g_FlashDiskIO.SectWrite(4, buff);
-	g_FlashDiskIO.SectWrite(8, buff);
+	g_FlashDiskIO.SectWrite(1, buff);
+
+	p = (uint16_t*)buff2;
+	for (int i = 0; i < 256; i++)
+	{
+		p[i] = i;
+	}
+	g_FlashDiskIO.SectWrite(2UL, buff2);
+	//g_FlashDiskIO.SectWrite(4, buff);
+	//g_FlashDiskIO.SectWrite(8, buff);
 
 	printf("Validate readback...\r\n");
 
-	g_FlashDiskIO.SectRead(0, tmp);
+	g_FlashDiskIO.SectRead(1, tmp);
 
+	for (int i = 0; i < 512; i++)
+	{
+		if (buff[i] != tmp[i])
+		{
+			printf("Failed %d\r\n", i);
+			break;
+		}
+	}
 	if (memcmp(buff, tmp, 512) != 0)
 	{
 		printf("Sector 0 verify failed\r\n");
@@ -218,13 +270,47 @@ int main()
 
 	memset(tmp, 0, 512);
 	g_FlashDiskIO.SectRead(2, tmp);
-	if (memcmp(buff, tmp, 512) != 0)
+	for (int i = 0; i < 512; i++)
+	{
+		if (buff2[i] != tmp[i])
+		{
+			printf("Failed %d\r\n", i);
+			break;
+		}
+	}
+	if (memcmp(buff2, tmp, 512) != 0)
 	{
 		printf("Sector 2 verify failed\r\n");
 	}
 	else
 	{
 		printf("Sector 2 verify success\r\n");
+	}
+	g_FlashDiskIO.EraseSector(0, 1);
+	msDelay(1000);
+	g_FlashDiskIO.SectRead(0, tmp);
+
+	memset(buff, 0xff, 512);
+	if (memcmp(buff, tmp, 512) != 0)
+	{
+		printf("Sector 1 verify erase failed\r\n");
+	}
+	else
+	{
+		printf("Sector 1 verify erase success\r\n");
+	}
+
+
+	g_FlashDiskIO.SectWrite(0, buff2);
+	g_FlashDiskIO.SectRead(0, tmp);
+
+	if (memcmp(buff2, tmp, 512) != 0)
+	{
+		printf("Sector 0 verify failed\r\n");
+	}
+	else
+	{
+		printf("Sector 0 verify success\r\n");
 	}
 
 	memset(tmp, 0, 512);
@@ -248,5 +334,7 @@ int main()
 	{
 		printf("Sector 8 verify success\r\n");
 	}
+
+	while(1) { __WFE(); }
 
 }

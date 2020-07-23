@@ -184,7 +184,11 @@ struct __Uart_Dev {
 	uint32_t LineState;			//!< Line state
 	int hStdIn;					//!< Handle to retarget stdin
 	int hStdOut;				//!< Handle to retarget stdout
-	uint32_t RxOECnt;			//!< Rx overrun error count
+	uint32_t RxOvrErrCnt;			//!< Rx overrun error count
+	uint32_t ParErrCnt;
+	uint32_t FramErrCnt;
+	uint32_t RxDropCnt;
+	uint32_t TxDropCnt;
 	volatile bool bRxReady;
 	volatile bool bTxReady;
 };
@@ -238,15 +242,15 @@ public:
 	operator UARTDEV *  const () { return &vDevData; }
 
 	// Set data baudrate
-	virtual int Rate(int DataRate) { return UARTSetRate(&vDevData, DataRate); }
+	virtual uint32_t Rate(uint32_t DataRate) { return UARTSetRate(&vDevData, DataRate); }
 	// Get current data baudrate
-	virtual int Rate(void) { return UARTGetRate(&vDevData); }
+	virtual uint32_t Rate(void) { return UARTGetRate(&vDevData); }
     void Enable(void) { DeviceIntrfEnable(&vDevData.DevIntrf); }
     void Disable(void) { DeviceIntrfDisable(&vDevData.DevIntrf); }
 	virtual void SetCtrlLineState(int LineState) { UARTSetCtrlLineState(&vDevData, LineState); }
 	virtual int Rx(uint8_t *pBuff, int Len) { return DeviceIntrfRx(&vDevData.DevIntrf, 0, pBuff, Len); }
 	// Initiate receive
-	virtual bool StartRx(int DevAddr) { return DeviceIntrfStartRx(&vDevData.DevIntrf, DevAddr); }
+	virtual bool StartRx(uint32_t DevAddr) { return DeviceIntrfStartRx(&vDevData.DevIntrf, DevAddr); }
 	// Receive Data only, no Start/Stop condition
 	virtual int RxData(uint8_t *pBuff, int BuffLen) {
 		return DeviceIntrfRxData(&vDevData.DevIntrf, pBuff, BuffLen);
@@ -255,7 +259,7 @@ public:
 	virtual void StopRx(void) { DeviceIntrfStopRx(&vDevData.DevIntrf); }
 	virtual int Tx(uint8_t *pData, uint32_t Len) { return DeviceIntrfTx(&vDevData.DevIntrf, 0, pData, Len); }
 	// Initiate transmit
-	virtual bool StartTx(int DevAddr) { return DeviceIntrfStartTx(&vDevData.DevIntrf, DevAddr); }
+	virtual bool StartTx(uint32_t DevAddr) { return DeviceIntrfStartTx(&vDevData.DevIntrf, DevAddr); }
 	// Transmit Data only, no Start/Stop condition
 	virtual int TxData(uint8_t *pData, int DataLen) {
 		return DeviceIntrfTxData(&vDevData.DevIntrf, pData, DataLen);

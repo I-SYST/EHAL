@@ -69,8 +69,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sensors/tphg_bme680.h"
 #include "sensors/agm_mpu9250.h"
 #include "sensors/accel_adxl362.h"
-#include "timer_nrf5x.h"
-#include "timer_nrf_app_timer.h"
+#include "timer_nrfx.h"
 #include "board.h"
 #include "idelay.h"
 #include "seep.h"
@@ -145,7 +144,7 @@ const static TIMER_CFG s_TimerCfg = {
 #ifdef NRF51
 TimerAppTimer g_Timer;
 #else
-TimerLFnRF5x g_Timer;
+TimerLFnRFx g_Timer;
 //TimerAppTimer g_Timer;
 #endif
 
@@ -226,8 +225,8 @@ static const IOPINCFG s_SpiPins[] = {
 
 static const SPICFG s_SpiCfg = {
     .DevNo = SPI2_DEVNO,
-	.Type = SPITYPE_NORMAL,
-    .Mode = SPIMODE_MASTER,
+    .Phy = SPIPHY_NORMAL,
+	.Mode = SPIMODE_MASTER,
     .pIOPinMap = s_SpiPins,
     .NbIOPins = sizeof(s_SpiPins) / sizeof(IOPINCFG),
     .Rate = 1000000,   // Speed in Hz
@@ -353,7 +352,8 @@ bool MX25U1635E_init(int pDevNo, DeviceIntrf* ppInterface);
 static FLASHDISKIO_CFG s_FlashDiskCfg = {
     .DevNo = 1,
     .TotalSize = 16 * 1024 * 1024 / 8,      // 256 Mbits
-    .EraseSize = 4096,
+    .SectSize = 4,
+	.BlkSize = 32,
     .WriteSize = 128,
     .AddrSize = 3,                          // 256+ Mbits needs 4 bytes addressing
     .pInitCB = MX25U1635E_init,//mx66u51235f_init,
@@ -605,12 +605,10 @@ void HardwareInit()
     }
     else
     {
-#ifndef NRF51
     	if (ICM20948Init(&g_Spi, &g_Timer) == true)
     	{
 
     	}
-#endif
     }
 
 //    g_AgmSensor.Init(s_AccelCfg, &g_Spi);

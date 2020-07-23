@@ -91,8 +91,6 @@ bool AccelLis2dh12::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf,
 		}
 	}
 
-	AccelSensor::Type(SENSOR_TYPE_ACCEL);
-
 	if (Cfg.IntHandler)
 	{
 		vIntHandler = Cfg.IntHandler;
@@ -141,8 +139,9 @@ bool AccelLis2dh12::Init(const ACCELSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf,
 
 	msDelay(1);
 
+	// Flush FIFO
  	regaddr = LIS2DH12_FIFO_SRC_REG;
-	d = Read8(&regaddr, 1) & LIS2DH12_FIFO_CTRL_REG_FTH_MASK;
+	d = Read8(&regaddr, 1) & LIS2DH12_FIFO_SRC_REG_FSS_MASK;
 
 	uint8_t b[196];
 
@@ -166,8 +165,6 @@ bool AccelLis2dh12::Init(const TEMPSENSOR_CFG &Cfg, DeviceIntrf * const pIntrf, 
 			return false;
 		}
 	}
-
-	TempSensor::Type(SENSOR_TYPE_TEMP);
 
 	uint8_t regaddr = LIS2DH12_TEMP_CFG_REG;
 	Write8(&regaddr, 1, LIS2DH12_TEMP_CFG_EN);
@@ -361,7 +358,7 @@ uint32_t AccelLis2dh12::FilterFreq(uint32_t Freq)
 	regaddr = LIS2DH12_REFERENCE;
 	d = Read8(&regaddr, 1);
 
-	return Freq;
+	return AccelSensor::FilterFreq(Freq);
 }
 
 bool AccelLis2dh12::Enable()

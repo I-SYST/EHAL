@@ -56,6 +56,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DEVICE_NAME                     "UARTDemo"                          /**< Name of device. Will be included in the advertising data. */
 
+#define PACKET_SIZE						20
+
 #define MANUFACTURER_NAME               "I-SYST inc."                       /**< Manufacturer. Will be passed to Device Information Service. */
 
 #ifdef NRF52
@@ -120,7 +122,7 @@ BLESRVC_CHAR g_UartChars[] = {
 	{
 		// Read characteristic
 		.Uuid = BLE_UART_UUID_RX_CHAR,
-		.MaxDataLen = 20,
+		.MaxDataLen = PACKET_SIZE,
 		.Property =
 #ifdef HM_10
 		BLESVC_CHAR_PROP_WRITE |
@@ -141,7 +143,7 @@ BLESRVC_CHAR g_UartChars[] = {
 	{
 		// Write characteristic
 		.Uuid = BLE_UART_UUID_TX_CHAR,		// char UUID
-		.MaxDataLen = 20,					// char max data length
+		.MaxDataLen = PACKET_SIZE,			// char max data length
 		.Property = BLESVC_CHAR_PROP_WRITEWORESP,// char properties define by BLUEIOSVC_CHAR_PROP_...
 		.pDesc = s_TxCharDescString,		// char UTF-8 description string
 		.WrCB = UartTxSrvcCallback,			// Callback for write char, set to NULL for read char
@@ -160,7 +162,8 @@ uint8_t g_LWrBuffer[512];
 /// Service definition
 const BLESRVC_CFG s_UartSrvcCfg = {
 	.SecType = BLESRVC_SECTYPE_NONE,		// Secure or Open service/char
-	.UuidBase = BLE_UART_UUID_BASE,			// Base UUID
+	.UuidBase = {BLE_UART_UUID_BASE,},		// Base UUID
+	1,
 	.UuidSvc = BLE_UART_UUID_SERVICE,		// Service UUID
 	.NbChar = s_BleUartNbChar,				// Total number of characteristics for the service
 	.pCharArray = g_UartChars,				// Pointer a an array of characteristic
@@ -215,6 +218,11 @@ const BLEAPP_CFG s_BleAppCfg = {
 
 int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 
+#define UARTFIFOSIZE			CFIFO_MEMSIZE(256)
+
+static uint8_t s_UartRxFifo[UARTFIFOSIZE];
+static uint8_t s_UartTxFifo[UARTFIFOSIZE];
+
 /// UART pins definitions
 static IOPINCFG s_UartPins[] = {
 	{UART_RX_PORT, UART_RX_PIN, UART_RX_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},		// RX
@@ -237,6 +245,10 @@ const UARTCFG g_UartCfg = {
 	.IntPrio = APP_IRQ_PRIORITY_LOW,	// Interrupt priority
 	.EvtCallback = nRFUartEvthandler,	// UART event handler
 	.bFifoBlocking = true,				// Blocking FIFO
+	.RxMemSize = UARTFIFOSIZE,
+	.pRxMem = s_UartRxFifo,
+	.TxMemSize = UARTFIFOSIZE,
+	.pTxMem = s_UartTxFifo,
 };
 
 /// UART object instance
@@ -312,21 +324,42 @@ void HardwareInit()
 void BleAppInitUserData()
 {
 	// Add passkey pairing
-    //ble_opt_t opt;
-    //opt.gap_opt.passkey.p_passkey = (uint8_t*)"123456";
-	//uint32_t err_code =  sd_ble_opt_set(BLE_GAP_OPT_PASSKEY, &opt);
-	//APP_ERROR_CHECK(err_code);
+    ble_opt_t opt;
+    opt.gap_opt.passkey.p_passkey = (uint8_t*)"123456";
+	uint32_t err_code =  sd_ble_opt_set(BLE_GAP_OPT_PASSKEY, &opt);
+	APP_ERROR_CHECK(err_code);
 
 }
 
 void UartRxChedHandler(void * p_event_data, uint16_t event_size)
 {
-	uint8_t buff[128];
+	static uint8_t buff[PACKET_SIZE];
+	static int bufflen = 0;
+	bool flush = false;
 
-	int l = g_Uart.Rx(buff, 128);
+	int l = g_Uart.Rx(&buff[bufflen], PACKET_SIZE - bufflen);
 	if (l > 0)
 	{
-		BleSrvcCharNotify(&g_UartBleSrvc, 0, buff, l);
+		bufflen += l;
+		if (bufflen >= PACKET_SIZE)
+		{
+			flush = true;
+		}
+	}
+	else
+	{
+		if (bufflen > 0)
+		{
+			flush = true;
+		}
+	}
+	if (flush)
+	{
+		if (BleSrvcCharNotify(&g_UartBleSrvc, 0, buff, bufflen) == 0)
+		{
+			bufflen = 0;
+		}
+		app_sched_event_put(NULL, 0, UartRxChedHandler);
 	}
 }
 

@@ -24,27 +24,27 @@ bsec_library_return_t res = bsec_init();
 
 @license
 
-Copyright (c) 2017, I-SYST inc., all rights reserved
+MIT License
 
-Permission to use, copy, modify, and distribute this software for any purpose
-with or without fee is hereby granted, provided that the above copyright
-notice and this permission notice appear in all copies, and none of the
-names : I-SYST or its contributors may be used to endorse or
-promote products derived from this software without specific prior written
-permission.
+Copyright (c) 2017 I-SYST inc. All rights reserved.
 
-For info or contributing contact : hnhoan at i-syst dot com
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ----------------------------------------------------------------------------*/
 
@@ -57,7 +57,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ble_app.h"
 #include "ble_service.h"
 
-#include "bsec_interface.h"
+#include "sensors/bsec_interface.h"
 
 #include "blueio_board.h"
 #include "coredev/uart.h"
@@ -66,10 +66,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "custom_board.h"
 #include "coredev/iopincfg.h"
 #include "iopinctrl.h"
-#include "tph_bme280.h"
-#include "tph_ms8607.h"
-#include "tphg_bme680.h"
-#include "timer_nrf5x.h"
+#include "sensors/tph_bme280.h"
+#include "sensors/tph_ms8607.h"
+#include "sensors/tphg_bme680.h"
+#include "timer_nrfx.h"
 #ifdef NRF51
 #include "timer_nrf_app_timer.h"
 #else
@@ -80,7 +80,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DEVICE_NAME                     "EnvSensorTag"                            /**< Name of device. Will be included in the advertising data. */
 
-//#define EVIM
+#define EVIM
 #ifdef NEBLINA_MODULE
 #define TPH_BME280
 #else
@@ -129,7 +129,7 @@ const static TIMER_CFG s_TimerCfg = {
 #ifdef NRF51
 TimerAppTimer g_Timer;
 #else
-TimerLFnRF5x g_Timer;
+TimerLFnRFx g_Timer;
 #endif
 
 const BLEAPP_CFG s_BleAppCfg = {
@@ -311,7 +311,7 @@ static const int s_NbRefVolt = sizeof(s_RefVolt) / sizeof(ADC_REFVOLT);
 
 #define ADC_CFIFO_SIZE		CFIFO_TOTAL_MEMSIZE(200, sizeof(ADC_DATA))
 
-void ADCEventHandler(AdcDevice *pAdcDev, ADC_EVT Evt);
+void ADCEventHandler(Device *pAdcDev, DEV_EVT Evt);
 
 static uint8_t s_AdcFifoMem[ADC_CFIFO_SIZE];
 
@@ -352,9 +352,9 @@ static const int s_NbChan = sizeof(s_ChanCfg) / sizeof(ADC_CHAN_CFG);
 volatile bool g_bDataReady = false;
 BLUEIO_DATA_BAT g_BatData;
 
-void ADCEventHandler(AdcDevice *pAdcDev, ADC_EVT Evt)
+void ADCEventHandler(Device *pAdcDev, DEV_EVT Evt)
 {
-	if (Evt == ADC_EVT_DATA_READY)
+	if (Evt == DEV_EVT_DATA_RDY)
 	{
 		g_bDataReady = true;
 		int cnt = 0;
@@ -498,11 +498,11 @@ void HardwareInit()
 	NRF_POWER->DCDCEN = 1;
 
     IOPinCfg(s_GpioPins, s_NbGpioPins);
-#ifdef EVIM
+
 	IOPinClear(0, BLUEIO_TAG_BME680_LED2_BLUE_PIN);
 	IOPinClear(0, BLUEIO_TAG_BME680_LED2_GREEN_PIN);
 	IOPinClear(0, BLUEIO_TAG_BME680_LED2_RED_PIN);
-#endif
+
 	g_Timer.Init(s_TimerCfg);
 
 	// Initialize I2C

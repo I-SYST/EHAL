@@ -4,7 +4,7 @@
 
 @brief	Motion sensor demo
 
-	This application demo shows UART Rx/Tx over BLE custom service using EHAL library.
+	This application demo shows how to use Motion sensors.
 
 @author	Hoang Nguyen Hoan
 @date	Dec. 21, 2018
@@ -39,37 +39,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "nrf.h"
 
-/*
-#include "Devices/Drivers/Icm20948/Icm20948.h"
-//#include "Devices/Drivers/Ak0991x/Ak0991x.h"
-#include "Devices/SensorTypes.h"
-#include "Devices/SensorConfig.h"
-#include "EmbUtils/InvScheduler.h"
-#include "EmbUtils/RingByteBuffer.h"
-#include "EmbUtils/Message.h"
-#include "EmbUtils/ErrorHelper.h"
-#include "EmbUtils/DataConverter.h"
-#include "EmbUtils/RingBuffer.h"
-#include "DynamicProtocol/DynProtocol.h"
-#include "DynamicProtocol/DynProtocolTransportUart.h"
-#include "Icm20948.h"
-#include "Icm20948Defs.h"
-#include "Icm20948DataBaseDriver.h"
-
-#include "Icm20948AuxTransport.h"
-*/
-
 #include "idelay.h"
 #include "coredev/spi.h"
 #include "coredev/iopincfg.h"
 #include "iopinctrl.h"
-#include "timer_nrf5x.h"
+#include "timer_nrfx.h"
 #include "sensors/agm_icm20948.h"
 #include "sensors/agm_invn_icm20948.h"
 #include "sensors/agm_mpu9250.h"
 #include "sensors/agm_lsm9ds1.h"
 #include "sensors/ag_bmi160.h"
+#include "sensors/accel_h3lis331dl.h"
 #include "imu/imu_invn_icm20948.h"
+#include "imu/imu_icm20948.h"
 #include "imu/imu_mpu9250.h"
 
 #include "board.h"
@@ -89,12 +71,14 @@ std::atomic<bool> g_bTest(false);
 //inv_bool_t interface_is_SPI(void);
 
 static const IOPINCFG s_SpiPins[] = {
-    {SPI2_SCK_PORT, SPI2_SCK_PIN, SPI2_SCK_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-    {SPI2_MISO_PORT, SPI2_MISO_PIN, SPI2_MISO_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
-    {SPI2_MOSI_PORT, SPI2_MOSI_PIN, SPI2_MOSI_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+    {SPI_SCK_PORT, SPI_SCK_PIN, SPI_SCK_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+    {SPI_MISO_PORT, SPI_MISO_PIN, SPI_MISO_PINOP, IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+    {SPI_MOSI_PORT, SPI_MOSI_PIN, SPI_MOSI_PINOP, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
 #ifdef NEBLINA
 	{NEBLINA_SPI_BMI160_CS_PORT, NEBLINA_SPI_BMI160_CS_PIN, NEBLINA_SPI_BMI160_CS_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
+	{NEBLINA_SPI_H3LIS_CS_PORT, NEBLINA_SPI_H3LIS_CS_PIN, NEBLINA_SPI_H3LIS_CS_PINOP,
+	 IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
 #else
 	{BLUEIO_TAG_EVIM_IMU_CS_PORT, BLUEIO_TAG_EVIM_IMU_CS_PIN, BLUEIO_TAG_EVIM_IMU_CS_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},
@@ -102,12 +86,12 @@ static const IOPINCFG s_SpiPins[] = {
 };
 
 static const SPICFG s_SpiCfg = {
-    SPI2_DEVNO,
-	SPITYPE_NORMAL,
+    SPI_DEVNO,
+	SPIPHY_NORMAL,
     SPIMODE_MASTER,
     s_SpiPins,
     sizeof(s_SpiPins) / sizeof(IOPINCFG),
-    4000000,   // Speed in Hz
+    2000000,   // Speed in Hz
     8,      // Data Size
     5,      // Max retries
     SPIDATABIT_MSB,
@@ -141,12 +125,12 @@ const static TIMER_CFG s_TimerCfg = {
 	.EvtHandler = TimerHandler,
 };
 
-TimerLFnRF5x g_Timer;
+TimerLFnRFx g_Timer;
 
 static const ACCELSENSOR_CFG s_AccelCfg = {
 	.DevAddr = 0,
 	.OpMode = SENSOR_OPMODE_CONTINUOUS,
-	.Freq = 150000,
+	.Freq = 1000,
 	.Scale = 2,
 	.FltrFreq = 0,
 	.bInter = true,
@@ -174,19 +158,30 @@ static const IMU_CFG s_ImuCfg = {
 	.EvtHandler = ImuEvtHandler
 };
 
-#if 0
-ImuInvnIcm20948 g_Imu;
-AgmInvnIcm20948 g_MotSensor;
-#elif 0
+//#define ICM20948
+#define MPU9250
+//#define BMI160
+//#define H3LIS331DL
+
+#ifdef ICM20948
+ImuIcm20948 g_Imu;
 AgmIcm20948 g_MotSensor;
 #elif 0
+AgmIcm20948 g_MotSensor;
+#elif defined(MPU9250)
 ImuMpu9250 g_Imu;
 AgmMpu9250 g_MotSensor;
-#elif 1
+#elif defined(BMI160)
 AgBmi160 g_MotSensor;
+#elif defined(H3LIS331DL)
+AccelH3lis331dl g_MotSensor;
 #else
 AgmLsm9ds1 g_MotSensor;
 #endif
+
+AccelSensor *g_pAccel = NULL;
+GyroSensor *g_pGyro = NULL;
+MagSensor *g_pMag = NULL;
 
 uint32_t g_DT = 0;
 static uint32_t g_TPrev = 0;
@@ -257,29 +252,34 @@ bool HardwareInit()
 
 	if (res == true)
 	{
-#if 0
-		res = g_Imu.Init(s_ImuCfg, 0, &g_Spi, &g_Timer);
-#else
 		res = g_MotSensor.Init(s_AccelCfg, &g_Spi, &g_Timer);
 		if (res == true)
 		{
-			res |= g_MotSensor.Init(s_GyroCfg, &g_Spi);
-			if (res == true)
-			{
-			//	res |= g_MotSensor.Init(s_MagCfg, &g_Spi);
-			}
+			g_pAccel = &g_MotSensor;
 		}
+#if !defined(H3LIS331DL)
+		res = g_MotSensor.Init(s_GyroCfg, &g_Spi);
 		if (res == true)
 		{
-//			res |= g_Imu.Init(s_ImuCfg, &g_MotSensor, &g_MotSensor, &g_MotSensor);
+			g_pGyro = &g_MotSensor;
 		}
+
+		res = g_MotSensor.Init(s_MagCfg, &g_Spi);
+		if (res == true)
+		{
+			g_pMag = &g_MotSensor;
+		}
+#endif
+
+#if defined(ICM20948) || defined(MPU9250)
+		res = g_Imu.Init(s_ImuCfg, &g_MotSensor, &g_MotSensor, &g_MotSensor);
 #endif
 	}
 
 	if (res == true)
 	{
-		IOPinCfg(s_GpioPins, s_NbGpioPins);
-		IOPinEnableInterrupt(0, 6, BLUEIO_TAG_EVIM_IMU_INT_PORT, BLUEIO_TAG_EVIM_IMU_INT_PIN, IOPINSENSE_LOW_TRANSITION, ImuIntHandler);
+		//IOPinCfg(s_GpioPins, s_NbGpioPins);
+		//IOPinEnableInterrupt(0, 6, BLUEIO_TAG_EVIM_IMU_INT_PORT, BLUEIO_TAG_EVIM_IMU_INT_PIN, IOPINSENSE_LOW_TRANSITION, ImuIntHandler);
 
 		int8_t m[9] = { 1, 0, 0,
 						0, 1, 0,
@@ -322,11 +322,6 @@ int main()
 
 	printf("MotionSensorDemo\r\n");
 
-	//g_MotSensor.Enable();
-	//g_Imu.Enable();
-//	g_MotSensor.Disable();
-//	g_Spi.Disable();
-//	g_Spi.PowerOff();
 	ACCELSENSOR_RAWDATA arawdata;
 	ACCELSENSOR_DATA accdata;
 	GYROSENSOR_RAWDATA grawdata;
@@ -346,22 +341,33 @@ int main()
 //		uint32_t t = g_Timer.uSecond();
 
 		//NRF_POWER->SYSTEMOFF = POWER_SYSTEMOFF_SYSTEMOFF_Enter;
-		__WFE();
-		//g_MotSensor.Read(accdata);
-		//g_MotSensor.Read(grawdata);
-		//g_MotSensor.Read(mrawdata);
+		//__WFE();
+		g_MotSensor.UpdateData();
 
 		uint32_t dt = arawdata.Timestamp - prevt;
 		prevt = arawdata.Timestamp;
+
+		g_MotSensor.Read(arawdata);
+
+		if (g_pGyro)
+		{
+			g_pGyro->Read(grawdata);
+		}
+
+		if (g_pMag)
+		{
+			g_pMag->Read(mrawdata);
+		}
+
 		//g_Imu.Read(accdata);
 		//g_Imu.Read(quat);
 
 		if (cnt-- < 0)
 		{
 			cnt = 100;
-			//printf("Accel %d %d: %d %d %d\r\n", (uint32_t)g_DT, (uint32_t)dt, arawdata.X, arawdata.Y, arawdata.Z);
+			printf("Accel %d %d: %d %d %d\r\n", (uint32_t)g_DT, (uint32_t)dt, arawdata.X, arawdata.Y, arawdata.Z);
 			//printf("Accel %d %d: %f %f %f\r\n", (uint32_t)g_DT, (uint32_t)dt, accdata.X, accdata.Y, accdata.Z);
-			printf("Quat %d %d: %f %f %f %f\r\n", (uint32_t)g_DT, (uint32_t)dt, quat.Q1, quat.Q2, quat.Q3, quat.Q4);
+			//printf("Quat %d %d: %f %f %f %f\r\n", (uint32_t)g_DT, (uint32_t)dt, quat.Q1, quat.Q2, quat.Q3, quat.Q4);
 		}
 	}
 }

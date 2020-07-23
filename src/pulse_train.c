@@ -69,7 +69,6 @@ void PulseTrain(PULSE_TRAIN_CFG *pCfg, uint32_t Loop)
 		{
 			IOPinToggle(pCfg->pPins[i].PortNo, pCfg->pPins[i].PinNo);
 			usDelay(pCfg->Period);
-			IOPinToggle(pCfg->pPins[i].PortNo, pCfg->pPins[i].PinNo);
 		}
 	} while (--Loop > 0);
 }

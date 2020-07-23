@@ -92,7 +92,11 @@ __attribute__((weak, alias("DEF_IRQHandler"))) void AFEC0_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void AFEC1_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void DACC_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void ACC_Handler(void);
+#if (__FPU_USED == 1)
+__WEAK void ARM_Handler(void);
+#else
 __attribute__((weak, alias("DEF_IRQHandler"))) void ARM_Handler(void);
+#endif
 __attribute__((weak, alias("DEF_IRQHandler"))) void UDP_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void PWM_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void CAN0_Handler(void);
@@ -100,12 +104,6 @@ __attribute__((weak, alias("DEF_IRQHandler"))) void CAN1_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void AES_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void GMAC_Handler(void);
 __attribute__((weak, alias("DEF_IRQHandler"))) void UART1_Handler(void);
-
-#if (__FPU_USED == 1)
-__WEAK void FPU_IRQHandler(void);
-#else
-__attribute__((weak, alias("DEF_IRQHandler"))) void FPU_IRQHandler(void);
-#endif
 
 /**
  * This interrupt vector is by default located in FLASH. Though it can not be
@@ -117,8 +115,8 @@ __attribute__((weak, alias("DEF_IRQHandler"))) void FPU_IRQHandler(void);
 __attribute__ ((section(".intvec"), used))
 void (* const __vector_table[])(void) = {
 #else
-__attribute__ ((section(".vectors"), used))
-void (* const __Vectors[100])(void) = {
+__attribute__ ((section(".intvect"), used))
+void (* const g_Vectors[100])(void) = {
 #endif
 #if defined ( __ARMCC_VERSION )
 	(void (*)(void) )((uint32_t)0x20000000 + 0x10000),
@@ -188,4 +186,19 @@ void (* const __Vectors[100])(void) = {
 	UART1_Handler
 };
 
+#if (__FPU_USED == 1)
+// Function handles and clears exception flags in FPSCR register and at the stack.
+// During interrupt, handler execution FPU registers might be copied to the stack
+// (see lazy stacking option) and it is necessary to clear data at the stack
+// which will be recovered in the return from interrupt handling.
+__WEAK void ARM_Handler(void)
+{
+    // Prepare pointer to stack address with pushed FPSCR register (0x40 is FPSCR register offset in stacked data)
+    uint32_t * fpscr = (uint32_t * )(FPU->FPCAR + 0x40);
+    // Execute FPU instruction to activate lazy stacking
+    (void)__get_FPSCR();
+    // Clear flags in stacked FPSCR register. To clear IDC, IXC, UFC, OFC, DZC and IOC flags, use 0x0000009F mask.
+    *fpscr = *fpscr & ~(0x0000009F);
+}
+#endif
 

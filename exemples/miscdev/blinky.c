@@ -45,13 +45,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "pulse_train.h"
 
 #include "board.h"
-
-#ifdef BUTTON_PINS_MAP
+#if 0
 /// Buttons & LED pins map
 static const IOPINCFG s_Buttons[] = BUTTON_PINS_MAP;
 static const int s_NbButtons = sizeof(s_Buttons) / sizeof(IOPINCFG);
 #endif
-
 static const IOPINCFG s_Leds[] = LED_PINS_MAP;
 static const int s_NbLeds = sizeof(s_Leds) / sizeof(IOPINCFG);
 
@@ -67,8 +65,7 @@ PULSE_TRAIN_CFG g_PulseTrainCfg = {
 
 volatile bool g_bBut1Pressed = false;
 volatile bool g_bBut2Pressed = false;
-
-#ifdef BUTTON_PINS_MAP
+#if 0
 void But1Handler(int IntNo)
 {
 	if (IntNo == BUT1_SENSE_INT)
@@ -86,6 +83,10 @@ void But2Handler(int IntNo)
 		printf("But 2 Int\r\n");
 	}
 }
+#endif
+
+#ifdef BOARD_OSC
+MCU_OSC g_McuOsc = BOARD_OSC;
 #endif
 
 //
@@ -106,25 +107,11 @@ int main()
 	// Configure
 	//IOPinCfg(s_Buttons, s_NbButtons);
 	//IOPinEnableInterrupt(BUT1_SENSE_INT, BUT1_INT_PRIO, BUT1_PORT, BUT1_PIN, BUT1_SENSE, But1Handler);
-	//IOPinEnableInterrupt(BUT2_SENSE_INT, BUT2_INT_PRIO, BUT2_PORT, BUT2_PIN, BUT2_SENSE, But2Handler);
-	//IOPinCfg(s_Leds, s_NbLeds);
+//	IOPinEnableInterrupt(BUT2_SENSE_INT, BUT2_INT_PRIO, BUT2_PORT, BUT2_PIN, BUT2_SENSE, But2Handler);
+	IOPinCfg(s_Leds, s_NbLeds);
 
-	IOPinConfig(6, 7, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
-	IOPinConfig(6, 8, 0, IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL);
-
-	while(1)
-	{
-		IOPinClear(6, 7);
-		//msDelay(250);
-		IOPinClear(6, 8);
-		IOPinSet(6, 7);
-		//msDelay(250);
-		IOPinSet(6, 8);
-	}
-	//while(1) __WFE();
-
-#if 0
-	for (int j = 0; j < 5; j++)
+#if 1
+	for (int j = 0; j < 100; j++)
 	{
 		for (int i = 0; i < s_NbLeds; i++)
 		{

@@ -51,6 +51,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLESVC_CHAR_PROP_RDAUTH			(1<<5)
 #define BLESVC_CHAR_PROP_WRAUTH			(1<<6)
 
+/// Max supported 128bits custom UUID.
+/// Beware this value must be less or equal the softdevice NRF_SDH_BLE_VS_UUID_COUNT
+/// First UUID base is always used for the service.
+#define BLESVC_UUID_BASE_MAXCNT			4
 
 typedef struct __BLE_Service_Data BLESRVC;
 
@@ -104,6 +108,7 @@ typedef struct __BLE_Service_Char_Data {
     uint16_t ValueLen;					//!< Default value length in bytes
     ble_gatts_char_handles_t Hdl;       //!< char handle
     bool bNotify;                       //!< Notify flag for read characteristic
+    uint8_t BaseUuidIdx;				//!< Index of Base UUID used for this characteristic.
 } BLESRVC_CHAR;
 
 /*
@@ -111,7 +116,8 @@ typedef struct __BLE_Service_Char_Data {
  */
 typedef struct __BLE_Service_Config {
 	BLESRVC_SECTYPE SecType;			//!< Secure or Open service/char
-	ble_uuid128_t	UuidBase;			//!< Base UUID
+	ble_uuid128_t	UuidBase[BLESVC_UUID_BASE_MAXCNT];//!< Base UUIDs
+	int				NbUuidBase;			//!< Number of UUID defined in the UuidBase array
 	uint16_t		UuidSvc;			//!< Service UUID
 	int             NbChar;				//!< Total number of characteristics for the service
 	BLESRVC_CHAR *pCharArray;           //!< Pointer a an array of characteristic
@@ -132,7 +138,7 @@ struct __BLE_Service_Data {
     uint16_t        SrvcHdl;            //!< Service handle
     uint16_t        ConnHdl;			//!< Connection handle
     uint16_t        UuidSvc;            //!< Service UUID
-    uint8_t         UuidType;
+    uint8_t         UuidType[BLESVC_UUID_BASE_MAXCNT];
     uint8_t			*pLongWrBuff;		//!< pointer to user long write buffer
     int				LongWrBuffSize;		//!< long write buffer size
     void			*pContext;

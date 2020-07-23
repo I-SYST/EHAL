@@ -56,7 +56,7 @@ static IOPINCFG s_UartPins[] = {
 
 // UART configuration data
 static const UARTCFG s_UartCfg = {
-	0,
+	UART_DEVNO,
 	s_UartPins,
 	sizeof(s_UartPins) / sizeof(IOPINCFG),
 	1000000,			// Rate
@@ -78,10 +78,10 @@ UART g_Uart;
 
 //********** I2C Master **********
 static const I2CCFG s_I2cCfgMaster = {
-	0,			// I2C device number
+	I2C_MASTER_DEVNO,			// I2C device number
 	{
-		{0, 22, 1, IOPINDIR_BI, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},		// SDA
-		{0, 23, 1, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},	// SCL
+		{I2C_MASTER_SDA_PORT, I2C_MASTER_SDA_PIN, I2C_MASTER_SDA_PINOP, IOPINDIR_BI, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},	// SDA
+		{I2C_MASTER_SCL_PORT, I2C_MASTER_SCL_PIN, I2C_MASTER_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},	// SCL
 	},
 	100000,		// Rate
 	I2CMODE_MASTER,
@@ -103,10 +103,10 @@ I2C g_I2CMaster;
 int I2CSlaveIntrfHandler(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer, int BufferLen);
 
 static const I2CCFG s_I2cCfgSlave = {
-	1,			// I2C device number
+	I2C_SLAVE_DEVNO,			// I2C device number
 	{
-		{0, 24, 1, IOPINDIR_BI, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},		// SDA
-		{0, 25, 1, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},	// SCL
+		{I2C_SLAVE_SDA_PORT, I2C_SLAVE_SDA_PIN, I2C_SLAVE_SDA_PINOP, IOPINDIR_BI, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},		// SDA
+		{I2C_SLAVE_SCL_PORT, I2C_SLAVE_SCL_PIN, I2C_SLAVE_SCL_PINOP, IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_OPENDRAIN},	// SCL
 	},
 	100000,		// Rate
 	I2CMODE_SLAVE,
@@ -173,8 +173,10 @@ int I2CSlaveIntrfHandler(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t *pBu
 void HardwareInit()
 {
 	g_Uart.Init(s_UartCfg);
+#ifdef NDEBUG
 	UARTRetargetEnable(g_Uart, STDIN_FILENO);
 	UARTRetargetEnable(g_Uart, STDOUT_FILENO);
+#endif
 
 	printf("Init I2C Master/Slave demo\r\n");
 }
@@ -187,7 +189,7 @@ void HardwareInit()
 // For example, for toolchains derived from GNU Tools for Embedded,
 // to enable semi-hosting, the following was added to the linker:
 //
-// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lc -lm -lrdimon -Wl,--end-group
+// --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lm -lrdimon -Wl,--end-group
 //
 // Adjust it for other toolchains.
 //
@@ -219,13 +221,28 @@ int main()
 
 	memset(buff, 0xFF, 10);
 
-	reg = 15; // want to read from offset 15
+	reg = 3; // want to read from offset 15
 
 	// Master send read command to read 10 bytes from offset defined in data[0]
-	g_I2CMaster.Read(I2C_SLAVE_ADDR, &reg, 1, buff, 10);
+	int c = g_I2CMaster.Read(I2C_SLAVE_ADDR, &reg, 1, buff, 10);
+
+	printf("Count %d\r\n",c );
+
+	for (int i = 0; i < c; i++)
+	{
+		printf("%x ", buff[i]);
+	}
+	printf("\r\n");
 
 	// Master send read command without setting anything
-	g_I2CMaster.Read(I2C_SLAVE_ADDR, NULL, 0, buff, 5);
+	c = g_I2CMaster.Read(I2C_SLAVE_ADDR, NULL, 0, buff, 5);
+	printf("Count %d\r\n",c );
+
+	for (int i = 0; i < c; i++)
+	{
+		printf("%x ", buff[i]);
+	}
+	printf("\r\n");
 
 	while (1)
 	{

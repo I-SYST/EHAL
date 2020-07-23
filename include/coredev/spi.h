@@ -55,22 +55,23 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // SPI Status code
 typedef enum __SPI_Status {
-	SPISTATUS_OK
+	SPISTATUS_OK,
+	SPISTATUS_TIMEOUT
 } SPISTATUS;
 
 typedef enum __SPI_Mode {
-	SPIMODE_MASTER,
-	SPIMODE_SLAVE
+	SPIMODE_MASTER,				//!< SPI master
+	SPIMODE_SLAVE				//!< SPI slave
 } SPIMODE;
 
 typedef enum __SPI_Clk_Polarity {
-	SPICLKPOL_HIGH,
-	SPICLKPOL_LOW
+	SPICLKPOL_HIGH,				//!< Clock polarity active high : CPOL=0 idle low
+	SPICLKPOL_LOW,				//!< Clock polarity active low : CPOL=1, idle high
 } SPICLKPOL;
 
 typedef enum __SPI_Data_Phase {
-	SPIDATAPHASE_FIRST_CLK,		//!< Data phase starts on first clock
-	SPIDATAPHASE_SECOND_CLK		//!< Data phase starts on 2nd clock
+	SPIDATAPHASE_FIRST_CLK,		//!< Data phase starts on first clock transition leading : CPHA=0
+	SPIDATAPHASE_SECOND_CLK		//!< Data phase starts on 2nd clock transition trailing : CPHA=1
 } SPIDATAPHASE;
 
 typedef enum __SPI_Data_Bit_Order {
@@ -79,15 +80,20 @@ typedef enum __SPI_Data_Bit_Order {
 } SPIDATABIT;
 
 typedef enum __SPI_Chip_Select {
-	SPICSEL_AUTO,	//!< Select control internally by hardware or driver
+	SPICSEL_AUTO,	//!< Select control internally by hardware or driver internally
 	SPICSEL_MAN,	//!< Select control externally by application
+	SPICSEL_DRIVER	//!< For driver's internal use only, do not set this in the config.
 } SPICSEL;
 
-typedef enum __SPI_Type {
-	SPITYPE_NORMAL,				//!< Standard 4 wires CLK, MOSI, MISO, CS
-	SPITYPE_3WIRE,				//!< 3 wires MISO/MOSI mux
-	SPITYPE_QUAD,				//! QSPI
-} SPITYPE;
+// SPI physical interface
+typedef enum __SPI_Phy {
+	SPIPHY_NORMAL,				//!< Standard single SPI 4 wires CLK, MOSI, MISO, CS
+	SPIPHY_4WIRE = SPIPHY_NORMAL,
+	SPIPHY_3WIRE,				//!< 3 wires MISO/MOSI mux
+	SPIPHY_DUAL,				//!< Dual SPI D0, D1 or used
+	SPIPHY_QUAD_SDR,			//!< QSPI, single data rate
+	SPIPHY_QUAD_DDR,			//!< QSPI, dual data rate
+} SPIPHY;
 
 #define SPI_MAX_RETRY			5
 
@@ -98,7 +104,16 @@ typedef enum __SPI_Type {
 #define SPI_SCK_IOPIN_IDX		0
 #define SPI_MISO_IOPIN_IDX		1
 #define SPI_MOSI_IOPIN_IDX		2
-#define SPI_SS_IOPIN_IDX		3	//!< Starting index for SPI chip select. This can
+#define SPI_CS_IOPIN_IDX		3	//!< Starting index for SPI chip select. This can
+									//!< grow to allows multiple devices on same SPI.
+
+/// Quad SPI pins indexes
+#define QSPI_SCK_IOPIN_IDX		0
+#define QSPI_D0_IOPIN_IDX		1
+#define QSPI_D1_IOPIN_IDX		2
+#define QSPI_D2_IOPIN_IDX		3
+#define QSPI_D3_IOPIN_IDX		4
+#define QSPI_CS_IOPIN_IDX		5	//!< Starting index for SPI chip select. This can
 									//!< grow to allows multiple devices on same SPI.
 
 #pragma pack(push, 4)
@@ -106,9 +121,9 @@ typedef enum __SPI_Type {
 /// Configuration data used to initialize device
 typedef struct __SPI_Config {
 	int DevNo;				//!< SPI interface number identify by chip select (CS0, CS1,..,CSn)
-	SPITYPE Type;			//!< SPI type (standard, 3 wire, quad
+	SPIPHY Phy;				//!< SPI physical interface type (standard, 3 wire, quad,..)
 	SPIMODE Mode;			//!< Master/Slave mode
-	const IOPINCFG *pIOPinMap;	//!< Define I/O pins used by SPI
+	const IOPINCFG *pIOPinMap;	//!< Define I/O pins used by SPI (including CS array)
 	int NbIOPins;			//!< Total number of I/O pins
 	int Rate;				//!< Speed in Hz
 	uint32_t DataSize; 		//!< Data Size 4-16 bits
@@ -123,8 +138,18 @@ typedef struct __SPI_Config {
 	DEVINTRF_EVTCB EvtCB;	//!< Event callback
 } SPICFG;
 
+typedef struct __QSPI_Cmd_Setup {
+	uint8_t Cmd;
+	uint8_t CmdMode;
+	uint32_t Addr;
+	uint8_t AddrLen;
+	uint8_t AddrMode;
+	uint32_t DataLen;
+	uint8_t DataMode;
+} QSPI_CMD_SETUP;
+
 /// Device driver data require by low level functions
-typedef struct {
+typedef struct __SPI_Device {
 	SPICFG Cfg;				//!< Config data
 	DEVINTRF DevIntrf;		//!< device interface implementation
 	int	FirstRdData;		//!< This is to keep the first dummy read data of SPI
@@ -173,12 +198,54 @@ static inline int SPITxData(SPIDEV * const pDev, uint8_t *pData, int Datalen) {
 static inline void SPIStopTx(SPIDEV * const pDev) { DeviceIntrfStopTx(&pDev->DevIntrf); }
 
 /**
+ * @brief	Get current physical interface type
+ */
+static inline SPIPHY SPIGetPhy(SPIDEV * const pDev) { return pDev->Cfg.Phy; }
+
+/**
+ * @brief	Change SPI physical interface type
+ *
+ * This function allows dynamically switching between 3WIRE & NORMAL mode.
+ * It is useful when a 3wire devices and standard devices are sharing the same SPI bus
+ *
+ * @param	pDev : Device Interface Handle
+ * @param	Phy	 : New SPI physical interface type
+ */
+SPIPHY SPISetPhy(SPIDEV * const pDev, SPIPHY Phy);
+
+/**
+ * @brief	Set Quad SPI Flash size
+ *
+ * This function is available only and require for Quad SPI
+ *
+ * @param	pDev : Pointer SPI driver data initialized by SPIInit function
+ * @param	Size : Flash memory size in KBytes
+ */
+void QuadSPISetMemSize(SPIDEV * const pDev, uint32_t Size);
+
+/**
+ * @brief	Configure and send command on Quad SPI interface
+ *
+ * This is only available and require for Quad SPI interface. Quad SPI is mainly used
+ * for Flash memory
+ *
+ * @param	pDev : SPI device handle
+ * @param	Cmd : Flash command code
+ * @param	Addr : Address offset in flash memory to access. -1 if not used
+ * @param	DataLen : Lenght of data in bytes to transfer
+ * @param	DummyCycle : Number of dummy clock cycle
+ *
+ * @return	true - successful
+ */
+bool QuadSPISendCmd(SPIDEV * const pDev, uint8_t Cmd, uint32_t Addr, uint8_t AddrLen, uint32_t DataLen, uint8_t DummyCycle);
+
+/**
  * @brief	Set SPI slave data for read command.
  *
  * This function sets internal pointer to the location of data to be returned to SPI master upon
  * receiving read command.
  *
- * @param	pDev	: Pointer SPI driver data initialized be SPIInit function
+ * @param	pDev	: Pointer SPI driver data initialized by SPIInit function
  * @param	SlaveIdx: Slave address index to assign the buffer
  * @param	pBuff	: Pointer to buffer to receive data from master
  * @param	BuffLen	: Total buffer length in bytes
@@ -222,15 +289,15 @@ public:
 
 	operator DEVINTRF * const () { return &vDevData.DevIntrf; }
 	operator SPIDEV& () { return vDevData; };			// Get config data
-	operator SPIDEV * const () { return &vDevData; };	// Get ponter to config data
-	int Rate(int RateHz) { return vDevData.DevIntrf.SetRate(&vDevData.DevIntrf, RateHz); }
-	int Rate(void) { return vDevData.DevIntrf.GetRate(&vDevData.DevIntrf); }	// Get rate in Hz
+	operator SPIDEV * const () { return &vDevData; };	// Get pointer to device data
+	uint32_t Rate(uint32_t RateHz) { return vDevData.DevIntrf.SetRate(&vDevData.DevIntrf, RateHz); }
+	uint32_t Rate(void) { return vDevData.DevIntrf.GetRate(&vDevData.DevIntrf); }	// Get rate in Hz
 	void Enable(void) { DeviceIntrfEnable(&vDevData.DevIntrf); }
 	void Disable(void) { DeviceIntrfDisable(&vDevData.DevIntrf); }
 
 	// DevCs is the ordinal starting from 0 of device connected to the SPI bus.
 	// It is translated to CS index in the I/O pin map
-	virtual bool StartRx(int DevCs) {
+	virtual bool StartRx(uint32_t DevCs) {
 		return DeviceIntrfStartRx(&vDevData.DevIntrf, DevCs);
 	}
 	// Receive Data only, no Start/Stop condition
@@ -240,7 +307,7 @@ public:
 	virtual void StopRx(void) { DeviceIntrfStopRx(&vDevData.DevIntrf); }
 	// DevAddr is the ordinal starting from 0 of device connected to the SPI bus.
 	// It is translated to CS index in the I/O pin map
-	virtual bool StartTx(int DevCs) {
+	virtual bool StartTx(uint32_t DevCs) {
 		return DeviceIntrfStartTx(&vDevData.DevIntrf, DevCs);
 	}
 	// Send Data only, no Start/Stop condition
@@ -280,6 +347,12 @@ public:
 	 */
 	virtual void SetSlaveTxData(int SlaveIdx, uint8_t * const pData, int DataLen) {
 		SPISetSlaveTxData(&vDevData, SlaveIdx, pData, DataLen);
+	}
+
+	virtual SPIPHY Phy() { return vDevData.Cfg.Phy; }
+	virtual SPIPHY Phy(SPIPHY Phy) {
+		vDevData.Cfg.Phy = SPISetPhy(&vDevData, Phy);
+		return vDevData.Cfg.Phy;
 	}
 
 private:

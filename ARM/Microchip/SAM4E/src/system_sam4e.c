@@ -32,9 +32,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ----------------------------------------------------------------------------*/
-
+//#include "cmsis_compiler.h"
 #include "sam4e.h"
-
+//#include "interrupt.h"
 #include "system_sam4e.h"
 #include "coredev/system_core_clock.h"
 
@@ -196,6 +196,12 @@ void SystemInit()
 	while ((SAM4E_PMC->PMC_SR & PMC_SR_MCKRDY) );
 
 	SystemCoreClockUpdate();
+
+#if (__FPU_USED == 1)
+    SCB->CPACR |= (3UL << 20) | (3UL << 22);
+    __DSB();
+    __ISB();
+#endif
 }
 
 void SystemCoreClockUpdate( void )

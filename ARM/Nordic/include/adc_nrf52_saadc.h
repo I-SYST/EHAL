@@ -139,6 +139,7 @@ public:
 	virtual void Disable();
 	virtual void Reset();
 	virtual void PowerOff();
+	virtual bool UpdateData();
 
 private:
 };

@@ -130,7 +130,8 @@ static BLESRVC_CHAR s_UIChars[] = {
 /// Service definition
 const BLESRVC_CFG s_UISrvcCfg = {
     BLESRVC_SECTYPE_NONE,       	// Secure or Open service/char
-    THINGY_BASE_UUID,           	// Base UUID
+    {THINGY_BASE_UUID,},           	// Base UUID
+	1,
     BLE_UUID_TUIS_SERVICE,       	// Service UUID
     sizeof(s_UIChars) / sizeof(BLESRVC_CHAR),  // Total number of characteristics for the service
     s_UIChars,                 		// Pointer a an array of characteristic

@@ -45,6 +45,7 @@ Device::Device()
 	vpTimer = NULL;
 	vbValid = false;
 	vDevId = -1;
+	vbIntEn = false;
 }
 
 /**

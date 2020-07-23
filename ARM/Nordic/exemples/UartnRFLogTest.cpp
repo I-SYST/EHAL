@@ -4,7 +4,7 @@
 
 @brief	nrf_log with uart backend test
 
-Demo code using EHAL library in integration with Nordic SDK
+Demo code using IOsonata library in integration with Nordic SDK
 
 @author	Hoang Nguyen Hoan
 @date	Mar. 12, 2020

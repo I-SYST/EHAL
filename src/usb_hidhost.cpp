@@ -29,7 +29,7 @@
  Modified by			Date					Description
  Hoan						juin 2009			Ekomini
  ----------------------------------------------------------------------------*/
-#include "usb_hidhost_impl.h"
+#include "usb/usb_hidhost_impl.h"
 
 UsbHidDevice *UsbHidDevice::Create() 
 { 

@@ -325,8 +325,6 @@ public:
 private:
 
 	bool Init(uint32_t DevAddr, DeviceIntrf * const pIntrf, Timer * const pTimer = NULL);
-
-	bool vbIntEn;
 };
 
 #endif // __ACCEL_LIS2DH12_H__

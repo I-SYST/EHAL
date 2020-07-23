@@ -112,7 +112,7 @@ void AdcLTC2495::CloseChannel(int Chan)
 
 bool AdcLTC2495::StartConversion()
 {
-	uint8_t d[4];
+//	uint8_t d[4];
 /*
 	d[0] = Chan;
 	d[1] = Gain;

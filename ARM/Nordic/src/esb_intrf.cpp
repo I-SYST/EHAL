@@ -111,7 +111,7 @@ void EsbIntrfEnable(DEVINTRF *pDevIntrf)
  *
  * @return Transfer rate per second
  */
-int EsbIntrfGetRate(DEVINTRF *pDevIntrf)
+uint32_t EsbIntrfGetRate(DEVINTRF *pDevIntrf)
 {
     ESBINTRF *dev = (ESBINTRF*)pDevIntrf->pDevData;
     int rate = 0;
@@ -148,7 +148,7 @@ int EsbIntrfGetRate(DEVINTRF *pDevIntrf)
  * @return  Actual transfer rate per second set.  It is the real capable rate
  *          closes to rate being requested.
  */
-int EsbIntrfSetRate(DEVINTRF *pDevIntrf, int Rate)
+uint32_t EsbIntrfSetRate(DEVINTRF *pDevIntrf, uint32_t Rate)
 {
     // Data rate can't be changed on the fly
     // just return current rate
@@ -170,7 +170,7 @@ int EsbIntrfSetRate(DEVINTRF *pDevIntrf, int Rate)
  * @return  true - Success
  *          false - failed.
  */
-bool EsbIntrfStartRx(DEVINTRF *pDevIntrf, int DevAddr)
+bool EsbIntrfStartRx(DEVINTRF *pDevIntrf, uint32_t DevAddr)
 {
     return true;
 }
@@ -240,7 +240,7 @@ void EsbIntrfStopRx(DEVINTRF *pSerDev)
  * @return  true - Success
  *          false - failed
  */
-bool EsbIntrfStartTx(DEVINTRF *pDevIntrf, int DevAddr)
+bool EsbIntrfStartTx(DEVINTRF *pDevIntrf, uint32_t DevAddr)
 {
     return true;
 }

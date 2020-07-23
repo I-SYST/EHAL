@@ -33,9 +33,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------------*/
 #include <string.h>
 
+#include "nrf.h"
+#include "nrf_peripherals.h"
+
 #include "pwm.h"
 
-#include "nrf.h"
+#if defined(NRF91_SERIES) || defined(NRF53_SERIES)
+#define NRF_PWM0		NRF_PWM0_S
+#define NRF_PWM1		NRF_PWM1_S
+#define NRF_PWM2		NRF_PWM2_S
+#endif
 
 #define PWM_NRF5_MAX_DEV		3
 #define PWM_NRF5_MAX_CHAN		4

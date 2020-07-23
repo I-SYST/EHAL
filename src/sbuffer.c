@@ -40,11 +40,11 @@ Modified by          Date              Description
 
 ----------------------------------------------------------------------------*/
 
-#ifndef EHAL_SBUFFER_SIZE
-#define EHAL_SBUFFER_SIZE	16
+#ifndef SPRT_BUFFER_SIZE
+#define SPRT_BUFFER_SIZE	16
 #endif
 
-char s_Buffer[EHAL_SBUFFER_SIZE] = {0,};
+char s_Buffer[SPRT_BUFFER_SIZE] = {0,};
 int s_BufferSize = sizeof(s_Buffer);
 
 

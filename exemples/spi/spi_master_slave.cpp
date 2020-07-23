@@ -56,7 +56,7 @@ static IOPINCFG s_UartPins[] = {
 
 // UART configuration data
 static const UARTCFG s_UartCfg = {
-	0,
+	UART_DEVNO,
 	s_UartPins,
 	sizeof(s_UartPins) / sizeof(IOPINCFG),
 	1000000,			// Rate
@@ -78,19 +78,19 @@ UART g_Uart;
 
 //********** SPI Master **********
 static const IOPINCFG s_SpiMasterPins[] = {
-    {0, 22, 1,
+    {SPI_MASTER_SCK_PORT, SPI_MASTER_SCK_PIN, SPI_MASTER_SCK_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},		// SCK
-    {0, 23, 1,
+    {SPI_MASTER_MISO_PORT, SPI_MASTER_MISO_PIN, SPI_MASTER_MISO_PINOP,
      IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},	// MISO
-    {0, 24, 1,
+    {SPI_MASTER_MOSI_PORT, SPI_MASTER_MOSI_PIN, SPI_MASTER_MOSI_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},		// MOSI
-    {0, 25, 0,
+    {SPI_MASTER_CS_PORT, SPI_MASTER_CS_PIN, SPI_MASTER_CS_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},	// CS
 };
 
 static const SPICFG s_SpiMasterCfg = {
-    0,//SPI_DEVNO,
-	SPITYPE_NORMAL,
+	SPI_MASTER_DEVNO,
+	SPIPHY_NORMAL,
     SPIMODE_MASTER,
 	s_SpiMasterPins,
     sizeof( s_SpiMasterPins ) / sizeof( IOPINCFG ),
@@ -114,19 +114,19 @@ SPI g_SpiMaster;
 int SpiSlaveHandler(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer, int Len);
 
 static const IOPINCFG s_SpiSlavePins[] = {
-    {0, 26, 1,
+    {SPI_SLAVE_SCK_PORT, SPI_SLAVE_SCK_PIN, SPI_SLAVE_SCK_PINOP,
      IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},		// SCK
-    {0, 27, 1,
+    {SPI_SLAVE_MISO_PORT, SPI_SLAVE_MISO_PIN, SPI_SLAVE_MISO_PINOP,
      IOPINDIR_OUTPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},	// MISO
-    {0, 28, 1,
+    {SPI_SLAVE_MOSI_PORT, SPI_SLAVE_MOSI_PIN, SPI_SLAVE_MOSI_PINOP,
      IOPINDIR_INPUT, IOPINRES_NONE, IOPINTYPE_NORMAL},		// MOSI
-    {0, 29, 0,
+    {SPI_SLAVE_CS_PORT, SPI_SLAVE_CS_PIN, SPI_SLAVE_CS_PINOP,
      IOPINDIR_INPUT, IOPINRES_PULLUP, IOPINTYPE_NORMAL},
 };
 
 static const SPICFG s_SpiSlaveCfg = {
-    1,//SPI_DEVNO,
-	SPITYPE_NORMAL,
+	SPI_SLAVE_DEVNO,
+	SPIPHY_NORMAL,
     SPIMODE_SLAVE,
 	s_SpiSlavePins,
     sizeof( s_SpiSlavePins ) / sizeof( IOPINCFG ),
@@ -154,8 +154,8 @@ int SpiSlaveHandler(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer,
 	{
 		case DEVINTRF_EVT_STATECHG:
 			// Update new RX/TX buffer here
-			g_SpiSlave.SetSlaveRxBuffer(0, g_SpiSlaveRxBuff, 10);
-			g_SpiSlave.SetSlaveTxData(0, g_SpiSlaveTxBuff, 10);
+			g_SpiSlave.SetSlaveRxBuffer(0, g_SpiSlaveRxBuff, 100);
+			g_SpiSlave.SetSlaveTxData(0, g_SpiSlaveTxBuff, 100);
 			break;
 
 		case DEVINTRF_EVT_COMPLETED:
@@ -173,9 +173,10 @@ int SpiSlaveHandler(DEVINTRF * const pDev, DEVINTRF_EVT EvtId, uint8_t *pBuffer,
 void HardwareInit()
 {
 	g_Uart.Init(s_UartCfg);
+#ifdef NDEBUG
 	UARTRetargetEnable(g_Uart, STDIN_FILENO);
 	UARTRetargetEnable(g_Uart, STDOUT_FILENO);
-
+#endif
 	printf("Init SPI Master/Slave demo\r\n");
 }
 
@@ -206,12 +207,13 @@ int main()
 	for (int i = 0; i < 100; i++)
 	{
 		data[i] = i;
+		//g_SpiSlaveTxBuff[i] = 255-i;
 	}
 
 	memset(buff, 0xff, 100);
 
-	g_SpiMaster.Write(0, data, 1, data, 10);
-	int cnt = g_SpiMaster.Read(0, data, 1, buff, 8);
+	g_SpiMaster.Write(0, data, 1, data, 100);
+	int cnt = g_SpiMaster.Read(0, data, 1, buff, 20);
 
 	printf("Received : ");
 	for (int i = 0; i < cnt; i++)

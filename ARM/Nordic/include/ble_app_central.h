@@ -1,10 +1,11 @@
 /**-------------------------------------------------------------------------
-@file	i2c_spi_nrf5x_irq.h
+@file	ble_app_central.h
 
-@brief	Shared IRQ handler for I2C, SPI
+@brief	Nordic SDK based BLE central application creation helper
+
 
 @author	Hoang Nguyen Hoan
-@date	July 20, 2018
+@date	Aug. 30, 2018
 
 @license
 
@@ -31,20 +32,20 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------------*/
+#ifndef __BLE_APP_CENTRAL_H__
+#define __BLE_APP_CENTRAL_H__
 
-#ifndef __I2C_SPI_NRF5X_IRQ_H__
-#define __I2C_SPI_NRF5X_IRQ_H__
-
-typedef void (*IRQHANDLER)(int DevNo, DEVINTRF *pDev);
+#include "nrf_ble_scan.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void SetI2cSpiIntHandler(int DevNo, DEVINTRF * const pDev, IRQHANDLER Handler);
+void BleScanInit(nrf_ble_scan_filter_type_t FilterType, void const * pFilterData);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __I2C_SPI_NRF5X_IRQ_H__
+#endif // __BLE_APP_CENTRAL_H__
+

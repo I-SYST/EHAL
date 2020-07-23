@@ -81,6 +81,7 @@ typedef void (*DEVEVTCB)(Device * const pDev, DEV_EVT Evt);
 class Device {
 public:
 	Device();
+	virtual ~Device() {}
 
 	//
 	// *** Require implementations ***
@@ -115,7 +116,7 @@ public:
 	 * @brief	Power off the device completely.
 	 *
 	 * If supported, this will put the device in complete power down.
-	 * Full re-intialization is required to re-enable the device.
+	 * Full re-initialization is required to re-enable the device.
 	 */
 	virtual void PowerOff() {}
 
@@ -281,6 +282,7 @@ public:
 	virtual operator Timer * const () { return vpTimer; }	// Get device interface data (handle)
 
 	void SetEvtHandler(DEVEVTCB EvtHandler) { vEvtHandler = EvtHandler; }
+	virtual void EvtHandler(DEV_EVT Evt) { if (vEvtHandler) vEvtHandler(this, Evt); }
 
 protected:
 
@@ -316,12 +318,16 @@ protected:
 	 */
 	DeviceIntrf *Interface() { return vpIntrf; }
 
+	void InterruptEnabled(bool En) { vbIntEn = En; }
+	bool InterruptEnabled() { return vbIntEn; }
+
 	bool		vbValid;		//!< Device is valid ready to use (passed detection)
 	uint32_t 	vDevAddr;		//!< Device address or chip select index
 	DeviceIntrf *vpIntrf;		//!< Device's interface
 	Timer 		*vpTimer;		//!< Timer to use for time stamping data or create a timer event
 	uint64_t	vDevId;			//!< This is implementation specific data for device identifier
 	 	 	 	 	 	 	 	//!< could be value read from hardware register or serial number
+	bool 		vbIntEn;		//!< Interrupt enabled
 	DEVEVTCB 	vEvtHandler;	//!< Event handler callback
 };
 

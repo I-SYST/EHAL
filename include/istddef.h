@@ -78,7 +78,7 @@ typedef bool	Bool;
 ///
 /// Version number MM.mm.ssss.bbbbbbbb\n
 /// Where MM = Major, mm = minor, ssss = Subversion, bbbbbbbb = Build number
-typedef struct {
+typedef struct __Version {
 	union {
 		uint16_t	Vers;   	//!< Verion number 0xMMmm, MM = Major, mm = minor (MM.mm)
 		struct {
@@ -102,11 +102,12 @@ typedef struct {
 /// It contains application identifier (Name), version and application specific private data
 /// This data is usually static const located at specific location where bootloader/dfu can
 /// access to validate.
-typedef struct {
+typedef struct __App_Info {
 	char Name[APPINFO_NAMESIZE_MAX];	//!< Application signature
 	VERS Vers;							//!< Version number
 	uint8_t Private[APPINFO_PRIVATESIZE_MAX];//!< APPINFO_PRIVATESIZE_MAX bytes private data
 } APP_INFO;
+
 #pragma pack(pop)
 
 #ifdef __cplusplus

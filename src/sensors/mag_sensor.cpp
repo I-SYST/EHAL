@@ -77,3 +77,28 @@ void MagSensor::ClearCalibration()
 	vCalibGain[1][1] = vSensitivity[1] / 1000.0;
 	vCalibGain[2][2] = vSensitivity[2] / 1000.0;
 }
+
+int MagSensor::Read(uint32_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pBuff, int BuffLen)
+{
+	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
+	{
+		// Most sensor that supports SPI have this for reading registers
+		// overload this function if different
+		*pCmdAddr |= 0x80;
+	}
+
+	return vpIntrf->Read(DevAddr, pCmdAddr, CmdAddrLen, pBuff, BuffLen);
+}
+
+int MagSensor::Write(uint32_t DevAddr, uint8_t *pCmdAddr, int CmdAddrLen, uint8_t *pData, int DataLen)
+{
+	if (vpIntrf->Type() == DEVINTRF_TYPE_SPI)
+	{
+		// Most sensor that supports SPI have this for writing registers
+		// overload this function if different
+		*pCmdAddr &= 0x7F;
+	}
+
+	return vpIntrf->Write(DevAddr, pCmdAddr, CmdAddrLen, pData, DataLen);
+}
+

@@ -63,6 +63,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #endif
 
+#define BLE_MAX_DATA_LEN				251
+
 typedef enum __BleApp_AdvMode {
 	BLEAPP_ADVMODE_IDLE,				//!< no connectable advertising is ongoing.
 	BLEAPP_ADVMODE_DIRECTED,			//!< Directed advertising attempts to connect to the most recently disconnected peer.
@@ -228,13 +230,8 @@ void BleAppGapDeviceNameSet(const char* ppDeviceName);
 
 /**
  *
- * @param pAdvData
- * @param AdvLen
- * @param pSrData
- * @param SrLen
- *
- * @return	true - Advertising
- * 			false - Not advertising
+ * @return	true - advertising
+ * 			false - not advertising
  */
 bool BleAppAdvManDataSet(uint8_t *pAdvData, int AdvLen, uint8_t *pSrData, int SrLen);
 void BleAppAdvTimeoutHandler();
@@ -243,13 +240,13 @@ void BleAppAdvStop();
 void BleAppDisconnect();
 
 bool BleAppScanInit(BLEAPP_SCAN_CFG *pCfg);
-//bool BleAppScanInit(ble_uuid128_t * const pBaseUid, ble_uuid_t * const pServUid);
-//bool BleAppScanStart();
 void BleAppScan();
 void BleAppScanStop();
 bool BleAppConnect(ble_gap_addr_t * const pDevAddr, ble_gap_conn_params_t * const pConnParam);
 bool BleAppEnableNotify(uint16_t ConnHandle, uint16_t CharHandle);
 bool BleAppWrite(uint16_t ConnHandle, uint16_t CharHandle, uint8_t *pData, uint16_t DatLen);
+int8_t GetValidTxPower(int TxPwr);
+bool isConnected();
 
 #ifdef __cplusplus
 }

@@ -94,14 +94,14 @@ public:
 	 *
 	 * @return	Number of sectors
 	 */
-	virtual uint32_t GetNbSect(void) { return GetSize() / GetSectSize(); }
+	virtual uint32_t GetNbSect(void) { return ((uint64_t)GetSize() << 10ULL) / GetSectSize(); }
 
 	/**
 	 * @brief	Get to=tal disk size in bytes.
 	 *
-	 * @return	Total disk size in bytes.
+	 * @return	Total disk size in KBytes.
 	 */
-	virtual uint64_t GetSize(void) = 0;
+	virtual uint32_t GetSize(void) = 0;
 
 	/**
 	 * @brief	Read one sector from physical device.

@@ -332,7 +332,7 @@ static uint32_t BlueIOBleSrvcCharAdd(BLESRVC *pSrvc, BLESRVC_CHAR *pChar,
         BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.write_perm);
     }
 
-    ble_uuid.type = pSrvc->UuidType;
+    ble_uuid.type = pSrvc->UuidType[pChar->BaseUuidIdx];
     ble_uuid.uuid = pChar->Uuid;
 
     attr_md.vloc       = BLE_GATTS_VLOC_STACK;
@@ -391,13 +391,16 @@ uint32_t BleSrvcInit(BLESRVC *pSrvc, const BLESRVC_CFG *pCfg)
     pSrvc->ConnHdl  = BLE_CONN_HANDLE_INVALID;
 
     // Add base UUID to softdevice's internal list.
-    err = sd_ble_uuid_vs_add(&pCfg->UuidBase, &pSrvc->UuidType);
-    if (err != NRF_SUCCESS)
+    for (int i = 0; i < pCfg->NbUuidBase; i++)
     {
-        return err;
+		err = sd_ble_uuid_vs_add(&pCfg->UuidBase[i], &pSrvc->UuidType[i]);
+		if (err != NRF_SUCCESS)
+		{
+			return err;
+		}
     }
 
-    ble_uuid.type = pSrvc->UuidType;
+    ble_uuid.type = pSrvc->UuidType[0];
     ble_uuid.uuid = pCfg->UuidSvc;
 
     err = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, &pSrvc->SrvcHdl);

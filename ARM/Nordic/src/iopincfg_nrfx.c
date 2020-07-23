@@ -308,7 +308,6 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
 #else
 	NRF_GPIO_Type *reg = NRF_GPIO;
 	NRF_GPIOTE_Type *gpiotereg = NRF_GPIOTE;
-	uint32_t cfg = 0;
 
 #ifdef NRF52840_XXAA
 	if (PortNo == 1)
@@ -324,6 +323,8 @@ bool IOPinEnableInterrupt(int IntNo, int IntPrio, int PortNo, int PinNo, IOPINSE
 #else
 #define GPIOTE_CONFIG_PORT_PIN_Msk GPIOTE_CONFIG_PSEL_Msk
 #endif
+
+	uint32_t cfg = 0;
 
 	reg->PIN_CNF[PinNo] &= ~(GPIO_PIN_CNF_SENSE_Msk << GPIO_PIN_CNF_SENSE_Pos);
 	switch (Sense)

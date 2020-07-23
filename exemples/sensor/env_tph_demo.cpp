@@ -52,7 +52,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "coredev/spi.h"
 #include "coredev/uart.h"
 #include "stddev.h"
-#include "timer_nrf5x.h"
+#include "timer_nrfx.h"
 #include "sensors/tph_bme280.h"
 #include "sensors/tphg_bme680.h"
 #include "sensors/tph_ms8607.h"
@@ -74,7 +74,7 @@ const static TIMER_CFG s_TimerCfg = {
 	.EvtHandler = NULL,//TimerHandler
 };
 
-TimerLFnRF5x g_Timer;
+TimerLFnRFx g_Timer;
 
 //********** UART **********
 //int nRFUartEvthandler(UARTDEV *pDev, UART_EVT EvtId, uint8_t *pBuffer, int BufferLen);
@@ -127,7 +127,7 @@ static const IOPINCFG s_SpiPins[] = {
 
 static const SPICFG s_SpiCfg = {
     0,//SPI_DEVNO,
-	SPITYPE_NORMAL,
+	SPIPHY_NORMAL,
     SPIMODE_MASTER,
 	s_SpiPins,
     sizeof( s_SpiPins ) / sizeof( IOPINCFG ),
@@ -255,7 +255,7 @@ int main()
 
 	if (bsec_status != BSEC_OK)
 	{
-		printf("BSEC init failed\r\n");
+		g_Uart.printf("BSEC init failed\r\n");
 
 		return 1;
 	}
@@ -265,7 +265,7 @@ int main()
 
 	if (res == false)
 	{
-		printf("Init error\r\n");
+		g_Uart.printf("Init error\r\n");
 	}
 
 #ifdef BME680
@@ -287,7 +287,7 @@ int main()
 		g_EnvSensor.Read(gdata);
 
 #endif
-		printf("T=%" PRIu64 " : Temp : %.2f C, Press : %.3f KPa, Humi : %.2f %% ",
+		g_Uart.printf("T=%" PRIu64 " : Temp : %.2f C, Press : %.3f KPa, Humi : %.2f %% ",
 				tphdata.Timestamp,
 				(float)tphdata.Temperature / 100.0,
 				(float)tphdata.Pressure / 1000.0,
@@ -298,7 +298,7 @@ int main()
 		{
 			lastiaq = gdata.AirQualIdx;
 		}
-		printf("Gas = %d %.2f\r\n", gdata.GasRes[gdata.MeasIdx], gdata.AirQualIdx);
+		g_Uart.printf("Gas = %d %.2f\r\n", gdata.GasRes[gdata.MeasIdx], gdata.AirQualIdx);
 #else
 		printf("\r\n");
 #endif

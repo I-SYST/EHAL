@@ -106,9 +106,9 @@ public:
 	operator DEVINTRF * const () { return &vBleIntrf.DevIntrf; }	// Get device interface data
 	operator BLESRVC * const () { return vBleIntrf.pBleSrv; }
 	// Set data rate in bits/sec (Hz)
-	virtual int Rate(int DataRate) { return DeviceIntrfSetRate(&vBleIntrf.DevIntrf, DataRate); }
+	virtual uint32_t Rate(uint32_t DataRate) { return DeviceIntrfSetRate(&vBleIntrf.DevIntrf, DataRate); }
 	// Get current data rate in bits/sec (Hz)
-	virtual int Rate(void) { return DeviceIntrfGetRate(&vBleIntrf.DevIntrf); }
+	virtual uint32_t Rate(void) { return DeviceIntrfGetRate(&vBleIntrf.DevIntrf); }
 	// Disable device for power reduction, re-enable with Enable() without
 	// full init
 	virtual void Disable(void) { DeviceIntrfDisable(&vBleIntrf.DevIntrf); }
@@ -116,7 +116,7 @@ public:
 	virtual void Enable(void) { DeviceIntrfEnable(&vBleIntrf.DevIntrf); }
 
 	// Initiate receive
-	virtual bool StartRx(int DevAddr) { return DeviceIntrfStartRx(&vBleIntrf.DevIntrf, DevAddr); }
+	virtual bool StartRx(uint32_t DevAddr) { return DeviceIntrfStartRx(&vBleIntrf.DevIntrf, DevAddr); }
 	// Receive Data only, no Start/Stop condition
 	virtual int RxData(uint8_t *pBuff, int BuffLen) {
 		return DeviceIntrfRxData(&vBleIntrf.DevIntrf, pBuff, BuffLen);
@@ -126,7 +126,7 @@ public:
 	// This functions MUST ONLY be called if StartRx returns true.
 	virtual void StopRx(void) { DeviceIntrfStopRx(&vBleIntrf.DevIntrf); }
 	// Initiate transmit
-	virtual bool StartTx(int DevAddr) {
+	virtual bool StartTx(uint32_t DevAddr) {
 		return DeviceIntrfStartTx(&vBleIntrf.DevIntrf, DevAddr);
 	}
 	// Transmit Data only, no Start/Stop condition

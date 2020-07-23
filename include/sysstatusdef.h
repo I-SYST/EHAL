@@ -83,9 +83,9 @@ Hoan				Nov. 18, 2014	Change module IDs
  */
 typedef enum _System_Status_Type {
    SYSSTATUS_TYPE_RNT   = 0,        		// Runtime status
-   SYSSTATUS_TYPE_WRN   = 0x40000000,      	// Warning
-   SYSSTATUS_TYPE_ERR   = 0x80000000,      	// Non fatal error
-   SYSSTATUS_TYPE_FERR  = 0xf0000000       	// Fatal error
+   SYSSTATUS_TYPE_WRN   = 0x40000000U,     	// Warning
+   SYSSTATUS_TYPE_ERR   = 0x80000000U,     	// Non fatal error
+   SYSSTATUS_TYPE_FERR  = 0xf0000000U      	// Fatal error
 } SYSSTATUS_TYPE;
 
 /**

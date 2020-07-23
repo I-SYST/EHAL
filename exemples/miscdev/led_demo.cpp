@@ -40,6 +40,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "iopinctrl.h"
 #include "miscdev/led.h"
 
+//#define BLUEIO_TAG
 
 #include "board.h"
 
@@ -55,19 +56,19 @@ static const PWM_CFG s_PwmCfg = {
 static const PWM_CHAN_CFG s_PwmChanCfg[] = {
 	{
 		.Chan = 0,
-		.Pol = PWM_POL_LOW,
+		.Pol = PWM_POL_HIGH,
 		.Port = LED2_PORT,
 		.Pin = LED2_PIN,
 	},
 	{
 		.Chan = 1,
-		.Pol = PWM_POL_LOW,
+		.Pol = PWM_POL_HIGH,
 		.Port = LED3_PORT,
 		.Pin = LED3_PIN,
 	},
 	{
 		.Chan = 2,
-		.Pol = PWM_POL_LOW,
+		.Pol = PWM_POL_HIGH,
 		.Port = LED4_PORT,
 		.Pin = LED4_PIN,
 	},
@@ -78,7 +79,10 @@ const int s_NbPwmChan = sizeof(s_PwmChanCfg) / sizeof(PWM_CHAN_CFG);
 Pwm g_Pwm;
 
 Led g_Led1;
-LedPwm g_Led2;
+Led g_Led2;
+Led g_Led3;
+Led g_Led4;
+LedPwm g_Led2Pwm;
 
 //
 // Print a greeting message on standard output and exit.
@@ -99,29 +103,58 @@ int main()
 
 	g_Led1.Init(LED1_PORT, LED1_PIN, LED_LOGIC_LOW);
 
-	g_Led2.Init(&g_Pwm, (PWM_CHAN_CFG*)s_PwmChanCfg, s_NbPwmChan);
-	g_Led1.On();
-	g_Led2.Level(100);
+#ifdef BLUEIO_TAG
+	g_Led2.Init(LED2_PORT, LED2_PIN, LED_LOGIC_HIGH);
+	g_Led3.Init(LED3_PORT, LED3_PIN, LED_LOGIC_HIGH);
+	g_Led4.Init(LED4_PORT, LED4_PIN, LED_LOGIC_HIGH);
+#else
+	g_Led2.Init(LED2_PORT, LED2_PIN, LED_LOGIC_LOW);
+	g_Led3.Init(LED3_PORT, LED3_PIN, LED_LOGIC_LOW);
+	g_Led4.Init(LED4_PORT, LED4_PIN, LED_LOGIC_LOW);
+#endif
 
+	//while (1)
+	{
+		g_Led1.Toggle();
+		msDelay(1000);
+		g_Led2.On();
+		msDelay(1000);
+		g_Led2.Off();
+		g_Led3.Toggle();
+		msDelay(1000);
+		g_Led3.Off();
+		g_Led4.Toggle();
+		msDelay(1000);
+		g_Led4.Off();
+	}
+
+	g_Led2Pwm.Init(&g_Pwm, (PWM_CHAN_CFG*)s_PwmChanCfg, s_NbPwmChan);
+	g_Led1.On();
+	g_Led2Pwm.Level(0xFF);
+	g_Led2Pwm.Level(0xFF00);
+	g_Led2Pwm.Level(0xFF0000);
+	g_Led2.Toggle();
 	g_Led1.Off();
 
-	uint32_t x = 0xFFFFFFFF;
+	uint32_t x = 0;
 
 	while (1)
 	{
 		g_Led1.Toggle();
-		g_Led2.Level(x);
+		g_Led2Pwm.Level(x);
 
 		msDelay(100);
 
-		g_Led2.Toggle();
+		//g_Led2.Toggle();
+
+//		x += 0xFF800F;
 
 		x >>= 1;
 
 		if (x == 0)
 		{
-			x = 0xFFFFFFFF;
+			x = 0xFFFFFF;
 		}
-		msDelay(20);
+		msDelay(10);
 	}
 }
