@@ -247,6 +247,22 @@ struct __device_intrf {
 	int (*TxData)(DEVINTRF * const pDevIntrf, uint8_t *pData, int DataLen);
 
 	/**
+	 * @brief	Transfer data from pData passed in parameter with re-start.
+	 *
+	 * Assuming StartTx was called prior calling this function to send the actual data.
+	 * This is a special function for some I2C devices that requires writing the data
+	 * into a special register for write-restart-read sequence. One of such MCU is
+	 * the Atmel SAM series. The data length in this case cannot exceed 4 bytes.
+	 *
+	 * @param	pDevIntrf : Pointer to an instance of the Device Interface
+	 * @param	pData 	: Pointer to memory area of data to send.
+	 * @param	DataLen : Length of data memory in bytes
+	 *
+	 * @return	Number of bytes sent
+	 */
+	int (*TxSrData)(DEVINTRF * const pDevIntrf, uint8_t *pData, int DataLen);
+
+	/**
 	 * @brief	Completion of sending data via TxData.  Do require post processing
 	 * after all data was transmitted via TxData.
 	 * This function must clear the busy state for re-entrancy
@@ -274,7 +290,6 @@ struct __device_intrf {
      * @param	pDevIntrf : Pointer to an instance of the Device Interface
 	 */
 	void (*PowerOff)(DEVINTRF * const pDevIntrf);
-
 };
 
 #pragma pack(pop)

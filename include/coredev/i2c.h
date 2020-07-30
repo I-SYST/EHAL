@@ -128,6 +128,7 @@ typedef struct __I2C_Config {
 	bool bIntEn;			//!< true - Interrupt enable
 	int	IntPrio;			//!< Interrupt priority.  Value is implementation specific
 	DEVINTRF_EVTCB EvtCB;	//!< Interrupt based event callback function pointer. Must be set to NULL if not used
+	bool bSmBus;			//!< Enable SMBUS support
 } I2CCFG;
 
 /// Device driver data require by low level functions
@@ -142,6 +143,7 @@ typedef struct {
 	int RRDataLen[I2C_SLAVEMODE_MAX_ADDR];		//!< Read request data length in bytes
 	uint8_t *pTRBuff[I2C_SLAVEMODE_MAX_ADDR];	//!< Pointer to buffer to receive data upon receiving write request
 	int TRBuffLen[I2C_SLAVEMODE_MAX_ADDR];		//!< Write request buffer length in bytes
+	bool bSmBus;			//!< SMBUS support
 } I2CDEV;
 
 #pragma pack(pop)

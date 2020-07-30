@@ -96,12 +96,21 @@ int DeviceIntrfRead(DEVINTRF * const pDev, uint32_t DevAddr, uint8_t *pAdCmd, in
         {
             if (pAdCmd)
             {
-                count = pDev->TxData(pDev, pAdCmd, AdCmdLen);
+            	if (pDev->TxSrData)
+            	{
+            		count = pDev->TxSrData(pDev, pAdCmd, AdCmdLen);
+            	}
+            	else
+            	{
+            		count = pDev->TxData(pDev, pAdCmd, AdCmdLen);
+            	}
             }
-            // Note : this is restart condition in read mode,
-            // must not generate any stop condition here
-            pDev->StartRx(pDev, DevAddr);
-
+           // if (pDev->TxSrData)
+            {
+            	// Note : this is restart condition in read mode,
+            	// must not generate any stop condition here
+            	pDev->StartRx(pDev, DevAddr);
+            }
            	count = pDev->RxData(pDev, pRxBuff, RxLen);
 
            	DeviceIntrfStopRx(pDev);
