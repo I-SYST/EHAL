@@ -57,7 +57,7 @@ extern "C" {
 /**
  * @brief	16 bits endianess conversion.
  *
- * @param	x : 16 bits data to covert.
+ * @param	x : 16 bits number to covert.
  *
  * @return	converted data.
  */
@@ -68,13 +68,27 @@ static inline int16_t EndianCvt16(int16_t x) {
 /**
  * @brief	32 bits endianess conversion.
  *
- * @param	x : 32 bits data to covert.
+ * @param	x : 32 bits number to covert.
  *
  * @return	converted data.
  */
 static inline uint32_t EndianCvt32(uint32_t x) {
 	return (((x >> 24UL) & 0xff) | ((x << 24UL) & 0xff000000) |
 			((x >> 8UL) & 0xff00) | ((x << 8UL) & 0xff0000));
+}
+
+/**
+ * @brief	64 bits endianess conversion.
+ *
+ * @param	x : 64 bits number to covert.
+ *
+ * @return	converted data.
+ */
+static inline uint64_t EndianCvt64(uint64_t x) {
+	return (((x >> 56ULL) & 0xffULL) | ((x << 56ULL) & 0xff00000000000000ULL) |
+			((x >> 40ULL) & 0xff00ULL) | ((x << 40ULL) & 0xff000000000000ULL) |
+			((x >> 24ULL) & 0xff0000ULL) | ((x << 24ULL) & 0xff0000000000ULL) |
+			((x >> 8ULL) & 0xff000000ULL) | ((x << 8ULL) & 0xff00000000ULL));
 }
 
 /**
