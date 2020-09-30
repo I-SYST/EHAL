@@ -62,10 +62,12 @@ static inline __attribute__((always_inline)) void IOPinSetDir(int PortNo, int Pi
 
 	if (Dir == IOPINDIR_OUTPUT)
 	{
+		reg->PIO_OWER = 1 << PinNo;
 		reg->PIO_OER = 1 << PinNo;
 	}
 	else
 	{
+		reg->PIO_OWDR = 1 << PinNo;
 		reg->PIO_ODR = 1 << PinNo;
 	}
 }
@@ -87,6 +89,9 @@ static inline __attribute__((always_inline)) int IOPinRead(int PortNo, int PinNo
 /**
  * @brief	Set pin to high (1 logic)
  *
+ * Note this chip has output write protect. Output direction must be set first to
+ * enable write output, otherwise it would not work
+ *
  * @Param 	PortNo	: Port number
  * @Param	PinNo  	: Pin number
  */
@@ -98,6 +103,9 @@ static inline __attribute__((always_inline)) void IOPinSet(int PortNo, int PinNo
 
 /**
  * @brief	Set pin to low (0 logic)
+ *
+ * Note this chip has output write protect. Output direction must be set first to
+ * enable write output, otherwise it would not work
  *
  * @Param 	PortNo	: Port number
  * @Param	PinNo  	: Pin number
@@ -111,15 +119,18 @@ static inline __attribute__((always_inline)) void IOPinClear(int PortNo, int Pin
 /**
  * @brief	Toggle pin state (invert pin state)
  *
+ * Note this chip has output write protect. Output direction must be set first to
+ * enable write output, otherwise it would not work
+ *
  * @Param 	PortNo	: Port number
  * @Param	PinNo  	: Pin number
  */
 static inline __attribute__((always_inline)) void IOPinToggle(int PortNo, int PinNo) {
 	Sam4ePio *reg = (Sam4ePio *)((uint32_t)SAM4E_PIOA + PortNo * 0x200);
 
-	reg->PIO_OWER = (1 << PinNo);
+	//reg->PIO_OWER = (1 << PinNo);
 	reg->PIO_ODSR ^= (1 << PinNo);
-	reg->PIO_OWDR = (1 << PinNo);
+	//reg->PIO_OWDR = (1 << PinNo);
 }
 
 /**
@@ -138,15 +149,18 @@ static inline __attribute__((always_inline)) uint32_t IOPinReadPort(int PortNo) 
 /**
  * @brief	Write state to all pin on port
  *
+ * Note this chip has output write protect. Output direction must be set first to
+ * enable write output, otherwise it would not work
+ *
  * @Param 	PortNo	: Port number
  * @Param	Data	: Bit field state of all pins on port
  */
 static inline __attribute__((always_inline)) void IOPinWritePort(int PortNo, uint32_t Data) {
 	Sam4ePio *reg = (Sam4ePio *)((uint32_t)SAM4E_PIOA + PortNo * 0x200);
 
-	reg->PIO_OWER = 0xFFFFFFFF;
+	//reg->PIO_OWER = 0xFFFFFFFF;
 	reg->PIO_ODSR = Data;
-	reg->PIO_OWDR = 0xFFFFFFFF;
+	//reg->PIO_OWDR = 0xFFFFFFFF;
 }
 
 
