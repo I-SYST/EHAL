@@ -95,7 +95,7 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 	if (PinOp > 0 && PinOp <= IOPIN_MAX_PINOP)
 	{
 		// Configure as peripheral
-		reg->PIO_PDR |= pinmask;
+		reg->PIO_PDR = pinmask;
 		
 		uint8_t psel = PinOp - 1;
 		
@@ -120,31 +120,31 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 	else
 	{
 		// Configure as GPIO	
-		reg->PIO_PER |= pinmask;
-		
+		reg->PIO_PER = pinmask;
+
 		if (Dir == IOPINDIR_OUTPUT)
 		{
-			reg->PIO_OER |= pinmask;
-			reg->PIO_OWER |= pinmask;
+			reg->PIO_OER = pinmask;
+			reg->PIO_OWER = pinmask;
 		}
 		else
 		{
-			reg->PIO_ODR &= pinmask;
-			reg->PIO_OWDR |= pinmask;
+			reg->PIO_ODR = pinmask;
+			reg->PIO_OWDR = pinmask;
 		}
 	}
 	
-	reg->PIO_PUDR |= pinmask;
-	reg->PIO_PPDDR |= pinmask;
+	reg->PIO_PUDR = pinmask;
+	reg->PIO_PPDDR = pinmask;
 
 	switch (Resistor)
 	{
 		case IOPINRES_FOLLOW:
 		case IOPINRES_PULLUP:
-			reg->PIO_PUER |= pinmask;
+			reg->PIO_PUER = pinmask;
 			break;
 		case IOPINRES_PULLDOWN:
-			reg->PIO_PPDER |= pinmask;
+			reg->PIO_PPDER = pinmask;
 			break;
 		case IOPINRES_NONE:
 			break;
@@ -152,11 +152,11 @@ void IOPinConfig(int PortNo, int PinNo, int PinOp, IOPINDIR Dir, IOPINRES Resist
 
 	if (Type == IOPINTYPE_OPENDRAIN)
 	{
-		reg->PIO_MDER |= pinmask;
+		reg->PIO_MDER = pinmask;
 	}
 	else
 	{
-		reg->PIO_MDDR |= pinmask;
+		reg->PIO_MDDR = pinmask;
 	}
 }
 

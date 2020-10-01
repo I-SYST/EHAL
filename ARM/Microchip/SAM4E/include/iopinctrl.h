@@ -58,17 +58,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static inline __attribute__((always_inline)) void IOPinSetDir(int PortNo, int PinNo, IOPINDIR Dir) {
 	Sam4ePio *reg = (Sam4ePio *)((uint32_t)SAM4E_PIOA + PortNo * 0x200);
 
-	PinNo <<= 1;
-
 	if (Dir == IOPINDIR_OUTPUT)
 	{
-		reg->PIO_OWER = 1 << PinNo;
 		reg->PIO_OER = 1 << PinNo;
+		reg->PIO_OWER = 1 << PinNo;
+		//reg->PIO_PUER = 1 << PinNo;
 	}
 	else
 	{
-		reg->PIO_OWDR = 1 << PinNo;
 		reg->PIO_ODR = 1 << PinNo;
+		reg->PIO_OWDR = 1 << PinNo;
 	}
 }
 
@@ -98,7 +97,9 @@ static inline __attribute__((always_inline)) int IOPinRead(int PortNo, int PinNo
 static inline __attribute__((always_inline)) void IOPinSet(int PortNo, int PinNo) {
 	Sam4ePio *reg = (Sam4ePio *)((uint32_t)SAM4E_PIOA + PortNo * 0x200);
 
+//	reg->PIO_OWER = (1 << PinNo);
 	reg->PIO_SODR = (1 << PinNo);
+	//reg->PIO_OWDR = (1 << PinNo);
 }
 
 /**
@@ -113,7 +114,9 @@ static inline __attribute__((always_inline)) void IOPinSet(int PortNo, int PinNo
 static inline __attribute__((always_inline)) void IOPinClear(int PortNo, int PinNo) {
 	Sam4ePio *reg = (Sam4ePio *)((uint32_t)SAM4E_PIOA + PortNo * 0x200);
 
+	//reg->PIO_OWER = (1 << PinNo);
 	reg->PIO_CODR = (1 << PinNo);
+	//reg->PIO_OWDR = (1 << PinNo);
 }
 
 /**
