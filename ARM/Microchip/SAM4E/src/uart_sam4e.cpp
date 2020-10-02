@@ -69,26 +69,46 @@ static SAM4_UARTDEV s_Sam4UartDev[] = {
 	{
 		.DevNo = 0,
 		.SamDevId = ID_UART0,
-		.pUartReg = SAM4E_UART0,
+		{.pUartReg = SAM4E_UART0,},
 		.pPdc = SAM4E_PDC_UART0,
+		.pUartDev = NULL,
+		.RxFifoMem = { 0, },
+		.TxFifoMem = { 0, },
+		.PdcRxByte = 0,
+		.PdcTxBuff = {0,}
 	},
 	{
 		.DevNo = 1,
 		.SamDevId = ID_UART1,
-		.pUartReg = SAM4E_UART1,
+		{.pUartReg = SAM4E_UART1,},
 		.pPdc = SAM4E_PDC_UART1,
+		.pUartDev = NULL,
+		.RxFifoMem = { 0, },
+		.TxFifoMem = { 0, },
+		.PdcRxByte = 0,
+		.PdcTxBuff = {0,}
 	},
 	{
 		.DevNo = 2,
 		.SamDevId = ID_USART0,
-		.pUSartReg = SAM4E_USART0,
+		{.pUSartReg = SAM4E_USART0,},
 		.pPdc = SAM4E_PDC_USART0,
+		.pUartDev = NULL,
+		.RxFifoMem = { 0, },
+		.TxFifoMem = { 0, },
+		.PdcRxByte = 0,
+		.PdcTxBuff = {0,}
 	},
 	{
 		.DevNo = 3,
 		.SamDevId = ID_USART1,
-		.pUSartReg = SAM4E_USART1,
+		{.pUSartReg = SAM4E_USART1,},
 		.pPdc = SAM4E_PDC_USART1,
+		.pUartDev = NULL,
+		.RxFifoMem = { 0, },
+		.TxFifoMem = { 0, },
+		.PdcRxByte = 0,
+		.PdcTxBuff = {0,}
 	},
 };
 
