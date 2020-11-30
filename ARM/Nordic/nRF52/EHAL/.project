@@ -26,11 +26,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>include/analog_comp_nrf5x.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/include/analog_comp_nrf5x.h</locationURI>
-		</link>
-		<link>
 			<name>include/atomic.h</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/include/atomic.h</locationURI>
@@ -893,7 +888,7 @@
 		<link>
 			<name>src/micro-ecc/uECC.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/external/micro-ecc/uECC.c</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/micro-ecc/uECC.c</locationURI>
 		</link>
 		<link>
 			<name>src/miscdev/buzzer.cpp</name>

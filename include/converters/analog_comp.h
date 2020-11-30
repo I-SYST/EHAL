@@ -49,47 +49,55 @@ typedef enum __Analog_Comp_Evt {
 	ANALOG_COMP_EVT_HIGHER	//!< Transition higher
 } ANALOG_COMP_EVT;
 
-typedef struct __Analog_Comp_Dev ANALOG_COMP_DEV;
+typedef struct __Analog_Comp_Dev AnalogCompDev_t;
 
-typedef void (*ANALOG_COMP_CB)(ANALOG_COMP_EVT Evt, ANALOG_COMP_DEV *pDev);
+typedef void (*AnalogCompEvtHandler)(AnalogCompDev_t *pDev, ANALOG_COMP_EVT Evt);
+
+#pragma pack(push, 4)
 
 typedef struct __Analog_Comp_Cfg {
 	int DevNo;				//!< Device No
 	ANALOG_COMP_MODE Mode;	//!< Operating mode
-	int RefSrc;				//!< Reference source voltage mV (set 0 for external source or VDD)
+	int RefSrc;				//!< Reference source voltage mV (set 0 for internal source or external source # + 1)
+	int RefVolt;			//!< Reference voltage
 	int CompVolt;			//!< Comparison voltage mV
 	int AnalogIn;			//!< Analog input source
 	bool bHystersys;		//!< true - enable hysteresis
 	int IntPrio;			//!< Interrupt priority
-	ANALOG_COMP_CB EvtHandler;	//!< Pointer to event handler function
-} ANALOG_COMP_CFG;
+	AnalogCompEvtHandler EvtHandler;	//!< Pointer to event handler function
+} AnalogCompCfg_t;
 
 /// Device data.  The pointer to this structure is used as handle
 /// for the driver.
 struct __Analog_Comp_Dev {
 	ANALOG_COMP_MODE Mode;	//!< Operating mode
 	int RefSrc;				//!< Reference source voltage mV (set 0 for external source or VDD)
+	uint16_t ExtVRefPin;	//!< External reference voltage pin
 	int CompVolt;			//!< Comparison voltage mV
 	int AnalogIn;			//!< Analog input source
 	bool bHystersys;		//!< true - enable hysteresis
-	ANALOG_COMP_CB EvtHandler;	//!< Pointer to event handler function
+	AnalogCompEvtHandler EvtHandler;	//!< Pointer to event handler function
 	void *pPrivate;			//!< Private data for use by implementer, usually is the pointer to the AnalogCmp class
-	bool (*Enable)(ANALOG_COMP_DEV *pDev);
-	void (*Disable)(ANALOG_COMP_DEV *pDev);
+	bool (*Enable)(AnalogCompDev_t *pDev);
+	void (*Disable)(AnalogCompDev_t *pDev);
+	bool (*Start)(AnalogCompDev_t *pDev);
+	void (*PowerOff)(AnalogCompDev_t *pDev);
 };
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 
 class AnalogComp {
 public:
-	virtual bool Init(const ANALOG_COMP_CFG &Cfg) = 0;
-	virtual bool Enable() = 0;
-	virtual void Disable() = 0;
-	virtual bool Start() = 0;
-	virtual void Stop() = 0;
+	virtual bool Init(const AnalogCompCfg_t &Cfg);
+	virtual bool Enable() { return vDevData.Enable(&vDevData); }
+	virtual void Disable() { vDevData.Disable(&vDevData); }
+	virtual bool Start() { return vDevData.Start(&vDevData); };
+	virtual void PowerOff() { vDevData.PowerOff(&vDevData); };
 
 protected:
-	ANALOG_COMP_DEV vDevData;
+	AnalogCompDev_t vDevData;
 private:
 };
 
@@ -103,7 +111,7 @@ extern "C" {
  *
  * This function must be implemented by driver implementer
  */
-bool AnalogCompInit(ANALOG_COMP_DEV *pDev, ANALOG_COMP_CFG *pCfg);
+bool AnalogCompInit(AnalogCompDev_t *pDev, AnalogCompCfg_t *pCfg);
 
 #ifdef __cplusplus
 }

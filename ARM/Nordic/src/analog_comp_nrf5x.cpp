@@ -38,9 +38,38 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "nrf.h"
 
 #include "idelay.h"
-#include "analog_comp_nrf5x.h"
+#include "converters/analog_comp.h"
 
-static ANALOG_COMP_DEV *s_pnRF5xLPCompDev = NULL;
+static AnalogCompDev_t *s_pnRF5xLPCompDev = NULL;
+
+bool nRF52LPCompEnable(AnalogCompDev_t * const pDev)
+{
+	NRF_LPCOMP->ENABLE = 1;
+
+	return true;
+}
+
+void nRF52LPCompDisable(AnalogCompDev_t * const pDev)
+{
+	NRF_LPCOMP->ENABLE = 0;
+}
+
+bool nRF52LPCompStart(AnalogCompDev_t * const pDev)
+{
+	NRF_LPCOMP->TASKS_START = 1;
+
+	return true;
+}
+
+void nRF52LPCompStop(AnalogCompDev_t * const pDev)
+{
+	NRF_LPCOMP->TASKS_STOP = 1;
+}
+
+void nRF52LPCompPowerOff(AnalogCompDev_t * const pDev)
+{
+
+}
 
 extern "C" void COMP_LPCOMP_IRQHandler()
 {
@@ -68,14 +97,15 @@ extern "C" void COMP_LPCOMP_IRQHandler()
 		NRF_LPCOMP->EVENTS_CROSS = 0;
 	}
 
-	//printf("Res = %x\r\n", NRF_LPCOMP->RESULT);
 	if (s_pnRF5xLPCompDev && s_pnRF5xLPCompDev->EvtHandler)
 	{
-		s_pnRF5xLPCompDev->EvtHandler(evt, s_pnRF5xLPCompDev);
+		s_pnRF5xLPCompDev->EvtHandler(s_pnRF5xLPCompDev, evt);
 	}
+
+	NVIC_ClearPendingIRQ(LPCOMP_IRQn);
 }
 
-bool AnalogCompInit(ANALOG_COMP_DEV * const pDev, const ANALOG_COMP_CFG *pCfg)
+bool AnalogCompInit(AnalogCompDev_t * const pDev, const AnalogCompCfg_t *pCfg)
 {
 	if (pDev == NULL)
 	{
@@ -83,15 +113,19 @@ bool AnalogCompInit(ANALOG_COMP_DEV * const pDev, const ANALOG_COMP_CFG *pCfg)
 	}
 
 	s_pnRF5xLPCompDev = pDev;
+	pDev->Enable = nRF52LPCompEnable;
+	pDev->Disable = nRF52LPCompDisable;
+	pDev->Start = nRF52LPCompStart;
+	pDev->PowerOff = nRF52LPCompPowerOff;
 
-	if (pCfg->RefSrc != 0)
+	if (pCfg->RefSrc == 0)
 	{
 #ifdef NRF52_SERIES
-		int d = pCfg->CompVolt * 16 / pCfg->RefSrc;
+		int d = pCfg->CompVolt * 16 / pCfg->RefVolt;
 
 		if (d & 1)
 		{
-			NRF_LPCOMP->REFSEL = d - 1;
+			NRF_LPCOMP->REFSEL = (d - 1) + 8;
 		}
 		else
 		{
@@ -106,6 +140,7 @@ bool AnalogCompInit(ANALOG_COMP_DEV * const pDev, const ANALOG_COMP_CFG *pCfg)
 	else
 	{
 		NRF_LPCOMP->REFSEL = 7;
+		NRF_LPCOMP->EXTREFSEL = (pCfg->RefSrc - 1) & 1;
 	}
 
 	NRF_LPCOMP->PSEL = pCfg->AnalogIn;
@@ -126,12 +161,19 @@ bool AnalogCompInit(ANALOG_COMP_DEV * const pDev, const ANALOG_COMP_CFG *pCfg)
 	}
 #endif
 
-	NRF_LPCOMP->SHORTS = LPCOMP_SHORTS_READY_SAMPLE_Msk;
+	if (pCfg->Mode == ANALOG_COMP_MODE_CONTINUOUS)
+	{
+		NRF_LPCOMP->SHORTS = LPCOMP_SHORTS_READY_SAMPLE_Msk;
+	}
+	else
+	{
+		NRF_LPCOMP->SHORTS = 0;
+	}
 
 	// Detect both Up & Down
 	NRF_LPCOMP->ANADETECT = LPCOMP_ANADETECT_ANADETECT_Msk;
 
-	((AnalogComp*)pDev->pPrivate)->Enable();
+	nRF52LPCompEnable(pDev);
 
 	// Anomaly 76 workaround
 	NRF_LPCOMP->EVENTS_READY = 0;
@@ -140,6 +182,7 @@ bool AnalogCompInit(ANALOG_COMP_DEV * const pDev, const ANALOG_COMP_CFG *pCfg)
 
 	usDelay(150);
 
+	NRF_LPCOMP->TASKS_STOP = 1;
 	NRF_LPCOMP->EVENTS_READY = 0;
 	NRF_LPCOMP->EVENTS_CROSS = 0;
 	NRF_LPCOMP->EVENTS_DOWN = 0;
@@ -154,35 +197,11 @@ bool AnalogCompInit(ANALOG_COMP_DEV * const pDev, const ANALOG_COMP_CFG *pCfg)
 	return true;
 }
 
-bool AnalogCompnRF52LPComp::Init(const ANALOG_COMP_CFG &Cfg)
+bool AnalogComp::Init(const AnalogCompCfg_t &Cfg)
 {
 	vDevData.pPrivate = this;
 
 	return AnalogCompInit(&vDevData, &Cfg);
-}
-
-bool AnalogCompnRF52LPComp::Enable()
-{
-	NRF_LPCOMP->ENABLE = 1;
-
-	return true;
-}
-
-void AnalogCompnRF52LPComp::Disable()
-{
-	NRF_LPCOMP->ENABLE = 0;
-}
-
-bool AnalogCompnRF52LPComp::Start()
-{
-	NRF_LPCOMP->TASKS_START = 1;
-
-	return true;
-}
-
-void AnalogCompnRF52LPComp::Stop()
-{
-	NRF_LPCOMP->TASKS_STOP = 1;
 }
 
 
