@@ -241,11 +241,6 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>src/analog_comp_nrf5x.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/analog_comp_nrf5x.cpp</locationURI>
-		</link>
-		<link>
 			<name>src/base64.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/src/base64.c</locationURI>
@@ -799,6 +794,11 @@
 			<name>src/converters/adc_nrf52_saadc.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/adc_nrf52_saadc.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/converters/analog_comp_nrf5x.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/analog_comp_nrf5x.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/coredev/i2c.cpp</name>
