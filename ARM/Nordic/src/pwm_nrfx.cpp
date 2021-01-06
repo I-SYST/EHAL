@@ -49,7 +49,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 typedef struct {
 	NRF_PWM_Type *pReg;					//!< PWM device register pointer
-	PWM_DEV	*pDev;						//!< PWM device handle
+	PwmDev_t	*pDev;						//!< PWM device handle
 	uint32_t Clk;						//!< Base clock frequency
 	uint32_t TopCount;					//!< Top counter value for PWM freq
 	PWM_POL Pol[PWM_NRF5_MAX_CHAN];		//!< Polarity 0 - active 0, 1 - active high
@@ -80,7 +80,7 @@ bool nRF52PWMWWaitForSTop(PWM_NRF_DEV *pDev, int Timeout)
 	return false;
 }
 
-bool PWMInit(PWM_DEV *pDev, const PWM_CFG *pCfg)
+bool PWMInit(PwmDev_t *pDev, const PwmCfg_t *pCfg)
 {
 	PWM_NRF_DEV *dev = NULL;
 
@@ -159,7 +159,7 @@ bool PWMInit(PWM_DEV *pDev, const PWM_CFG *pCfg)
 	return true;
 }
 
-bool PWMSetFrequency(PWM_DEV *pDev, uint32_t Freq)
+bool PWMSetFrequency(PwmDev_t *pDev, uint32_t Freq)
 {
 	if (pDev == NULL)
 		return false;
@@ -246,7 +246,7 @@ bool PWMSetFrequency(PWM_DEV *pDev, uint32_t Freq)
 	return true;
 }
 
-bool PWMEnable(PWM_DEV *pDev)
+bool PWMEnable(PwmDev_t *pDev)
 {
 	if (pDev == NULL)
 		return false;
@@ -261,7 +261,7 @@ bool PWMEnable(PWM_DEV *pDev)
 	return true;
 }
 
-void PWMDisable(PWM_DEV *pDev)
+void PWMDisable(PwmDev_t *pDev)
 {
 	if (pDev != NULL)
 	{
@@ -271,7 +271,7 @@ void PWMDisable(PWM_DEV *pDev)
 	}
 }
 
-bool PWMOpenChannel(PWM_DEV *pDev, const PWM_CHAN_CFG *pChanCfg, int NbChan)
+bool PWMOpenChannel(PwmDev_t *pDev, const PwmChanCfg_t *pChanCfg, int NbChan)
 {
 	if (pDev == NULL || pChanCfg == NULL)
 		return false;
@@ -282,7 +282,7 @@ bool PWMOpenChannel(PWM_DEV *pDev, const PWM_CHAN_CFG *pChanCfg, int NbChan)
 	{
 		if (pChanCfg[i].Chan >= 0 && pChanCfg[i].Chan < PWM_NRF5_MAX_CHAN)
 		{
-			dev->pReg->PSEL.OUT[pChanCfg[i].Chan] = pChanCfg[i].Pin;
+			dev->pReg->PSEL.OUT[pChanCfg[i].Chan] = (pChanCfg[i].Pin & 0x1f) | ((pChanCfg[i].Port & 1) << 5);
 			dev->Pol[pChanCfg[i].Chan] = pChanCfg[i].Pol;
 		}
 	}
@@ -290,7 +290,7 @@ bool PWMOpenChannel(PWM_DEV *pDev, const PWM_CHAN_CFG *pChanCfg, int NbChan)
 	return true;
 }
 
-void PWMCloseChannel(PWM_DEV *pDev, int Chan)
+void PWMCloseChannel(PwmDev_t *pDev, int Chan)
 {
 	if (pDev == NULL)
 		return;
@@ -303,7 +303,7 @@ void PWMCloseChannel(PWM_DEV *pDev, int Chan)
 	}
 }
 
-bool PWMStart(PWM_DEV *pDev, uint32_t msDur)
+bool PWMStart(PwmDev_t *pDev, uint32_t msDur)
 {
 	if (pDev == NULL)
 		return false;
@@ -334,7 +334,7 @@ bool PWMStart(PWM_DEV *pDev, uint32_t msDur)
 	return true;
 }
 
-void PWMStop(PWM_DEV *pDev)
+void PWMStop(PwmDev_t *pDev)
 {
 	if (pDev != NULL)
 	{
@@ -347,7 +347,7 @@ void PWMStop(PWM_DEV *pDev)
 }
 
 
-bool PWMSetDutyCycle(PWM_DEV *pDev, int Chan, int DutyCycle)
+bool PWMSetDutyCycle(PwmDev_t *pDev, int Chan, int DutyCycle)
 {
 	if (pDev == NULL)
 		return false;
@@ -381,7 +381,7 @@ bool PWMSetDutyCycle(PWM_DEV *pDev, int Chan, int DutyCycle)
 	return true;
 }
 
-bool PWMPlay(PWM_DEV *pDev, int Chan, uint32_t Freq, uint32_t Dur)
+bool PWMPlay(PwmDev_t *pDev, int Chan, uint32_t Freq, uint32_t Dur)
 {
 	if (pDev == NULL)
 		return false;

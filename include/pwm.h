@@ -52,9 +52,10 @@ typedef enum __Pwm_Polarity {
 	PWM_POL_HIGH				//!< Active high --____, __--__
 } PWM_POL;
 
-typedef struct __Pwm_Device PWM_DEV;
+typedef struct __Pwm_Device PwmDev_t;
+typedef PwmDev_t	PWM_DEV;
 
-typedef void (*PWMEVTHANDLER) (PWM_DEV *pDev, PWM_EVT Evt);
+typedef void (*PwmEvtHandler_t) (PwmDev_t *pDev, PWM_EVT Evt);
 
 /// PWM configuration data
 typedef struct __Pwm_Config {
@@ -63,8 +64,10 @@ typedef struct __Pwm_Config {
 	PWM_MODE Mode;				//!< PWM mode edge or center
 	bool bIntEn;				//!< Enable interrupt
 	int IntPrio;				//!< Interrupt prio
-	PWMEVTHANDLER pEvtHandler;	//!< Event handler
-} PWM_CFG;
+	PwmEvtHandler_t pEvtHandler;	//!< Event handler
+} PwmCfg_t;
+
+typedef PwmCfg_t	PWM_CFG;
 
 /// PWM channel configuration
 typedef struct __Pwm_Chan_Cfg {
@@ -72,14 +75,16 @@ typedef struct __Pwm_Chan_Cfg {
 	PWM_POL Pol;				//!< Polarity 0 - active 0, 1 - active high
 	int Port;					//!< output port number
 	int Pin;					//!< output pin number
-} PWM_CHAN_CFG;
+} PwmChanCfg_t;
+
+typedef PwmChanCfg_t	PWM_CHAN_CFG;
 
 // Private driver data for internal use only
 struct __Pwm_Device {
 	int DevNo;
 	uint32_t Freq;
 	PWM_MODE Mode;				//!< PWM mode edge or center
-	PWMEVTHANDLER pEvtHandler;
+	PwmEvtHandler_t pEvtHandler;
 	void *pDevData;				//!< Internal implementation data
 };
 
@@ -88,15 +93,15 @@ struct __Pwm_Device {
 extern "C" {
 #endif
 
-bool PWMInit(PWM_DEV *pDev, const PWM_CFG *pCfg);
-bool PWMEnable(PWM_DEV *pDev);
-void PWMDisable(PWM_DEV *pDev);
-bool PWMOpenChannel(PWM_DEV *pDev, const PWM_CHAN_CFG *pChanCfg, int NbChan);
-void PWMCloseChannel(PWM_DEV *pDev, int Chan);
-bool PWMStart(PWM_DEV *pDev, uint32_t msDur);
-void PWMStop(PWM_DEV *pDev);
-bool PWMSetFrequency(PWM_DEV *pDev, uint32_t Freq);
-bool PWMSetDutyCycle(PWM_DEV *pDev, int Chan, int Percent);
+bool PWMInit(PwmDev_t *pDev, const PwmCfg_t *pCfg);
+bool PWMEnable(PwmDev_t *pDev);
+void PWMDisable(PwmDev_t *pDev);
+bool PWMOpenChannel(PwmDev_t *pDev, const PwmChanCfg_t *pChanCfg, int NbChan);
+void PWMCloseChannel(PwmDev_t *pDev, int Chan);
+bool PWMStart(PwmDev_t *pDev, uint32_t msDur);
+void PWMStop(PwmDev_t *pDev);
+bool PWMSetFrequency(PwmDev_t *pDev, uint32_t Freq);
+bool PWMSetDutyCycle(PwmDev_t *pDev, int Chan, int Percent);
 
 #ifdef __cplusplus
 }
@@ -112,7 +117,7 @@ public:
 	 *
 	 * @return	true - success
 	 */
-	virtual bool Init(const PWM_CFG &Cfg) { return PWMInit(&vDev, &Cfg); }
+	virtual bool Init(const PwmCfg_t &Cfg) { return PWMInit(&vDev, &Cfg); }
 
 	/**
 	 * @brief	Enable PWM device
@@ -133,7 +138,7 @@ public:
 	 *
 	 * @return	true - success
 	 */
-	virtual bool OpenChannel(const PWM_CHAN_CFG *pChanCfg, int NbChan) { return PWMOpenChannel(&vDev, pChanCfg, NbChan); }
+	virtual bool OpenChannel(const PwmChanCfg_t *pChanCfg, int NbChan) { return PWMOpenChannel(&vDev, pChanCfg, NbChan); }
 
 	/**
 	 * @brief	Close channel
@@ -176,7 +181,7 @@ public:
 	virtual bool DutyCycle(int Chan, int Percent) { return PWMSetDutyCycle(&vDev, Chan, Percent); }
 
 private:
-	PWM_DEV vDev;
+	PwmDev_t vDev;
 };
 
 #endif
