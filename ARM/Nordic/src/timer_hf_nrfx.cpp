@@ -51,8 +51,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NRF_CLOCK			NRF_CLOCK_NS
 #endif
 
-#define	INTERRUPT_LATENCY		11
-
 static TimerHFnRFx *s_pnRFxTimer[TIMER_NRFX_HF_MAX] = {
 	NULL,
 };
@@ -61,27 +59,14 @@ void TimerHFnRFx::IRQHandler()
 {
     uint32_t evt = 0;
     uint32_t count;
+    uint32_t t = vpReg->CC[0];	// Preserve comparator
 
+    // Read counter
     vpReg->TASKS_CAPTURE[0] = 1;
     count = vpReg->CC[0];
 
-    for (int i = 0; i < vMaxNbTrigEvt; i++)
-    {
-        if (vpReg->EVENTS_COMPARE[i])
-        {
-            evt |= 1 << (i + 2);
-            vpReg->EVENTS_COMPARE[i] = 0;
-            if (vTrigger[i].Type == TIMER_TRIG_TYPE_CONTINUOUS)
-            {
-            	vpReg->CC[i] = count + vCC[i] - INTERRUPT_LATENCY;
-            }
-            if (vTrigger[i].Handler)
-            {
-            	vTrigger[i].Handler(this, i, vTrigger[i].pContext);
-            }
-        }
-
-    }
+    // Restore comparator
+    vpReg->CC[0] = t;
 
     if (count < vLastCount)
     {
@@ -91,6 +76,24 @@ void TimerHFnRFx::IRQHandler()
     }
 
     vLastCount = count;
+
+    for (int i = 0; i < vMaxNbTrigEvt; i++)
+    {
+        if (vpReg->EVENTS_COMPARE[i])
+        {
+            evt |= 1 << (i + 2);
+            vpReg->EVENTS_COMPARE[i] = 0;
+            if (vTrigger[i].Type == TIMER_TRIG_TYPE_CONTINUOUS)
+            {
+            	vpReg->CC[i] = count + vCC[i];
+            }
+            if (vTrigger[i].Handler)
+            {
+            	vTrigger[i].Handler(this, i, vTrigger[i].pContext);
+            }
+        }
+
+    }
 
     if (vEvtHandler)
     {
@@ -353,11 +356,9 @@ uint32_t TimerHFnRFx::Frequency(uint32_t Freq)
     if (Freq > 0)
     {
         uint32_t divisor = TIMER_NRFX_HF_BASE_FREQ / Freq;
-#ifdef __ICCARM__
+
         prescaler = 31 - __CLZ(divisor);
-#else
-        prescaler = 31 - __builtin_clzl(divisor);
-#endif
+
         if (prescaler > 9)
         {
             prescaler = 9;
@@ -369,8 +370,7 @@ uint32_t TimerHFnRFx::Frequency(uint32_t Freq)
     vFreq = TIMER_NRFX_HF_BASE_FREQ / (1 << prescaler);
 
     // Pre-calculate periods for faster timer counter to time conversion use later
-    // for precision this value is x10 (in 100 psec)
-    vnsPeriod = 10000000000ULL / vFreq;     // Period in x10 nsec
+    vnsPeriod = 1000000000ULL / vFreq;     // Period in nsec
 
     vpReg->TASKS_START = 1;
 
@@ -379,20 +379,21 @@ uint32_t TimerHFnRFx::Frequency(uint32_t Freq)
 
 uint64_t TimerHFnRFx::TickCount()
 {
-	if (vpReg->INTENSET == 0)
-    {
-		vpReg->TASKS_CAPTURE[vDevNo] = 1;
+	uint32_t t = vpReg->CC[0];	// Save comparator
 
-		uint32_t count = vpReg->CC[vDevNo];
+	// Read counter
+	vpReg->TASKS_CAPTURE[0] = 1;
+	uint32_t count = vpReg->CC[0];
 
-		if (count < vLastCount)
-	    {
-	        // Counter wrap arround
-	        vRollover += 0x100000000ULL;//vFreq;
-	    }
+	vpReg->CC[0] = t;	// Restore comparator
 
-		vLastCount = count;
-    }
+	if (count < vLastCount)
+	{
+		// Counter wrap arround
+		vRollover += 0x100000000ULL;;
+	}
+
+	vLastCount = count;
 
 	return (uint64_t)vLastCount + vRollover;
 }
@@ -403,8 +404,7 @@ uint64_t TimerHFnRFx::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TR
     if (TrigNo < 0 || TrigNo >= vMaxNbTrigEvt)
         return 0;
 
-    // vnsPerios is x10 nsec (100 psec) => nsPeriod * 10ULL
-    uint32_t cc = (nsPeriod * 10ULL + (vnsPeriod >> 1)) / vnsPeriod;
+    uint32_t cc = (nsPeriod + (vnsPeriod >> 1)) / vnsPeriod;
 
     if (cc <= 0)
     {
@@ -419,21 +419,21 @@ uint64_t TimerHFnRFx::EnableTimerTrigger(int TrigNo, uint64_t nsPeriod, TIMER_TR
 
 	vpReg->INTENSET = TIMER_INTENSET_COMPARE0_Msk << TrigNo;
 
-    vpReg->CC[TrigNo] = count + cc - INTERRUPT_LATENCY;
+    vpReg->CC[TrigNo] = count + cc;
 
     if (count < vLastCount)
     {
         // Counter wrap around
-        vRollover += 0x100000000ULL;//vFreq;
+        vRollover += 0x100000000ULL;;
     }
 
     vLastCount = count;
 
-    vTrigger[TrigNo].nsPeriod = vnsPeriod * (uint64_t)cc / 10ULL;
+    vTrigger[TrigNo].nsPeriod = vnsPeriod * (uint64_t)cc;
     vTrigger[TrigNo].Handler = Handler;
     vTrigger[TrigNo].pContext = pContext;
 
-    return vnsPeriod * (uint64_t)cc / 10ULL; // Return real period in nsec
+    return vnsPeriod * (uint64_t)cc; // Return real period in nsec
 }
 /*
 uint32_t TimerHFnRFx::EnableTimerTrigger(int TrigNo, uint32_t msPeriod, TIMER_TRIG_TYPE Type,
