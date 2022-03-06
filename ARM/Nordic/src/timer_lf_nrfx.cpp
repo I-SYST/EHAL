@@ -72,6 +72,8 @@ void TimerLFnRFx::IRQHandler()
         vpReg->EVENTS_OVRFLW = 0;
     }
 
+    vLastCount = count;
+
     for (int i = 0; i < vMaxNbTrigEvt; i++)
     {
         if (vpReg->EVENTS_COMPARE[i])
@@ -88,8 +90,6 @@ void TimerLFnRFx::IRQHandler()
             }
         }
     }
-
-    vLastCount = count;
 
     if (vEvtHandler)
     {
