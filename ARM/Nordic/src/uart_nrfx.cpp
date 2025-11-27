@@ -401,7 +401,7 @@ static void UartIrqHandler(int DevNo, DEVINTRF * const pDev)
 			// Transfer to tx cache before sending as CFifo will immediately make the memory
 			// block available for reuse in the Put request. This could cause an overwrite
 			// if uart tx has not completed in time.
-			memcpy(&dev->TxDmaCache, p, l);
+			memcpy(dev->TxDmaCache, p, l);
 
 			dev->pDmaReg->TXD.MAXCNT = l;
 			dev->pDmaReg->TXD.PTR = (uint32_t)dev->TxDmaCache;
